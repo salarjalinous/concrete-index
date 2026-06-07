@@ -189,7 +189,7 @@ footer .brand{font-size:15px}
     <div class="card">
       <h2>Methodology &amp; definitions</h2>
       <h3>Source</h3>
-      <p>All figures are drawn live from the <a href="https://data.cityofnewyork.us/City-Government/Capital-Projects-Dashboard-Citywide-Budget-and-Sch/fb86-vt7u" target="_blank" rel="noopener">Capital Projects Dashboard — Citywide Budget and Schedule</a> dataset on NYC Open Data (dataset <code>fb86-vt7u</code>), published by the NYC Office of Management and Budget. OMB issues a new snapshot with each capital commitment plan, three times a year (January, May, September). This page automatically uses the most recent snapshot.</p>
+      <p>All figures are drawn live from the <a href="https://data.cityofnewyork.us/City-Government/Capital-Projects-Dashboard-Citywide-Budget-and-Sch/fb86-vt7u" target="_blank" rel="noopener">Capital Projects Dashboard — Citywide Budget and Schedule</a> dataset on NYC Open Data (dataset <code>fb86-vt7u</code>), published by the NYC Office of Management and Budget. OMB issues a new snapshot with each capital commitment plan, three times a year (January, May, September). This page automatically uses the most recent snapshot. The source publishes one row per sub-project milestone and repeats the project-level budget on each; The Concrete Index collapses these to one record per project so no dollar is counted twice.</p>
       <h3>Unspent committed</h3>
       <p>For each project, unspent committed dollars are its total budget (city plus non-city funds) minus spending to date. This is the page's headline measure of forward demand: money the City has planned for projects that still have work ahead of them. It is a planning measure — budgets shift between plan releases, and commitment is not a guarantee of timing.</p>
       <h3>Phases and what counts as active</h3>
@@ -220,7 +220,24 @@ footer .brand{font-size:15px}
 const API = 'https://data.cityofnewyork.us/resource/fb86-vt7u.json';
 const state = { stage: 'all', rows: [], period: null, priorTotal: 0, priorPeriod: null };
 
-const FIELDS = 'managing_agency,fms_project_name,total_budget,spend_to_date,current_phase,borough,ten_year_plan_category';
+const FIELDS = 'fms_id,managing_agency,fms_project_name,total_budget,spend_to_date,current_phase,borough,ten_year_plan_category';
+
+/* The dataset publishes one row per sub-project/milestone, repeating the
+   project-level budget on every row. Collapse to one row per project,
+   keeping the most advanced delivery phase. */
+function dedupe(rows){
+  const m = new Map();
+  for(const r of rows){
+    const k = r.agency + '|' + r.fmsId;
+    const prev = m.get(k);
+    if(!prev || phaseRank(r.bucket) > phaseRank(prev.bucket)) m.set(k, r);
+  }
+  return [...m.values()];
+}
+function phaseRank(b){
+  const i = PHASE_ORDER.indexOf(b);
+  return i === -1 ? -1 : (b === 'Other active' ? -1 : i);
+}
 
 async function getJSON(params){
   const res = await fetch(API + '?' + new URLSearchParams(params));
@@ -240,14 +257,15 @@ async function fetchPlan(){
     '$where': `reporting_period='${state.period}'`,
     '$limit': '20000'
   });
-  state.rows = rows.map(normalize).filter(r => r.bucket !== 'excluded');
+  state.rows = dedupe(rows.map(normalize).filter(r => r.bucket !== 'excluded'));
   if(state.priorPeriod){
     const prior = await getJSON({
-      '$select':'current_phase,total_budget,spend_to_date',
+      '$select':'fms_id,managing_agency,current_phase,total_budget,spend_to_date',
       '$where': `reporting_period='${state.priorPeriod}'`,
       '$limit': '20000'
     });
-    state.priorTotal = prior.map(normalize).filter(r => r.bucket !== 'excluded')
+    state.priorTotal = dedupe(prior.map(normalize).filter(r => r.bucket !== 'excluded'))
+      .filter(r => r.bucket !== 'Close-out')
       .reduce((a,r) => a + r.unspent, 0);
   }
 }
@@ -302,6 +320,7 @@ function normalize(r){
   const budget = Math.max(parseFloat(r.total_budget) || 0, 0);
   const spent  = Math.max(parseFloat(r.spend_to_date) || 0, 0);
   return {
+    fmsId: r.fms_id || Math.random().toString(36),
     agency: r.managing_agency || '—',
     name: r.fms_project_name || '(unnamed project)',
     budget,
