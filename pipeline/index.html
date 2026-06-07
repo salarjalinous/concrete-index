@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Pipeline — The Concrete Index</title>
+<meta name="description" content="The forward pipeline of NYC public construction: capital dollars committed but not yet spent, by phase, agency, and borough. Built on NYC Open Data.">
+<meta property="og:title" content="The Concrete Index — Pipeline">
+<meta property="og:description" content="NYC capital dollars committed but not yet spent.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#f7f6f3; --card:#ffffff; --ink:#1a1d21; --muted:#6b7280; --faint:#9ca3af;
+  --line:#e7e4dd; --accent:#d97706; --accent-deep:#b45309; --steel:#475569;
+  --green:#15803d; --red:#b91c1c;
+  --radius:10px; --shadow:0 1px 2px rgba(26,29,33,.05),0 4px 14px rgba(26,29,33,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--accent-deep);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+header{border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:50}
+.nav{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{font-family:'Fraunces',serif;font-weight:700;font-size:19px;letter-spacing:.01em;color:var(--ink)}
+.brand .tick{color:var(--accent)}
+.nav-links{display:flex;gap:22px;align-items:center;font-size:13.5px;font-weight:500}
+.nav-links a{color:var(--muted)}
+.nav-links a:hover{color:var(--ink);text-decoration:none}
+.nav-links a.active{color:var(--ink);font-weight:600}
+.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green);background:#f0fdf4;border:1px solid #bbf7d0;border-radius:999px;padding:3px 10px}
+.badge-live .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hero{padding:44px 0 10px}
+.hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(28px,4vw,40px);line-height:1.15;max-width:760px}
+.hero p.sub{margin-top:12px;font-size:16px;color:var(--muted);max-width:660px}
+.hero .asof{margin-top:14px;font-size:13px;color:var(--faint)}
+.hero .asof strong{color:var(--muted);font-weight:600}
+.controls{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:22px 0 6px}
+.seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:3px;box-shadow:var(--shadow)}
+.seg button{border:0;background:transparent;font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:6px 14px;border-radius:6px;cursor:pointer;transition:all .15s}
+.seg button:hover{color:var(--ink)}
+.seg button.on{background:var(--ink);color:#fff}
+.ctl-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin-right:-4px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:18px 0 8px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+.kpi .k-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
+.kpi .k-value{font-family:'Fraunces',serif;font-size:30px;font-weight:600;margin-top:6px;letter-spacing:-.01em}
+.kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:4px}
+.kpi .up{color:var(--green);font-weight:600}
+.kpi .down{color:var(--red);font-weight:600}
+.grid{display:grid;gap:14px;padding:8px 0}
+.grid.two{grid-template-columns:1fr 1fr}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.card h2{font-size:15px;font-weight:700;letter-spacing:-.01em}
+.card .h-sub{font-size:12.5px;color:var(--muted);margin-top:2px;margin-bottom:16px}
+.chart-box{position:relative;height:300px}
+.chart-box.tall{height:340px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:10px;border-bottom:1px solid #f1efe9;vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td .t-title{font-weight:500;color:var(--ink)}
+td .t-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill{display:inline-block;font-size:11px;font-weight:600;border-radius:5px;padding:2px 7px;white-space:nowrap;background:#eef2f7;color:var(--steel)}
+.pill.c{background:#fef3e2;color:var(--accent-deep)}
+.rank{color:var(--faint);font-weight:600;width:28px}
+.method{padding:30px 0 10px}
+.method .card{padding:30px 34px}
+.method h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:4px}
+.method h3{font-size:14px;font-weight:700;margin:20px 0 6px}
+.method p{font-size:14px;color:#374151;max-width:780px}
+.method p+p{margin-top:8px}
+footer{margin-top:40px;border-top:1px solid var(--line);padding:26px 0 38px;font-size:13px;color:var(--muted)}
+footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer .brand{font-size:15px}
+#loader{padding:80px 0;text-align:center;color:var(--muted)}
+.spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#error{display:none;padding:60px 24px;text-align:center;color:var(--muted)}
+#app{display:none}
+@media(max-width:880px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .grid.two{grid-template-columns:1fr}
+  .nav-links a.hide-m{display:none}
+}
+@media(max-width:560px){
+  .kpis{grid-template-columns:1fr 1fr}
+  .kpi .k-value{font-size:24px}
+  .hero{padding-top:30px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="/" style="text-decoration:none"><div class="brand">The Concrete Index<span class="tick">.</span></div></a>
+    <nav class="nav-links">
+      <a href="/">Awarded</a>
+      <a href="/pipeline/" class="active">Pipeline</a>
+      <a href="#methodology" class="hide-m">Methodology</a>
+      <span class="badge-live"><span class="dot"></span>Live data</span>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <h1>The forward pipeline: funded, not yet spent.</h1>
+  <p class="sub">Every capital project in the City's plan carries a budget and a spend-to-date. The gap between them is tomorrow's construction demand — dollars committed to projects that still have to move through design, procurement, and construction.</p>
+  <p class="asof" id="asof">Loading the capital plan…</p>
+</div>
+
+<div id="loader" class="wrap">
+  <div class="spinner"></div>
+  Pulling the capital projects plan from NYC Open Data…
+</div>
+
+<div id="error" class="wrap">
+  <p><strong>Couldn't reach NYC Open Data.</strong></p>
+  <p style="margin-top:6px">The City's API may be momentarily unavailable. Please refresh the page to try again.</p>
+</div>
+
+<main id="app" class="wrap">
+
+  <div class="controls">
+    <span class="ctl-label">Stage</span>
+    <div class="seg" id="seg-stage">
+      <button data-g="all">All active</button>
+      <button data-g="pre">Pre-construction</button>
+      <button data-g="con">In construction</button>
+    </div>
+  </div>
+
+  <section class="kpis">
+    <div class="kpi"><div class="k-label">Unspent committed</div><div class="k-value" id="kpi-unspent">—</div><div class="k-note" id="kpi-unspent-note"></div></div>
+    <div class="kpi"><div class="k-label">Projects</div><div class="k-value" id="kpi-count">—</div><div class="k-note" id="kpi-count-note"></div></div>
+    <div class="kpi"><div class="k-label">Median project budget</div><div class="k-value" id="kpi-median">—</div><div class="k-note">total budget per project</div></div>
+    <div class="kpi"><div class="k-label">Plan growth</div><div class="k-value" id="kpi-growth">—</div><div class="k-note" id="kpi-growth-note"></div></div>
+  </section>
+
+  <section class="grid" id="phases">
+    <div class="card">
+      <h2>Where the pipeline sits</h2>
+      <div class="h-sub">Unspent committed dollars by project phase — earlier phases are demand that has not yet reached the market</div>
+      <div class="chart-box tall"><canvas id="chart-phase"></canvas></div>
+    </div>
+  </section>
+
+  <section class="grid two" id="agencies">
+    <div class="card">
+      <h2>Pipeline by agency</h2>
+      <div class="h-sub">Unspent committed dollars — top managing agencies</div>
+      <div class="chart-box"><canvas id="chart-agency"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Pipeline by borough</h2>
+      <div class="h-sub">As designated in the capital plan</div>
+      <div class="chart-box"><canvas id="chart-boro"></canvas></div>
+    </div>
+  </section>
+
+  <section class="grid" id="categories">
+    <div class="card">
+      <h2>Pipeline by category</h2>
+      <div class="h-sub">Unspent committed dollars by ten-year plan category</div>
+      <div class="chart-box"><canvas id="chart-cat"></canvas></div>
+    </div>
+  </section>
+
+  <section class="grid" id="projects">
+    <div class="card">
+      <h2>Largest open projects</h2>
+      <div class="h-sub">Ranked by unspent committed dollars</div>
+      <table id="tbl-projects">
+        <thead><tr><th></th><th>Project</th><th>Phase</th><th class="num">Budget</th><th class="num">Unspent</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="method" id="methodology">
+    <div class="card">
+      <h2>Methodology &amp; definitions</h2>
+      <h3>Source</h3>
+      <p>All figures are drawn live from the <a href="https://data.cityofnewyork.us/City-Government/Capital-Projects-Dashboard-Citywide-Budget-and-Sch/fb86-vt7u" target="_blank" rel="noopener">Capital Projects Dashboard — Citywide Budget and Schedule</a> dataset on NYC Open Data (dataset <code>fb86-vt7u</code>), published by the NYC Office of Management and Budget. OMB issues a new snapshot with each capital commitment plan, three times a year (January, May, September). This page automatically uses the most recent snapshot.</p>
+      <h3>Unspent committed</h3>
+      <p>For each project, unspent committed dollars are its total budget (city plus non-city funds) minus spending to date. This is the page's headline measure of forward demand: money the City has planned for projects that still have work ahead of them. It is a planning measure — budgets shift between plan releases, and commitment is not a guarantee of timing.</p>
+      <h3>Phases and what counts as active</h3>
+      <p>Projects are grouped into the City's delivery sequence: pending, pre-design, design, construction procurement, construction, and close-out, plus an "other active" group for vehicles like requirements contracts and pass-through funds that don't follow the standard sequence. Projects marked completed, cancelled, on hold, inactive, transferred, or otherwise terminated are excluded from all figures. Close-out projects appear in the phase chart but are excluded from the headline unspent number, since their construction work is substantially done.</p>
+      <h3>Relationship to the Awarded page</h3>
+      <p>This page and the <a href="/">Awarded</a> page measure different moments of the same flow. The pipeline is demand the City has funded; an award is demand reaching a contractor. Capital plan categories are broader than the procurement categories on the Awarded page — this page covers the full capital plan, including transportation, parks, water, and buildings programs delivered by many agencies.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap f-row">
+    <div>
+      <div class="brand">The Concrete Index<span class="tick">.</span></div>
+      <div style="margin-top:4px">NYC public construction capital, from commitment to cash.</div>
+    </div>
+    <div style="text-align:right">
+      <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
+      <div style="margin-top:4px">© 2026 Salar Jalinous</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+'use strict';
+/* ================= data layer ================= */
+const API = 'https://data.cityofnewyork.us/resource/fb86-vt7u.json';
+const state = { stage: 'all', rows: [], period: null, priorTotal: 0, priorPeriod: null };
+
+const FIELDS = 'managing_agency,fms_project_name,total_budget,spend_to_date,current_phase,borough,ten_year_plan_category';
+
+async function getJSON(params){
+  const res = await fetch(API + '?' + new URLSearchParams(params));
+  if(!res.ok) throw new Error('API ' + res.status);
+  return res.json();
+}
+
+async function fetchPlan(){
+  const periods = await getJSON({
+    '$select':'reporting_period', '$group':'reporting_period',
+    '$order':'reporting_period DESC', '$limit':'2'
+  });
+  state.period = periods[0].reporting_period;
+  state.priorPeriod = periods[1] ? periods[1].reporting_period : null;
+  const rows = await getJSON({
+    '$select': FIELDS,
+    '$where': `reporting_period='${state.period}'`,
+    '$limit': '20000'
+  });
+  state.rows = rows.map(normalize).filter(r => r.bucket !== 'excluded');
+  if(state.priorPeriod){
+    const prior = await getJSON({
+      '$select':'current_phase,total_budget,spend_to_date',
+      '$where': `reporting_period='${state.priorPeriod}'`,
+      '$limit': '20000'
+    });
+    state.priorTotal = prior.map(normalize).filter(r => r.bucket !== 'excluded')
+      .reduce((a,r) => a + r.unspent, 0);
+  }
+}
+
+/* phase normalization */
+const PHASE_MAP = {
+  'pending':'Pending', 'initiation':'Pending',
+  'pre-design':'Pre-Design', 'predesign':'Pre-Design',
+  'design':'Design',
+  'construction procurement':'Procurement',
+  'construction':'Construction', 'design build':'Construction', 'design built':'Construction',
+  'close-out':'Close-out', 'closeout':'Close-out'
+};
+const EXCLUDED = new Set(['completed','cancelled','inactive','on-hold','on hold','transferred',
+  'withdrawn','terminated','defaulted','capitally ineligible','expense']);
+const PHASE_ORDER = ['Pending','Pre-Design','Design','Procurement','Construction','Close-out','Other active'];
+const PRE_CON = new Set(['Pending','Pre-Design','Design','Procurement']);
+
+function normPhase(raw){
+  const p = (raw||'').replace(/[()]/g,'').trim().toLowerCase();
+  if(EXCLUDED.has(p)) return 'excluded';
+  return PHASE_MAP[p] || 'Other active';
+}
+
+const AGENCY_NAMES = {
+  DPR:'Parks & Recreation', DDC:'Design & Construction', DOT:'Transportation',
+  EDC:'Economic Development', DEP:'Environmental Protection', HHC:'NYC Health + Hospitals',
+  DCAS:'Citywide Admin Services', CUNY:'CUNY', NYPD:'Police', FDNY:'Fire',
+  DCLA:'Cultural Affairs', DHS:'Homeless Services', DSNY:'Sanitation',
+  QPL:'Queens Public Library', DOC:'Correction', DOHMH:'Health & Mental Hygiene',
+  BPL:'Brooklyn Public Library', NYPL:'New York Public Library', HRA:'Human Resources Admin',
+  DFTA:'Aging', ACS:'Children’s Services', DOE:'Education',
+  HPD:'Housing Preservation & Dev', OTI:'Technology & Innovation'
+};
+function agencyLabel(code){
+  return AGENCY_NAMES[code] ? `${AGENCY_NAMES[code]} (${code})` : code;
+}
+
+const BOROS = new Set(['Brooklyn','Queens','Manhattan','Bronx','Staten Island']);
+function normBorough(b){
+  const v = (b||'').trim();
+  if(BOROS.has(v)) return v;
+  if(/citywide/i.test(v)) return 'Citywide';
+  return v ? 'Multi-site / Other' : 'Citywide';
+}
+
+function titleCase(s){
+  return (s||'').toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase());
+}
+
+function normalize(r){
+  const budget = Math.max(parseFloat(r.total_budget) || 0, 0);
+  const spent  = Math.max(parseFloat(r.spend_to_date) || 0, 0);
+  return {
+    agency: r.managing_agency || '—',
+    name: r.fms_project_name || '(unnamed project)',
+    budget,
+    unspent: Math.max(budget - spent, 0),
+    bucket: normPhase(r.current_phase),
+    borough: normBorough(r.borough),
+    cat: titleCase(r.ten_year_plan_category || 'Uncategorized')
+  };
+}
+
+/* ================= filtering & aggregation ================= */
+function inStage(r){
+  if(state.stage === 'pre') return PRE_CON.has(r.bucket);
+  if(state.stage === 'con') return r.bucket === 'Construction';
+  return r.bucket !== 'Close-out'; // 'all active' headline excludes close-out
+}
+function filtered(){ return state.rows.filter(inStage); }
+
+function sumUnspent(rows){ return rows.reduce((a,r) => a + r.unspent, 0); }
+
+function median(vals){
+  if(!vals.length) return 0;
+  const v = [...vals].sort((a,b) => a-b);
+  const m = Math.floor(v.length/2);
+  return v.length % 2 ? v[m] : (v[m-1]+v[m])/2;
+}
+
+function groupUnspent(rows, keyFn){
+  const m = new Map();
+  for(const r of rows){
+    const k = keyFn(r);
+    const g = m.get(k) || { total:0, count:0 };
+    g.total += r.unspent; g.count++;
+    m.set(k, g);
+  }
+  return m;
+}
+
+/* ================= formatting ================= */
+function fmtMoney(v){
+  if(v >= 1e9) return '$' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2) + 'B';
+  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
+  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
+  return '$' + Math.round(v);
+}
+function fmtInt(v){ return v.toLocaleString('en-US'); }
+function fmtPeriod(p){
+  if(!p) return '';
+  const names = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  return names[+p.slice(4,6)-1] + ' ' + p.slice(0,4);
+}
+function esc(s){ const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+const STAGE_LABEL = { all:'all active phases', pre:'pre-construction phases', con:'construction phase' };
+
+/* ================= rendering ================= */
+const COLOR_A = '#d97706', COLOR_B = '#64748b';
+let charts = {};
+Chart.defaults.font.family = "'Inter',sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.color = '#6b7280';
+function destroyChart(k){ if(charts[k]){ charts[k].destroy(); delete charts[k]; } }
+function moneyTicks(v){ return fmtMoney(v); }
+
+function hBar(key, canvasId, entries, color){
+  destroyChart(key);
+  charts[key] = new Chart(document.getElementById(canvasId), {
+    type:'bar',
+    data:{
+      labels: entries.map(e=>e[0]),
+      datasets:[{ data: entries.map(e=>e[1].total), backgroundColor: color, borderRadius:3, barThickness:16 }]
+    },
+    options:{
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:(c)=> fmtMoney(c.parsed.x) + ' across ' + fmtInt(entries[c.dataIndex][1].count) + ' projects'}}
+      },
+      scales:{
+        x:{grid:{color:'#f1efe9'}, border:{display:false}, ticks:{callback:moneyTicks, maxTicksLimit:5}},
+        y:{grid:{display:false}, ticks:{autoSkip:false, font:{size:11.5}}}
+      }
+    }
+  });
+}
+
+function renderPhases(){
+  // phase chart always shows all active rows incl. close-out, independent of stage filter
+  const g = groupUnspent(state.rows, r=>r.bucket);
+  const entries = PHASE_ORDER.filter(p=>g.has(p)).map(p=>[p, g.get(p)]);
+  hBar('phase','chart-phase', entries, COLOR_A);
+}
+
+function renderAgencies(rows){
+  const entries = [...groupUnspent(rows, r=>agencyLabel(r.agency)).entries()]
+    .sort((a,b)=>b[1].total-a[1].total).slice(0,8);
+  hBar('agency','chart-agency', entries, COLOR_A);
+}
+
+const BORO_ORDER = ['Brooklyn','Queens','Manhattan','Bronx','Staten Island','Citywide','Multi-site / Other'];
+function renderBoroughs(rows){
+  const g = groupUnspent(rows, r=>r.borough);
+  const entries = BORO_ORDER.filter(b=>g.has(b)).map(b=>[b,g.get(b)]);
+  hBar('boro','chart-boro', entries, COLOR_B);
+}
+
+function renderCats(rows){
+  const entries = [...groupUnspent(rows, r=>r.cat).entries()]
+    .sort((a,b)=>b[1].total-a[1].total).slice(0,8);
+  hBar('cat','chart-cat', entries, COLOR_B);
+}
+
+function renderProjects(rows){
+  const top = [...rows].sort((a,b)=>b.unspent-a.unspent).slice(0,15);
+  const tb = document.querySelector('#tbl-projects tbody');
+  tb.innerHTML = top.map((r,i)=>`<tr>
+    <td class="rank">${i+1}</td>
+    <td>
+      <div class="t-title">${esc(r.name)}</div>
+      <div class="t-sub">${esc(agencyLabel(r.agency))} · ${esc(r.borough)} · ${esc(r.cat)}</div>
+    </td>
+    <td><span class="pill ${r.bucket==='Construction'?'c':''}">${esc(r.bucket)}</span></td>
+    <td class="num amt">${fmtMoney(r.budget)}</td>
+    <td class="num amt">${fmtMoney(r.unspent)}</td>
+  </tr>`).join('');
+}
+
+function renderKpis(rows){
+  const unspent = sumUnspent(rows);
+  document.getElementById('kpi-unspent').textContent = fmtMoney(unspent);
+  document.getElementById('kpi-unspent-note').textContent = STAGE_LABEL[state.stage] + ', ' + fmtPeriod(state.period) + ' plan';
+  document.getElementById('kpi-count').textContent = fmtInt(rows.length);
+  document.getElementById('kpi-count-note').textContent = 'open capital projects in scope';
+  document.getElementById('kpi-median').textContent = fmtMoney(median(rows.map(r=>r.budget)));
+  const curAll = sumUnspent(state.rows.filter(r=>r.bucket!=='Close-out'));
+  if(state.priorTotal > 0){
+    const d = (curAll - state.priorTotal) / state.priorTotal * 100;
+    document.getElementById('kpi-growth').innerHTML =
+      `<span class="${d>=0?'up':'down'}">${d>=0?'▲':'▼'} ${Math.abs(d).toFixed(1)}%</span>`;
+    document.getElementById('kpi-growth-note').textContent =
+      'unspent pipeline vs ' + fmtPeriod(state.priorPeriod) + ' plan';
+  }else{
+    document.getElementById('kpi-growth').textContent = '—';
+  }
+}
+
+function renderAll(){
+  const rows = filtered();
+  renderKpis(rows);
+  renderPhases();
+  renderAgencies(rows);
+  renderBoroughs(rows);
+  renderCats(rows);
+  renderProjects(rows);
+}
+
+/* ================= controls & init ================= */
+function wireSeg(id, attr, initial, onChange){
+  const seg = document.getElementById(id);
+  const btns = [...seg.querySelectorAll('button')];
+  function set(val){
+    btns.forEach(b => b.classList.toggle('on', b.dataset[attr] === String(val)));
+    onChange(val);
+  }
+  btns.forEach(b => b.addEventListener('click', ()=> set(b.dataset[attr])));
+  set(initial);
+}
+
+(async function init(){
+  try{
+    await fetchPlan();
+  }catch(e){
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('error').style.display = 'block';
+    return;
+  }
+  document.getElementById('asof').innerHTML =
+    `<strong>${fmtPeriod(state.period)}</strong> capital plan snapshot · ${fmtInt(state.rows.length)} active projects · published by OMB three times a year`;
+  document.getElementById('loader').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  let ready = false;
+  wireSeg('seg-stage','g','all', v => { state.stage = v; if(ready) renderAll(); });
+  ready = true;
+  renderAll();
+})();
+
+</script>
+</body>
+</html>
