@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open Solicitations — The Concrete Index</title>
+<meta name="description" content="Every open NYC construction solicitation in one place — what's bidding right now, from the City Record, refreshed on every load.">
+<meta property="og:title" content="The Concrete Index — Open Solicitations">
+<meta property="og:description" content="NYC construction work bidding right now.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23d97706'/%3E%3Crect x='25' y='55' width='50' height='20' rx='4' fill='white'/%3E%3Crect x='35' y='30' width='30' height='18' rx='4' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f6f3; --card:#ffffff; --ink:#1a1d21; --muted:#6b7280; --faint:#9ca3af;
+  --line:#e7e4dd; --accent:#d97706; --accent-deep:#b45309; --steel:#475569;
+  --green:#15803d; --red:#b91c1c;
+  --radius:10px; --shadow:0 1px 2px rgba(26,29,33,.05),0 4px 14px rgba(26,29,33,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--accent-deep);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+header{border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:50}
+.nav{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{font-family:'Fraunces',serif;font-weight:700;font-size:19px;letter-spacing:.01em;color:var(--ink)}
+.brand .tick{color:var(--accent)}
+.nav-links{display:flex;gap:20px;align-items:center;font-size:13.5px;font-weight:500}
+.nav-links a{color:var(--muted)}
+.nav-links a:hover{color:var(--ink);text-decoration:none}
+.nav-links a.active{color:var(--ink);font-weight:600}
+.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green);background:#f0fdf4;border:1px solid #bbf7d0;border-radius:999px;padding:3px 10px}
+.badge-live .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hero{padding:44px 0 10px}
+.hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(28px,4vw,40px);line-height:1.15;max-width:760px}
+.hero p.sub{margin-top:12px;font-size:16px;color:var(--muted);max-width:660px}
+.hero .asof{margin-top:14px;font-size:13px;color:var(--faint)}
+.hero .asof strong{color:var(--muted);font-weight:600}
+.controls{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:22px 0 6px}
+.seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:3px;box-shadow:var(--shadow);flex-wrap:wrap}
+.seg button{border:0;background:transparent;font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:6px 14px;border-radius:6px;cursor:pointer;transition:all .15s}
+.seg button:hover{color:var(--ink)}
+.seg button.on{background:var(--ink);color:#fff}
+.ctl-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin-right:-4px}
+.search{flex:1;min-width:200px;max-width:340px}
+.search input{width:100%;font:inherit;font-size:13.5px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.search input:focus{outline:2px solid #f3d9b5}
+.grid{display:grid;gap:14px;padding:14px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.sol{display:flex;gap:18px;justify-content:space-between;border-bottom:1px solid #f1efe9;padding:16px 0}
+.sol:last-child{border-bottom:0}
+.sol .s-main{min-width:0}
+.sol .s-title{font-weight:600;font-size:14.5px}
+.sol .s-meta{font-size:12.5px;color:var(--muted);margin-top:3px}
+.sol .s-desc{font-size:13px;color:#4b5563;margin-top:6px;max-width:720px}
+.sol .s-side{flex-shrink:0;text-align:right;min-width:130px}
+.due{font-weight:700;font-size:13.5px;white-space:nowrap}
+.due.soon{color:var(--red)}
+.due.ok{color:var(--ink)}
+.due-sub{font-size:11.5px;color:var(--faint);margin-top:2px}
+.pill{display:inline-block;font-size:11px;font-weight:600;border-radius:5px;padding:2px 7px;white-space:nowrap}
+.pill.hard{background:#fef3e2;color:var(--accent-deep)}
+.pill.rel{background:#eef2f7;color:var(--steel)}
+.contact{font-size:12px;color:var(--muted);margin-top:6px}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+.method{padding:30px 0 10px}
+.method .card{padding:30px 34px}
+.method h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:4px}
+.method h3{font-size:14px;font-weight:700;margin:20px 0 6px}
+.method p{font-size:14px;color:#374151;max-width:780px}
+footer{margin-top:40px;border-top:1px solid var(--line);padding:26px 0 38px;font-size:13px;color:var(--muted)}
+footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer .brand{font-size:15px}
+#loader{padding:80px 0;text-align:center;color:var(--muted)}
+.spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#error{display:none;padding:60px 24px;text-align:center;color:var(--muted)}
+#app{display:none}
+@media(max-width:720px){
+  .sol{flex-direction:column;gap:8px}
+  .sol .s-side{text-align:left}
+  .nav-links a.hide-m{display:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="/" style="text-decoration:none"><div class="brand">The Concrete Index<span class="tick">.</span></div></a>
+    <nav class="nav-links">
+      <a href="/pipeline/" class="hide-m">Pipeline</a>
+      <a href="/solicitations/" class="active">Bidding</a>
+      <a href="/">Awarded</a>
+      <a href="/funnel/" class="hide-m">Funnel</a>
+      <a href="/briefing/">Briefing</a>
+      <span class="badge-live"><span class="dot"></span>Live data</span>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <h1>What's bidding right now.</h1>
+  <p class="sub">Every open construction solicitation in the City Record — the moment between the pipeline and the award. Sorted by due date, refreshed from the public record on every load.</p>
+  <p class="asof" id="asof">Loading open solicitations…</p>
+</div>
+
+<div id="loader" class="wrap">
+  <div class="spinner"></div>
+  Pulling open solicitations from NYC Open Data…
+</div>
+
+<div id="error" class="wrap">
+  <p><strong>Couldn't reach NYC Open Data.</strong></p>
+  <p style="margin-top:6px">The City's API may be momentarily unavailable. Please refresh the page to try again.</p>
+</div>
+
+<main id="app" class="wrap">
+
+  <div class="controls">
+    <span class="ctl-label">Scope</span>
+    <div class="seg" id="seg-scope">
+      <button data-s="all">All construction</button>
+      <button data-s="hard">Construction</button>
+      <button data-s="rel">Related services</button>
+    </div>
+    <div class="search"><input id="q" type="search" placeholder="Search title, agency, or description…"></div>
+  </div>
+
+  <section class="grid">
+    <div class="card" id="list"></div>
+  </section>
+
+  <section class="method" id="methodology">
+    <div class="card">
+      <h2>About this page</h2>
+      <h3>Source</h3>
+      <p>Open solicitation notices from <a href="https://data.cityofnewyork.us/City-Government/Current-Solicitations/3khw-qi8f" target="_blank" rel="noopener">Current Solicitations</a> on NYC Open Data (dataset <code>3khw-qi8f</code>) — the City Record's notice of procurement opportunities, in the two construction categories, with a due date that hasn't passed. Always confirm requirements and deadlines with the issuing agency; the contact listed on each notice is the authoritative source.</p>
+      <h3>Where this sits in the funnel</h3>
+      <p>A solicitation is the moment committed money (the <a href="/pipeline/">Pipeline</a>) reaches the market, before it becomes an <a href="/">award</a>. Watching this page is watching next quarter's award flow form.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap f-row">
+    <div>
+      <div class="brand">The Concrete Index<span class="tick">.</span></div>
+      <div style="margin-top:4px">NYC public construction capital, from commitment to cash.</div>
+    </div>
+    <div style="text-align:right">
+      <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
+      <div style="margin-top:4px">© 2026 Salar Jalinous</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+'use strict';
+const API = 'https://data.cityofnewyork.us/resource/3khw-qi8f.json';
+const HARD = 'Construction/Construction Services';
+const state = { scope:'all', q:'', rows:[] };
+
+function stripHtml(s){ const d=document.createElement('div'); d.innerHTML=s||''; return (d.textContent||'').replace(/\s+/g,' ').trim(); }
+function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+async function fetchSolicitations(){
+  const today = new Date().toISOString().slice(0,10);
+  const params = new URLSearchParams({
+    '$select':'request_id,start_date,agency_name,category_description,selection_method_description,short_title,pin,due_date,contact_name,contact_phone,email,additional_description_1',
+    '$where':`starts_with(category_description,'Construction') AND due_date>='${today}'`,
+    '$order':'due_date',
+    '$limit':'2000'
+  });
+  const res = await fetch(`${API}?${params}`);
+  if(!res.ok) throw new Error('API '+res.status);
+  const raw = await res.json();
+  const seen = new Set();
+  return raw.filter(r => {
+    const k = r.pin || r.request_id;
+    if(seen.has(k)) return false;
+    seen.add(k); return true;
+  }).map(r => ({
+    title: r.short_title || '(untitled)',
+    agency: r.agency_name || '—',
+    cat: r.category_description === HARD ? 'hard' : 'rel',
+    method: r.selection_method_description || '',
+    pin: r.pin || '',
+    due: new Date(r.due_date),
+    posted: new Date(r.start_date),
+    contact: r.contact_name || '',
+    phone: r.contact_phone || '',
+    email: r.email || '',
+    desc: stripHtml(r.additional_description_1).slice(0, 280)
+  }));
+}
+
+function daysUntil(d){ return Math.ceil((d - new Date()) / 86400000); }
+function fmtDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+
+function filtered(){
+  const q = state.q.toLowerCase();
+  return state.rows.filter(r =>
+    (state.scope==='all' || r.cat===state.scope) &&
+    (!q || (r.title+' '+r.agency+' '+r.desc+' '+r.method).toLowerCase().includes(q))
+  );
+}
+
+function render(){
+  const rows = filtered();
+  const el = document.getElementById('list');
+  if(!rows.length){ el.innerHTML = '<div class="empty">No open solicitations match.</div>'; return; }
+  el.innerHTML = rows.map(r => {
+    const days = daysUntil(r.due);
+    return `<div class="sol">
+      <div class="s-main">
+        <div class="s-title">${esc(r.title)}</div>
+        <div class="s-meta">${esc(r.agency)} · ${esc(r.method)} · PIN ${esc(r.pin)} · <span class="pill ${r.cat}">${r.cat==='hard'?'Construction':'Related services'}</span></div>
+        ${r.desc ? `<div class="s-desc">${esc(r.desc)}${r.desc.length>=280?'…':''}</div>` : ''}
+        <div class="contact">${esc(r.contact)}${r.phone?' · '+esc(r.phone):''}${r.email?' · <a href="mailto:'+esc(r.email)+'">'+esc(r.email)+'</a>':''}</div>
+      </div>
+      <div class="s-side">
+        <div class="due ${days<=7?'soon':'ok'}">Due ${fmtDate(r.due)}</div>
+        <div class="due-sub">${days<=0?'due today':days+' day'+(days===1?'':'s')+' left'} · posted ${fmtDate(r.posted)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function wireSeg(id, attr, initial, onChange){
+  const btns = [...document.getElementById(id).querySelectorAll('button')];
+  function set(val){ btns.forEach(b=>b.classList.toggle('on', b.dataset[attr]===String(val))); onChange(val); }
+  btns.forEach(b=>b.addEventListener('click',()=>set(b.dataset[attr])));
+  set(initial);
+}
+
+(async function init(){
+  try{ state.rows = await fetchSolicitations(); }
+  catch(e){
+    document.getElementById('loader').style.display='none';
+    document.getElementById('error').style.display='block';
+    return;
+  }
+  document.getElementById('asof').innerHTML =
+    `<strong>${state.rows.length}</strong> open construction solicitations · sorted by due date · source updated daily`;
+  document.getElementById('loader').style.display='none';
+  document.getElementById('app').style.display='block';
+  let ready=false;
+  wireSeg('seg-scope','s','all', v=>{ state.scope=v; if(ready) render(); });
+  document.getElementById('q').addEventListener('input', e=>{ state.q=e.target.value; render(); });
+  ready=true;
+  render();
+})();
+</script>
+</body>
+</html>
