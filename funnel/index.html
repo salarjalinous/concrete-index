@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Funnel — The Concrete Index</title>
+<title>The Funnel · The Concrete Index</title>
 <meta name="description" content="NYC public construction capital from commitment to cash: how committed dollars become awards and spending, and how fast each agency moves money.">
-<meta property="og:title" content="The Concrete Index — Funnel">
+<meta property="og:title" content="The Concrete Index · Funnel">
 <meta property="og:description" content="How fast NYC capital commitments become cash.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23c2570f'/%3E%3Crect x='25' y='55' width='50' height='20' rx='4' fill='white'/%3E%3Crect x='35' y='30' width='30' height='18' rx='4' fill='white'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -119,7 +119,7 @@ footer .brand{font-size:15px}
 
 <div class="wrap hero">
   <h1>From commitment to cash.</h1>
-  <p class="sub">The full picture: what New York City has committed to build, what's reaching contractors as awards, and what's actually being paid out — with the speed of that flow measured agency by agency.</p>
+  <p class="sub">The full picture: what New York City has committed to build, what's reaching contractors as awards, and what's actually being paid out, with the speed of that flow measured agency by agency.</p>
   <p class="asof" id="asof">Assembling the funnel from live City data…</p>
 </div>
 
@@ -136,10 +136,10 @@ footer .brand{font-size:15px}
 <main id="app" class="wrap">
 
   <section class="kpis">
-    <div class="kpi"><div class="k-label">Committed, unspent</div><div class="k-value" id="kpi-committed">—</div><div class="k-note" id="kpi-committed-note"></div></div>
-    <div class="kpi"><div class="k-label">Awarded</div><div class="k-value" id="kpi-awarded">—</div><div class="k-note" id="kpi-awarded-note"></div></div>
-    <div class="kpi"><div class="k-label">Spent</div><div class="k-value" id="kpi-spent">—</div><div class="k-note" id="kpi-spent-note"></div></div>
-    <div class="kpi hl"><div class="k-label">Backlog coverage</div><div class="k-value" id="kpi-coverage">—</div><div class="k-note">years of funded work at the current pace of spending</div></div>
+    <div class="kpi"><div class="k-label">Committed, unspent</div><div class="k-value" id="kpi-committed">–</div><div class="k-note" id="kpi-committed-note"></div></div>
+    <div class="kpi"><div class="k-label">Awarded</div><div class="k-value" id="kpi-awarded">–</div><div class="k-note" id="kpi-awarded-note"></div></div>
+    <div class="kpi"><div class="k-label">Spent</div><div class="k-value" id="kpi-spent">–</div><div class="k-note" id="kpi-spent-note"></div></div>
+    <div class="kpi hl"><div class="k-label">Backlog coverage</div><div class="k-value" id="kpi-coverage">–</div><div class="k-note">years of funded work at the current pace of spending</div></div>
   </section>
 
   <section class="grid" id="stages">
@@ -166,7 +166,7 @@ footer .brand{font-size:15px}
   <section class="grid" id="velocity">
     <div class="card">
       <h2>Agency velocity</h2>
-      <div class="h-sub">Who moves money fast — open pipeline vs. trailing-year spending, top agencies by pipeline</div>
+      <div class="h-sub">Who moves money fast, open pipeline vs. trailing-year spending, top agencies by pipeline</div>
       <table id="tbl-velocity">
         <thead><tr><th>Agency</th><th class="num">Open pipeline</th><th class="num">Spent (TTM)</th><th class="num">Awarded (TTM)</th><th class="num">Backlog, years</th></tr></thead>
         <tbody></tbody>
@@ -178,13 +178,13 @@ footer .brand{font-size:15px}
     <div class="card">
       <h2>Methodology &amp; definitions</h2>
       <h3>The three measures</h3>
-      <p><strong>Committed, unspent</strong> is the forward pipeline from the <a href="/pipeline/">Pipeline</a> page: total project budgets minus spending to date across active capital projects in the City's most recent capital plan snapshot (NYC OMB, dataset <code>fb86-vt7u</code>). <strong>Awarded</strong> is trailing-twelve-month construction award value from the City Record (dataset <code>qyyg-4tf5</code>), as on the <a href="/">Awarded</a> page. <strong>Spent</strong> is trailing-year capital outlays, measured as the growth in each project's cumulative spend-to-date between capital plan snapshots — the City's own FMS ledger, the same accounting that powers Checkbook NYC.</p>
+      <p><strong>Committed, unspent</strong> is the forward pipeline from the <a href="/pipeline/">Pipeline</a> page: total project budgets minus spending to date across active capital projects in the City's most recent capital plan snapshot (NYC OMB, dataset <code>fb86-vt7u</code>). <strong>Awarded</strong> is trailing-twelve-month construction award value from the City Record (dataset <code>qyyg-4tf5</code>), as on the <a href="/">Awarded</a> page. <strong>Spent</strong> is trailing-year capital outlays, measured as the growth in each project's cumulative spend-to-date between capital plan snapshots, the City's own FMS ledger, the same accounting that powers Checkbook NYC.</p>
       <h3>How spending pace is computed</h3>
-      <p>OMB publishes a plan snapshot roughly every four months. For each project, spending in a period is its cumulative spend-to-date in one snapshot minus the prior snapshot, floored at zero; new projects count from zero. Projects are matched across snapshots by agency and FMS ID, with sub-project rows collapsed first so nothing is double-counted. Projects that leave the dataset between snapshots stop contributing — a conservative treatment.</p>
+      <p>OMB publishes a plan snapshot roughly every four months. For each project, spending in a period is its cumulative spend-to-date in one snapshot minus the prior snapshot, floored at zero; new projects count from zero. Projects are matched across snapshots by agency and FMS ID, with sub-project rows collapsed first so nothing is double-counted. Projects that leave the dataset between snapshots stop contributing, a conservative treatment.</p>
       <h3>Backlog coverage</h3>
-      <p>Unspent committed dollars divided by trailing-year spending: how many years the current funded pipeline would take to deliver at today's pace. It's the demand-side counterpart to a contractor's backlog ratio — higher means more future work stacked behind the same delivery capacity.</p>
+      <p>Unspent committed dollars divided by trailing-year spending: how many years the current funded pipeline would take to deliver at today's pace. It's the demand-side counterpart to a contractor's backlog ratio, higher means more future work stacked behind the same delivery capacity.</p>
       <h3>Scope</h3>
-      <p>Committed and Spent cover the City's full capital plan — buildings, transportation, water, parks — because capital budgets aren't divided by procurement category. Awarded covers the City Record's two construction procurement categories. The three measures answer one question from different ledgers: how demand is moving. They are not a single cohort traced end-to-end, and the methodology keeps each measure on its own source's terms.</p>
+      <p>Committed and Spent cover the City's full capital plan, buildings, transportation, water, parks, because capital budgets aren't divided by procurement category. Awarded covers the City Record's two construction procurement categories. The three measures answer one question from different ledgers: how demand is moving. They are not a single cohort traced end-to-end, and the methodology keeps each measure on its own source's terms.</p>
       <h3>Agency velocity</h3>
       <p>Agencies are matched across the two sources (capital plan codes to City Record names) for the agencies that appear in both. Backlog years is each agency's open pipeline divided by its own trailing-year spending.</p>
     </div>
@@ -200,7 +200,7 @@ footer .brand{font-size:15px}
     </div>
     <div style="text-align:right">
       <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
-      <div style="margin-top:4px">© 2026 Salar Jalinous</div>
+      <div style="margin-top:4px">© 2026 <a href="/about/">Salar Jalinous</a></div>
     </div>
   </div>
 </footer>
@@ -255,7 +255,7 @@ function collapseSnapshot(rows){
     const key = (r.managing_agency||'') + '|' + (r.fms_id||r.fms_project_name||'');
     const bucket = normPhase(r.current_phase);
     const rec = {
-      agency: r.managing_agency || '—',
+      agency: r.managing_agency || '–',
       spend: Math.max(parseFloat(r.spend_to_date)||0, 0),
       budget: Math.max(parseFloat(r.total_budget)||0, 0),
       bucket
@@ -397,12 +397,12 @@ function renderKpis(){
   document.getElementById('kpi-awarded-note').textContent = fmtInt(state.awards.count) + ' construction awards, trailing 12 months';
   document.getElementById('kpi-spent').textContent = fmtMoney(spent);
   document.getElementById('kpi-spent-note').textContent = 'capital outlays, trailing year of plan snapshots';
-  document.getElementById('kpi-coverage').textContent = spent > 0 ? (committed/spent).toFixed(1) + ' yrs' : '—';
+  document.getElementById('kpi-coverage').textContent = spent > 0 ? (committed/spent).toFixed(1) + ' yrs' : '–';
 }
 
 function renderStages(){
   const stages = [
-    { t:'Committed', s:'funded, unspent — full capital plan', v: state.pipeline.total, c: COLOR_B },
+    { t:'Committed', s:'funded, unspent, full capital plan', v: state.pipeline.total, c: COLOR_B },
     { t:'Awarded', s:'construction awards, trailing 12 mo', v: state.awards.ttm, c: COLOR_A },
     { t:'Spent', s:'capital outlays, trailing year', v: ttmSpend(), c: COLOR_C }
   ];
@@ -414,7 +414,7 @@ function renderStages(){
       <div class="stage-val">${fmtMoney(s.v)}</div>
     </div>`).join('');
   document.getElementById('stages-sub').textContent =
-    'Three ledgers, one flow — stock of funded work vs. trailing-year flows of awards and cash';
+    'Three ledgers, one flow, stock of funded work vs. trailing-year flows of awards and cash';
 }
 
 function vBar(canvasId, labels, data, color){
@@ -454,9 +454,9 @@ function renderVelocity(){
   document.querySelector('#tbl-velocity tbody').innerHTML = rows.map(r=>`<tr>
     <td><span class="t-title">${esc(agencyLabel(r.code))}</span></td>
     <td class="num amt">${fmtMoney(r.pipe)}</td>
-    <td class="num amt">${r.sp>0 ? fmtMoney(r.sp) : '—'}</td>
-    <td class="num amt">${r.aw!==undefined ? fmtMoney(r.aw) : '—'}</td>
-    <td class="num"><span class="yrs ${r.yrs===null?'':(r.yrs>medianYrs*1.5?'slow':(r.yrs<medianYrs*.67?'fast':''))}">${r.yrs===null?'—':r.yrs.toFixed(1)}</span></td>
+    <td class="num amt">${r.sp>0 ? fmtMoney(r.sp) : '–'}</td>
+    <td class="num amt">${r.aw!==undefined ? fmtMoney(r.aw) : '–'}</td>
+    <td class="num"><span class="yrs ${r.yrs===null?'':(r.yrs>medianYrs*1.5?'slow':(r.yrs<medianYrs*.67?'fast':''))}">${r.yrs===null?'–':r.yrs.toFixed(1)}</span></td>
   </tr>`).join('');
 }
 
