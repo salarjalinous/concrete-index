@@ -237,6 +237,12 @@ const COLOR_A = '#c2570f', COLOR_B = '#2e5a88';
 Chart.defaults.font.family = "'Inter',sans-serif";
 Chart.defaults.font.size = 12;
 Chart.defaults.color = '#6e6657';
+Object.assign(Chart.defaults.plugins.tooltip, {
+  backgroundColor:'#faf6ec', titleColor:'#26231d', bodyColor:'#46412f',
+  borderColor:'#c2570f', borderWidth:1, cornerRadius:4, padding:10, displayColors:false,
+  titleFont:{family:"'Inter',sans-serif",weight:'600',size:12}, bodyFont:{family:"'Inter',sans-serif",size:12},
+  caretSize:5
+});
 let charts = {};
 function destroy(k){ if(charts[k]){ charts[k].destroy(); delete charts[k]; } }
 
@@ -400,7 +406,7 @@ function renderProfile(){
   destroy('year');
   charts.year = new Chart(document.getElementById('chart-year'), {
     type:'bar',
-    data:{ labels: years, datasets:[{ data: years.map(y=>byYear.get(y)), backgroundColor: COLOR_A, borderRadius:2 }]},
+    data:{ labels: years, datasets:[{ data: years.map(y=>byYear.get(y)), backgroundColor: COLOR_A, borderRadius:1 }]},
     options:{ responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>fmtMoney(c.parsed.y)}} },
       scales:{ x:{grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:10}},
@@ -410,7 +416,7 @@ function renderProfile(){
   const agTop = agSorted.slice(0,6);
   charts.agency = new Chart(document.getElementById('chart-agency'), {
     type:'bar',
-    data:{ labels: agTop.map(a=>a[0]), datasets:[{ data: agTop.map(a=>a[1]), backgroundColor: COLOR_B, borderRadius:2, barThickness:18 }]},
+    data:{ labels: agTop.map(a=>a[0]), datasets:[{ data: agTop.map(a=>a[1]), backgroundColor: COLOR_B, borderRadius:1, barThickness:18 }]},
     options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>fmtMoney(c.parsed.x)}} },
       scales:{ x:{grid:{color:'#e4dac4'}, border:{display:false}, ticks:{callback:v=>fmtMoney(v), maxTicksLimit:5}},
