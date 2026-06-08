@@ -61,8 +61,15 @@ footer .brand{font-size:15px}
 #app{display:none}
 @media(max-width:880px){
   .stats{grid-template-columns:repeat(2,1fr)}
-  .nav-links a.hide-m{display:none}
   .brief .card{padding:26px 22px}
+}
+.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
+@media(max-width:1023px){
+  .menu-btn{display:block}
+  .nav{position:relative}
+  .nav-links{display:none;position:absolute;top:59px;left:-24px;right:-24px;background:var(--card);border-bottom:2px solid var(--ink);flex-direction:column;align-items:flex-start;padding:14px 24px;gap:13px;box-shadow:0 10px 20px rgba(63,53,33,.15);z-index:60}
+  .nav-links.open{display:flex}
+  .nav-links a.hide-m{display:inline}
 }
 </style>
 </head>
@@ -71,6 +78,7 @@ footer .brand{font-size:15px}
 <header>
   <div class="wrap nav">
     <a href="/" style="text-decoration:none"><div class="brand">The Concrete Index<span class="tick">.</span></div></a>
+    <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
     <nav class="nav-links">
       <a href="/pipeline/">Pipeline</a>
       <a href="/solicitations/">Bidding</a>
@@ -108,7 +116,7 @@ footer .brand{font-size:15px}
   <section class="brief">
     <div class="card">
       <div id="brief-body"></div>
-      <div class="sig">This briefing is composed automatically from NYC Open Data each time the page loads, the City Record of contract awards (updated daily) and the OMB capital plan (updated three times a year). Every figure reflects the public record as of right now. Definitions and treatment: see the methodology notes on the <a href="/">Awarded</a>, <a href="/pipeline/">Pipeline</a>, and <a href="/funnel/">Funnel</a> pages.</div>
+      <div class="sig">This briefing is composed automatically each time the page loads, drawing on the City Record of contract awards (updated daily) and the OMB capital plan (updated three times a year). Every figure reflects the public record as of right now. Definitions and treatment: see the methodology notes on the <a href="/">Awarded</a>, <a href="/pipeline/">Pipeline</a>, and <a href="/funnel/">Funnel</a> pages.</div>
     </div>
   </section>
 
@@ -300,7 +308,7 @@ function compose(){
     ['The award market',
      `New York City agencies awarded ${num(fmtMoney(D.awardTTM))} of construction and construction-services work over the trailing twelve months, across ${num(fmtInt(D.awardCount))} contract awards. Award volume has ${trendWord(D.awardDelta)}, ${D.awardDelta!==null ? num((D.awardDelta>=0?'+':'−')+fmtPct(D.awardDelta)) + ' versus the preceding twelve months' : 'with no prior-year comparison available'}. Hard construction makes up ${num(fmtPct(D.hardShare))} of awarded value; design, engineering, and construction management make up the rest. ${capFirst(AWARD_AGENCY_SHORT[D.topAwardAgency.agency_name]||D.topAwardAgency.agency_name)} is the busiest buyer, accounting for ${num(fmtPct(D.topAwardShare))} of trailing-year award value.`],
     ['The pipeline behind it',
-     `Behind the award market sits a funded pipeline of ${num(fmtMoney(D.pipe))}, budgets committed to ${num(fmtInt(D.pipeCount))} open capital projects in the City's ${latestPlan} plan that have not yet been spent. ${num(fmtPct(D.pipePre/D.pipe*100))} of that money is attached to projects still in pre-construction phases, pending, design, or procurement, demand that has not yet reached the market. ${capFirst(AGENCY_FULL[D.topPipeAgency[0]]||D.topPipeAgency[0])} holds the largest share of the pipeline at ${num(fmtMoney(D.topPipeAgency[1]))}.`],
+     `Behind the award market sits a funded pipeline of ${num(fmtMoney(D.pipe))}, budgets committed to ${num(fmtInt(D.pipeCount))} open capital projects in the City's ${latestPlan} plan that have not yet been spent. ${num(fmtPct(D.pipePre/D.pipe*100))} of that money is attached to projects still in pre-construction (pending, pre-design, design, or procurement): demand that has not yet reached the market. ${capFirst(AGENCY_FULL[D.topPipeAgency[0]]||D.topPipeAgency[0])} holds the largest share of the pipeline at ${num(fmtMoney(D.topPipeAgency[1]))}.`],
     ['The pace of conversion',
      `The City paid out ${num(fmtMoney(D.spendTTM))} on capital projects over the trailing year of plan snapshots. At that pace, the current funded pipeline represents ${num(D.coverage.toFixed(1)+' years')} of work, the demand-side equivalent of a contractor's backlog ratio. ${market}`]
   ];
