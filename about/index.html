@@ -61,9 +61,11 @@ header{border-bottom:2px solid var(--ink);background:var(--card);position:sticky
 .how .s-d{font-size:13.5px;color:var(--muted);margin-top:5px;line-height:1.6}
 .who{margin-top:26px;border-top:1px solid var(--line);padding-top:20px}
 .who h3{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);margin-bottom:12px}
-.who-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 26px}
-.who .w-row{font-size:14px;color:#46412f;line-height:1.6}
-.who .w-row strong{color:var(--ink)}
+.who-lede{font-size:14px;color:#46412f;line-height:1.6;margin-bottom:14px;max-width:780px}
+.who-stack{display:grid;gap:14px}
+.who .w-block{font-size:14px;color:#46412f;line-height:1.65;max-width:820px;border-left:3px solid var(--line);padding-left:14px}
+.who .w-block strong{color:var(--ink)}
+.who-close{font-size:13px;color:var(--muted);margin-top:16px;padding-top:14px;border-top:1px solid var(--line);max-width:820px}
 @media(max-width:760px){
   .how{grid-template-columns:1fr}
   .who-grid{grid-template-columns:1fr}
@@ -157,13 +159,15 @@ footer .brand{font-size:15px}
         </div>
       </div>
       <div class="who">
-        <h3>Who it's for</h3>
-        <div class="who-grid">
-          <div class="w-row"><strong>Contractors</strong> see what's bidding now and which agencies are putting work into the market, before it shows up in a backlog conversation.</div>
-          <div class="w-row"><strong>Brokers &amp; agents</strong> see where their clients' next bonding needs are forming, by agency, borough, and category.</div>
-          <div class="w-row"><strong>Underwriters &amp; credit analysts</strong> see the demand side of contractor health: how much funded work is stacked upstream and how fast it converts to revenue.</div>
-          <div class="w-row"><strong>Analysts &amp; investors</strong> get a public-market read on one of the country's largest construction economies, with the methodology in the open.</div>
+        <h3>Who it serves</h3>
+        <p class="who-lede">The site does not see financials, margins, bonding capacity, or job performance, and it does not rate or certify any contractor. Each party below reads the same public numbers for a different decision.</p>
+        <div class="who-stack">
+          <div class="w-block"><strong>Contract surety underwriters.</strong> The Vendor Lookup page pulls any account's public award history from the City Record in one query: what it has won, from which agencies, and how its job sizes are trending. Read against a contractor's financials, this is demand-side context those statements do not carry. A rising job-size trend is a demand fact, not a verdict: a book stepping up in size is taking on work of a different scale, which is context to read against the financials, not a risk rating in itself. The Funnel and Analysis pages add portfolio color, whether a segment is thinning and where forward work is funded. The record covers City agency awards; it does not attribute School Construction Authority or MTA work to a named contractor, because those datasets carry no vendor field.</div>
+          <div class="w-block"><strong>Brokers and agents.</strong> The Pipeline page and the Bidding page are a prospecting map. Pipeline shows committed-but-unspent capital by agency, borough, and category, the market where the next round of bonding demand is forming, often before it is advertised. Bidding shows every City construction solicitation open right now, sorted by what is due next.</div>
+          <div class="w-block"><strong>Contractors.</strong> The Bidding page is a working bid-chase list: every open City construction solicitation, its due date, its procurement method and PIN, and the agency contact who answers questions, re-pulled on every load. The Vendor Lookup page adds competitive context, showing who has been winning what kind of work from which agencies. The Pipeline page shows where funded work is stacking up before it is advertised.</div>
+          <div class="w-block"><strong>Credit analysts and investors.</strong> The Funnel and Analysis pages give a public-market read on one of the country's largest construction economies, with the full method disclosed on each page. Backlog coverage, unspent committed dollars over trailing-year spending, is a market-level reading, the public-market analog of how a single contractor's backlog relates to its revenue. It describes the market, not any one firm; the per-vendor pages carry no revenue or backlog figure and none can be derived here.</div>
         </div>
+        <p class="who-close">Everything here comes from public data, read by a fixed, disclosed rule set. No contractor is rated, scored, or ranked, and nothing is estimated or inferred by a model.</p>
       </div>
     </div>
   </section>
