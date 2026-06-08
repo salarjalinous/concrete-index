@@ -7,63 +7,69 @@
 <meta name="description" content="The Concrete Index tracks NYC public construction capital, which agencies are awarding work, to whom, and how fast. Built on NYC Open Data, refreshed daily.">
 <meta property="og:title" content="The Concrete Index">
 <meta property="og:description" content="NYC public construction capital, from commitment to cash.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23c2570f'/%3E%3Crect x='25' y='55' width='50' height='20' rx='4' fill='white'/%3E%3Crect x='35' y='30' width='30' height='18' rx='4' fill='white'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%2314233b%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23e07a37%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root{
-  --bg:#ece4d2; --card:#faf6ec; --ink:#26231d; --muted:#6e6657; --faint:#9a9081;
-  --line:#d9cdb4; --accent:#c2570f; --accent-deep:#9a4509; --steel:#2e5a88;
-  --green:#3f6f3f; --red:#a83232;
-  --radius:4px; --shadow:0 1px 0 rgba(63,53,33,.06);
+  --bg:#eef1f5; --surface:#ffffff; --panel-2:#f7f9fb;
+  --ink:#14233b; --muted:#586575; --faint:#8a95a3;
+  --line:#d4dbe3; --accent:#e07a37; --accent-deep:#c25f22;
+  --steel:#2f5d8f; --green:#2f7d5b; --red:#b4462f;
+  --radius:6px; --shadow:0 1px 2px rgba(20,35,59,.06);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
-a{color:var(--accent-deep);text-decoration:none}
+body{font-family:'Public Sans',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--steel);text-decoration:none}
 a:hover{text-decoration:underline}
-.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
 
 /* ---------- header ---------- */
-header{border-bottom:2px solid var(--ink);background:var(--card);position:sticky;top:0;z-index:50}
-.nav{display:flex;align-items:center;justify-content:space-between;height:60px}
-.brand{font-family:'Fraunces',serif;font-weight:700;font-size:19px;letter-spacing:.01em;color:var(--ink)}
+header{background:var(--ink);position:sticky;top:0;z-index:50}
+.nav{display:flex;align-items:center;justify-content:space-between;height:62px}
+.brand{display:flex;align-items:center;gap:9px;font-family:'Archivo',sans-serif;font-weight:700;font-size:18px;letter-spacing:-.015em;color:#fff}
+.brand svg{color:#fff;flex-shrink:0}
 .brand .tick{color:var(--accent)}
-.nav-links{display:flex;gap:22px;align-items:center;font-size:13.5px;font-weight:500}
-.nav-links a{color:var(--muted)}
-.nav-links a:hover{color:var(--ink);text-decoration:none}
-.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent)}
-.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green);background:#e8eedd;border:1px solid #c2cfa8;border-radius:var(--radius);padding:3px 10px}
-.badge-live .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2.4s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.nav-links{display:flex;gap:20px;align-items:center;font-size:13.5px;font-weight:500}
+.nav-links a{color:#aeb9c7}
+.nav-links a:hover{color:#fff;text-decoration:none}
+.nav-links a.active{color:#fff;font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px}
+.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;letter-spacing:.02em;color:#7fe0b0;background:rgba(47,125,91,.18);border:1px solid rgba(47,125,91,.45);border-radius:var(--radius);padding:3px 10px}
+.badge-live .dot{width:7px;height:7px;border-radius:50%;background:#46c98c;animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* ---------- hero ---------- */
-.hero{padding:44px 0 10px}
-.hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(28px,4vw,40px);line-height:1.15;max-width:720px}
-.hero p.sub{margin-top:12px;font-size:16px;color:var(--muted);max-width:640px}
-.hero .asof{margin-top:14px;font-size:13px;color:var(--faint)}
+.hero{padding:48px 0 14px;border-left:3px solid var(--accent);padding-left:25px;margin:36px 0 0;margin-left:28px;max-width:calc(1180px - 28px)}
+@media(min-width:1237px){.hero{margin-left:auto;margin-right:auto}}
+.hero-wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+.kicker{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.16em;color:var(--faint);margin-bottom:12px}
+.hero h1{font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(30px,4.4vw,44px);line-height:1.08;letter-spacing:-.02em;max-width:760px}
+.hero p.sub{margin-top:14px;font-size:16px;color:var(--muted);max-width:660px}
+.hero .asof{margin-top:16px;font-size:13px;color:var(--faint)}
 .hero .asof strong{color:var(--muted);font-weight:600}
 
 /* ---------- controls ---------- */
-.controls{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:22px 0 6px}
-.seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:3px;box-shadow:var(--shadow)}
-.seg button{border:0;background:transparent;font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:6px 14px;border-radius:3px;cursor:pointer;transition:all .15s}
+.controls{display:flex;flex-wrap:wrap;gap:14px 16px;align-items:center;padding:26px 0 6px}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:3px}
+.seg button{border:0;background:transparent;font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:6px 14px;border-radius:4px;cursor:pointer;transition:all .15s}
 .seg button:hover{color:var(--ink)}
 .seg button.on{background:var(--ink);color:#fff}
-.ctl-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin-right:-4px}
-.wt-select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:6px 10px;box-shadow:var(--shadow);cursor:pointer}
-.wt-select:focus{outline:2px solid #e0bd92}
+.ctl-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-right:-4px}
+.wt-select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:6px 10px;cursor:pointer}
+.wt-select:focus{outline:2px solid var(--accent)}
 
 /* ---------- KPIs ---------- */
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:24px 0 8px}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
-.kpi .k-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
-.kpi .k-value{font-family:'Fraunces',serif;font-size:30px;font-weight:600;margin-top:6px;letter-spacing:-.01em}
-.kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:4px}
-.kpi .up{display:inline-block;font-size:12px;font-weight:600;padding:1px 7px;border-radius:3px;color:var(--green);background:#e8eedd}
-.kpi .down{display:inline-block;font-size:12px;font-weight:600;padding:1px 7px;border-radius:3px;color:var(--red);background:#f6e3e0}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+.kpi .k-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
+.kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:500;margin-top:8px;letter-spacing:-.02em;color:var(--ink)}
+.kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:5px}
+.kpi .up{display:inline-block;font-size:12px;font-weight:600;padding:1px 7px;border-radius:3px;color:var(--green);background:rgba(47,125,91,.12)}
+.kpi .down{display:inline-block;font-size:12px;font-weight:600;padding:1px 7px;border-radius:3px;color:var(--red);background:rgba(180,70,47,.12)}
 .kpi.hero{border-top:3px solid var(--accent)}
 .kpi.hero .k-value{font-size:40px}
 @media(max-width:560px){.kpi.hero .k-value{font-size:30px}}
@@ -71,38 +77,42 @@ header{border-bottom:2px solid var(--ink);background:var(--card);position:sticky
 /* ---------- cards & grid ---------- */
 .grid{display:grid;gap:14px;padding:8px 0}
 .grid.two{grid-template-columns:3fr 2fr}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
-.card h2{font-size:15px;font-weight:700;letter-spacing:-.01em}
-.card .h-sub{font-size:12.5px;color:var(--muted);margin-top:2px;margin-bottom:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow)}
+.card h2{font-family:'Archivo',sans-serif;font-size:16px;font-weight:700;letter-spacing:-.01em}
+.card .h-sub{font-size:12.5px;color:var(--muted);margin-top:3px;margin-bottom:16px}
 .chart-box{position:relative;height:300px}
 .chart-box.tall{height:340px}
 
 /* ---------- tables ---------- */
 table{width:100%;border-collapse:collapse;font-size:13.5px}
-th{text-align:left;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);padding:8px 10px;border-bottom:1px solid var(--line)}
-td{padding:10px;border-bottom:1px solid #e7ddc9;vertical-align:top}
+th{text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:top}
 tr:last-child td{border-bottom:0}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td.num{font-family:'IBM Plex Mono',monospace}
 td .t-title{font-weight:500;color:var(--ink)}
-td .t-sub{font-size:12px;color:var(--muted);margin-top:2px}
-.amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
-.pill{display:inline-block;font-size:11px;font-weight:600;border-radius:3px;padding:2px 7px;white-space:nowrap}
-.pill.hard{background:#f3e0c8;color:var(--accent-deep)}
-.pill.rel{background:#dde6ee;color:var(--steel)}
-.rank{color:var(--faint);font-weight:600;width:28px}
+td .t-sub{font-size:12px;color:var(--muted);margin-top:2px;font-family:'Public Sans',sans-serif}
+.amt{font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill{display:inline-block;font-size:11px;font-weight:600;border-radius:3px;padding:2px 7px;white-space:nowrap;font-family:'Public Sans',sans-serif}
+.pill.hard{background:#f7e4d3;color:var(--accent-deep)}
+.pill.rel{background:#dde7f1;color:var(--steel)}
+.rank{color:var(--faint);font-weight:600;width:28px;font-family:'IBM Plex Mono',monospace}
 
 /* ---------- methodology ---------- */
-.method{padding:30px 0 10px}
-.method .card{padding:30px 34px}
-.method h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:4px}
-.method h3{font-size:14px;font-weight:700;margin:20px 0 6px}
-.method p{font-size:14px;color:#46412f;max-width:780px}
+.method{padding:32px 0 10px}
+.method .card{padding:32px 36px}
+.method h2{font-family:'Archivo',sans-serif;font-size:22px;font-weight:700;letter-spacing:-.015em;margin-bottom:6px}
+.method h3{font-family:'Archivo',sans-serif;font-size:14px;font-weight:600;margin:22px 0 6px}
+.method p{font-size:14px;color:var(--muted);max-width:800px}
 .method p+p{margin-top:8px}
+.method code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:var(--panel-2);padding:1px 5px;border-radius:3px;border:1px solid var(--line)}
 
 /* ---------- footer ---------- */
-footer{margin-top:40px;border-top:2px solid var(--ink);padding:26px 0 38px;font-size:13px;color:var(--muted)}
+footer{margin-top:42px;background:var(--ink);padding:30px 0 40px;font-size:13px;color:#9fabbb}
+footer a{color:#c6d2e0}
 footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-footer .brand{font-size:15px}
+footer .brand{font-size:16px;color:#fff}
+footer .brand svg{color:#fff}
 
 /* ---------- loading / error ---------- */
 #loader{padding:80px 0;text-align:center;color:var(--muted)}
@@ -118,26 +128,28 @@ footer .brand{font-size:15px}
 @media(max-width:560px){
   .kpis{grid-template-columns:1fr 1fr}
   .kpi .k-value{font-size:24px}
-  .hero{padding-top:30px}
+  .hero{padding-top:32px}
+  .wrap,.hero-wrap{padding:0 18px}
+  .hero{margin-left:18px;padding-left:18px}
 }
-.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
+.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid rgba(255,255,255,.25);border-radius:var(--radius);padding:5px 10px;color:#fff;cursor:pointer}
 @media(max-width:1023px){
   .menu-btn{display:block}
   .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:59px;left:-24px;right:-24px;background:var(--card);border-bottom:2px solid var(--ink);flex-direction:column;align-items:flex-start;padding:14px 24px;gap:13px;box-shadow:0 10px 20px rgba(63,53,33,.15);z-index:60}
+  .nav-links{display:none;position:absolute;top:61px;left:-28px;right:-28px;background:var(--ink);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(20,35,59,.4);z-index:60}
   .nav-links.open{display:flex}
   .nav-links a.hide-m{display:inline}
 }
-.photo-band{position:relative;height:200px;background-size:cover;background-position:center 38%;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);filter:sepia(.14) saturate(.82);margin-top:20px}
-.ph-credit{position:absolute;right:10px;bottom:8px;font-size:10.5px;letter-spacing:.03em;color:rgba(250,246,236,.9);background:rgba(38,35,29,.5);padding:2px 8px;border-radius:3px}
-@media(max-width:560px){.photo-band{height:130px}}
 </style>
 </head>
 <body>
 
 <header>
   <div class="wrap nav">
-    <div class="brand">The Concrete Index<span class="tick">.</span></div>
+    <div class="brand">
+      <svg viewBox="0 0 120 120" width="26" height="26" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#e07a37"/></svg>
+      <span>The Concrete Index<span class="tick">.</span></span>
+    </div>
     <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
     <nav class="nav-links">
       <a href="/pipeline/">Pipeline</a>
@@ -155,13 +167,14 @@ footer .brand{font-size:15px}
   </div>
 </header>
 
-<div class="wrap hero">
-  <h1>NYC public construction capital, from commitment to cash.</h1>
-  <p class="sub">The Concrete Index reads the City Record the way an analyst would if they had the time: every construction award notice the City publishes, pulled through the Socrata API, classified by selection method, and totaled on the spot. It shows which agencies are letting work, who keeps winning it, and how the bid market is actually trending.</p>
-  <p class="asof" id="asof">Loading latest award data…</p>
+<div class="hero-wrap">
+  <div class="hero">
+    <div class="kicker">NYC Public Construction Capital</div>
+    <h1>NYC public construction capital, from commitment to cash.</h1>
+    <p class="sub">The Concrete Index reads the City Record the way an analyst would if they had the time: every construction award notice the City publishes, pulled through the Socrata API, classified by selection method, and totaled on the spot. It shows which agencies are letting work, who keeps winning it, and how the bid market is actually trending.</p>
+    <p class="asof" id="asof">Loading latest award data…</p>
+  </div>
 </div>
-
-<div class="photo-band" style="background-image:url('https://images.unsplash.com/photo-1546436836-07a91091f160?auto=format&fit=crop&w=1800&q=55')"><span class="ph-credit">Midtown Manhattan · Unsplash</span></div>
 
 <div id="loader" class="wrap">
   <div class="spinner"></div>
@@ -281,8 +294,11 @@ footer .brand{font-size:15px}
 <footer>
   <div class="wrap f-row">
     <div>
-      <div class="brand">The Concrete Index<span class="tick">.</span></div>
-      <div style="margin-top:4px">NYC public construction capital, from commitment to cash.</div>
+      <div class="brand">
+        <svg viewBox="0 0 120 120" width="24" height="24" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#e07a37"/></svg>
+        <span style="font-family:'Archivo',sans-serif;font-weight:700;letter-spacing:-.015em">The Concrete Index<span class="tick" style="color:var(--accent)">.</span></span>
+      </div>
+      <div style="margin-top:6px">NYC public construction capital, from commitment to cash.</div>
     </div>
     <div style="text-align:right">
       <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
@@ -465,16 +481,16 @@ function esc(s){ const d = document.createElement('div'); d.textContent = s; ret
 const WINDOW_LABEL = { 12:'trailing 12 months', 36:'trailing 3 years', 60:'trailing 5 years' };
 
 /* ================= rendering ================= */
-const COLOR_HARD = '#c2570f', COLOR_REL = '#2e5a88';
+const COLOR_HARD = '#e07a37', COLOR_REL = '#2f5d8f';
 let charts = {};
 
-Chart.defaults.font.family = "'Inter',sans-serif";
+Chart.defaults.font.family = "'Public Sans',sans-serif";
 Chart.defaults.font.size = 12;
-Chart.defaults.color = '#6e6657';
+Chart.defaults.color = '#586575';
 Object.assign(Chart.defaults.plugins.tooltip, {
-  backgroundColor:'#faf6ec', titleColor:'#26231d', bodyColor:'#46412f',
-  borderColor:'#c2570f', borderWidth:1, cornerRadius:4, padding:10, displayColors:false,
-  titleFont:{family:"'Inter',sans-serif",weight:'600',size:12}, bodyFont:{family:"'Inter',sans-serif",size:12},
+  backgroundColor:'#ffffff', titleColor:'#14233b', bodyColor:'#586575',
+  borderColor:'#e07a37', borderWidth:1, cornerRadius:6, padding:10, displayColors:false,
+  titleFont:{family:"'Public Sans',sans-serif",weight:'600',size:12}, bodyFont:{family:"'IBM Plex Mono',monospace",size:12},
   caretSize:5
 });
 
@@ -486,20 +502,20 @@ function renderTrend(rows){
   const s = monthSeries(rows);
   destroyChart('trend');
   const datasets = [];
-  if(state.scope !== 'rel') datasets.push({label:'Construction', data:s.hard, backgroundColor:COLOR_HARD, borderRadius:3, stack:'a'});
-  if(state.scope !== 'hard') datasets.push({label:'Related services', data:s.rel, backgroundColor:COLOR_REL, borderRadius:3, stack:'a'});
+  if(state.scope !== 'rel') datasets.push({label:'Construction', data:s.hard, backgroundColor:COLOR_HARD, borderRadius:2, stack:'a'});
+  if(state.scope !== 'hard') datasets.push({label:'Related services', data:s.rel, backgroundColor:COLOR_REL, borderRadius:2, stack:'a'});
   charts.trend = new Chart(document.getElementById('chart-trend'), {
     type:'bar',
     data:{ labels:s.months.map(fmtMonthLabel), datasets },
     options:{
       responsive:true, maintainAspectRatio:false,
       plugins:{
-        legend:{position:'top', align:'end', labels:{boxWidth:10, boxHeight:10, usePointStyle:true, pointStyle:'rectRounded'}},
+        legend:{position:'top', align:'end', labels:{boxWidth:10, boxHeight:10, usePointStyle:true, pointStyle:'rect'}},
         tooltip:{callbacks:{label:(c)=> c.dataset.label + ': ' + fmtMoney(c.parsed.y)}}
       },
       scales:{
         x:{stacked:true, grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:12}},
-        y:{stacked:true, grid:{color:'#e4dac4'}, border:{display:false}, ticks:{callback:moneyTicks, maxTicksLimit:6}}
+        y:{stacked:true, grid:{color:'#e3e8ee'}, border:{display:false}, ticks:{callback:moneyTicks, maxTicksLimit:6}}
       }
     }
   });
@@ -526,7 +542,7 @@ function renderBarChart(key, canvasId, entries, color){
     type:'bar',
     data:{
       labels: entries.map(e=>e[0]),
-      datasets:[{ data: entries.map(e=>e[1].total), backgroundColor: color, borderRadius:3, barThickness:18 }]
+      datasets:[{ data: entries.map(e=>e[1].total), backgroundColor: color, borderRadius:2, barThickness:18 }]
     },
     options:{
       indexAxis:'y', responsive:true, maintainAspectRatio:false,
@@ -535,7 +551,7 @@ function renderBarChart(key, canvasId, entries, color){
         tooltip:{callbacks:{label:(c)=> fmtMoney(c.parsed.x) + ' across ' + fmtInt(entries[c.dataIndex][1].count) + ' awards'}}
       },
       scales:{
-        x:{grid:{color:'#e4dac4'}, border:{display:false}, ticks:{callback:moneyTicks, maxTicksLimit:5}},
+        x:{grid:{color:'#e3e8ee'}, border:{display:false}, ticks:{callback:moneyTicks, maxTicksLimit:5}},
         y:{grid:{display:false}, ticks:{autoSkip:false, font:{size:11.5}}}
       }
     }
