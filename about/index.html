@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About · The Concrete Index</title>
+<meta name="description" content="Who builds The Concrete Index and why: closing the information gap in NYC public construction.">
+<meta property="og:title" content="About · The Concrete Index">
+<meta property="og:description" content="Closing the information gap in NYC public construction.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='14' fill='%23c2570f'/%3E%3Crect x='25' y='55' width='50' height='20' rx='3' fill='%23faf6ec'/%3E%3Crect x='35' y='30' width='30' height='18' rx='3' fill='%23faf6ec'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ece4d2; --card:#faf6ec; --ink:#26231d; --muted:#6e6657; --faint:#9a9081;
+  --line:#d9cdb4; --accent:#c2570f; --accent-deep:#9a4509; --blue:#2e5a88;
+  --green:#3f6f3f; --red:#a83232;
+  --radius:4px; --shadow:0 1px 0 rgba(63,53,33,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--accent-deep);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+header{border-bottom:2px solid var(--ink);background:var(--card);position:sticky;top:0;z-index:50}
+.nav{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{font-family:'Fraunces',serif;font-weight:700;font-size:19px;letter-spacing:.01em;color:var(--ink)}
+.brand .tick{color:var(--accent)}
+.nav-links{display:flex;gap:17px;align-items:center;font-size:13.5px;font-weight:500}
+.nav-links a{color:var(--muted)}
+.nav-links a:hover{color:var(--ink);text-decoration:none}
+.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green);background:#e8eedd;border:1px solid #c2cfa8;border-radius:var(--radius);padding:3px 9px}
+.badge-live .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hero{padding:44px 0 6px}
+.kicker{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent-deep)}
+.hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(28px,4vw,40px);line-height:1.15;max-width:780px;margin-top:8px}
+.about{display:grid;grid-template-columns:300px 1fr;gap:34px;padding:30px 0}
+.photo-col img{width:100%;border-radius:var(--radius);border:1px solid var(--line);box-shadow:var(--shadow);display:block}
+.photo-col .p-name{font-family:'Fraunces',serif;font-size:20px;font-weight:600;margin-top:14px}
+.photo-col .p-occ{font-size:13.5px;color:var(--muted);margin-top:3px;line-height:1.45}
+.bio .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:30px 34px;box-shadow:var(--shadow)}
+.bio h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:10px}
+.bio p{font-size:15px;color:#46412f;max-width:680px;line-height:1.7}
+.bio p+p{margin-top:12px}
+.btn-row{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;padding:9px 16px;border-radius:var(--radius);border:1px solid var(--line);background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.btn:hover{text-decoration:none;border-color:var(--ink)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#faf6ec}
+.btn.primary:hover{background:#264c74}
+.what{padding:6px 0 10px}
+.what .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:30px 34px;box-shadow:var(--shadow)}
+.what h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:6px}
+.what p.lede{font-size:15px;color:#46412f;max-width:760px;line-height:1.7}
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:22px}
+.how .step{border-top:3px solid var(--accent);padding-top:12px}
+.how .step:nth-child(2){border-top-color:var(--blue)}
+.how .step:nth-child(3){border-top-color:var(--ink)}
+.how .s-t{font-weight:700;font-size:14px}
+.how .s-d{font-size:13.5px;color:var(--muted);margin-top:5px;line-height:1.6}
+.who{margin-top:26px;border-top:1px solid var(--line);padding-top:20px}
+.who h3{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);margin-bottom:12px}
+.who-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 26px}
+.who .w-row{font-size:14px;color:#46412f;line-height:1.6}
+.who .w-row strong{color:var(--ink)}
+@media(max-width:760px){
+  .how{grid-template-columns:1fr}
+  .who-grid{grid-template-columns:1fr}
+}
+footer{margin-top:40px;border-top:2px solid var(--ink);padding:26px 0 38px;font-size:13px;color:var(--muted)}
+footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer .brand{font-size:15px}
+@media(max-width:760px){
+  .about{grid-template-columns:1fr}
+  .photo-col img{max-width:280px}
+  .nav-links a.hide-m{display:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="/" style="text-decoration:none"><div class="brand">The Concrete Index<span class="tick">.</span></div></a>
+    <nav class="nav-links">
+      <a href="/pipeline/" class="hide-m">Pipeline</a>
+      <a href="/solicitations/" class="hide-m">Bidding</a>
+      <a href="/">Awarded</a>
+      <a href="/funnel/" class="hide-m">Funnel</a>
+      <a href="/analysis/" class="hide-m">Analysis</a>
+      <a href="/regional/" class="hide-m">Regional</a>
+      <a href="/briefing/">Briefing</a>
+      <span class="badge-live"><span class="dot"></span>Live data</span>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <div class="kicker">About</div>
+  <h1>Why The Concrete Index exists.</h1>
+</div>
+
+<main class="wrap">
+  <div class="about">
+    <div class="photo-col">
+      <img src="headshot.jpg" alt="Salar Jalinous">
+      <div class="p-name">Salar Jalinous</div>
+      <div class="p-occ">Contract surety underwriter,<br>Liberty Mutual Surety</div>
+    </div>
+    <div class="bio">
+      <div class="card">
+        <h2>The mission</h2>
+        <p>Public construction runs on information that is technically public but practically invisible. The agencies that fund work, the contractors who build it, the brokers and underwriters who stand behind it, and the analysts who measure it all make decisions about the same market, usually with different, partial views of it.</p>
+        <p>The Concrete Index exists to close that gap. Every figure on this site comes from the public record, normalized and read the same way for everyone. When all sides of the market see the same clear picture of demand, what's funded, what's bidding, what's awarded, what's actually being paid, work gets priced better, capacity gets planned earlier, credit decisions rest on evidence, and capital moves to where the city is actually building.</p>
+        <p>I underwrite contract surety for a living, which means my job is judging whether contractors can deliver the work they take on. This site is the demand side of that question, built in the open, for anyone who shares it.</p>
+        <div class="btn-row">
+          <a class="btn primary" href="https://www.linkedin.com/in/salar-jalinous/" target="_blank" rel="noopener">Connect on LinkedIn</a>
+          <a class="btn" href="https://github.com/salarjalinous/concrete-index" target="_blank" rel="noopener">View the code</a>
+          <a class="btn" href="mailto:salar.jalinous@gmail.com">Email</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="what">
+    <div class="card">
+      <h2>What this site actually does</h2>
+      <p class="lede">The Concrete Index is a live reading of New York City's public construction market, built directly on the government's own records. Nothing here is estimated, scraped, or manually maintained, every number is computed from official datasets at the moment you load the page.</p>
+      <div class="how">
+        <div class="step">
+          <div class="s-t">1 · Pull</div>
+          <div class="s-d">Each page queries the City Record, the OMB capital plan, the SCA's construction roster, and the MTA's capital dashboard through their official APIs, the same systems the government publishes from, refreshed daily by the agencies themselves.</div>
+        </div>
+        <div class="step">
+          <div class="s-t">2 · Normalize</div>
+          <div class="s-d">Raw records are messy: duplicate sub-projects, renewals mixed with new awards, budgets repeated across rows, agencies named five different ways. The site applies one disclosed set of rules so every figure means the same thing everywhere, and no dollar is counted twice.</div>
+        </div>
+        <div class="step">
+          <div class="s-t">3 · Read</div>
+          <div class="s-d">The cleaned data becomes the measures that matter: the demand funnel from commitment to cash, conversion speed by agency, a composite index back to 2004, and a written briefing that recomposes itself from the live record on every visit.</div>
+        </div>
+      </div>
+      <div class="who">
+        <h3>Who it's for</h3>
+        <div class="who-grid">
+          <div class="w-row"><strong>Contractors</strong> see what's bidding now and which agencies are putting work into the market, before it shows up in a backlog conversation.</div>
+          <div class="w-row"><strong>Brokers &amp; agents</strong> see where their clients' next bonding needs are forming, by agency, borough, and category.</div>
+          <div class="w-row"><strong>Underwriters &amp; credit analysts</strong> see the demand side of contractor health: how much funded work is stacked upstream and how fast it converts to revenue.</div>
+          <div class="w-row"><strong>Analysts &amp; investors</strong> get a public-market read on one of the country's largest construction economies, with the methodology in the open.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap f-row">
+    <div>
+      <div class="brand">The Concrete Index<span class="tick">.</span></div>
+      <div style="margin-top:4px">NYC public construction capital, from commitment to cash.</div>
+    </div>
+    <div style="text-align:right">
+      <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
+      <div style="margin-top:4px">© 2026 <a href="/about/">Salar Jalinous</a></div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
