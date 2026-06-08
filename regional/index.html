@@ -93,6 +93,9 @@ footer .brand{font-size:15px}
   .nav-links.open{display:flex}
   .nav-links a.hide-m{display:inline}
 }
+.photo-band{position:relative;height:200px;background-size:cover;background-position:center 38%;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);filter:sepia(.14) saturate(.82);margin-top:20px}
+.ph-credit{position:absolute;right:10px;bottom:8px;font-size:10.5px;letter-spacing:.03em;color:rgba(250,246,236,.9);background:rgba(38,35,29,.5);padding:2px 8px;border-radius:3px}
+@media(max-width:560px){.photo-band{height:130px}}
 </style>
 </head>
 <body>
@@ -105,6 +108,7 @@ footer .brand{font-size:15px}
       <a href="/pipeline/" class="hide-m">Pipeline</a>
       <a href="/solicitations/" class="hide-m">Bidding</a>
       <a href="/">Awarded</a>
+      <a href="/vendors/" class="hide-m">Vendors</a>
       <a href="/funnel/" class="hide-m">Funnel</a>
       <a href="/analysis/" class="hide-m">Analysis</a>
       <a href="/regional/" class="active">Regional</a>
@@ -121,6 +125,8 @@ footer .brand{font-size:15px}
   <p class="sub">City agencies aren't New York's only public builders. The School Construction Authority runs its own program, and the MTA runs the region's largest. Both publish their books. This page reads them with the same normalization rules as the City funnel, including the conversion of MTA figures from their source units of thousands of dollars.</p>
   <p class="asof" id="asof">Reading the SCA and MTA records…</p>
 </div>
+
+<div class="photo-band" style="background-image:url('https://images.unsplash.com/photo-1518391846015-55a9cc003b25?auto=format&fit=crop&w=1800&q=55')"><span class="ph-credit">Williamsburg Bridge · Unsplash</span></div>
 
 <div id="loader" class="wrap">
   <div class="spinner"></div>
