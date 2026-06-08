@@ -76,6 +76,14 @@ td .t-sub{font-size:12px;color:var(--muted);margin-top:2px}
 .starter button:hover{border-color:var(--accent-deep)}
 .starter .v-amt{display:block;font-weight:400;font-size:12px;color:var(--muted);margin-top:3px}
 .empty{padding:36px;text-align:center;color:var(--muted)}
+.readstrip{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.rd{padding:16px 18px;border-right:1px solid var(--line);border-top:3px solid var(--blue)}
+.rd:last-child{border-right:0}
+.rd.flag{border-top-color:var(--accent);background:#fbf3e7}
+.rd .rd-label{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--faint)}
+.rd .rd-value{font-family:'Fraunces',serif;font-size:23px;font-weight:600;margin-top:5px;letter-spacing:-.01em}
+.rd .rd-note{font-size:12.5px;color:var(--muted);margin-top:5px;line-height:1.5}
+@media(max-width:720px){.readstrip{grid-template-columns:1fr}.rd{border-right:0;border-bottom:1px solid var(--line)}.rd:last-child{border-bottom:0}}
 .method{padding:30px 0 10px}
 .method .card{padding:30px 34px}
 .method h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:4px}
@@ -159,6 +167,13 @@ footer .brand{font-size:15px}
       <div class="kpi"><div class="k-label">Awards</div><div class="k-value" id="kpi-n">–</div><div class="k-note" id="kpi-n-note"></div></div>
       <div class="kpi"><div class="k-label">Top agency</div><div class="k-value" id="kpi-ag" style="font-size:19px;line-height:1.3">–</div><div class="k-note" id="kpi-ag-note"></div></div>
     </section>
+    <section class="grid">
+      <div class="card">
+        <h2>The underwriting read</h2>
+        <div class="h-sub">Demand-side signals from the public award record. These describe what the City has hired this contractor to do; they are not a credit opinion, a rating, or a prequalification.</div>
+        <div class="readstrip" id="readstrip"></div>
+      </div>
+    </section>
     <section class="grid two">
       <div class="card">
         <h2>Awarded value by year</h2>
@@ -241,6 +256,9 @@ function fmtInt(v){ return v.toLocaleString('en-US'); }
 function fmtDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
 function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 function isoMonthsAgo(n){ const d=new Date(); d.setMonth(d.getMonth()-n); return d.toISOString().slice(0,10); }
+function isContinuation(m){ return /renewal|extension/i.test(m||''); }
+function median(a){ if(!a.length) return 0; const s=[...a].sort((x,y)=>x-y); const m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; }
+function monthsSince(d){ const n=new Date(); return (n.getFullYear()-d.getFullYear())*12 + (n.getMonth()-d.getMonth()); }
 
 const state = { rows: [], names: new Map(), active: new Set() };
 
@@ -310,6 +328,55 @@ function toggleName(name){
   renderChips(); renderProfile();
 }
 
+function renderReadStrip(rows, agSorted, all){
+  const el = document.getElementById('readstrip');
+  const cells = [];
+
+  // 1. Job-size creep: largest single new award all-time, this year, vs trailing-3yr median single new award.
+  // New awards only (exclude renewals/extensions) so a contract renewal isn't read as a new megajob.
+  const newRows = rows.filter(r => !isContinuation(r.method));
+  const thisYear = String(new Date().getFullYear());
+  const since3 = new Date(); since3.setFullYear(since3.getFullYear()-3);
+  const amtsAll = newRows.map(r=>r.amount);
+  const largestAll = amtsAll.length ? Math.max(...amtsAll) : 0;
+  const largestYr = Math.max(0, ...newRows.filter(r=>r.year===thisYear).map(r=>r.amount));
+  const med3arr = newRows.filter(r=>r.date>=since3).map(r=>r.amount);
+  let creepCell;
+  if(med3arr.length >= 5 && largestYr > 0){
+    const med3 = median(med3arr);
+    const ratio = med3 > 0 ? largestYr/med3 : 0;
+    const flag = ratio >= 2;
+    creepCell = `<div class="rd ${flag?'flag':''}"><div class="rd-label">Job-size step-up</div>
+      <div class="rd-value">${ratio.toFixed(1)}×</div>
+      <div class="rd-note">Largest new award this year (${fmtMoney(largestYr)}) versus the trailing-3-year median new award (${fmtMoney(med3)}). Above 2× means this year's biggest job is well outside the recent norm.</div></div>`;
+  } else {
+    creepCell = `<div class="rd"><div class="rd-label">Job-size step-up</div>
+      <div class="rd-value">${largestAll? fmtMoney(largestAll):'–'}</div>
+      <div class="rd-note">Largest single new award on record. Trailing-3-year sample is under 5 awards, so a step-up ratio is not shown.</div></div>`;
+  }
+  cells.push(creepCell);
+
+  // 2. Agency concentration: top-1 and top-3 share of awarded value.
+  const top1 = all>0 ? agSorted[0][1]/all : 0;
+  const top3 = all>0 ? agSorted.slice(0,3).reduce((a,x)=>a+x[1],0)/all : 0;
+  const conc = top1 > 0.6 || top3 > 0.85;
+  cells.push(`<div class="rd ${conc?'flag':''}"><div class="rd-label">Agency concentration</div>
+    <div class="rd-value">${(top1*100).toFixed(0)}% · ${(top3*100).toFixed(0)}%</div>
+    <div class="rd-note">Top agency and top-3 share of awarded value. Concentrated demand sits behind one payment cycle and one funding stream, a structural feature of the agency, not a judgment about the vendor.</div></div>`);
+
+  // 3. Cadence and recency.
+  const t12 = rows.filter(r=>r.date>=new Date(Date.now()-365*864e5)).length;
+  const t24 = rows.filter(r=>r.date>=new Date(Date.now()-730*864e5)).length;
+  const last = rows.reduce((a,r)=> r.date>a?r.date:a, rows[0].date);
+  const ms = monthsSince(last);
+  const stale = ms >= 18;
+  cells.push(`<div class="rd ${stale?'flag':''}"><div class="rd-label">Award cadence</div>
+    <div class="rd-value">${t12} · ${t24}</div>
+    <div class="rd-note">New award notices in the trailing 12 and 24 months. Last appeared in the City Record as a winner ${ms===0?'this month':ms+' month'+(ms===1?'':'s')+' ago'}. These are award-notice dates, not a measure of work in progress.</div></div>`);
+
+  el.innerHTML = cells.join('');
+}
+
 function renderProfile(){
   const rows = state.rows.filter(r => state.active.has(r.vendor));
   const ttmStart = new Date(); ttmStart.setMonth(ttmStart.getMonth()-12);
@@ -324,6 +391,8 @@ function renderProfile(){
   const agSorted = [...byAg.entries()].sort((a,b)=>b[1]-a[1]);
   document.getElementById('kpi-ag').textContent = agSorted[0][0];
   document.getElementById('kpi-ag-note').textContent = all>0 ? (agSorted[0][1]/all*100).toFixed(0)+'% of awarded value' : '';
+
+  renderReadStrip(rows, agSorted, all);
 
   const byYear = new Map();
   for(const r of rows) byYear.set(r.year, (byYear.get(r.year)||0)+r.amount);
