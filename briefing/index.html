@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Demand Briefing — The Concrete Index</title>
+<title>Demand Briefing · The Concrete Index</title>
 <meta name="description" content="The state of NYC public construction demand, written from the live public record every time the page loads.">
-<meta property="og:title" content="The Concrete Index — Demand Briefing">
+<meta property="og:title" content="The Concrete Index · Demand Briefing">
 <meta property="og:description" content="The state of NYC construction demand, generated from the live public record.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23c2570f'/%3E%3Crect x='25' y='55' width='50' height='20' rx='4' fill='white'/%3E%3Crect x='35' y='30' width='30' height='18' rx='4' fill='white'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -107,7 +107,7 @@ footer .brand{font-size:15px}
   <section class="brief">
     <div class="card">
       <div id="brief-body"></div>
-      <div class="sig">This briefing is composed automatically from NYC Open Data each time the page loads — the City Record of contract awards (updated daily) and the OMB capital plan (updated three times a year). Every figure reflects the public record as of right now. Definitions and treatment: see the methodology notes on the <a href="/">Awarded</a>, <a href="/pipeline/">Pipeline</a>, and <a href="/funnel/">Funnel</a> pages.</div>
+      <div class="sig">This briefing is composed automatically from NYC Open Data each time the page loads, the City Record of contract awards (updated daily) and the OMB capital plan (updated three times a year). Every figure reflects the public record as of right now. Definitions and treatment: see the methodology notes on the <a href="/">Awarded</a>, <a href="/pipeline/">Pipeline</a>, and <a href="/funnel/">Funnel</a> pages.</div>
     </div>
   </section>
 
@@ -121,7 +121,7 @@ footer .brand{font-size:15px}
     </div>
     <div style="text-align:right">
       <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
-      <div style="margin-top:4px">© 2026 Salar Jalinous</div>
+      <div style="margin-top:4px">© 2026 <a href="/about/">Salar Jalinous</a></div>
     </div>
   </div>
 </footer>
@@ -140,7 +140,7 @@ async function getJSON(api, params){
 }
 function isoMonthsAgo(n){ const d=new Date(); d.setMonth(d.getMonth()-n); return d.toISOString().slice(0,10); }
 
-/* plan normalization — same rules as Pipeline/Funnel pages */
+/* plan normalization, same rules as Pipeline/Funnel pages */
 const PHASE_MAP = {
   'pending':'Pending','initiation':'Pending','pre-design':'Pre-Design','predesign':'Pre-Design',
   'design':'Design','construction procurement':'Procurement','construction':'Construction',
@@ -161,7 +161,7 @@ function collapseSnapshot(rows){
   for(const r of rows){
     const key = (r.managing_agency||'') + '|' + (r.fms_id||r.fms_project_name||'');
     const bucket = normPhase(r.current_phase);
-    const rec = { agency:r.managing_agency||'—',
+    const rec = { agency:r.managing_agency||'–',
       spend:Math.max(parseFloat(r.spend_to_date)||0,0),
       budget:Math.max(parseFloat(r.total_budget)||0,0), bucket };
     const prev = m.get(key);
@@ -286,7 +286,7 @@ function compose(){
     ['Awarded, TTM', fmtMoney(D.awardTTM)],
     ['vs prior year', (D.awardDelta>=0?'▲ ':'▼ ') + fmtPct(D.awardDelta)],
     ['Open pipeline', fmtMoney(D.pipe)],
-    ['Backlog coverage', D.coverage ? D.coverage.toFixed(1)+' yrs' : '—']
+    ['Backlog coverage', D.coverage ? D.coverage.toFixed(1)+' yrs' : '–']
   ].map(([l,v])=>`<div class="stat"><div class="s-label">${l}</div><div class="s-value">${v}</div></div>`).join('');
 
   const market = D.awardDelta!==null && D.awardDelta<=-15 ?
@@ -297,11 +297,11 @@ function compose(){
 
   const paras = [
     ['The award market',
-     `New York City agencies awarded ${num(fmtMoney(D.awardTTM))} of construction and construction-services work over the trailing twelve months, across ${num(fmtInt(D.awardCount))} contract awards. Award volume has ${trendWord(D.awardDelta)} — ${D.awardDelta!==null ? num((D.awardDelta>=0?'+':'−')+fmtPct(D.awardDelta)) + ' versus the preceding twelve months' : 'with no prior-year comparison available'}. Hard construction makes up ${num(fmtPct(D.hardShare))} of awarded value; design, engineering, and construction management make up the rest. ${capFirst(AWARD_AGENCY_SHORT[D.topAwardAgency.agency_name]||D.topAwardAgency.agency_name)} is the busiest buyer, accounting for ${num(fmtPct(D.topAwardShare))} of trailing-year award value.`],
+     `New York City agencies awarded ${num(fmtMoney(D.awardTTM))} of construction and construction-services work over the trailing twelve months, across ${num(fmtInt(D.awardCount))} contract awards. Award volume has ${trendWord(D.awardDelta)}, ${D.awardDelta!==null ? num((D.awardDelta>=0?'+':'−')+fmtPct(D.awardDelta)) + ' versus the preceding twelve months' : 'with no prior-year comparison available'}. Hard construction makes up ${num(fmtPct(D.hardShare))} of awarded value; design, engineering, and construction management make up the rest. ${capFirst(AWARD_AGENCY_SHORT[D.topAwardAgency.agency_name]||D.topAwardAgency.agency_name)} is the busiest buyer, accounting for ${num(fmtPct(D.topAwardShare))} of trailing-year award value.`],
     ['The pipeline behind it',
-     `Behind the award market sits a funded pipeline of ${num(fmtMoney(D.pipe))} — budgets committed to ${num(fmtInt(D.pipeCount))} open capital projects in the City's ${latestPlan} plan that have not yet been spent. ${num(fmtPct(D.pipePre/D.pipe*100))} of that money is attached to projects still in pre-construction phases — pending, design, or procurement — demand that has not yet reached the market. ${capFirst(AGENCY_FULL[D.topPipeAgency[0]]||D.topPipeAgency[0])} holds the largest share of the pipeline at ${num(fmtMoney(D.topPipeAgency[1]))}.`],
+     `Behind the award market sits a funded pipeline of ${num(fmtMoney(D.pipe))}, budgets committed to ${num(fmtInt(D.pipeCount))} open capital projects in the City's ${latestPlan} plan that have not yet been spent. ${num(fmtPct(D.pipePre/D.pipe*100))} of that money is attached to projects still in pre-construction phases, pending, design, or procurement, demand that has not yet reached the market. ${capFirst(AGENCY_FULL[D.topPipeAgency[0]]||D.topPipeAgency[0])} holds the largest share of the pipeline at ${num(fmtMoney(D.topPipeAgency[1]))}.`],
     ['The pace of conversion',
-     `The City paid out ${num(fmtMoney(D.spendTTM))} on capital projects over the trailing year of plan snapshots. At that pace, the current funded pipeline represents ${num(D.coverage.toFixed(1)+' years')} of work — the demand-side equivalent of a contractor's backlog ratio. ${market}`]
+     `The City paid out ${num(fmtMoney(D.spendTTM))} on capital projects over the trailing year of plan snapshots. At that pace, the current funded pipeline represents ${num(D.coverage.toFixed(1)+' years')} of work, the demand-side equivalent of a contractor's backlog ratio. ${market}`]
   ];
   document.getElementById('brief-body').innerHTML =
     paras.map(([h,p])=>`<h2>${h}</h2><p>${p}</p>`).join('');
