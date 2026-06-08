@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agency Velocity · The Concrete Index</title>
+<meta name="description" content="Which NYC agencies move construction money fast: open pipeline against trailing-year spending, the backlog-coverage ratio agency by agency.">
+<meta property="og:title" content="The Concrete Index · Agency Velocity">
+<meta property="og:description" content="Which NYC agencies convert funded work to cash fastest.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23c2570f'/%3E%3Crect x='25' y='55' width='50' height='20' rx='4' fill='white'/%3E%3Crect x='35' y='30' width='30' height='18' rx='4' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#ece4d2; --card:#faf6ec; --ink:#26231d; --muted:#6e6657; --faint:#9a9081;
+  --line:#d9cdb4; --accent:#c2570f; --accent-deep:#9a4509; --steel:#2e5a88;
+  --green:#3f6f3f; --red:#a83232;
+  --radius:4px; --shadow:0 1px 0 rgba(63,53,33,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--accent-deep);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+header{border-bottom:2px solid var(--ink);background:var(--card);position:sticky;top:0;z-index:50}
+.nav{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{font-family:'Fraunces',serif;font-weight:700;font-size:19px;letter-spacing:.01em;color:var(--ink)}
+.brand .tick{color:var(--accent)}
+.nav-links{display:flex;gap:22px;align-items:center;font-size:13.5px;font-weight:500}
+.nav-links a{color:var(--muted)}
+.nav-links a:hover{color:var(--ink);text-decoration:none}
+.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent)}
+.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green);background:#e8eedd;border:1px solid #c2cfa8;border-radius:var(--radius);padding:3px 10px}
+.badge-live .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hero{padding:44px 0 10px}
+.hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(28px,4vw,40px);line-height:1.15;max-width:760px}
+.hero p.sub{margin-top:12px;font-size:16px;color:var(--muted);max-width:660px}
+.hero .asof{margin-top:14px;font-size:13px;color:var(--faint)}
+.hero .asof strong{color:var(--muted);font-weight:600}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:26px 0 8px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+.kpi .k-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
+.kpi .k-value{font-family:'Fraunces',serif;font-size:30px;font-weight:600;margin-top:6px;letter-spacing:-.01em}
+.kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:4px}
+.kpi.hl{border-color:#e0bd92;background:#f6efdd}
+.grid{display:grid;gap:14px;padding:8px 0}
+.grid.two{grid-template-columns:1fr 1fr}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.card h2{font-size:15px;font-weight:700;letter-spacing:-.01em}
+.card .h-sub{font-size:12.5px;color:var(--muted);margin-top:2px;margin-bottom:16px}
+.chart-box{position:relative;height:280px}
+.chart-box.tall{height:420px}
+.stage-row{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid #e7ddc9}
+.stage-row:last-child{border-bottom:0}
+.stage-name{width:150px;flex-shrink:0}
+.stage-name .s-t{font-weight:700;font-size:14px}
+.stage-name .s-s{font-size:11.5px;color:var(--faint)}
+.stage-bar-track{flex:1;height:26px;background:#e9e0cb;border-radius:6px;overflow:hidden}
+.stage-bar{height:100%;border-radius:6px;min-width:3px}
+.stage-val{width:90px;text-align:right;font-family:'Fraunces',serif;font-size:19px;font-weight:600;flex-shrink:0}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:10px;border-bottom:1px solid #e7ddc9;vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td .t-title{font-weight:500;color:var(--ink)}
+.amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.yrs{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.yrs.slow{color:var(--red)}
+.yrs.fast{color:var(--green)}
+.method{padding:30px 0 10px}
+.method .card{padding:30px 34px}
+.method h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:4px}
+.method h3{font-size:14px;font-weight:700;margin:20px 0 6px}
+.method p{font-size:14px;color:#46412f;max-width:780px}
+.method p+p{margin-top:8px}
+footer{margin-top:40px;border-top:2px solid var(--ink);padding:26px 0 38px;font-size:13px;color:var(--muted)}
+footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer .brand{font-size:15px}
+#loader{padding:80px 0;text-align:center;color:var(--muted)}
+.spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#error{display:none;padding:60px 24px;text-align:center;color:var(--muted)}
+#app{display:none}
+@media(max-width:880px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .grid.two{grid-template-columns:1fr}
+  .stage-name{width:110px}
+}
+@media(max-width:560px){
+  .kpis{grid-template-columns:1fr 1fr}
+  .kpi .k-value{font-size:24px}
+  .hero{padding-top:30px}
+}
+.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
+@media(max-width:1023px){
+  .menu-btn{display:block}
+  .nav{position:relative}
+  .nav-links{display:none;position:absolute;top:59px;left:-24px;right:-24px;background:var(--card);border-bottom:2px solid var(--ink);flex-direction:column;align-items:flex-start;padding:14px 24px;gap:13px;box-shadow:0 10px 20px rgba(63,53,33,.15);z-index:60}
+  .nav-links.open{display:flex}
+  .nav-links a.hide-m{display:inline}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="/" style="text-decoration:none"><div class="brand">The Concrete Index<span class="tick">.</span></div></a>
+    <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
+    <nav class="nav-links">
+      <a href="/pipeline/">Pipeline</a>
+      <a href="/solicitations/">Bidding</a>
+      <a href="/">Awarded</a>
+      <a href="/vendors/" class="hide-m">Vendors</a>
+      <a href="/funnel/" class="active">Funnel</a>
+      <a href="/analysis/">Analysis</a>
+      <a href="/regional/">Regional</a>
+      <a href="/briefing/">Briefing</a>
+      <a href="#methodology" class="hide-m">Methodology</a>
+      <span class="badge-live"><span class="dot"></span>Live data</span>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <div class="kicker">Agency Velocity</div>
+  <h1>Which agencies move money fast.</h1>
+  <p class="sub">Every agency carries a different ratio of funded work to spending pace. Backlog coverage, an agency's open pipeline divided by its own trailing-year outlays, is the demand-side analog of a contractor's backlog-to-revenue ratio. A high number means more funded work stacked behind the same delivery capacity.</p>
+  <p class="asof" id="asof">Assembling agency velocity from live City data…</p>
+</div>
+
+<div id="loader" class="wrap">
+  <div class="spinner"></div>
+  Pulling the capital plan and award record from NYC Open Data…
+</div>
+
+<div id="error" class="wrap">
+  <p><strong>Couldn't reach NYC Open Data.</strong></p>
+  <p style="margin-top:6px">The City's API may be momentarily unavailable. Please refresh the page to try again.</p>
+</div>
+
+<main id="app" class="wrap">
+
+  <section class="kpis">
+    <div class="kpi"><div class="k-label">Committed, unspent</div><div class="k-value" id="kpi-committed">–</div><div class="k-note" id="kpi-committed-note"></div></div>
+    <div class="kpi"><div class="k-label">Awarded</div><div class="k-value" id="kpi-awarded">–</div><div class="k-note" id="kpi-awarded-note"></div></div>
+    <div class="kpi"><div class="k-label">Spent</div><div class="k-value" id="kpi-spent">–</div><div class="k-note" id="kpi-spent-note"></div></div>
+    <div class="kpi hl"><div class="k-label">Backlog coverage</div><div class="k-value" id="kpi-coverage">–</div><div class="k-note">years of funded work at the current pace of spending</div></div>
+  </section>
+
+  <section class="grid" id="chart-sec">
+    <div class="card">
+      <h2>Backlog coverage by agency</h2>
+      <div class="h-sub">Years of funded work at each agency's current spending pace. Longer bars are agencies sitting on more committed work relative to how fast they pay it out.</div>
+      <div class="chart-box tall"><canvas id="chart-bl"></canvas></div>
+      <div class="reading" id="vel-reading"></div>
+    </div>
+  </section>
+
+  <section class="grid" id="velocity">
+    <div class="card">
+      <h2>The full table</h2>
+      <div class="h-sub">Every managing agency with an open construction pipeline, ranked by pipeline size. Awarded column is trailing-twelve City Record awards where the agency name maps across sources.</div>
+      <table id="tbl-velocity">
+        <thead><tr><th>Agency</th><th class="num">Open pipeline</th><th class="num">Spent (TTM)</th><th class="num">Awarded (TTM)</th><th class="num">Backlog, years</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="method" id="methodology">
+    <div class="card">
+      <h2>Methodology &amp; definitions</h2>
+      <h3>The three measures</h3>
+      <p><strong>Committed, unspent</strong> is the forward pipeline from the <a href="/pipeline/">Pipeline</a> page: total project budgets minus spending to date across active capital projects in the City's most recent capital plan snapshot (NYC OMB, dataset <code>fb86-vt7u</code>). <strong>Awarded</strong> is trailing-twelve-month construction award value from the City Record (dataset <code>qyyg-4tf5</code>), as on the <a href="/">Awarded</a> page. <strong>Spent</strong> is trailing-year capital outlays, measured as the growth in each project's cumulative spend-to-date between capital plan snapshots. The underlying ledger is the City's FMS, the same accounting that feeds Checkbook NYC.</p>
+      <h3>How spending pace is computed</h3>
+      <p>OMB publishes a plan snapshot roughly every four months. For each project, spending in a period is its cumulative spend-to-date in one snapshot minus the prior snapshot, floored at zero; new projects count from zero. Projects are matched across snapshots by agency and FMS ID, with sub-project rows collapsed first so nothing is double-counted. Projects that leave the dataset between snapshots stop contributing, which biases the spend estimate low rather than high.</p>
+      <h3>Backlog coverage</h3>
+      <p>Unspent committed dollars divided by trailing-year spending: how many years the current funded pipeline would take to deliver at today's pace. It's the demand-side counterpart to a contractor's backlog ratio. A higher number means more future work stacked behind the same delivery capacity.</p>
+      <h3>Scope</h3>
+      <p>Committed and Spent cover the City's full capital plan, buildings, transportation, water, parks, because capital budgets aren't divided by procurement category. Awarded covers the City Record's two construction procurement categories. The three measures answer one question from different ledgers: how demand is moving. They are not a single cohort traced end-to-end, and the methodology keeps each measure on its own source's terms.</p>
+      <h3>Agency velocity</h3>
+      <p>Agencies are matched across the two sources (capital plan codes to City Record names) for the agencies that appear in both. Backlog years is each agency's open pipeline divided by its own trailing-year spending. The ratio is shown only where an agency's trailing self-delivered outlay clears $10M; below that, the agency's capital work is mostly delivered under another managing agency (chiefly the Department of Design and Construction), so its own spend line understates delivery and the ratio would be a noise figure. Those agencies still appear in the table with their pipeline and a blank backlog column.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap f-row">
+    <div>
+      <div class="brand">The Concrete Index<span class="tick">.</span></div>
+      <div style="margin-top:4px">NYC public construction capital, from commitment to cash.</div>
+    </div>
+    <div style="text-align:right">
+      <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
+      <div style="margin-top:4px">© 2026 <a href="/about/">Salar Jalinous</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+'use strict';
+/* ================= data layer ================= */
+const PLAN_API = 'https://data.cityofnewyork.us/resource/fb86-vt7u.json';
+const AWARD_API = 'https://data.cityofnewyork.us/resource/qyyg-4tf5.json';
+const SNAPSHOTS = 5; // latest 5 plan snapshots → 4 spend periods; last 3 ≈ TTM
+
+const state = {
+  periods: [],          // ascending, e.g. ['202409','202501','202505','202509','202601']
+  snap: {},             // period -> Map(key -> {spend,budget,bucket,agency})
+  spendPeriods: [],     // [{label, total, byAgency:Map}]
+  pipeline: { total:0, byAgency:new Map() },
+  awards: { ttm:0, count:0, byAgency:new Map(), byQuarter:[] }
+};
+
+async function getJSON(api, params){
+  params['$$app_token'] = '3TAzQQPiSG2T4WGWfYYUxxqfJ';
+  const res = await fetch(api + '?' + new URLSearchParams(params));
+  if(!res.ok) throw new Error('API ' + res.status);
+  return res.json();
+}
+
+/* ---- phase normalization (same rules as the Pipeline page) ---- */
+const PHASE_MAP = {
+  'pending':'Pending','initiation':'Pending','pre-design':'Pre-Design','predesign':'Pre-Design',
+  'design':'Design','construction procurement':'Procurement','construction':'Construction',
+  'design build':'Construction','design built':'Construction','close-out':'Close-out','closeout':'Close-out'
+};
+const EXCLUDED = new Set(['completed','cancelled','inactive','on-hold','on hold','transferred',
+  'withdrawn','terminated','defaulted','capitally ineligible','expense']);
+const PHASE_ORDER = ['Pending','Pre-Design','Design','Procurement','Construction','Close-out','Other active'];
+function normPhase(raw){
+  const p = (raw||'').replace(/[()]/g,'').trim().toLowerCase();
+  if(EXCLUDED.has(p)) return 'excluded';
+  return PHASE_MAP[p] || 'Other active';
+}
+function phaseRank(b){
+  const i = PHASE_ORDER.indexOf(b);
+  return i === -1 ? -1 : (b === 'Other active' ? -1 : i);
+}
+
+/* one record per project per snapshot; keep most advanced phase.
+   Spending deltas use ALL projects (including completed) so final payments count;
+   pipeline uses active phases excluding Close-out. */
+function collapseSnapshot(rows){
+  const m = new Map();
+  for(const r of rows){
+    const key = (r.managing_agency||'') + '|' + (r.fms_id||r.fms_project_name||'');
+    const bucket = normPhase(r.current_phase);
+    const rec = {
+      agency: r.managing_agency || '–',
+      spend: Math.max(parseFloat(r.spend_to_date)||0, 0),
+      budget: Math.max(parseFloat(r.total_budget)||0, 0),
+      bucket
+    };
+    const prev = m.get(key);
+    if(!prev || phaseRank(bucket) > phaseRank(prev.bucket)) m.set(key, rec);
+  }
+  return m;
+}
+
+async function fetchAll(){
+  // 1. snapshot periods
+  const ps = await getJSON(PLAN_API, {
+    '$select':'reporting_period','$group':'reporting_period',
+    '$order':'reporting_period DESC','$limit': String(SNAPSHOTS)
+  });
+  state.periods = ps.map(p=>p.reporting_period).sort();
+
+  // 2. rows per snapshot (in parallel)
+  const snaps = await Promise.all(state.periods.map(p => getJSON(PLAN_API, {
+    '$select':'fms_id,fms_project_name,managing_agency,spend_to_date,total_budget,current_phase',
+    '$where': `reporting_period='${p}'`, '$limit':'20000'
+  })));
+  state.periods.forEach((p,i) => { state.snap[p] = collapseSnapshot(snaps[i]); });
+
+  // 3. spend deltas between consecutive snapshots
+  for(let i=1; i<state.periods.length; i++){
+    const prev = state.snap[state.periods[i-1]], cur = state.snap[state.periods[i]];
+    let total = 0; const byAgency = new Map();
+    for(const [key, rec] of cur){
+      if(rec.bucket === 'excluded' && !prev.has(key)) continue;
+      const before = prev.has(key) ? prev.get(key).spend : 0;
+      const d = Math.max(rec.spend - before, 0);
+      total += d;
+      byAgency.set(rec.agency, (byAgency.get(rec.agency)||0) + d);
+    }
+    state.spendPeriods.push({ label: periodLabel(state.periods[i-1], state.periods[i]), total, byAgency });
+  }
+
+  // 4. pipeline from latest snapshot (active, excluding Close-out)
+  const latest = state.snap[state.periods[state.periods.length-1]];
+  for(const rec of latest.values()){
+    if(rec.bucket === 'excluded' || rec.bucket === 'Close-out') continue;
+    const unspent = Math.max(rec.budget - rec.spend, 0);
+    state.pipeline.total += unspent;
+    state.pipeline.byAgency.set(rec.agency, (state.pipeline.byAgency.get(rec.agency)||0) + unspent);
+  }
+
+  // 5. awards: TTM total + by agency + by quarter (last 4 quarters)
+  const since = isoMonthsAgo(12);
+  const [tot, byAg, byMonth] = await Promise.all([
+    getJSON(AWARD_API, {'$select':'sum(contract_amount) as s,count(*) as n',
+      '$where':`starts_with(category_description,'Construction') AND start_date>'${since}' AND contract_amount>0`}),
+    getJSON(AWARD_API, {'$select':'agency_name,sum(contract_amount) as s',
+      '$where':`starts_with(category_description,'Construction') AND start_date>'${since}' AND contract_amount>0`,
+      '$group':'agency_name'}),
+    getJSON(AWARD_API, {'$select':'date_trunc_ym(start_date) as m,sum(contract_amount) as s',
+      '$where':`starts_with(category_description,'Construction') AND start_date>'${since}' AND contract_amount>0`,
+      '$group':'m','$order':'m'})
+  ]);
+  state.awards.ttm = parseFloat(tot[0].s)||0;
+  state.awards.count = parseInt(tot[0].n)||0;
+  byAg.forEach(r => state.awards.byAgency.set(r.agency_name, parseFloat(r.s)||0));
+  state.awards.byQuarter = toQuarters(byMonth);
+}
+
+function isoMonthsAgo(n){
+  const d = new Date(); d.setMonth(d.getMonth()-n);
+  return d.toISOString().slice(0,10);
+}
+function toQuarters(byMonth){
+  const qs = new Map();
+  for(const r of byMonth){
+    const ym = r.m.slice(0,7), y = ym.slice(0,4), q = 'Q' + (Math.floor((+ym.slice(5,7)-1)/3)+1);
+    const k = q + ' ’' + y.slice(2);
+    qs.set(k, (qs.get(k)||0) + (parseFloat(r.s)||0));
+  }
+  return [...qs.entries()];
+}
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function shortPeriod(p){ return MONTHS[+p.slice(4,6)-1] + ' ’' + p.slice(2,4); }
+function periodLabel(a,b){ return shortPeriod(a) + ' → ' + shortPeriod(b); }
+function fmtPeriodLong(p){
+  const names=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  return names[+p.slice(4,6)-1] + ' ' + p.slice(0,4);
+}
+
+/* TTM spend = last 3 inter-snapshot periods (≈12 months) */
+function ttmSpend(){ return state.spendPeriods.slice(-3).reduce((a,p)=>a+p.total,0); }
+function ttmSpendByAgency(){
+  const m = new Map();
+  for(const p of state.spendPeriods.slice(-3))
+    for(const [a,v] of p.byAgency) m.set(a, (m.get(a)||0)+v);
+  return m;
+}
+
+/* agency code (capital plan) -> City Record agency_name */
+const CODE_TO_AWARD = {
+  DDC:'Design and Construction', DOT:'Transportation', DEP:'Environmental Protection',
+  DPR:'Parks and Recreation', DCAS:'Citywide Administrative Services', DSNY:'Sanitation',
+  NYPD:'Police Department', HPD:'Housing Preservation and Development', FDNY:'Fire Department',
+  DOC:'Correction', DOHMH:'Health and Mental Hygiene', DHS:'Homeless Services',
+  ACS:'Children’s Services', DFTA:'Aging'
+};
+const AGENCY_NAMES = {
+  DPR:'Parks & Recreation', DDC:'Design & Construction', DOT:'Transportation',
+  EDC:'Economic Development', DEP:'Environmental Protection', HHC:'NYC Health + Hospitals',
+  DCAS:'Citywide Admin Services', CUNY:'CUNY', NYPD:'Police', FDNY:'Fire',
+  DCLA:'Cultural Affairs', DHS:'Homeless Services', DSNY:'Sanitation',
+  QPL:'Queens Public Library', DOC:'Correction', DOHMH:'Health & Mental Hygiene',
+  BPL:'Brooklyn Public Library', NYPL:'New York Public Library', HRA:'Human Resources Admin',
+  DFTA:'Aging', ACS:'Children’s Services', DOE:'Education',
+  HPD:'Housing Preservation & Dev', OTI:'Technology & Innovation'
+};
+function agencyLabel(code){ return AGENCY_NAMES[code] ? `${AGENCY_NAMES[code]} (${code})` : code; }
+
+/* ================= formatting ================= */
+function fmtMoney(v){
+  if(v >= 1e9) return '$' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2) + 'B';
+  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
+  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
+  return '$' + Math.round(v);
+}
+function fmtInt(v){ return v.toLocaleString('en-US'); }
+function esc(s){ const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+/* ================= rendering ================= */
+const COLOR_A = '#c2570f', COLOR_B = '#2e5a88', COLOR_C = '#3f6f3f';
+Chart.defaults.font.family = "'Inter',sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.color = '#6e6657';
+Object.assign(Chart.defaults.plugins.tooltip, {
+  backgroundColor:'#faf6ec', titleColor:'#26231d', bodyColor:'#46412f',
+  borderColor:'#c2570f', borderWidth:1, cornerRadius:4, padding:10, displayColors:false,
+  titleFont:{family:"'Inter',sans-serif",weight:'600',size:12}, bodyFont:{family:"'Inter',sans-serif",size:12},
+  caretSize:5
+});
+
+function renderKpis(){
+  const committed = state.pipeline.total, spent = ttmSpend();
+  const latest = state.periods[state.periods.length-1];
+  document.getElementById('kpi-committed').textContent = fmtMoney(committed);
+  document.getElementById('kpi-committed-note').textContent = 'open pipeline, ' + fmtPeriodLong(latest) + ' plan';
+  document.getElementById('kpi-awarded').textContent = fmtMoney(state.awards.ttm);
+  document.getElementById('kpi-awarded-note').textContent = fmtInt(state.awards.count) + ' construction awards, trailing 12 months';
+  document.getElementById('kpi-spent').textContent = fmtMoney(spent);
+  document.getElementById('kpi-spent-note').textContent = 'capital outlays, trailing year of plan snapshots';
+  document.getElementById('kpi-coverage').textContent = spent > 0 ? (committed/spent).toFixed(1) + ' yrs' : '–';
+}
+
+function renderStages(){
+  const stages = [
+    { t:'Committed', s:'stock · full capital plan, unspent', v: state.pipeline.total, c: COLOR_B },
+    { t:'Awarded', s:'flow · construction awards, TTM', v: state.awards.ttm, c: COLOR_A },
+    { t:'Spent', s:'flow · capital outlays, trailing year', v: ttmSpend(), c: COLOR_C }
+  ];
+  const max = Math.max(...stages.map(s=>s.v));
+  document.getElementById('stage-rows').innerHTML = stages.map(s=>`
+    <div class="stage-row">
+      <div class="stage-name"><div class="s-t">${s.t}</div><div class="s-s">${s.s}</div></div>
+      <div class="stage-bar-track"><div class="stage-bar" style="width:${(s.v/max*100).toFixed(1)}%;background:${s.c}"></div></div>
+      <div class="stage-val">${fmtMoney(s.v)}</div>
+    </div>`).join('');
+  document.getElementById('stages-sub').textContent =
+    'Read these as three separate readings, not a draining funnel. Committed is a stock from the full capital plan; Awarded covers two City Record procurement categories; Spent is full-plan outlays. The scopes differ, so the bars are not meant to net against each other. The bar lengths share a scale only to make the magnitudes comparable.';
+}
+
+function vBar(canvasId, labels, data, color){
+  new Chart(document.getElementById(canvasId), {
+    type:'bar',
+    data:{ labels, datasets:[{ data, backgroundColor: color, borderRadius:3 }] },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false},
+        tooltip:{callbacks:{label:(c)=> fmtMoney(c.parsed.y)}} },
+      scales:{
+        x:{grid:{display:false}, ticks:{maxRotation:0}},
+        y:{grid:{color:'#e4dac4'}, border:{display:false}, ticks:{callback:(v)=>fmtMoney(v), maxTicksLimit:5}}
+      }
+    }
+  });
+}
+
+function renderTrends(){
+  vBar('chart-spend', state.spendPeriods.map(p=>p.label), state.spendPeriods.map(p=>p.total), COLOR_C);
+  vBar('chart-award', state.awards.byQuarter.map(q=>q[0]), state.awards.byQuarter.map(q=>q[1]), COLOR_A);
+}
+
+function renderVelocity(){
+  const spend = ttmSpendByAgency();
+  // Floor on trailing self-delivered spend. Below this, the agency's own FMS
+  // outlay line is too small to anchor a ratio: its capital work is mostly
+  // delivered under another managing agency (chiefly DDC), so backlog years
+  // would be a noise figure, not a velocity signal.
+  const MIN_SPEND = 10e6;
+  const rows = [...state.pipeline.byAgency.entries()]
+    .sort((a,b)=>b[1]-a[1])
+    .map(([code, pipe]) => {
+      const sp = spend.get(code) || 0;
+      const awardName = CODE_TO_AWARD[code];
+      const aw = awardName ? state.awards.byAgency.get(awardName) : undefined;
+      const yrs = sp >= MIN_SPEND ? pipe/sp : null;
+      return { code, pipe, sp, aw, yrs };
+    })
+    .filter(r => r.pipe > 0);
+  const medianYrs = (()=>{ const v = rows.filter(r=>r.yrs!==null).map(r=>r.yrs).sort((a,b)=>a-b);
+    return v.length ? v[Math.floor(v.length/2)] : 0; })();
+  document.querySelector('#tbl-velocity tbody').innerHTML = rows.map(r=>`<tr>
+    <td><span class="t-title">${esc(agencyLabel(r.code))}</span></td>
+    <td class="num amt">${fmtMoney(r.pipe)}</td>
+    <td class="num amt">${r.sp>0 ? fmtMoney(r.sp) : '–'}</td>
+    <td class="num amt">${r.aw!==undefined ? fmtMoney(r.aw) : '–'}</td>
+    <td class="num"><span class="yrs ${r.yrs===null?'':(r.yrs>medianYrs*1.5?'slow':(r.yrs<medianYrs*.67?'fast':''))}">${r.yrs===null?'–':r.yrs.toFixed(1)}</span></td>
+  </tr>`).join('');
+
+  // backlog-coverage chart: agencies with a computable ratio, top 10 by pipeline
+  const charted = rows.filter(r=>r.yrs!==null).slice(0,10);
+  new Chart(document.getElementById('chart-bl'), {
+    type:'bar',
+    data:{ labels: charted.map(r=>agencyLabel(r.code)),
+      datasets:[{ data: charted.map(r=>r.yrs), borderRadius:1, barThickness:18,
+        backgroundColor: charted.map(r=> r.yrs>medianYrs*1.5 ? '#a83232' : (r.yrs<medianYrs*0.67 ? '#3f6f3f' : '#c2570f')) }]},
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>c.parsed.x.toFixed(1)+' years of funded work'}} },
+      scales:{ x:{grid:{color:'#e4dac4'}, border:{display:false}, ticks:{callback:v=>v+' yr', maxTicksLimit:6}},
+               y:{grid:{display:false}, ticks:{autoSkip:false, font:{size:11.5}}} } }
+  });
+
+  const fast = rows.filter(r=>r.yrs!==null).reduce((a,r)=> r.yrs<a.yrs?r:a, {yrs:Infinity});
+  const slow = charted.reduce((a,r)=> r.yrs>a.yrs?r:a, {yrs:0});
+  document.getElementById('vel-reading').innerHTML =
+    `<strong>Reading:</strong> across agencies with a computable ratio, the median is <strong>${medianYrs.toFixed(1)} years</strong> of funded work at the current pace. ${slow.code ? agencyLabel(slow.code)+' carries the deepest backlog at '+slow.yrs.toFixed(1)+' years, ' : ''}${fast.code ? agencyLabel(fast.code)+' the shallowest at '+fast.yrs.toFixed(1)+'.' : ''} A deep backlog is funded work waiting on delivery capacity, not a problem in itself; it is where future awards and bonding demand are most concentrated.`;
+}
+
+/* ================= init ================= */
+(async function init(){
+  try{
+    await fetchAll();
+  }catch(e){
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('error').style.display = 'block';
+    return;
+  }
+  const latest = state.periods[state.periods.length-1];
+  document.getElementById('asof').innerHTML =
+    `Capital plan through <strong>${fmtPeriodLong(latest)}</strong> · awards through today · spending measured across ${state.spendPeriods.length} plan-to-plan periods`;
+  document.getElementById('loader').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  renderKpis();
+  renderVelocity();
+})();
+
+</script>
+</body>
+</html>
