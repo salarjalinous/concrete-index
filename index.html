@@ -7,17 +7,17 @@
 <meta name="description" content="The Concrete Index tracks NYC public construction capital — which agencies are awarding work, to whom, and how fast. Built on NYC Open Data, refreshed daily.">
 <meta property="og:title" content="The Concrete Index">
 <meta property="og:description" content="NYC public construction capital, from commitment to cash.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23d97706'/%3E%3Crect x='25' y='55' width='50' height='20' rx='4' fill='white'/%3E%3Crect x='35' y='30' width='30' height='18' rx='4' fill='white'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23c2570f'/%3E%3Crect x='25' y='55' width='50' height='20' rx='4' fill='white'/%3E%3Crect x='35' y='30' width='30' height='18' rx='4' fill='white'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root{
-  --bg:#f7f6f3; --card:#ffffff; --ink:#1a1d21; --muted:#6b7280; --faint:#9ca3af;
-  --line:#e7e4dd; --accent:#d97706; --accent-deep:#b45309; --steel:#475569;
-  --green:#15803d; --red:#b91c1c;
-  --radius:10px; --shadow:0 1px 2px rgba(26,29,33,.05),0 4px 14px rgba(26,29,33,.04);
+  --bg:#ece4d2; --card:#faf6ec; --ink:#26231d; --muted:#6e6657; --faint:#9a9081;
+  --line:#d9cdb4; --accent:#c2570f; --accent-deep:#9a4509; --steel:#2e5a88;
+  --green:#3f6f3f; --red:#a83232;
+  --radius:4px; --shadow:0 1px 0 rgba(63,53,33,.06);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -27,14 +27,14 @@ a:hover{text-decoration:underline}
 .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
 
 /* ---------- header ---------- */
-header{border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:50}
+header{border-bottom:2px solid var(--ink);background:var(--card);position:sticky;top:0;z-index:50}
 .nav{display:flex;align-items:center;justify-content:space-between;height:60px}
 .brand{font-family:'Fraunces',serif;font-weight:700;font-size:19px;letter-spacing:.01em;color:var(--ink)}
 .brand .tick{color:var(--accent)}
 .nav-links{display:flex;gap:22px;align-items:center;font-size:13.5px;font-weight:500}
 .nav-links a{color:var(--muted)}
 .nav-links a:hover{color:var(--ink);text-decoration:none}
-.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green);background:#f0fdf4;border:1px solid #bbf7d0;border-radius:999px;padding:3px 10px}
+.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green);background:#e8eedd;border:1px solid #c2cfa8;border-radius:var(--radius);padding:3px 10px}
 .badge-live .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2.4s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 
@@ -47,8 +47,8 @@ header{border-bottom:1px solid var(--line);background:var(--card);position:stick
 
 /* ---------- controls ---------- */
 .controls{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:22px 0 6px}
-.seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:3px;box-shadow:var(--shadow)}
-.seg button{border:0;background:transparent;font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:6px 14px;border-radius:6px;cursor:pointer;transition:all .15s}
+.seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:3px;box-shadow:var(--shadow)}
+.seg button{border:0;background:transparent;font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:6px 14px;border-radius:3px;cursor:pointer;transition:all .15s}
 .seg button:hover{color:var(--ink)}
 .seg button.on{background:var(--ink);color:#fff}
 .ctl-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin-right:-4px}
@@ -74,15 +74,15 @@ header{border-bottom:1px solid var(--line);background:var(--card);position:stick
 /* ---------- tables ---------- */
 table{width:100%;border-collapse:collapse;font-size:13.5px}
 th{text-align:left;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);padding:8px 10px;border-bottom:1px solid var(--line)}
-td{padding:10px;border-bottom:1px solid #f1efe9;vertical-align:top}
+td{padding:10px;border-bottom:1px solid #e7ddc9;vertical-align:top}
 tr:last-child td{border-bottom:0}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 td .t-title{font-weight:500;color:var(--ink)}
 td .t-sub{font-size:12px;color:var(--muted);margin-top:2px}
 .amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
-.pill{display:inline-block;font-size:11px;font-weight:600;border-radius:5px;padding:2px 7px;white-space:nowrap}
-.pill.hard{background:#fef3e2;color:var(--accent-deep)}
-.pill.rel{background:#eef2f7;color:var(--steel)}
+.pill{display:inline-block;font-size:11px;font-weight:600;border-radius:3px;padding:2px 7px;white-space:nowrap}
+.pill.hard{background:#f3e0c8;color:var(--accent-deep)}
+.pill.rel{background:#dde6ee;color:var(--steel)}
 .rank{color:var(--faint);font-weight:600;width:28px}
 
 /* ---------- methodology ---------- */
@@ -90,11 +90,11 @@ td .t-sub{font-size:12px;color:var(--muted);margin-top:2px}
 .method .card{padding:30px 34px}
 .method h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:4px}
 .method h3{font-size:14px;font-weight:700;margin:20px 0 6px}
-.method p{font-size:14px;color:#374151;max-width:780px}
+.method p{font-size:14px;color:#46412f;max-width:780px}
 .method p+p{margin-top:8px}
 
 /* ---------- footer ---------- */
-footer{margin-top:40px;border-top:1px solid var(--line);padding:26px 0 38px;font-size:13px;color:var(--muted)}
+footer{margin-top:40px;border-top:2px solid var(--ink);padding:26px 0 38px;font-size:13px;color:var(--muted)}
 footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 footer .brand{font-size:15px}
 
@@ -128,6 +128,7 @@ footer .brand{font-size:15px}
       <a href="/" style="color:var(--ink);font-weight:600">Awarded</a>
       <a href="/funnel/">Funnel</a>
       <a href="/analysis/">Analysis</a>
+      <a href="/regional/">Regional</a>
       <a href="/briefing/">Briefing</a>
       <a href="#methodology" class="hide-m">Methodology</a>
       <span class="badge-live"><span class="dot"></span>Live data</span>
@@ -288,6 +289,7 @@ async function fetchAwards(){
     '$order': 'start_date DESC',
     '$limit': '20000'
   });
+  params.set('$$app_token', '3TAzQQPiSG2T4WGWfYYUxxqfJ');
   const res = await fetch(`${API}?${params}`);
   if(!res.ok) throw new Error('API ' + res.status);
   const raw = await res.json();
@@ -414,12 +416,12 @@ function esc(s){ const d = document.createElement('div'); d.textContent = s; ret
 const WINDOW_LABEL = { 12:'trailing 12 months', 36:'trailing 3 years', 60:'trailing 5 years' };
 
 /* ================= rendering ================= */
-const COLOR_HARD = '#d97706', COLOR_REL = '#64748b';
+const COLOR_HARD = '#c2570f', COLOR_REL = '#2e5a88';
 let charts = {};
 
 Chart.defaults.font.family = "'Inter',sans-serif";
 Chart.defaults.font.size = 12;
-Chart.defaults.color = '#6b7280';
+Chart.defaults.color = '#6e6657';
 
 function destroyChart(k){ if(charts[k]){ charts[k].destroy(); delete charts[k]; } }
 
@@ -442,7 +444,7 @@ function renderTrend(rows){
       },
       scales:{
         x:{stacked:true, grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:12}},
-        y:{stacked:true, grid:{color:'#f1efe9'}, border:{display:false}, ticks:{callback:moneyTicks, maxTicksLimit:6}}
+        y:{stacked:true, grid:{color:'#e4dac4'}, border:{display:false}, ticks:{callback:moneyTicks, maxTicksLimit:6}}
       }
     }
   });
@@ -478,7 +480,7 @@ function renderBarChart(key, canvasId, entries, color){
         tooltip:{callbacks:{label:(c)=> fmtMoney(c.parsed.x) + ' across ' + fmtInt(entries[c.dataIndex][1].count) + ' awards'}}
       },
       scales:{
-        x:{grid:{color:'#f1efe9'}, border:{display:false}, ticks:{callback:moneyTicks, maxTicksLimit:5}},
+        x:{grid:{color:'#e4dac4'}, border:{display:false}, ticks:{callback:moneyTicks, maxTicksLimit:5}},
         y:{grid:{display:false}, ticks:{autoSkip:false, font:{size:11.5}}}
       }
     }
