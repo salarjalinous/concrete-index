@@ -145,7 +145,7 @@ footer .brand{font-size:15px}
       <div class="how">
         <div class="step">
           <div class="s-t">1 · Pull</div>
-          <div class="s-d">Each page queries the City Record, the OMB capital plan, the SCA construction roster, and the MTA capital dashboard through their Socrata APIs, with server-side SoQL aggregation doing the heavy lifting before a single row reaches your browser.</div>
+          <div class="s-d">Each page queries the City Record, the OMB capital plan, the SCA construction roster, and the MTA capital dashboard through their Socrata APIs. Aggregation runs server-side with SoQL where a dataset is large, and in the browser on views whose filters need to recompute as you change them. Either way the math is reproducible from the public record.</div>
         </div>
         <div class="step">
           <div class="s-t">2 · Normalize</div>
