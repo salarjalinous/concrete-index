@@ -74,7 +74,14 @@ footer .brand{font-size:15px}
 @media(max-width:760px){
   .about{grid-template-columns:1fr}
   .photo-col img{max-width:280px}
-  .nav-links a.hide-m{display:none}
+}
+.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
+@media(max-width:1023px){
+  .menu-btn{display:block}
+  .nav{position:relative}
+  .nav-links{display:none;position:absolute;top:59px;left:-24px;right:-24px;background:var(--card);border-bottom:2px solid var(--ink);flex-direction:column;align-items:flex-start;padding:14px 24px;gap:13px;box-shadow:0 10px 20px rgba(63,53,33,.15);z-index:60}
+  .nav-links.open{display:flex}
+  .nav-links a.hide-m{display:inline}
 }
 </style>
 </head>
@@ -83,6 +90,7 @@ footer .brand{font-size:15px}
 <header>
   <div class="wrap nav">
     <a href="/" style="text-decoration:none"><div class="brand">The Concrete Index<span class="tick">.</span></div></a>
+    <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
     <nav class="nav-links">
       <a href="/pipeline/" class="hide-m">Pipeline</a>
       <a href="/solicitations/" class="hide-m">Bidding</a>
@@ -112,8 +120,8 @@ footer .brand{font-size:15px}
     <div class="bio">
       <div class="card">
         <h2>The mission</h2>
-        <p>Public construction runs on information that is technically public but practically invisible. The agencies that fund work, the contractors who build it, the brokers and underwriters who stand behind it, and the analysts who measure it all make decisions about the same market, usually with different, partial views of it.</p>
-        <p>The Concrete Index exists to close that gap. Every figure on this site comes from the public record, normalized and read the same way for everyone: what's funded, what's bidding, what's awarded, and what's actually being paid. When all sides of the market share that view, work gets priced better, capacity gets planned earlier, credit decisions rest on evidence, and capital moves to where the city is actually building.</p>
+        <p>The data behind public construction is public in name only. Award notices sit in one system, capital budgets in another, payments in a third, and none of them were built to be read together. The agencies that fund work, the contractors who build it, the brokers and underwriters who stand behind it, and the analysts who measure it all make decisions about the same market, usually with different, partial views of it.</p>
+        <p>The Concrete Index exists to close that gap. Every figure on this site comes from the public record, normalized and read the same way for everyone: what's funded, what's bidding, what's awarded, and what's actually being paid. When everyone prices against the same picture of demand, bids get sharper, bonding and credit decisions rest on evidence instead of anecdote, and capital finds the work earlier.</p>
         <p>As a contract surety underwriter, my work is judging whether contractors can deliver the projects they take on. This site is the demand side of that question, built in the open, for anyone who shares it.</p>
         <div class="btn-row">
           <a class="btn primary" href="https://www.linkedin.com/in/salar-jalinous/" target="_blank" rel="noopener">Connect on LinkedIn</a>
@@ -127,19 +135,19 @@ footer .brand{font-size:15px}
   <section class="what">
     <div class="card">
       <h2>What this site actually does</h2>
-      <p class="lede">The Concrete Index is a live reading of New York City's public construction market, built directly on the government's own records. Nothing here is estimated, scraped, or manually maintained, every number is computed from official datasets at the moment you load the page.</p>
+      <p class="lede">The Concrete Index is a live reading of New York City's public construction market, built directly on the government's own records. Nothing here is estimated or scraped. Each page queries the official datasets at the moment you load it, runs the numbers in your browser, and renders the result. There is no database to go stale and no analyst refresh to wait for.</p>
       <div class="how">
         <div class="step">
           <div class="s-t">1 · Pull</div>
-          <div class="s-d">Each page queries the City Record, the OMB capital plan, the SCA's construction roster, and the MTA's capital dashboard through their official APIs, the same systems the government publishes from, refreshed daily by the agencies themselves.</div>
+          <div class="s-d">Each page queries the City Record, the OMB capital plan, the SCA construction roster, and the MTA capital dashboard through their Socrata APIs, with server-side SoQL aggregation doing the heavy lifting before a single row reaches your browser.</div>
         </div>
         <div class="step">
           <div class="s-t">2 · Normalize</div>
-          <div class="s-d">Raw records are messy: duplicate sub-projects, renewals mixed with new awards, budgets repeated across rows, agencies named five different ways. The site applies one disclosed set of rules so every figure means the same thing everywhere, and no dollar is counted twice.</div>
+          <div class="s-d">Raw records are messy. Sub-projects duplicate, renewals hide among new awards, budgets repeat across rows, and agencies go by five names. One disclosed rule set fixes that: project rows collapse on an agency-plus-FMS-ID key, continuations are flagged by selection method, and $500M megaprojects can be set aside so a single award doesn't bend a trend.</div>
         </div>
         <div class="step">
           <div class="s-t">3 · Read</div>
-          <div class="s-d">The cleaned data becomes the measures that matter: the demand funnel from commitment to cash, conversion speed by agency, a composite index back to 2004, and a written briefing that recomposes itself from the live record on every visit.</div>
+          <div class="s-d">From the cleaned data the site computes the demand funnel from commitment to cash, phase-conversion rates by agency, a composite index back to 2004, and a briefing that rewrites itself from the live record on every visit.</div>
         </div>
       </div>
       <div class="who">
