@@ -442,13 +442,23 @@ async function runSearch(q){
     if(hit) g.variants.forEach(v => matchedVariants.add(v));
   });
 
-  // Build the WHERE: the user's substring match OR exact membership in any
-  // matched group's variant set. IN-list is chunked to keep the URL sane.
+  // Build the WHERE: the user's substring match OR a fetch of every matched
+  // group's member rows. The alias variants are NORMALIZED (internal whitespace
+  // collapsed, trailing punctuation stripped), but the raw vendor_name in the
+  // dataset still carries its original spacing and punctuation. So we cannot
+  // match variants with exact equality, so we fetch with a whitespace-and-trailing
+  // tolerant LIKE (each run of spaces becomes '%', a trailing '%' absorbs any
+  // suffix punctuation) to PULL candidate rows, then attribute each fetched row
+  // exactly client-side via groupKeyFor(). The LIKE only widens the fetch net;
+  // exact normalized attribution below is the authority, so an over-fetched row
+  // for an unrelated firm falls through to standalone and never enters a parent
+  // total. (This is what keeps "CRUZ CONSTRUCTION" out of the E.E. Cruz total.)
+  // Variant strings contain no literal % or _ (verified against the alias map),
+  // so we only need to double single quotes here; the % we insert are wildcards.
+  const likeOf = v => v.replace(/'/g,"''").replace(/\s+/g,'%') + '%';
   const clauses = [`upper(vendor_name) like upper('%${safe}%')`];
-  const variantList = [...matchedVariants];
-  for(let i=0;i<variantList.length;i+=50){
-    const chunk = variantList.slice(i,i+50).map(v=>`'${soqlLit(v)}'`).join(',');
-    if(chunk) clauses.push(`upper(vendor_name) in(${chunk})`);
+  for(const v of matchedVariants){
+    clauses.push(`upper(vendor_name) like upper('${likeOf(v)}')`);
   }
   const where = `starts_with(category_description,'Construction') AND contract_amount>0 AND (${clauses.join(' OR ')})`;
 
