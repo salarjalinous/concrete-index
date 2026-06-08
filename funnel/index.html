@@ -153,7 +153,7 @@ footer .brand{font-size:15px}
 
   <section class="grid" id="stages">
     <div class="card">
-      <h2>The three stages</h2>
+      <h2>Three gauges, not one flow</h2>
       <div class="h-sub" id="stages-sub"></div>
       <div id="stage-rows"></div>
     </div>
@@ -411,9 +411,9 @@ function renderKpis(){
 
 function renderStages(){
   const stages = [
-    { t:'Committed', s:'funded, unspent, full capital plan', v: state.pipeline.total, c: COLOR_B },
-    { t:'Awarded', s:'construction awards, trailing 12 mo', v: state.awards.ttm, c: COLOR_A },
-    { t:'Spent', s:'capital outlays, trailing year', v: ttmSpend(), c: COLOR_C }
+    { t:'Committed', s:'stock · full capital plan, unspent', v: state.pipeline.total, c: COLOR_B },
+    { t:'Awarded', s:'flow · construction awards, TTM', v: state.awards.ttm, c: COLOR_A },
+    { t:'Spent', s:'flow · capital outlays, trailing year', v: ttmSpend(), c: COLOR_C }
   ];
   const max = Math.max(...stages.map(s=>s.v));
   document.getElementById('stage-rows').innerHTML = stages.map(s=>`
@@ -423,7 +423,7 @@ function renderStages(){
       <div class="stage-val">${fmtMoney(s.v)}</div>
     </div>`).join('');
   document.getElementById('stages-sub').textContent =
-    'Stock of funded work against trailing-year flows of awards and cash. The sources differ; the methodology explains what each one measures.';
+    'Read these as three separate readings, not a draining funnel. Committed is a stock from the full capital plan; Awarded covers two City Record procurement categories; Spent is full-plan outlays. The scopes differ, so the bars are not meant to net against each other. The bar lengths share a scale only to make the magnitudes comparable.';
 }
 
 function vBar(canvasId, labels, data, color){
