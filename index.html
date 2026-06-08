@@ -64,6 +64,9 @@ header{border-bottom:2px solid var(--ink);background:var(--card);position:sticky
 .kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:4px}
 .kpi .up{display:inline-block;font-size:12px;font-weight:600;padding:1px 7px;border-radius:3px;color:var(--green);background:#e8eedd}
 .kpi .down{display:inline-block;font-size:12px;font-weight:600;padding:1px 7px;border-radius:3px;color:var(--red);background:#f6e3e0}
+.kpi.hero{border-top:3px solid var(--accent)}
+.kpi.hero .k-value{font-size:40px}
+@media(max-width:560px){.kpi.hero .k-value{font-size:30px}}
 
 /* ---------- cards & grid ---------- */
 .grid{display:grid;gap:14px;padding:8px 0}
@@ -200,7 +203,7 @@ footer .brand{font-size:15px}
   </div>
 
   <section class="kpis">
-    <div class="kpi"><div class="k-label">Awarded</div><div class="k-value" id="kpi-total">–</div><div class="k-note" id="kpi-total-note"></div></div>
+    <div class="kpi hero"><div class="k-label">Awarded</div><div class="k-value" id="kpi-total">–</div><div class="k-note" id="kpi-total-note"></div></div>
     <div class="kpi"><div class="k-label">Awards</div><div class="k-value" id="kpi-count">–</div><div class="k-note" id="kpi-count-note"></div></div>
     <div class="kpi"><div class="k-label">Median award</div><div class="k-value" id="kpi-median">–</div><div class="k-note">published contract value</div></div>
     <div class="kpi"><div class="k-label">Largest award</div><div class="k-value" id="kpi-max">–</div><div class="k-note" id="kpi-max-note"></div></div>
