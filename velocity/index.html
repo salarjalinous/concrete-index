@@ -185,7 +185,7 @@ footer .brand{font-size:15px}
       <h3>Scope</h3>
       <p>Committed and Spent cover the City's full capital plan, buildings, transportation, water, parks, because capital budgets aren't divided by procurement category. Awarded covers the City Record's two construction procurement categories. The three measures answer one question from different ledgers: how demand is moving. They are not a single cohort traced end-to-end, and the methodology keeps each measure on its own source's terms.</p>
       <h3>Agency velocity</h3>
-      <p>Agencies are matched across the two sources (capital plan codes to City Record names) for the agencies that appear in both. Backlog years is each agency's open pipeline divided by its own trailing-year spending.</p>
+      <p>Agencies are matched across the two sources (capital plan codes to City Record names) for the agencies that appear in both. Backlog years is each agency's open pipeline divided by its own trailing-year spending. The ratio is shown only where an agency's trailing self-delivered outlay clears $10M; below that, the agency's capital work is mostly delivered under another managing agency (chiefly the Department of Design and Construction), so its own spend line understates delivery and the ratio would be a noise figure. Those agencies still appear in the table with their pipeline and a blank backlog column.</p>
     </div>
   </section>
 
@@ -445,13 +445,18 @@ function renderTrends(){
 
 function renderVelocity(){
   const spend = ttmSpendByAgency();
+  // Floor on trailing self-delivered spend. Below this, the agency's own FMS
+  // outlay line is too small to anchor a ratio: its capital work is mostly
+  // delivered under another managing agency (chiefly DDC), so backlog years
+  // would be a noise figure, not a velocity signal.
+  const MIN_SPEND = 10e6;
   const rows = [...state.pipeline.byAgency.entries()]
     .sort((a,b)=>b[1]-a[1])
     .map(([code, pipe]) => {
       const sp = spend.get(code) || 0;
       const awardName = CODE_TO_AWARD[code];
       const aw = awardName ? state.awards.byAgency.get(awardName) : undefined;
-      const yrs = sp > 0 ? pipe/sp : null;
+      const yrs = sp >= MIN_SPEND ? pipe/sp : null;
       return { code, pipe, sp, aw, yrs };
     })
     .filter(r => r.pipe > 0);
