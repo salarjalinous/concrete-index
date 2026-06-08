@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Pipeline — The Concrete Index</title>
+<title>The Pipeline · The Concrete Index</title>
 <meta name="description" content="The forward pipeline of NYC public construction: capital dollars committed but not yet spent, by phase, agency, and borough. Built on NYC Open Data.">
-<meta property="og:title" content="The Concrete Index — Pipeline">
+<meta property="og:title" content="The Concrete Index · Pipeline">
 <meta property="og:description" content="NYC capital dollars committed but not yet spent.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23c2570f'/%3E%3Crect x='25' y='55' width='50' height='20' rx='4' fill='white'/%3E%3Crect x='35' y='30' width='30' height='18' rx='4' fill='white'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -119,7 +119,7 @@ footer .brand{font-size:15px}
 
 <div class="wrap hero">
   <h1>The forward pipeline: funded, not yet spent.</h1>
-  <p class="sub">Every capital project in the City's plan carries a budget and a spend-to-date. The gap between them is tomorrow's construction demand — dollars committed to projects that still have to move through design, procurement, and construction.</p>
+  <p class="sub">Every capital project in the City's plan carries a budget and a spend-to-date. The gap between them is tomorrow's construction demand, dollars committed to projects that still have to move through design, procurement, and construction.</p>
   <p class="asof" id="asof">Loading the capital plan…</p>
 </div>
 
@@ -145,16 +145,16 @@ footer .brand{font-size:15px}
   </div>
 
   <section class="kpis">
-    <div class="kpi"><div class="k-label">Unspent committed</div><div class="k-value" id="kpi-unspent">—</div><div class="k-note" id="kpi-unspent-note"></div></div>
-    <div class="kpi"><div class="k-label">Projects</div><div class="k-value" id="kpi-count">—</div><div class="k-note" id="kpi-count-note"></div></div>
-    <div class="kpi"><div class="k-label">Median project budget</div><div class="k-value" id="kpi-median">—</div><div class="k-note">total budget per project</div></div>
-    <div class="kpi"><div class="k-label">Plan growth</div><div class="k-value" id="kpi-growth">—</div><div class="k-note" id="kpi-growth-note"></div></div>
+    <div class="kpi"><div class="k-label">Unspent committed</div><div class="k-value" id="kpi-unspent">–</div><div class="k-note" id="kpi-unspent-note"></div></div>
+    <div class="kpi"><div class="k-label">Projects</div><div class="k-value" id="kpi-count">–</div><div class="k-note" id="kpi-count-note"></div></div>
+    <div class="kpi"><div class="k-label">Median project budget</div><div class="k-value" id="kpi-median">–</div><div class="k-note">total budget per project</div></div>
+    <div class="kpi"><div class="k-label">Plan growth</div><div class="k-value" id="kpi-growth">–</div><div class="k-note" id="kpi-growth-note"></div></div>
   </section>
 
   <section class="grid" id="phases">
     <div class="card">
       <h2>Where the pipeline sits</h2>
-      <div class="h-sub">Unspent committed dollars by project phase — earlier phases are demand that has not yet reached the market</div>
+      <div class="h-sub">Unspent committed dollars by project phase, earlier phases are demand that has not yet reached the market</div>
       <div class="chart-box tall"><canvas id="chart-phase"></canvas></div>
     </div>
   </section>
@@ -162,7 +162,7 @@ footer .brand{font-size:15px}
   <section class="grid two" id="agencies">
     <div class="card">
       <h2>Pipeline by agency</h2>
-      <div class="h-sub">Unspent committed dollars — top managing agencies</div>
+      <div class="h-sub">Unspent committed dollars, top managing agencies</div>
       <div class="chart-box"><canvas id="chart-agency"></canvas></div>
     </div>
     <div class="card">
@@ -195,13 +195,13 @@ footer .brand{font-size:15px}
     <div class="card">
       <h2>Methodology &amp; definitions</h2>
       <h3>Source</h3>
-      <p>All figures are drawn live from the <a href="https://data.cityofnewyork.us/City-Government/Capital-Projects-Dashboard-Citywide-Budget-and-Sch/fb86-vt7u" target="_blank" rel="noopener">Capital Projects Dashboard — Citywide Budget and Schedule</a> dataset on NYC Open Data (dataset <code>fb86-vt7u</code>), published by the NYC Office of Management and Budget. OMB issues a new snapshot with each capital commitment plan, three times a year (January, May, September). This page automatically uses the most recent snapshot. The source publishes one row per sub-project milestone and repeats the project-level budget on each; The Concrete Index collapses these to one record per project so no dollar is counted twice.</p>
+      <p>All figures are drawn live from the <a href="https://data.cityofnewyork.us/City-Government/Capital-Projects-Dashboard-Citywide-Budget-and-Sch/fb86-vt7u" target="_blank" rel="noopener">Capital Projects Dashboard: Citywide Budget and Schedule</a> dataset on NYC Open Data (dataset <code>fb86-vt7u</code>), published by the NYC Office of Management and Budget. OMB issues a new snapshot with each capital commitment plan, three times a year (January, May, September). This page automatically uses the most recent snapshot. The source publishes one row per sub-project milestone and repeats the project-level budget on each; The Concrete Index collapses these to one record per project so no dollar is counted twice.</p>
       <h3>Unspent committed</h3>
-      <p>For each project, unspent committed dollars are its total budget (city plus non-city funds) minus spending to date. This is the page's headline measure of forward demand: money the City has planned for projects that still have work ahead of them. It is a planning measure — budgets shift between plan releases, and commitment is not a guarantee of timing.</p>
+      <p>For each project, unspent committed dollars are its total budget (city plus non-city funds) minus spending to date. This is the page's headline measure of forward demand: money the City has planned for projects that still have work ahead of them. It is a planning measure, budgets shift between plan releases, and commitment is not a guarantee of timing.</p>
       <h3>Phases and what counts as active</h3>
       <p>Projects are grouped into the City's delivery sequence: pending, pre-design, design, construction procurement, construction, and close-out, plus an "other active" group for vehicles like requirements contracts and pass-through funds that don't follow the standard sequence. Projects marked completed, cancelled, on hold, inactive, transferred, or otherwise terminated are excluded from all figures. Close-out projects appear in the phase chart but are excluded from the headline unspent number, since their construction work is substantially done.</p>
       <h3>Relationship to the Awarded page</h3>
-      <p>This page and the <a href="/">Awarded</a> page measure different moments of the same flow. The pipeline is demand the City has funded; an award is demand reaching a contractor. Capital plan categories are broader than the procurement categories on the Awarded page — this page covers the full capital plan, including transportation, parks, water, and buildings programs delivered by many agencies.</p>
+      <p>This page and the <a href="/">Awarded</a> page measure different moments of the same flow. The pipeline is demand the City has funded; an award is demand reaching a contractor. Capital plan categories are broader than the procurement categories on the Awarded page, this page covers the full capital plan, including transportation, parks, water, and buildings programs delivered by many agencies.</p>
     </div>
   </section>
 
@@ -215,7 +215,7 @@ footer .brand{font-size:15px}
     </div>
     <div style="text-align:right">
       <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
-      <div style="margin-top:4px">© 2026 Salar Jalinous</div>
+      <div style="margin-top:4px">© 2026 <a href="/about/">Salar Jalinous</a></div>
     </div>
   </div>
 </footer>
@@ -328,7 +328,7 @@ function normalize(r){
   const spent  = Math.max(parseFloat(r.spend_to_date) || 0, 0);
   return {
     fmsId: r.fms_id || Math.random().toString(36),
-    agency: r.managing_agency || '—',
+    agency: r.managing_agency || '–',
     name: r.fms_project_name || '(unnamed project)',
     budget,
     unspent: Math.max(budget - spent, 0),
@@ -469,7 +469,7 @@ function renderKpis(rows){
     document.getElementById('kpi-growth-note').textContent =
       'unspent pipeline vs ' + fmtPeriod(state.priorPeriod) + ' plan';
   }else{
-    document.getElementById('kpi-growth').textContent = '—';
+    document.getElementById('kpi-growth').textContent = '–';
   }
 }
 
