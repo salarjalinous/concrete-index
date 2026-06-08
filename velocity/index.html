@@ -7,80 +7,122 @@
 <meta name="description" content="Which NYC agencies move construction money fast: open pipeline against trailing-year spending, the backlog-coverage ratio agency by agency.">
 <meta property="og:title" content="The Concrete Index · Agency Velocity">
 <meta property="og:description" content="Which NYC agencies convert funded work to cash fastest.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23c2570f'/%3E%3Crect x='25' y='55' width='50' height='20' rx='4' fill='white'/%3E%3Crect x='35' y='30' width='30' height='18' rx='4' fill='white'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23b5482a%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root{
-  --bg:#ece4d2; --card:#faf6ec; --ink:#26231d; --muted:#6e6657; --faint:#9a9081;
-  --line:#d9cdb4; --accent:#c2570f; --accent-deep:#9a4509; --steel:#2e5a88;
-  --green:#3f6f3f; --red:#a83232;
-  --radius:4px; --shadow:0 1px 0 rgba(63,53,33,.06);
+  --paper:#fbf2ea; --surface:#fffaf4; --band:#f6ece2;
+  --ink:#22150e; --navy:#243b53; --muted:#6e5d52; --faint:#9b8979;
+  --line:#e4d4c5; --rule:#22150e;
+  --accent:#b5482a; --accent-soft:#f1d9cd; --steel:#2f5d8f;
+  --pos:#2f7d52; --neg:#a3302a; --green:#2f7d52; --red:#a3302a; --radius:3px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
-a{color:var(--accent-deep);text-decoration:none}
+body{font-family:'Public Sans',-apple-system,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--steel);text-decoration:none}
 a:hover{text-decoration:underline}
-.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
-header{border-bottom:2px solid var(--ink);background:var(--card);position:sticky;top:0;z-index:50}
-.nav{display:flex;align-items:center;justify-content:space-between;height:60px}
-.brand{font-family:'Fraunces',serif;font-weight:700;font-size:19px;letter-spacing:.01em;color:var(--ink)}
+.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+.serif{font-family:'Source Serif 4',Georgia,serif}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+
+/* ---------- header ---------- */
+header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2px solid var(--ink)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:62px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:20px;letter-spacing:-.01em;color:var(--ink)}
+.brand svg{color:var(--navy);flex-shrink:0}
 .brand .tick{color:var(--accent)}
-.nav-links{display:flex;gap:22px;align-items:center;font-size:13.5px;font-weight:500}
+.nav-links{display:flex;gap:17px;align-items:center;font-size:13.5px;font-weight:500}
 .nav-links a{color:var(--muted)}
 .nav-links a:hover{color:var(--ink);text-decoration:none}
-.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent)}
-.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green);background:#e8eedd;border:1px solid #c2cfa8;border-radius:var(--radius);padding:3px 10px}
-.badge-live .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2.4s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-.hero{padding:44px 0 10px}
-.hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(28px,4vw,40px);line-height:1.15;max-width:760px}
-.hero p.sub{margin-top:12px;font-size:16px;color:var(--muted);max-width:660px}
-.hero .asof{margin-top:14px;font-size:13px;color:var(--faint)}
+.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px}
+.badge-live{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--pos);background:rgba(47,125,82,.1);border:1px solid rgba(47,125,82,.34);border-radius:3px;padding:3px 9px}
+.badge-live .dot{width:6px;height:6px;border-radius:50%;background:var(--pos);animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ---------- release-series bar ---------- */
+.series-bar{background:var(--band);border-bottom:1px solid var(--line)}
+.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px 28px;max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.series-bar b{color:var(--ink);font-weight:600}
+.series-bar .sep{color:var(--faint);padding:0 12px}
+@media(max-width:720px){.series-bar .inner{white-space:normal}}
+
+/* ---------- hero ---------- */
+.hero{padding:46px 0 14px}
+.kicker{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:14px}
+.hero h1{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(32px,4.6vw,46px);line-height:1.06;letter-spacing:-.012em;max-width:840px;color:var(--ink)}
+.hero p.sub{margin-top:17px;font-size:16px;color:var(--muted);max-width:700px}
+.hero .asof{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--faint)}
 .hero .asof strong{color:var(--muted);font-weight:600}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:26px 0 8px}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
-.kpi .k-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
-.kpi .k-value{font-family:'Fraunces',serif;font-size:30px;font-weight:600;margin-top:6px;letter-spacing:-.01em}
-.kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:4px}
-.kpi.hl{border-color:#e0bd92;background:#f6efdd}
-.grid{display:grid;gap:14px;padding:8px 0}
+
+/* ---------- KPI tape ---------- */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:28px 0 8px;border-left:1px solid var(--line)}
+.kpi{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px 18px}
+.kpi.hl{border-top-color:var(--accent)}
+.kpi .k-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
+.kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--navy);line-height:1}
+.kpi.hl .k-value{color:var(--ink)}
+.kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:8px}
+
+/* ---------- section heads ---------- */
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:0}
+.sec-head h2{font-family:'Source Serif 4',Georgia,serif;font-size:21px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+.sec-head .cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em;text-align:right;white-space:nowrap}
+
+.grid{display:grid;gap:22px;padding:30px 0 0}
 .grid.two{grid-template-columns:1fr 1fr}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
-.card h2{font-size:15px;font-weight:700;letter-spacing:-.01em}
-.card .h-sub{font-size:12.5px;color:var(--muted);margin-top:2px;margin-bottom:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 22px;box-shadow:0 1px 0 rgba(34,21,14,.04)}
+.card .h-sub{font-size:12.5px;color:var(--muted);margin-top:9px;margin-bottom:18px}
 .chart-box{position:relative;height:280px}
 .chart-box.tall{height:420px}
-.stage-row{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid #e7ddc9}
+
+/* ---------- reading box ---------- */
+.reading{background:var(--band);border-left:3px solid var(--accent);border-radius:0;padding:16px 20px;margin-top:22px;font-size:14px;color:var(--muted)}
+.reading strong{color:var(--ink);font-weight:600}
+
+/* ---------- stage bars ---------- */
+.stage-row{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--line)}
 .stage-row:last-child{border-bottom:0}
 .stage-name{width:150px;flex-shrink:0}
 .stage-name .s-t{font-weight:700;font-size:14px}
-.stage-name .s-s{font-size:11.5px;color:var(--faint)}
-.stage-bar-track{flex:1;height:26px;background:#e9e0cb;border-radius:6px;overflow:hidden}
-.stage-bar{height:100%;border-radius:6px;min-width:3px}
-.stage-val{width:90px;text-align:right;font-family:'Fraunces',serif;font-size:19px;font-weight:600;flex-shrink:0}
+.stage-name .s-s{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint)}
+.stage-bar-track{flex:1;height:26px;background:var(--band);border-radius:3px;overflow:hidden}
+.stage-bar{height:100%;border-radius:3px;min-width:3px}
+.stage-val{width:90px;text-align:right;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:18px;font-weight:600;flex-shrink:0}
+
+/* ---------- tables ---------- */
 table{width:100%;border-collapse:collapse;font-size:13.5px}
-th{text-align:left;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);padding:8px 10px;border-bottom:1px solid var(--line)}
-td{padding:10px;border-bottom:1px solid #e7ddc9;vertical-align:top}
+th{text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);padding:0 10px 8px;border-bottom:1px solid var(--ink)}
+td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:top}
 tr:last-child td{border-bottom:0}
-td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td.num,th.num{text-align:right}
+td.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
 td .t-title{font-weight:500;color:var(--ink)}
 .amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
-.yrs{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
-.yrs.slow{color:var(--red)}
-.yrs.fast{color:var(--green)}
-.method{padding:30px 0 10px}
-.method .card{padding:30px 34px}
-.method h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:4px}
-.method h3{font-size:14px;font-weight:700;margin:20px 0 6px}
-.method p{font-size:14px;color:#46412f;max-width:780px}
+.yrs{font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.yrs.slow{color:var(--neg)}
+.yrs.fast{color:var(--pos)}
+
+/* ---------- methodology ---------- */
+.method{padding:44px 0 10px}
+.method h2{font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:700;letter-spacing:-.012em;color:var(--ink)}
+.method-body{margin-top:24px}
+.method h3{font-family:'Public Sans',sans-serif;font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin:24px 0 6px;color:var(--ink)}
+.method p{font-size:14px;color:var(--muted);max-width:820px}
 .method p+p{margin-top:8px}
-footer{margin-top:40px;border-top:2px solid var(--ink);padding:26px 0 38px;font-size:13px;color:var(--muted)}
+.method code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:var(--band);padding:1px 5px;border-radius:3px;border:1px solid var(--line)}
+
+/* ---------- footer ---------- */
+footer{margin-top:54px;background:var(--band);border-top:2px solid var(--ink);padding:30px 0 40px;font-size:13px;color:var(--muted)}
+footer a{color:var(--steel)}
 footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-footer .brand{font-size:15px}
+footer .brand{font-size:17px;color:var(--ink)}
+footer .brand svg{color:var(--navy)}
+footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em}
+
 #loader{padding:80px 0;text-align:center;color:var(--muted)}
 .spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -88,19 +130,22 @@ footer .brand{font-size:15px}
 #app{display:none}
 @media(max-width:880px){
   .kpis{grid-template-columns:repeat(2,1fr)}
+  .kpi:nth-child(2){border-right:0}
   .grid.two{grid-template-columns:1fr}
   .stage-name{width:110px}
 }
 @media(max-width:560px){
   .kpis{grid-template-columns:1fr 1fr}
   .kpi .k-value{font-size:24px}
-  .hero{padding-top:30px}
+  .hero{padding-top:34px}
+  .wrap{padding:0 18px}
+  .series-bar .inner{padding-left:18px;padding-right:18px}
 }
 .menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
 @media(max-width:1023px){
   .menu-btn{display:block}
   .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:59px;left:-24px;right:-24px;background:var(--card);border-bottom:2px solid var(--ink);flex-direction:column;align-items:flex-start;padding:14px 24px;gap:13px;box-shadow:0 10px 20px rgba(63,53,33,.15);z-index:60}
+  .nav-links{display:none;position:absolute;top:61px;left:-28px;right:-28px;background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60}
   .nav-links.open{display:flex}
   .nav-links a.hide-m{display:inline}
 }
@@ -110,7 +155,10 @@ footer .brand{font-size:15px}
 
 <header>
   <div class="wrap nav">
-    <a href="/" style="text-decoration:none"><div class="brand">The Concrete Index<span class="tick">.</span></div></a>
+    <div class="brand">
+      <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#b5482a"/></svg>
+      <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
+    </div>
     <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
     <nav class="nav-links">
       <a href="/pipeline/">Pipeline</a>
@@ -128,11 +176,17 @@ footer .brand{font-size:15px}
   </div>
 </header>
 
-<div class="wrap hero">
-  <div class="kicker">Agency Velocity</div>
-  <h1>Which agencies move money fast.</h1>
-  <p class="sub">Every agency carries a different ratio of funded work to spending pace. Backlog coverage, an agency's open pipeline divided by its own trailing-year outlays, is the demand-side analog of a contractor's backlog-to-revenue ratio. A high number means more funded work stacked behind the same delivery capacity.</p>
-  <p class="asof" id="asof">Assembling agency velocity from live City data…</p>
+<div class="series-bar">
+  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-VELOCITY</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>OMB fb86-vt7u + CITY RECORD qyyg-4tf5</b><span class="sep">·</span>UPDATED&nbsp;·&nbsp;<b>3× YEARLY</b><span class="sep">·</span>PLAN&nbsp;·&nbsp;<b id="series-asof">–</b></div>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="kicker">Agency Velocity</div>
+    <h1>Which agencies move money fast.</h1>
+    <p class="sub">Every agency carries a different ratio of funded work to spending pace. Backlog coverage, an agency's open pipeline divided by its own trailing-year outlays, is the demand-side analog of a contractor's backlog-to-revenue ratio. A high number means more funded work stacked behind the same delivery capacity.</p>
+    <p class="asof" id="asof">Assembling agency velocity from live City data…</p>
+  </div>
 </div>
 
 <div id="loader" class="wrap">
@@ -156,7 +210,7 @@ footer .brand{font-size:15px}
 
   <section class="grid" id="chart-sec">
     <div class="card">
-      <h2>Backlog coverage by agency</h2>
+      <div class="sec-head"><h2>Backlog coverage by agency</h2><span class="cap">YEARS · TOP 10</span></div>
       <div class="h-sub">Years of funded work at each agency's current spending pace. Longer bars are agencies sitting on more committed work relative to how fast they pay it out.</div>
       <div class="chart-box tall"><canvas id="chart-bl"></canvas></div>
       <div class="reading" id="vel-reading"></div>
@@ -165,7 +219,7 @@ footer .brand{font-size:15px}
 
   <section class="grid" id="velocity">
     <div class="card">
-      <h2>The full table</h2>
+      <div class="sec-head"><h2>The full table</h2><span class="cap">RANKED BY PIPELINE</span></div>
       <div class="h-sub">Every managing agency with an open construction pipeline, ranked by pipeline size. Awarded column is trailing-twelve City Record awards where the agency name maps across sources.</div>
       <table id="tbl-velocity">
         <thead><tr><th>Agency</th><th class="num">Open pipeline</th><th class="num">Spent (TTM)</th><th class="num">Awarded (TTM)</th><th class="num">Backlog, years</th></tr></thead>
@@ -176,7 +230,8 @@ footer .brand{font-size:15px}
 
   <section class="method" id="methodology">
     <div class="card">
-      <h2>Methodology &amp; definitions</h2>
+      <div class="sec-head"><h2>Methodology &amp; definitions</h2><span class="cap">SERIES NOTES</span></div>
+      <div class="method-body">
       <h3>The three measures</h3>
       <p><strong>Committed, unspent</strong> is the forward pipeline from the <a href="/pipeline/">Pipeline</a> page: total project budgets minus spending to date across active capital projects in the City's most recent capital plan snapshot (NYC OMB, dataset <code>fb86-vt7u</code>). <strong>Awarded</strong> is trailing-twelve-month construction award value from the City Record (dataset <code>qyyg-4tf5</code>), as on the <a href="/">Awarded</a> page. <strong>Spent</strong> is trailing-year capital outlays, measured as the growth in each project's cumulative spend-to-date between capital plan snapshots. The underlying ledger is the City's FMS, the same accounting that feeds Checkbook NYC.</p>
       <h3>How spending pace is computed</h3>
@@ -187,6 +242,7 @@ footer .brand{font-size:15px}
       <p>Committed and Spent cover the City's full capital plan, buildings, transportation, water, parks, because capital budgets aren't divided by procurement category. Awarded covers the City Record's two construction procurement categories. The three measures answer one question from different ledgers: how demand is moving. They are not a single cohort traced end-to-end, and the methodology keeps each measure on its own source's terms.</p>
       <h3>Agency velocity</h3>
       <p>Agencies are matched across the two sources (capital plan codes to City Record names) for the agencies that appear in both. Backlog years is each agency's open pipeline divided by its own trailing-year spending. The ratio is shown only where an agency's trailing self-delivered outlay clears $10M; below that, the agency's capital work is mostly delivered under another managing agency (chiefly the Department of Design and Construction), so its own spend line understates delivery and the ratio would be a noise figure. Those agencies still appear in the table with their pipeline and a blank backlog column.</p>
+      </div>
     </div>
   </section>
 
@@ -195,12 +251,15 @@ footer .brand{font-size:15px}
 <footer>
   <div class="wrap f-row">
     <div>
-      <div class="brand">The Concrete Index<span class="tick">.</span></div>
-      <div style="margin-top:4px">NYC public construction capital, from commitment to cash.</div>
+      <div class="brand">
+        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#b5482a"/></svg>
+        <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.01em">The Concrete Index<span class="tick" style="color:var(--accent)">.</span></span>
+      </div>
+      <div style="margin-top:8px">NYC public construction capital, from commitment to cash.</div>
     </div>
-    <div style="text-align:right">
+    <div style="text-align:right" class="f-meta">
       <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
-      <div style="margin-top:4px">© 2026 <a href="/about/">Salar Jalinous</a></div>
+      <div style="margin-top:5px">© 2026 <a href="/about/">Salar Jalinous</a></div>
     </div>
   </div>
 </footer>
@@ -383,14 +442,14 @@ function fmtInt(v){ return v.toLocaleString('en-US'); }
 function esc(s){ const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
 /* ================= rendering ================= */
-const COLOR_A = '#c2570f', COLOR_B = '#2e5a88', COLOR_C = '#3f6f3f';
-Chart.defaults.font.family = "'Inter',sans-serif";
-Chart.defaults.font.size = 12;
-Chart.defaults.color = '#6e6657';
+const COLOR_A = '#b5482a', COLOR_B = '#243b53', COLOR_C = '#2f7d52', GRID = '#ead9c9';
+Chart.defaults.font.family = "'IBM Plex Mono',monospace";
+Chart.defaults.font.size = 10;
+Chart.defaults.color = '#6e5d52';
 Object.assign(Chart.defaults.plugins.tooltip, {
-  backgroundColor:'#faf6ec', titleColor:'#26231d', bodyColor:'#46412f',
-  borderColor:'#c2570f', borderWidth:1, cornerRadius:4, padding:10, displayColors:false,
-  titleFont:{family:"'Inter',sans-serif",weight:'600',size:12}, bodyFont:{family:"'Inter',sans-serif",size:12},
+  backgroundColor:'#fffaf4', titleColor:'#22150e', bodyColor:'#6e5d52',
+  borderColor:'#b5482a', borderWidth:1, cornerRadius:2, padding:10, displayColors:false,
+  titleFont:{family:"'Public Sans',sans-serif",weight:'600',size:12}, bodyFont:{family:"'IBM Plex Mono',monospace",size:12},
   caretSize:5
 });
 
@@ -433,7 +492,7 @@ function vBar(canvasId, labels, data, color){
         tooltip:{callbacks:{label:(c)=> fmtMoney(c.parsed.y)}} },
       scales:{
         x:{grid:{display:false}, ticks:{maxRotation:0}},
-        y:{grid:{color:'#e4dac4'}, border:{display:false}, ticks:{callback:(v)=>fmtMoney(v), maxTicksLimit:5}}
+        y:{grid:{color:GRID}, border:{display:false}, ticks:{callback:(v)=>fmtMoney(v), maxTicksLimit:5}}
       }
     }
   });
@@ -477,11 +536,11 @@ function renderVelocity(){
     type:'bar',
     data:{ labels: charted.map(r=>agencyLabel(r.code)),
       datasets:[{ data: charted.map(r=>r.yrs), borderRadius:1, barThickness:18,
-        backgroundColor: charted.map(r=> r.yrs>medianYrs*1.5 ? '#a83232' : (r.yrs<medianYrs*0.67 ? '#3f6f3f' : '#c2570f')) }]},
+        backgroundColor: charted.map(r=> r.yrs>medianYrs*1.5 ? '#a3302a' : (r.yrs<medianYrs*0.67 ? '#2f7d52' : '#b5482a')) }]},
     options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>c.parsed.x.toFixed(1)+' years of funded work'}} },
-      scales:{ x:{grid:{color:'#e4dac4'}, border:{display:false}, ticks:{callback:v=>v+' yr', maxTicksLimit:6}},
-               y:{grid:{display:false}, ticks:{autoSkip:false, font:{size:11.5}}} } }
+      scales:{ x:{grid:{color:GRID}, border:{display:false}, ticks:{callback:v=>v+' yr', maxTicksLimit:6}},
+               y:{grid:{display:false}, ticks:{autoSkip:false, font:{family:"'Public Sans',sans-serif",size:11.5}}} } }
   });
 
   const fast = rows.filter(r=>r.yrs!==null).reduce((a,r)=> r.yrs<a.yrs?r:a, {yrs:Infinity});
@@ -502,6 +561,7 @@ function renderVelocity(){
   const latest = state.periods[state.periods.length-1];
   document.getElementById('asof').innerHTML =
     `Capital plan through <strong>${fmtPeriodLong(latest)}</strong> · awards through today · spending measured across ${state.spendPeriods.length} plan-to-plan periods`;
+  document.getElementById('series-asof').textContent = fmtPeriodLong(latest).toUpperCase();
   document.getElementById('loader').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   renderKpis();
