@@ -150,7 +150,7 @@ footer .brand{font-size:15px}
 
 <div class="wrap hero">
   <h1>NYC public construction capital, from commitment to cash.</h1>
-  <p class="sub">The Concrete Index reads the City Record the way an analyst would if they had the time: every construction award notice the City publishes, pulled through the Socrata API, deduplicated, classified by selection method, and totaled on the spot. It shows which agencies are letting work, who keeps winning it, and how the bid market is actually trending.</p>
+  <p class="sub">The Concrete Index reads the City Record the way an analyst would if they had the time: every construction award notice the City publishes, pulled through the Socrata API, classified by selection method, and totaled on the spot. It shows which agencies are letting work, who keeps winning it, and how the bid market is actually trending.</p>
   <p class="asof" id="asof">Loading latest award data…</p>
 </div>
 
@@ -257,6 +257,7 @@ footer .brand{font-size:15px}
       <p>The source data does not carry a structured borough field. The Concrete Index derives borough from the award's title and description text. Awards referencing multiple boroughs are shown as multi-borough; awards with no borough reference, typically citywide programs or requirements contracts, are shown as citywide / unspecified.</p>
       <h3>Award types and sizes</h3>
       <p>The type control separates <strong>new awards</strong> from <strong>continuations</strong>, renewals and extensions of existing contracts, identified by the published selection method. New awards measure fresh demand reaching the market; continuations measure work staying in place. The size control excludes awards of $500M and above, so trend readings aren't dominated by a handful of megaprojects.</p>
+      <p>The headline awarded total above includes everything by default: new work, continuations, and megaprojects. The composite index on the <a href="/analysis/">Analysis</a> page strips all three out to isolate the cycle in new work, so its trailing-twelve total reads lower than this one. Both are correct for their purpose.</p>
       <h3>The funnel</h3>
       <p>Awards are the middle of the capital flow. The <a href="/pipeline/">Pipeline</a> page tracks the stage before this one: dollars the City has committed to capital projects that haven't yet reached the market.</p>
       <h3>Coverage</h3>
@@ -520,7 +521,7 @@ function renderVendors(rows){
   const tb = document.querySelector('#tbl-vendors tbody');
   tb.innerHTML = entries.map((e,i)=>`<tr>
     <td class="rank">${i+1}</td>
-    <td><span class="t-title">${esc(e[0])}</span></td>
+    <td><a class="t-title" href="/vendors/?q=${encodeURIComponent(e[0])}" title="See this contractor's full award history">${esc(e[0])}</a></td>
     <td class="num">${fmtInt(e[1].count)}</td>
     <td class="num amt">${fmtMoney(e[1].total)}</td>
   </tr>`).join('');
