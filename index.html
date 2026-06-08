@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; img-src 'self' data: https://images.unsplash.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://data.cityofnewyork.us https://data.ny.gov; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>The Concrete Index · NYC Public Construction Demand</title>
 <meta name="description" content="The Concrete Index tracks NYC public construction capital, which agencies are awarding work, to whom, and how fast. Built on NYC Open Data, refreshed daily.">
 <meta property="og:title" content="The Concrete Index">
@@ -11,8 +13,8 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23b5482a%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&family=Space+Grotesk:wght@600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha384-bs/nf9FbdNouRbMiFcrcZfLXYPKiPaGVGplVbv7dLGECccEXDW+S3zjqSKR5ZEaD" crossorigin="anonymous"></script>
 <style>
 :root{
   --paper:#fbf2ea; --surface:#fffaf4; --band:#f6ece2;
