@@ -124,6 +124,7 @@ footer .brand{font-size:15px}
     <div class="brand">The Concrete Index<span class="tick">.</span></div>
     <nav class="nav-links">
       <a href="/pipeline/">Pipeline</a>
+      <a href="/solicitations/">Bidding</a>
       <a href="/" style="color:var(--ink);font-weight:600">Awarded</a>
       <a href="/funnel/">Funnel</a>
       <a href="/briefing/">Briefing</a>
@@ -163,6 +164,17 @@ footer .brand{font-size:15px}
       <button data-s="all">All construction</button>
       <button data-s="hard">Construction</button>
       <button data-s="rel">Related services</button>
+    </div>
+    <span class="ctl-label">Type</span>
+    <div class="seg" id="seg-type">
+      <button data-t="all">All</button>
+      <button data-t="new">New awards</button>
+      <button data-t="cont">Continuations</button>
+    </div>
+    <span class="ctl-label">Size</span>
+    <div class="seg" id="seg-size">
+      <button data-z="all">All</button>
+      <button data-z="exmega">Under $500M</button>
     </div>
   </div>
 
@@ -227,6 +239,8 @@ footer .brand{font-size:15px}
       <p>The index covers the two construction categories in the City's procurement taxonomy: <strong>Construction/Construction Services</strong> (hard construction) and <strong>Construction Related Services</strong> (design, engineering, construction management). The scope control above lets you view either or both. Awards with no positive published value are excluded.</p>
       <h3>Geography</h3>
       <p>The source data does not carry a structured borough field. The Concrete Index derives borough from the award's title and description text. Awards referencing multiple boroughs are shown as multi-borough; awards with no borough reference — typically citywide programs or requirements contracts — are shown as citywide / unspecified.</p>
+      <h3>Award types and sizes</h3>
+      <p>The type control separates <strong>new awards</strong> from <strong>continuations</strong> — renewals and extensions of existing contracts, identified by the published selection method. New awards measure fresh demand reaching the market; continuations measure work staying in place. The size control excludes awards of $500M and above, so trend readings aren't dominated by a handful of megaprojects.</p>
       <h3>The funnel</h3>
       <p>Awards are the middle of the capital flow. The <a href="/pipeline/">Pipeline</a> page tracks the stage before this one: dollars the City has committed to capital projects that haven't yet reached the market.</p>
       <h3>Coverage</h3>
@@ -256,7 +270,9 @@ const API = 'https://data.cityofnewyork.us/resource/qyyg-4tf5.json';
 const HARD = 'Construction/Construction Services';
 const REL  = 'Construction Related Services';
 
-const state = { windowMonths: 12, scope: 'all', rows: [] };
+const state = { windowMonths: 12, scope: 'all', type: 'all', size: 'all', rows: [] };
+const MEGA = 500e6;
+function isContinuation(method){ return /renewal|extension/i.test(method || ''); }
 
 function isoDaysAgo(years){
   const d = new Date();
@@ -304,6 +320,7 @@ function normalize(r){
     cat: r.category_description === HARD ? 'hard' : 'rel',
     title: r.short_title || '(untitled)',
     method: r.selection_method_description || '',
+    kind: isContinuation(r.selection_method_description) ? 'cont' : 'new',
     vendor: (r.vendor_name || 'Unspecified').trim(),
     amount: parseFloat(r.contract_amount) || 0,
     borough: deriveBorough(r.short_title || '', r.additional_description_1 || '')
@@ -320,7 +337,11 @@ function windowStart(months){
 }
 
 function inScope(row){
-  return state.scope === 'all' || row.cat === state.scope;
+  if(state.scope !== 'all' && row.cat !== state.scope) return false;
+  if(state.type === 'new' && row.kind !== 'new') return false;
+  if(state.type === 'cont' && row.kind !== 'cont') return false;
+  if(state.size === 'exmega' && row.amount >= MEGA) return false;
+  return true;
 }
 
 function filtered(){
@@ -555,6 +576,8 @@ function wireSeg(id, attr, initial, onChange){
   let ready = false;
   wireSeg('seg-window','w', '12', v => { state.windowMonths = +v; if(ready) renderAll(); });
   wireSeg('seg-scope','s', 'all', v => { state.scope = v; if(ready) renderAll(); });
+  wireSeg('seg-type','t', 'all', v => { state.type = v; if(ready) renderAll(); });
+  wireSeg('seg-size','z', 'all', v => { state.size = v; if(ready) renderAll(); });
   ready = true;
   renderAll();
 })();
