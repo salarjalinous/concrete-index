@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Regional Builders — The Concrete Index</title>
+<title>Regional Builders · The Concrete Index</title>
 <meta name="description" content="NYC public construction demand beyond City agencies: the School Construction Authority's active program and the MTA capital plan, from the public record.">
-<meta property="og:title" content="The Concrete Index — Regional Builders">
+<meta property="og:title" content="The Concrete Index · Regional Builders">
 <meta property="og:description" content="The SCA and MTA demand pools, measured live.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='14' fill='%23c2570f'/%3E%3Crect x='25' y='55' width='50' height='20' rx='3' fill='%23faf6ec'/%3E%3Crect x='35' y='30' width='30' height='18' rx='3' fill='%23faf6ec'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -109,7 +109,7 @@ footer .brand{font-size:15px}
 <div class="wrap hero">
   <div class="kicker">Regional Builders</div>
   <h1>Beyond City Hall.</h1>
-  <p class="sub">City agencies aren't New York's only public builders. The School Construction Authority runs its own program, and the MTA runs the region's largest. Both publish their books — here they are, measured the same way as the City funnel.</p>
+  <p class="sub">City agencies aren't New York's only public builders. The School Construction Authority runs its own program, and the MTA runs the region's largest. Both publish their books, here they are, measured the same way as the City funnel.</p>
   <p class="asof" id="asof">Reading the SCA and MTA records…</p>
 </div>
 
@@ -126,10 +126,10 @@ footer .brand{font-size:15px}
 <main id="app" class="wrap">
 
   <section class="kpis">
-    <div class="kpi"><div class="k-label">SCA under construction</div><div class="k-value" id="kpi-sca">—</div><div class="k-note" id="kpi-sca-note"></div></div>
-    <div class="kpi"><div class="k-label">School projects</div><div class="k-value" id="kpi-sca-n">—</div><div class="k-note">currently in construction</div></div>
-    <div class="kpi"><div class="k-label">MTA 2025–29 plan</div><div class="k-value" id="kpi-mta">—</div><div class="k-note" id="kpi-mta-note"></div></div>
-    <div class="kpi"><div class="k-label">MTA program growth</div><div class="k-value" id="kpi-mta-g">—</div><div class="k-note">2025–29 plan vs 2020–24 plan</div></div>
+    <div class="kpi"><div class="k-label">SCA under construction</div><div class="k-value" id="kpi-sca">–</div><div class="k-note" id="kpi-sca-note"></div></div>
+    <div class="kpi"><div class="k-label">School projects</div><div class="k-value" id="kpi-sca-n">–</div><div class="k-note">currently in construction</div></div>
+    <div class="kpi"><div class="k-label">MTA 2025–29 plan</div><div class="k-value" id="kpi-mta">–</div><div class="k-note" id="kpi-mta-note"></div></div>
+    <div class="kpi"><div class="k-label">MTA program growth</div><div class="k-value" id="kpi-mta-g">–</div><div class="k-note">2025–29 plan vs 2020–24 plan</div></div>
   </section>
 
   <section class="grid two" id="sca">
@@ -157,7 +157,7 @@ footer .brand{font-size:15px}
     </div>
     <div class="card">
       <h2>MTA: five capital plans of growth</h2>
-      <div class="h-sub">Total current allocations by plan — the region's transit build-out keeps compounding</div>
+      <div class="h-sub">Total current allocations by plan, the region's transit build-out keeps compounding</div>
       <div class="chart-box"><canvas id="chart-mta-plans"></canvas></div>
       <div class="reading" id="mta-reading"></div>
     </div>
@@ -167,11 +167,11 @@ footer .brand{font-size:15px}
     <div class="card">
       <h2>Methodology &amp; definitions</h2>
       <h3>School Construction Authority</h3>
-      <p>SCA figures come from <a href="https://data.cityofnewyork.us/Housing-Development/Active-Projects-Under-Construction/8586-3zfm" target="_blank" rel="noopener">Active Projects Under Construction</a> on NYC Open Data (dataset <code>8586-3zfm</code>): new-capacity school projects and capital improvement projects currently in construction, with their awarded construction value. This is work in the ground today — the SCA's separate five-year plan commits additional future work not shown here.</p>
+      <p>SCA figures come from <a href="https://data.cityofnewyork.us/Housing-Development/Active-Projects-Under-Construction/8586-3zfm" target="_blank" rel="noopener">Active Projects Under Construction</a> on NYC Open Data (dataset <code>8586-3zfm</code>): new-capacity school projects and capital improvement projects currently in construction, with their awarded construction value. This is work in the ground today, the SCA's separate five-year plan commits additional future work not shown here.</p>
       <h3>MTA</h3>
-      <p>MTA figures come from the <a href="https://data.ny.gov/Transportation/Metropolitan-Transportation-Authority-MTA-Capital-/kizb-nxtu" target="_blank" rel="noopener">MTA Capital Dashboard — Agencies Detail</a> on data.ny.gov (dataset <code>kizb-nxtu</code>), using each project's current budget submission. Source values are reported in thousands of dollars and converted here. Allocations measure planned capital budgets by plan, not construction contract awards — the MTA stage is most comparable to the City's <a href="/pipeline/">Pipeline</a>, not its award flow.</p>
+      <p>MTA figures come from the <a href="https://data.ny.gov/Transportation/Metropolitan-Transportation-Authority-MTA-Capital-/kizb-nxtu" target="_blank" rel="noopener">MTA Capital Dashboard: Agencies Detail</a> on data.ny.gov (dataset <code>kizb-nxtu</code>), using each project's current budget submission. Source values are reported in thousands of dollars and converted here. Allocations measure planned capital budgets by plan, not construction contract awards, the MTA stage is most comparable to the City's <a href="/pipeline/">Pipeline</a>, not its award flow.</p>
       <h3>Why these aren't merged into the City funnel</h3>
-      <p>The SCA and MTA publish on their own ledgers, with different definitions than the City Record and OMB plan. The Concrete Index presents them side by side rather than blending incompatible measures — same discipline, separate books.</p>
+      <p>The SCA and MTA publish on their own ledgers, with different definitions than the City Record and OMB plan. The Concrete Index presents them side by side rather than blending incompatible measures, same discipline, separate books.</p>
     </div>
   </section>
 
@@ -185,7 +185,7 @@ footer .brand{font-size:15px}
     </div>
     <div style="text-align:right">
       <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> &amp; <a href="https://data.ny.gov" target="_blank" rel="noopener">data.ny.gov</a> · refreshed on load</div>
-      <div style="margin-top:4px">© 2026 Salar Jalinous</div>
+      <div style="margin-top:4px">© 2026 <a href="/about/">Salar Jalinous</a></div>
     </div>
   </div>
 </footer>
@@ -267,7 +267,7 @@ function render(){
     D.boro.map(r=>fmtInt(parseInt(r.n)||0)+' projects'));
   const cip = D.type.find(t=>t.consttype==='CIP'), cap = D.type.find(t=>t.consttype==='Capacity');
   document.getElementById('sca-reading').innerHTML =
-    `<strong>Reading:</strong> ${cip&&cap ? `capital improvements (roofs, masonry, systems) make up ${fmtMoney(parseFloat(cip.s))} of the active program; new capacity — new schools and additions — ${fmtMoney(parseFloat(cap.s))}.` : ''} School construction is steady, borough-spread demand — the counter-cyclical base under the city's construction market.`;
+    `<strong>Reading:</strong> ${cip&&cap ? `capital improvements (roofs, masonry, systems) make up ${fmtMoney(parseFloat(cip.s))} of the active program; new capacity, new schools and additions, ${fmtMoney(parseFloat(cap.s))}.` : ''} School construction is steady, borough-spread demand, the counter-cyclical base under the city's construction market.`;
 
   document.querySelector('#tbl-sca tbody').innerHTML = D.top.map((r,i)=>`<tr>
     <td class="rank">${i+1}</td>
@@ -284,7 +284,7 @@ function render(){
     }
   });
   document.getElementById('mta-reading').innerHTML =
-    `<strong>Reading:</strong> the MTA's plan has grown every cycle — the 2025–29 program, at <strong>${fmtMoney(plan29.s)}</strong>, is ${(plan29.s/plan24.s).toFixed(1)}× the 2020–24 plan's current allocation. For the region's contractors, the MTA is the single largest pool of public work in New York.`;
+    `<strong>Reading:</strong> the MTA's plan has grown every cycle, the 2025–29 program, at <strong>${fmtMoney(plan29.s)}</strong>, is ${(plan29.s/plan24.s).toFixed(1)}× the 2020–24 plan's current allocation. For the region's contractors, the MTA is the single largest pool of public work in New York.`;
 }
 
 (async function init(){
