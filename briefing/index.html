@@ -355,7 +355,7 @@ function compose(){
     ['The pipeline behind it',
      `Behind the award market sits a funded pipeline of ${num(fmtMoney(D.pipe))}, budgets committed to ${num(fmtInt(D.pipeCount))} open capital projects in the City's ${latestPlan} plan that have not yet been spent. ${num(fmtPct(D.pipePre/D.pipe*100))} of that money is attached to projects still in pre-construction (pending, pre-design, design, or procurement): demand that has not yet reached the market. ${capFirst(AGENCY_FULL[D.topPipeAgency[0]]||D.topPipeAgency[0])} holds the largest share of the pipeline at ${num(fmtMoney(D.topPipeAgency[1]))}.`],
     ['The pace of conversion',
-     `The City paid out ${num(fmtMoney(D.spendTTM))} on capital projects over the trailing year of plan snapshots. At that pace, the current funded pipeline represents ${num(D.coverage.toFixed(1)+' years')} of work, the demand-side equivalent of a contractor's backlog ratio. ${market}`]
+     `The City paid out ${num(fmtMoney(D.spendTTM))} on capital projects over the trailing year of plan snapshots. ${D.coverage!=null ? `At that pace, the current funded pipeline represents ${num(D.coverage.toFixed(1)+' years')} of work, the demand-side equivalent of a contractor's backlog ratio. ` : `Trailing-year spend is not yet measurable from the plan snapshots, so a backlog-coverage ratio is not shown. `}${market}`]
   ];
   document.getElementById('brief-body').innerHTML =
     paras.map(([h,p])=>`<h2>${h}</h2><p>${p}</p>`).join('');
