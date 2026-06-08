@@ -1,0 +1,66 @@
+name: Nightly data archive
+
+# Snapshots the public datasets behind The Concrete Index into the repo.
+# Git history of these files becomes a daily archive nobody else has:
+# award-notice revisions, plan-to-plan changes, and a foundation for
+# payment-speed and cohort analyses.
+
+on:
+  schedule:
+    - cron: '15 6 * * *'   # 06:15 UTC daily (~1:15am New York)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Snapshot construction awards (full set, compact fields)
+        run: |
+          mkdir -p data
+          curl -sf --retry 3 -G "https://data.cityofnewyork.us/resource/qyyg-4tf5.json" \
+            --data-urlencode "\$select=request_id,start_date,agency_name,category_description,selection_method_description,short_title,vendor_name,contract_amount" \
+            --data-urlencode "\$where=starts_with(category_description,'Construction')" \
+            --data-urlencode "\$order=start_date DESC,request_id" \
+            --data-urlencode "\$limit=50000" \
+            -o data/awards.json
+          python3 -c "import json;d=json.load(open('data/awards.json'));assert len(d)>5000, f'only {len(d)} rows';print(len(d),'award rows')"
+
+      - name: Snapshot open construction solicitations
+        run: |
+          curl -sf --retry 3 -G "https://data.cityofnewyork.us/resource/3khw-qi8f.json" \
+            --data-urlencode "\$select=request_id,start_date,agency_name,category_description,selection_method_description,short_title,pin,due_date,contact_name,email" \
+            --data-urlencode "\$where=starts_with(category_description,'Construction')" \
+            --data-urlencode "\$order=due_date DESC" \
+            --data-urlencode "\$limit=5000" \
+            -o data/solicitations.json
+          python3 -c "import json;d=json.load(open('data/solicitations.json'));print(len(d),'solicitation rows')"
+
+      - name: Snapshot latest capital plan period (compact fields)
+        run: |
+          PERIOD=$(curl -sf --retry 3 -G "https://data.cityofnewyork.us/resource/fb86-vt7u.json" \
+            --data-urlencode "\$select=reporting_period" \
+            --data-urlencode "\$group=reporting_period" \
+            --data-urlencode "\$order=reporting_period DESC" \
+            --data-urlencode "\$limit=1" | python3 -c "import sys,json;print(json.load(sys.stdin)[0]['reporting_period'])")
+          echo "Latest plan period: $PERIOD"
+          curl -sf --retry 3 -G "https://data.cityofnewyork.us/resource/fb86-vt7u.json" \
+            --data-urlencode "\$select=fms_id,managing_agency,fms_project_name,total_budget,spend_to_date,current_phase,borough,ten_year_plan_category,budget_line" \
+            --data-urlencode "\$where=reporting_period='$PERIOD'" \
+            --data-urlencode "\$limit=20000" \
+            -o data/plan-latest.json
+          python3 -c "import json;d=json.load(open('data/plan-latest.json'));assert len(d)>3000;print(len(d),'plan rows')"
+
+      - name: Commit if changed
+        run: |
+          git config user.name "concrete-index-archive"
+          git config user.email "actions@users.noreply.github.com"
+          git add data
+          git diff --cached --quiet && echo "No changes today" || {
+            git commit -m "Data archive $(date -u +%Y-%m-%d)"
+            git push
+          }
