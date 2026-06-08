@@ -31,7 +31,7 @@ header{border-bottom:2px solid var(--ink);background:var(--card);position:sticky
 .nav-links{display:flex;gap:18px;align-items:center;font-size:13.5px;font-weight:500}
 .nav-links a{color:var(--muted)}
 .nav-links a:hover{color:var(--ink);text-decoration:none}
-.nav-links a.active{color:var(--ink);font-weight:600}
+.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent)}
 .badge-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green);background:#e8eedd;border:1px solid #c2cfa8;border-radius:var(--radius);padding:3px 10px}
 .badge-live .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2.4s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
@@ -47,8 +47,8 @@ header{border-bottom:2px solid var(--ink);background:var(--card);position:sticky
 .kpi .k-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
 .kpi .k-value{font-family:'Fraunces',serif;font-size:30px;font-weight:600;margin-top:6px;letter-spacing:-.01em}
 .kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:4px}
-.kpi .up{color:var(--green);font-weight:600}
-.kpi .down{color:var(--red);font-weight:600}
+.kpi .up{display:inline-block;font-size:12px;font-weight:600;padding:1px 7px;border-radius:3px;color:var(--green);background:#e8eedd}
+.kpi .down{display:inline-block;font-size:12px;font-weight:600;padding:1px 7px;border-radius:3px;color:var(--red);background:#f6e3e0}
 .grid{display:grid;gap:14px;padding:8px 0}
 .grid.two{grid-template-columns:1fr 1fr}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
@@ -416,6 +416,12 @@ const COLOR_A = '#c2570f', COLOR_B = '#2e5a88', COLOR_C = '#3f6f3f';
 Chart.defaults.font.family = "'Inter',sans-serif";
 Chart.defaults.font.size = 12;
 Chart.defaults.color = '#6e6657';
+Object.assign(Chart.defaults.plugins.tooltip, {
+  backgroundColor:'#faf6ec', titleColor:'#26231d', bodyColor:'#46412f',
+  borderColor:'#c2570f', borderWidth:1, cornerRadius:4, padding:10, displayColors:false,
+  titleFont:{family:"'Inter',sans-serif",weight:'600',size:12}, bodyFont:{family:"'Inter',sans-serif",size:12},
+  caretSize:5
+});
 
 function renderKpis(){
   const { months, values } = D.idx;
