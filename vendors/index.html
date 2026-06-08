@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vendor Lookup · The Concrete Index</title>
+<meta name="description" content="Look up any contractor in NYC's public construction record: award history, agency mix, job-size trend, all from the City Record.">
+<meta property="og:title" content="The Concrete Index · Vendor Lookup">
+<meta property="og:description" content="Any contractor's public award history, on demand.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='14' fill='%23c2570f'/%3E%3Crect x='25' y='55' width='50' height='20' rx='3' fill='%23faf6ec'/%3E%3Crect x='35' y='30' width='30' height='18' rx='3' fill='%23faf6ec'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#ece4d2; --card:#faf6ec; --ink:#26231d; --muted:#6e6657; --faint:#9a9081;
+  --line:#d9cdb4; --accent:#c2570f; --accent-deep:#9a4509; --blue:#2e5a88;
+  --green:#3f6f3f; --red:#a83232;
+  --radius:4px; --shadow:0 1px 0 rgba(63,53,33,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--accent-deep);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+header{border-bottom:2px solid var(--ink);background:var(--card);position:sticky;top:0;z-index:50}
+.nav{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{font-family:'Fraunces',serif;font-weight:700;font-size:19px;letter-spacing:.01em;color:var(--ink)}
+.brand .tick{color:var(--accent)}
+.nav-links{display:flex;gap:16px;align-items:center;font-size:13.5px;font-weight:500}
+.nav-links a{color:var(--muted)}
+.nav-links a:hover{color:var(--ink);text-decoration:none}
+.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent)}
+.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green);background:#e8eedd;border:1px solid #c2cfa8;border-radius:var(--radius);padding:3px 9px}
+.badge-live .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hero{padding:44px 0 6px}
+.kicker{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent-deep)}
+.hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(28px,4vw,40px);line-height:1.15;max-width:780px;margin-top:8px}
+.hero p.sub{margin-top:12px;font-size:16px;color:var(--muted);max-width:680px}
+.searchbar{display:flex;gap:10px;margin-top:22px;max-width:560px}
+.searchbar input{flex:1;font:inherit;font-size:15px;padding:11px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.searchbar input:focus{outline:2px solid #e0bd92}
+.searchbar button{font:inherit;font-size:14px;font-weight:600;padding:11px 20px;border:0;border-radius:var(--radius);background:var(--blue);color:#faf6ec;cursor:pointer}
+.searchbar button:hover{background:#264c74}
+.hint{margin-top:10px;font-size:12.5px;color:var(--faint)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0}
+.chip{font-size:12.5px;font-weight:600;border:1px solid var(--line);background:var(--card);border-radius:var(--radius);padding:5px 11px;cursor:pointer;color:var(--muted)}
+.chip:hover{color:var(--ink);border-color:var(--ink)}
+.chip.on{background:var(--ink);color:#faf6ec;border-color:var(--ink)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:24px 0 8px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+.kpi .k-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
+.kpi .k-value{font-family:'Fraunces',serif;font-size:28px;font-weight:600;margin-top:6px;letter-spacing:-.01em}
+.kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:4px}
+.grid{display:grid;gap:14px;padding:8px 0}
+.grid.two{grid-template-columns:1fr 1fr}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.card h2{font-size:15px;font-weight:700;letter-spacing:-.01em}
+.card .h-sub{font-size:12.5px;color:var(--muted);margin-top:2px;margin-bottom:16px;max-width:760px}
+.chart-box{position:relative;height:280px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:10px;border-bottom:1px solid #e7ddc9;vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td .t-title{font-weight:500;color:var(--ink)}
+td .t-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill{display:inline-block;font-size:11px;font-weight:600;border-radius:3px;padding:2px 7px;white-space:nowrap}
+.pill.hard{background:#f3e0c8;color:var(--accent-deep)}
+.pill.rel{background:#dde6ee;color:var(--blue)}
+.starter{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
+.starter button{font:inherit;text-align:left;font-size:13.5px;font-weight:600;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--card);color:var(--ink);cursor:pointer;box-shadow:var(--shadow)}
+.starter button:hover{border-color:var(--accent-deep)}
+.starter .v-amt{display:block;font-weight:400;font-size:12px;color:var(--muted);margin-top:3px}
+.empty{padding:36px;text-align:center;color:var(--muted)}
+.method{padding:30px 0 10px}
+.method .card{padding:30px 34px}
+.method h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:4px}
+.method h3{font-size:14px;font-weight:700;margin:20px 0 6px}
+.method p{font-size:14px;color:#46412f;max-width:780px}
+footer{margin-top:40px;border-top:2px solid var(--ink);padding:26px 0 38px;font-size:13px;color:var(--muted)}
+footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer .brand{font-size:15px}
+#vloader{display:none;padding:50px 0;text-align:center;color:var(--muted)}
+.spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#profile{display:none}
+.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
+@media(max-width:1023px){
+  .menu-btn{display:block}
+  .nav{position:relative}
+  .nav-links{display:none;position:absolute;top:59px;left:-24px;right:-24px;background:var(--card);border-bottom:2px solid var(--ink);flex-direction:column;align-items:flex-start;padding:14px 24px;gap:13px;box-shadow:0 10px 20px rgba(63,53,33,.15);z-index:60}
+  .nav-links.open{display:flex}
+}
+@media(max-width:880px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .grid.two{grid-template-columns:1fr}
+  .starter{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  .kpis{grid-template-columns:1fr 1fr}
+  .kpi .k-value{font-size:23px}
+  .hero{padding-top:30px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="/" style="text-decoration:none"><div class="brand">The Concrete Index<span class="tick">.</span></div></a>
+    <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
+    <nav class="nav-links">
+      <a href="/pipeline/" class="hide-m">Pipeline</a>
+      <a href="/solicitations/" class="hide-m">Bidding</a>
+      <a href="/">Awarded</a>
+      <a href="/vendors/" class="active">Vendors</a>
+      <a href="/funnel/" class="hide-m">Funnel</a>
+      <a href="/analysis/" class="hide-m">Analysis</a>
+      <a href="/regional/" class="hide-m">Regional</a>
+      <a href="/briefing/">Briefing</a>
+      <a href="#methodology" class="hide-m">Methodology</a>
+      <span class="badge-live"><span class="dot"></span>Live data</span>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <div class="kicker">Vendor Lookup</div>
+  <h1>Any contractor's public record, on demand.</h1>
+  <p class="sub">Type a company name and get its City Record history: what it has won, from which agencies, and how its job sizes are trending. The same search an underwriter or broker would run by hand, done in one query.</p>
+  <div class="searchbar">
+    <input id="q" type="search" placeholder="Try a contractor name, e.g. Deboe or Iannelli" autocomplete="off">
+    <button id="go">Search</button>
+  </div>
+  <p class="hint">Matches the vendor name as published in the City Record. Entities can file under more than one spelling; matching names appear as filters below.</p>
+</div>
+
+<main class="wrap">
+
+  <section id="starter" class="grid">
+    <div class="card">
+      <h2>Most awarded, trailing twelve months</h2>
+      <div class="h-sub">A starting point: tap any name for its full profile</div>
+      <div class="starter" id="starter-list"></div>
+    </div>
+  </section>
+
+  <div id="vloader"><div class="spinner"></div>Pulling the award record…</div>
+
+  <section id="profile">
+    <div class="chips" id="chips"></div>
+    <section class="kpis">
+      <div class="kpi"><div class="k-label">Awarded, all-time</div><div class="k-value" id="kpi-all">–</div><div class="k-note">in the record since 2003</div></div>
+      <div class="kpi"><div class="k-label">Awarded, TTM</div><div class="k-value" id="kpi-ttm">–</div><div class="k-note">trailing twelve months</div></div>
+      <div class="kpi"><div class="k-label">Awards</div><div class="k-value" id="kpi-n">–</div><div class="k-note" id="kpi-n-note"></div></div>
+      <div class="kpi"><div class="k-label">Top agency</div><div class="k-value" id="kpi-ag" style="font-size:19px;line-height:1.3">–</div><div class="k-note" id="kpi-ag-note"></div></div>
+    </section>
+    <section class="grid two">
+      <div class="card">
+        <h2>Awarded value by year</h2>
+        <div class="h-sub">Job-size trend matters as much as the total: a book stepping up in size is taking on different risk</div>
+        <div class="chart-box"><canvas id="chart-year"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>Agency mix</h2>
+        <div class="h-sub">Who this vendor works for, by awarded value</div>
+        <div class="chart-box"><canvas id="chart-agency"></canvas></div>
+      </div>
+    </section>
+    <section class="grid">
+      <div class="card">
+        <h2>Recent awards</h2>
+        <div class="h-sub" id="recent-sub"></div>
+        <table id="tbl-recent">
+          <thead><tr><th>Date</th><th>Award</th><th>Agency</th><th class="num">Value</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </section>
+
+  <div id="noresults" class="card empty" style="display:none">No construction awards found for that name. Try a shorter fragment of the company name.</div>
+
+  <section class="method" id="methodology">
+    <div class="card">
+      <h2>Methodology &amp; definitions</h2>
+      <h3>What this search covers</h3>
+      <p>Results come from the City Record's Recent Contract Awards dataset (<code>qyyg-4tf5</code>), construction categories only, 2003 to present. The query runs a case-insensitive substring match against the vendor name exactly as the awarding agency published it. SCA and MTA contracts are on separate ledgers and do not appear here.</p>
+      <h3>Reading the numbers</h3>
+      <p>Dollar figures are published contract values at award, including renewals and extensions of existing contracts. They are not registered contract values, change orders, or payments. One legal entity can appear under several name spellings; the filter chips above the profile let you include or exclude each variant.</p>
+      <h3>A note for credit work</h3>
+      <p>This is the public demand-side view of a contractor: what the City has hired it to do. It says nothing about costs, margins, bonding capacity, or performance. Treat it as one input alongside financials, not a substitute for them.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap f-row">
+    <div>
+      <div class="brand">The Concrete Index<span class="tick">.</span></div>
+      <div style="margin-top:4px">NYC public construction capital, from commitment to cash.</div>
+    </div>
+    <div style="text-align:right">
+      <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
+      <div style="margin-top:4px">© 2026 <a href="/about/">Salar Jalinous</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+'use strict';
+const API = 'https://data.cityofnewyork.us/resource/qyyg-4tf5.json';
+const TOKEN = '3TAzQQPiSG2T4WGWfYYUxxqfJ';
+const HARD = 'Construction/Construction Services';
+const COLOR_A = '#c2570f', COLOR_B = '#2e5a88';
+
+Chart.defaults.font.family = "'Inter',sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.color = '#6e6657';
+let charts = {};
+function destroy(k){ if(charts[k]){ charts[k].destroy(); delete charts[k]; } }
+
+async function getJSON(params){
+  params['$$app_token'] = TOKEN;
+  const res = await fetch(API + '?' + new URLSearchParams(params));
+  if(!res.ok) throw new Error('API ' + res.status);
+  return res.json();
+}
+function fmtMoney(v){
+  if(v >= 1e9) return '$' + (v/1e9).toFixed(2) + 'B';
+  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
+  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
+  return '$' + Math.round(v);
+}
+function fmtInt(v){ return v.toLocaleString('en-US'); }
+function fmtDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function isoMonthsAgo(n){ const d=new Date(); d.setMonth(d.getMonth()-n); return d.toISOString().slice(0,10); }
+
+const state = { rows: [], names: new Map(), active: new Set() };
+
+async function loadStarter(){
+  const since = isoMonthsAgo(12);
+  const top = await getJSON({
+    '$select':'vendor_name,sum(contract_amount) as s,count(*) as n',
+    '$where':`starts_with(category_description,'Construction') AND start_date>'${since}' AND contract_amount>0`,
+    '$group':'vendor_name','$order':'s DESC','$limit':'12'
+  });
+  document.getElementById('starter-list').innerHTML = top.map(t =>
+    `<button onclick="runSearch(${JSON.stringify(t.vendor_name).replace(/"/g,'&quot;')})">${esc(t.vendor_name)}<span class="v-amt">${fmtMoney(parseFloat(t.s))} · ${fmtInt(parseInt(t.n))} awards, TTM</span></button>`
+  ).join('');
+}
+
+async function runSearch(q){
+  q = (q||'').trim();
+  if(q.length < 3) return;
+  document.getElementById('q').value = q;
+  history.replaceState(null,'', '?q=' + encodeURIComponent(q));
+  document.getElementById('starter').style.display = 'none';
+  document.getElementById('profile').style.display = 'none';
+  document.getElementById('noresults').style.display = 'none';
+  document.getElementById('vloader').style.display = 'block';
+  const safe = q.replace(/'/g, "''").replace(/[%_]/g, '');
+  let rows = [];
+  try{
+    rows = await getJSON({
+      '$select':'start_date,agency_name,category_description,selection_method_description,short_title,vendor_name,contract_amount',
+      '$where':`starts_with(category_description,'Construction') AND contract_amount>0 AND upper(vendor_name) like upper('%${safe}%')`,
+      '$order':'start_date DESC','$limit':'3000'
+    });
+  }catch(e){ rows = []; }
+  document.getElementById('vloader').style.display = 'none';
+  if(!rows.length){
+    document.getElementById('noresults').style.display = 'block';
+    return;
+  }
+  state.rows = rows.map(r => ({
+    date: new Date(r.start_date),
+    year: r.start_date.slice(0,4),
+    agency: r.agency_name || '(unspecified)',
+    cat: r.category_description === HARD ? 'hard' : 'rel',
+    method: r.selection_method_description || '',
+    title: r.short_title || '(untitled)',
+    vendor: (r.vendor_name || '').trim(),
+    amount: parseFloat(r.contract_amount) || 0
+  }));
+  state.names = new Map();
+  for(const r of state.rows) state.names.set(r.vendor, (state.names.get(r.vendor)||0) + 1);
+  state.active = new Set(state.names.keys());
+  renderChips();
+  renderProfile();
+  document.getElementById('profile').style.display = 'block';
+}
+
+function renderChips(){
+  const el = document.getElementById('chips');
+  if(state.names.size <= 1){ el.innerHTML = ''; return; }
+  el.innerHTML = [...state.names.entries()].sort((a,b)=>b[1]-a[1]).map(([name,n]) =>
+    `<button class="chip ${state.active.has(name)?'on':''}" onclick="toggleName(${JSON.stringify(name).replace(/"/g,'&quot;')})">${esc(name)} (${n})</button>`
+  ).join('');
+}
+function toggleName(name){
+  if(state.active.has(name)){ if(state.active.size > 1) state.active.delete(name); }
+  else state.active.add(name);
+  renderChips(); renderProfile();
+}
+
+function renderProfile(){
+  const rows = state.rows.filter(r => state.active.has(r.vendor));
+  const ttmStart = new Date(); ttmStart.setMonth(ttmStart.getMonth()-12);
+  const all = rows.reduce((a,r)=>a+r.amount,0);
+  const ttm = rows.filter(r=>r.date>=ttmStart).reduce((a,r)=>a+r.amount,0);
+  document.getElementById('kpi-all').textContent = fmtMoney(all);
+  document.getElementById('kpi-ttm').textContent = fmtMoney(ttm);
+  document.getElementById('kpi-n').textContent = fmtInt(rows.length);
+  document.getElementById('kpi-n-note').textContent = 'award notices in the record';
+  const byAg = new Map();
+  for(const r of rows) byAg.set(r.agency, (byAg.get(r.agency)||0)+r.amount);
+  const agSorted = [...byAg.entries()].sort((a,b)=>b[1]-a[1]);
+  document.getElementById('kpi-ag').textContent = agSorted[0][0];
+  document.getElementById('kpi-ag-note').textContent = all>0 ? (agSorted[0][1]/all*100).toFixed(0)+'% of awarded value' : '';
+
+  const byYear = new Map();
+  for(const r of rows) byYear.set(r.year, (byYear.get(r.year)||0)+r.amount);
+  const years = [...byYear.keys()].sort();
+  destroy('year');
+  charts.year = new Chart(document.getElementById('chart-year'), {
+    type:'bar',
+    data:{ labels: years, datasets:[{ data: years.map(y=>byYear.get(y)), backgroundColor: COLOR_A, borderRadius:2 }]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>fmtMoney(c.parsed.y)}} },
+      scales:{ x:{grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:10}},
+               y:{grid:{color:'#e4dac4'}, border:{display:false}, ticks:{callback:v=>fmtMoney(v), maxTicksLimit:5}} } }
+  });
+  destroy('agency');
+  const agTop = agSorted.slice(0,6);
+  charts.agency = new Chart(document.getElementById('chart-agency'), {
+    type:'bar',
+    data:{ labels: agTop.map(a=>a[0]), datasets:[{ data: agTop.map(a=>a[1]), backgroundColor: COLOR_B, borderRadius:2, barThickness:18 }]},
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>fmtMoney(c.parsed.x)}} },
+      scales:{ x:{grid:{color:'#e4dac4'}, border:{display:false}, ticks:{callback:v=>fmtMoney(v), maxTicksLimit:5}},
+               y:{grid:{display:false}, ticks:{autoSkip:false, font:{size:11.5}}} } }
+  });
+  document.getElementById('recent-sub').textContent = 'Latest ' + Math.min(15, rows.length) + ' of ' + fmtInt(rows.length) + ' award notices';
+  document.querySelector('#tbl-recent tbody').innerHTML = rows.slice(0,15).map(r=>`<tr>
+    <td style="white-space:nowrap">${fmtDate(r.date)}</td>
+    <td><div class="t-title">${esc(r.title)}</div>
+        <div class="t-sub">${esc(r.vendor)} · ${esc(r.method)} · <span class="pill ${r.cat}">${r.cat==='hard'?'Construction':'Related services'}</span></div></td>
+    <td>${esc(r.agency)}</td>
+    <td class="num amt">${fmtMoney(r.amount)}</td>
+  </tr>`).join('');
+}
+
+document.getElementById('go').addEventListener('click', ()=>runSearch(document.getElementById('q').value));
+document.getElementById('q').addEventListener('keydown', e=>{ if(e.key==='Enter') runSearch(e.target.value); });
+
+(function init(){
+  loadStarter().catch(()=>{});
+  const q = new URLSearchParams(location.search).get('q');
+  if(q) runSearch(q);
+})();
+</script>
+</body>
+</html>
