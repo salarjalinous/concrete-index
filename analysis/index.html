@@ -7,24 +7,24 @@
 <meta name="description" content="The Concrete Index: a composite measure of NYC public construction demand since 2004, plus seasonality, budget escalation, and pipeline conversion analysis.">
 <meta property="og:title" content="The Concrete Index — Analysis">
 <meta property="og:description" content="Two decades of NYC construction demand, in one number.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23d97706'/%3E%3Crect x='25' y='55' width='50' height='20' rx='4' fill='white'/%3E%3Crect x='35' y='30' width='30' height='18' rx='4' fill='white'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23c2570f'/%3E%3Crect x='25' y='55' width='50' height='20' rx='4' fill='white'/%3E%3Crect x='35' y='30' width='30' height='18' rx='4' fill='white'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root{
-  --bg:#f7f6f3; --card:#ffffff; --ink:#1a1d21; --muted:#6b7280; --faint:#9ca3af;
-  --line:#e7e4dd; --accent:#d97706; --accent-deep:#b45309; --steel:#475569;
-  --green:#15803d; --red:#b91c1c;
-  --radius:10px; --shadow:0 1px 2px rgba(26,29,33,.05),0 4px 14px rgba(26,29,33,.04);
+  --bg:#ece4d2; --card:#faf6ec; --ink:#26231d; --muted:#6e6657; --faint:#9a9081;
+  --line:#d9cdb4; --accent:#c2570f; --accent-deep:#9a4509; --steel:#2e5a88;
+  --green:#3f6f3f; --red:#a83232;
+  --radius:4px; --shadow:0 1px 0 rgba(63,53,33,.06);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
 a{color:var(--accent-deep);text-decoration:none}
 a:hover{text-decoration:underline}
 .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
-header{border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:50}
+header{border-bottom:2px solid var(--ink);background:var(--card);position:sticky;top:0;z-index:50}
 .nav{display:flex;align-items:center;justify-content:space-between;height:60px}
 .brand{font-family:'Fraunces',serif;font-weight:700;font-size:19px;letter-spacing:.01em;color:var(--ink)}
 .brand .tick{color:var(--accent)}
@@ -32,7 +32,7 @@ header{border-bottom:1px solid var(--line);background:var(--card);position:stick
 .nav-links a{color:var(--muted)}
 .nav-links a:hover{color:var(--ink);text-decoration:none}
 .nav-links a.active{color:var(--ink);font-weight:600}
-.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green);background:#f0fdf4;border:1px solid #bbf7d0;border-radius:999px;padding:3px 10px}
+.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green);background:#e8eedd;border:1px solid #c2cfa8;border-radius:var(--radius);padding:3px 10px}
 .badge-live .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2.4s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 .hero{padding:44px 0 6px}
@@ -43,7 +43,7 @@ header{border-bottom:1px solid var(--line);background:var(--card);position:stick
 .hero .asof strong{color:var(--muted);font-weight:600}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:26px 0 8px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
-.kpi.hl{border-color:#f3d9b5;background:#fffaf2}
+.kpi.hl{border-color:#e0bd92;background:#f6efdd}
 .kpi .k-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
 .kpi .k-value{font-family:'Fraunces',serif;font-size:30px;font-weight:600;margin-top:6px;letter-spacing:-.01em}
 .kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:4px}
@@ -56,11 +56,11 @@ header{border-bottom:1px solid var(--line);background:var(--card);position:stick
 .card .h-sub{font-size:12.5px;color:var(--muted);margin-top:2px;margin-bottom:16px;max-width:760px}
 .chart-box{position:relative;height:300px}
 .chart-box.tall{height:360px}
-.reading{font-size:13.5px;color:#374151;background:#faf9f6;border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-top:14px;max-width:860px}
+.reading{font-size:13.5px;color:#46412f;background:#f3edde;border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-top:14px;max-width:860px}
 .reading strong{color:var(--ink)}
 table{width:100%;border-collapse:collapse;font-size:13.5px}
 th{text-align:left;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);padding:8px 10px;border-bottom:1px solid var(--line)}
-td{padding:10px;border-bottom:1px solid #f1efe9}
+td{padding:10px;border-bottom:1px solid #e7ddc9}
 tr:last-child td{border-bottom:0}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 .amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -69,8 +69,8 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 .method .card{padding:30px 34px}
 .method h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:4px}
 .method h3{font-size:14px;font-weight:700;margin:20px 0 6px}
-.method p{font-size:14px;color:#374151;max-width:780px}
-footer{margin-top:40px;border-top:1px solid var(--line);padding:26px 0 38px;font-size:13px;color:var(--muted)}
+.method p{font-size:14px;color:#46412f;max-width:780px}
+footer{margin-top:40px;border-top:2px solid var(--ink);padding:26px 0 38px;font-size:13px;color:var(--muted)}
 footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 footer .brand{font-size:15px}
 #loader{padding:80px 0;text-align:center;color:var(--muted)}
@@ -101,6 +101,7 @@ footer .brand{font-size:15px}
       <a href="/">Awarded</a>
       <a href="/funnel/" class="hide-m">Funnel</a>
       <a href="/analysis/" class="active">Analysis</a>
+      <a href="/regional/">Regional</a>
       <a href="/briefing/">Briefing</a>
       <span class="badge-live"><span class="dot"></span>Live data</span>
     </nav>
@@ -208,6 +209,7 @@ const PLAN_API = 'https://data.cityofnewyork.us/resource/fb86-vt7u.json';
 const MEGA = 500e6;
 
 async function getJSON(api, params){
+  params['$$app_token'] = '3TAzQQPiSG2T4WGWfYYUxxqfJ';
   const res = await fetch(api + '?' + new URLSearchParams(params));
   if(!res.ok) throw new Error('API ' + res.status);
   return res.json();
@@ -399,10 +401,10 @@ function fmtYM(m){ return MONTH_SHORT[+m.slice(5,7)-1] + ' ' + m.slice(0,4); }
 function fmtPeriodLong(p){ return MONTH_NAMES[+p.slice(4,6)-1] + ' ' + p.slice(0,4); }
 
 /* ================= rendering ================= */
-const COLOR_A = '#d97706', COLOR_B = '#64748b', COLOR_C = '#15803d';
+const COLOR_A = '#c2570f', COLOR_B = '#2e5a88', COLOR_C = '#3f6f3f';
 Chart.defaults.font.family = "'Inter',sans-serif";
 Chart.defaults.font.size = 12;
-Chart.defaults.color = '#6b7280';
+Chart.defaults.color = '#6e6657';
 
 function renderKpis(){
   const { months, values } = D.idx;
@@ -424,7 +426,7 @@ function renderIndexChart(){
     type:'line',
     data:{ labels: months.map(fmtYM), datasets:[{
       data: values, borderColor: COLOR_A, borderWidth: 2.2, pointRadius: 0,
-      fill: {target:'origin'}, backgroundColor: 'rgba(217,119,6,0.06)', tension: .25
+      fill: {target:'origin'}, backgroundColor: 'rgba(194,87,15,0.07)', tension: .25
     }]},
     options:{
       responsive:true, maintainAspectRatio:false,
@@ -432,7 +434,7 @@ function renderIndexChart(){
         tooltip:{callbacks:{label:(c)=>'Index: '+c.parsed.y.toFixed(1)}} },
       scales:{
         x:{grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:12}},
-        y:{grid:{color:'#f1efe9'}, border:{display:false}, ticks:{maxTicksLimit:6}}
+        y:{grid:{color:'#e4dac4'}, border:{display:false}, ticks:{maxTicksLimit:6}}
       }
     }
   });
@@ -458,7 +460,7 @@ function renderSeasonality(){
         tooltip:{callbacks:{label:(c)=> c.parsed.y.toFixed(2)+'× an average month'}} },
       scales:{
         x:{grid:{display:false}},
-        y:{grid:{color:'#f1efe9'}, border:{display:false}, ticks:{callback:v=>v.toFixed(1)+'×', maxTicksLimit:5}}
+        y:{grid:{color:'#e4dac4'}, border:{display:false}, ticks:{callback:v=>v.toFixed(1)+'×', maxTicksLimit:5}}
       }
     }
   });
@@ -498,7 +500,7 @@ function renderEscalation(){
       plugins:{ legend:{display:false},
         tooltip:{callbacks:{label:(c)=> '+'+c.parsed.x.toFixed(1)+'% median · '+fmtInt(D.esc.agRows[c.dataIndex][2])+' projects'}} },
       scales:{
-        x:{grid:{color:'#f1efe9'}, border:{display:false}, ticks:{callback:v=>'+'+v+'%', maxTicksLimit:6}},
+        x:{grid:{color:'#e4dac4'}, border:{display:false}, ticks:{callback:v=>'+'+v+'%', maxTicksLimit:6}},
         y:{grid:{display:false}, ticks:{autoSkip:false, font:{size:11.5}}}
       }
     }
