@@ -122,6 +122,9 @@ footer .brand{font-size:15px}
   .nav-links.open{display:flex}
   .nav-links a.hide-m{display:inline}
 }
+.photo-band{position:relative;height:200px;background-size:cover;background-position:center 38%;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);filter:sepia(.14) saturate(.82);margin-top:20px}
+.ph-credit{position:absolute;right:10px;bottom:8px;font-size:10.5px;letter-spacing:.03em;color:rgba(250,246,236,.9);background:rgba(38,35,29,.5);padding:2px 8px;border-radius:3px}
+@media(max-width:560px){.photo-band{height:130px}}
 </style>
 </head>
 <body>
@@ -134,6 +137,7 @@ footer .brand{font-size:15px}
       <a href="/pipeline/">Pipeline</a>
       <a href="/solicitations/">Bidding</a>
       <a href="/" style="color:var(--ink);font-weight:600">Awarded</a>
+      <a href="/vendors/" class="hide-m">Vendors</a>
       <a href="/funnel/">Funnel</a>
       <a href="/analysis/">Analysis</a>
       <a href="/regional/">Regional</a>
@@ -149,6 +153,8 @@ footer .brand{font-size:15px}
   <p class="sub">The Concrete Index reads the City Record the way an analyst would if they had the time: every construction award notice the City publishes, pulled through the Socrata API, deduplicated, classified by selection method, and totaled on the spot. It shows which agencies are letting work, who keeps winning it, and how the bid market is actually trending.</p>
   <p class="asof" id="asof">Loading latest award data…</p>
 </div>
+
+<div class="photo-band" style="background-image:url('https://images.unsplash.com/photo-1546436836-07a91091f160?auto=format&fit=crop&w=1800&q=55')"><span class="ph-credit">Midtown Manhattan · Unsplash</span></div>
 
 <div id="loader" class="wrap">
   <div class="spinner"></div>
