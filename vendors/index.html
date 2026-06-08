@@ -134,6 +134,22 @@ footer .brand{font-size:17px;color:var(--ink)}
 footer .brand svg{color:var(--navy)}
 footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em}
 
+/* ---------- grouped entity head + member breakdown ---------- */
+.grouphead{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;margin:4px 0 2px}
+.grouphead h2{font-family:'Source Serif 4',Georgia,serif;font-size:25px;font-weight:700;letter-spacing:-.012em;color:var(--ink)}
+.grouphead .gp{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;background:var(--accent-soft);color:var(--accent);border-radius:3px;padding:3px 7px}
+.grouphead .gn{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)}
+.members{margin-top:18px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.members summary{list-style:none;cursor:pointer;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;font-weight:600;color:var(--ink);background:var(--band)}
+.members summary::-webkit-details-marker{display:none}
+.members summary .mcap{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.03em}
+.members summary .caret{font-family:'IBM Plex Mono',monospace;color:var(--faint);transition:transform .15s}
+.members[open] summary .caret{transform:rotate(90deg)}
+.members .mbody{padding:4px 18px 8px}
+.members table{font-size:13px}
+.members th{padding:10px 8px 7px}
+.members td{padding:9px 8px}
+.members td.mname{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink)}
 #vloader{display:none;padding:50px 0;text-align:center;color:var(--muted)}
 .spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -187,7 +203,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 </header>
 
 <div class="series-bar">
-  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-VENDORS</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>NYC CITY RECORD (qyyg-4tf5)</b><span class="sep">·</span>COVERAGE&nbsp;·&nbsp;<b>2003–PRESENT</b><span class="sep">·</span>MATCH&nbsp;·&nbsp;<b>VENDOR NAME</b></div>
+  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-VENDORS</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>NYC CITY RECORD (qyyg-4tf5)</b><span class="sep">·</span>COVERAGE&nbsp;·&nbsp;<b>2003–PRESENT</b><span class="sep">·</span>GROUPING&nbsp;·&nbsp;<b>PARENT ROLLUP</b></div>
 </div>
 
 <div class="wrap">
@@ -199,7 +215,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <input id="q" type="search" placeholder="Try a contractor name, e.g. Deboe or Iannelli" autocomplete="off">
       <button id="go">Search</button>
     </div>
-    <p class="hint">Matches the vendor name as published in the City Record. Entities can file under more than one spelling; matching names appear as filters below.</p>
+    <p class="hint">Matches the vendor name as published in the City Record. Where we can confirm by hand that several names belong to the same firm, they roll up under one parent total; every underlying name is listed below the profile.</p>
   </div>
 </div>
 
@@ -217,6 +233,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 
   <section id="profile">
     <div class="chips" id="chips"></div>
+    <div class="grouphead" id="grouphead"></div>
     <section class="kpis">
       <div class="kpi"><div class="k-label">Awarded, all-time</div><div class="k-value" id="kpi-all">–</div><div class="k-note">in the record since 2003</div></div>
       <div class="kpi"><div class="k-label">Awarded, TTM</div><div class="k-value" id="kpi-ttm">–</div><div class="k-note">trailing twelve months</div></div>
@@ -250,6 +267,15 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
           <thead><tr><th>Date</th><th>Award</th><th>Agency</th><th class="num">Value</th></tr></thead>
           <tbody></tbody>
         </table>
+        <details class="members" id="members">
+          <summary><span id="members-label">Names included in this total</span><span style="display:flex;align-items:center;gap:10px"><span class="mcap" id="members-cap"></span><span class="caret">▸</span></span></summary>
+          <div class="mbody">
+            <table>
+              <thead><tr><th>Name as published</th><th class="num">Awards</th><th class="num">Awarded value</th></tr></thead>
+              <tbody id="members-body"></tbody>
+            </table>
+          </div>
+        </details>
       </div>
     </section>
   </section>
@@ -260,10 +286,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     <div class="card">
       <div class="sec-head"><h2>Methodology &amp; definitions</h2><span class="cap">SERIES NOTES</span></div>
       <div class="method-body">
-      <h3>What this search covers</h3>
-      <p>Results come from the City Record's Recent Contract Awards dataset (<code>qyyg-4tf5</code>), construction categories only, 2003 to present. The query runs a case-insensitive substring match against the vendor name exactly as the awarding agency published it. SCA and MTA contracts are on separate ledgers and do not appear here.</p>
-      <h3>Reading the numbers</h3>
-      <p>Dollar figures are published contract values at award, including renewals and extensions of existing contracts. They are not registered contract values, change orders, or payments. One legal entity can appear under several name spellings; the filter chips above the profile let you include or exclude each variant.</p>
+      <h3>How vendor totals are grouped</h3>
+      <p>Figures on this page come from the New York City Record Recent Contract Awards dataset (NYC Open Data <code>qyyg-4tf5</code>), limited to awards in Construction categories. Many firms appear under several spellings of their name, and a single firm group can file under more than one legal entity. Where we can confirm by hand that several names belong to the same firm, we group them under one parent total and list every underlying name and its amount, so nothing is hidden. Grouping is a fixed, verified list of name variants, not automated name-matching or any statistical guess. We group only on a distinctive shared identifier or an unmistakable spelling variation of the same company; when a connection is uncertain, we leave the names separate. Each amount is the value stated in the award notice, which is a floor rather than a running total of work performed or paid, so a group's total is a lower bound. This dataset covers City-agency awards only. Work let by the MTA, the School Construction Authority, the Port Authority, and New York State agencies is out of scope here because those datasets do not name the awarded contractor.</p>
       <h3>A note for credit work</h3>
       <p>This is the public demand-side view of a contractor: what the City has hired it to do. It says nothing about costs, margins, bonding capacity, or performance. Treat it as one input alongside financials, not a substitute for them.</p>
       </div>
@@ -327,7 +351,57 @@ function isContinuation(m){ return /renewal|extension/i.test(m||''); }
 function median(a){ if(!a.length) return 0; const s=[...a].sort((x,y)=>x-y); const m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; }
 function monthsSince(d){ const n=new Date(); return (n.getFullYear()-d.getFullYear())*12 + (n.getMonth()-d.getMonth()); }
 
-const state = { rows: [], names: new Map(), active: new Set() };
+// Normalizer: mirrors the reference build.js EXACTLY (applied to both raw
+// vendor_name and every alias variant string so matching is on identical keys):
+// trim, collapse internal whitespace, uppercase, strip trailing punctuation/space.
+function normName(s){
+  return (s||'')
+    .trim()
+    .replace(/\s+/g,' ')
+    .toUpperCase()
+    .replace(/[.,;:&/'"`\-\s]+$/,'')
+    .trim();
+}
+
+// Alias lookup, built from /data/vendor-aliases.json at load.
+const alias = {
+  loaded: false,
+  variantToParent: new Map(),   // normalizedVariant -> parentLabel
+  parentVariants: new Map(),    // parentLabel -> [normalizedVariant, ...] (distinct)
+  groups: []                    // [{parent, variants:[normalized...]}]
+};
+
+async function loadAliases(){
+  try{
+    const res = await fetch('/data/vendor-aliases.json');
+    if(!res.ok) throw new Error('aliases ' + res.status);
+    const raw = await res.json();
+    raw.forEach(g => {
+      const seen = new Set();
+      const norm = [];
+      g.variants.forEach(v => {
+        const nv = normName(v);
+        if(!nv || seen.has(nv)) return;     // dedupe identical normalized keys
+        seen.add(nv);
+        norm.push(nv);
+        alias.variantToParent.set(nv, g.parent);
+      });
+      alias.parentVariants.set(g.parent, norm);
+      alias.groups.push({ parent: g.parent, variants: norm });
+    });
+    alias.loaded = true;
+  }catch(e){ /* page still works ungrouped if aliases fail to load */ }
+}
+
+// Resolve a raw vendor_name to its group key: parent label if in the alias map,
+// else the raw name stands alone as its own group.
+function groupKeyFor(vendorName){
+  const p = alias.variantToParent.get(normName(vendorName));
+  return p || (vendorName||'').trim();
+}
+
+// State holds raw award rows, the resolved groups, and the selected group.
+const state = { rows: [], groups: new Map(), active: '' };
 
 async function loadStarter(){
   const since = isoMonthsAgo(12);
@@ -341,6 +415,9 @@ async function loadStarter(){
   ).join('');
 }
 
+// SoQL string literal escaper (single quotes doubled; strip LIKE wildcards).
+function soqlLit(s){ return (s||'').replace(/'/g, "''").replace(/[%_]/g, ''); }
+
 async function runSearch(q){
   q = (q||'').trim();
   if(q.length < 3) return;
@@ -350,13 +427,37 @@ async function runSearch(q){
   document.getElementById('profile').style.display = 'none';
   document.getElementById('noresults').style.display = 'none';
   document.getElementById('vloader').style.display = 'block';
-  const safe = q.replace(/'/g, "''").replace(/[%_]/g, '');
+
+  const ql = q.toLowerCase();
+  const safe = soqlLit(q);
+
+  // Which alias groups does the query reach? Substring-match against the parent
+  // label or any normalized variant. These groups' member rows are pulled in
+  // even when the member spelling does not itself contain the query text
+  // (so "Cruz" reaches the JRCRUZ rows, "JRCruz" reaches the E.E. Cruz rows).
+  const matchedVariants = new Set();
+  alias.groups.forEach(g => {
+    const hit = g.parent.toLowerCase().includes(ql) ||
+                g.variants.some(v => v.toLowerCase().includes(ql));
+    if(hit) g.variants.forEach(v => matchedVariants.add(v));
+  });
+
+  // Build the WHERE: the user's substring match OR exact membership in any
+  // matched group's variant set. IN-list is chunked to keep the URL sane.
+  const clauses = [`upper(vendor_name) like upper('%${safe}%')`];
+  const variantList = [...matchedVariants];
+  for(let i=0;i<variantList.length;i+=50){
+    const chunk = variantList.slice(i,i+50).map(v=>`'${soqlLit(v)}'`).join(',');
+    if(chunk) clauses.push(`upper(vendor_name) in(${chunk})`);
+  }
+  const where = `starts_with(category_description,'Construction') AND contract_amount>0 AND (${clauses.join(' OR ')})`;
+
   let rows = [];
   try{
     rows = await getJSON({
       '$select':'start_date,agency_name,category_description,selection_method_description,short_title,vendor_name,contract_amount',
-      '$where':`starts_with(category_description,'Construction') AND contract_amount>0 AND upper(vendor_name) like upper('%${safe}%')`,
-      '$order':'start_date DESC','$limit':'3000'
+      '$where':where,
+      '$order':'start_date DESC','$limit':'5000'
     });
   }catch(e){ rows = []; }
   document.getElementById('vloader').style.display = 'none';
@@ -364,6 +465,7 @@ async function runSearch(q){
     document.getElementById('noresults').style.display = 'block';
     return;
   }
+
   state.rows = rows.map(r => ({
     date: new Date(r.start_date),
     year: r.start_date.slice(0,4),
@@ -372,27 +474,46 @@ async function runSearch(q){
     method: r.selection_method_description || '',
     title: r.short_title || '(untitled)',
     vendor: (r.vendor_name || '').trim(),
-    amount: parseFloat(r.contract_amount) || 0
+    amount: parseFloat(r.contract_amount) || 0,
+    gkey: groupKeyFor(r.vendor_name)
   }));
-  state.names = new Map();
-  for(const r of state.rows) state.names.set(r.vendor, (state.names.get(r.vendor)||0) + 1);
-  state.active = new Set(state.names.keys());
-  renderChips();
+
+  // Resolve groups. Each row is attributed to exactly one group key (parent or
+  // standalone), so summing actual award rows never double-counts a spelling.
+  state.groups = new Map();   // gkey -> {key, isParent, total, n, rows:[]}
+  for(const r of state.rows){
+    let g = state.groups.get(r.gkey);
+    if(!g){
+      g = { key:r.gkey, isParent:alias.parentVariants.has(r.gkey), total:0, n:0, rows:[] };
+      state.groups.set(r.gkey, g);
+    }
+    g.total += r.amount; g.n += 1; g.rows.push(r);
+  }
+  // Default selection: the largest group by awarded value.
+  const sorted = [...state.groups.values()].sort((a,b)=>b.total-a.total);
+  state.active = sorted[0].key;
+
+  renderGroupPicker();
   renderProfile();
   document.getElementById('profile').style.display = 'block';
 }
 
-function renderChips(){
+// When more than one group matched the query, offer a picker. The active group
+// is highlighted; every other matched group (including unrelated firms that
+// merely share the search fragment) appears as a separate, selectable entity.
+function renderGroupPicker(){
   const el = document.getElementById('chips');
-  if(state.names.size <= 1){ el.innerHTML = ''; return; }
-  el.innerHTML = [...state.names.entries()].sort((a,b)=>b[1]-a[1]).map(([name,n]) =>
-    `<button class="chip ${state.active.has(name)?'on':''}" onclick="toggleName(${JSON.stringify(name).replace(/"/g,'&quot;')})">${esc(name)} (${n})</button>`
+  const groups = [...state.groups.values()].sort((a,b)=>b.total-a.total);
+  if(groups.length <= 1){ el.innerHTML = ''; return; }
+  el.innerHTML = groups.map(g =>
+    `<button class="chip ${g.key===state.active?'on':''}" onclick="selectGroup(${JSON.stringify(g.key).replace(/"/g,'&quot;')})">${esc(g.key)} · ${fmtMoney(g.total)}</button>`
   ).join('');
 }
-function toggleName(name){
-  if(state.active.has(name)){ if(state.active.size > 1) state.active.delete(name); }
-  else state.active.add(name);
-  renderChips(); renderProfile();
+function selectGroup(key){
+  if(!state.groups.has(key)) return;
+  state.active = key;
+  renderGroupPicker();
+  renderProfile();
 }
 
 function renderReadStrip(rows, agSorted, all){
@@ -445,7 +566,20 @@ function renderReadStrip(rows, agSorted, all){
 }
 
 function renderProfile(){
-  const rows = state.rows.filter(r => state.active.has(r.vendor));
+  const grp = state.groups.get(state.active);
+  if(!grp) return;
+  const rows = grp.rows;                 // deduped member award rows for this group
+
+  // Grouped-entity head: parent label + a grouped pill when this is a rollup.
+  const gh = document.getElementById('grouphead');
+  if(grp.isParent){
+    const distinct = new Set(rows.map(r=>normName(r.vendor))).size;
+    gh.innerHTML = `<h2>${esc(grp.key)}</h2><span class="gp">Grouped</span>`
+      + `<span class="gn">${distinct} name${distinct===1?'':'s'} rolled up</span>`;
+  } else {
+    gh.innerHTML = `<h2>${esc(grp.key)}</h2>`;
+  }
+
   const ttmStart = new Date(); ttmStart.setMonth(ttmStart.getMonth()-12);
   const all = rows.reduce((a,r)=>a+r.amount,0);
   const ttm = rows.filter(r=>r.date>=ttmStart).reduce((a,r)=>a+r.amount,0);
@@ -491,13 +625,48 @@ function renderProfile(){
     <td>${esc(r.agency)}</td>
     <td class="num amt">${fmtMoney(r.amount)}</td>
   </tr>`).join('');
+
+  renderMembers(grp, rows);
+}
+
+// Expandable breakdown: every underlying name spelling and its summed amount.
+// Spellings that normalize identically are collapsed onto one line (the most
+// common raw spelling is shown as the label), so nothing is hidden or doubled.
+function renderMembers(grp, rows){
+  const panel = document.getElementById('members');
+  const byNorm = new Map();   // normName -> {label, n, total, spellings:Map<raw,n>}
+  for(const r of rows){
+    const nk = normName(r.vendor);
+    let e = byNorm.get(nk);
+    if(!e){ e = { n:0, total:0, spellings:new Map() }; byNorm.set(nk, e); }
+    e.n += 1; e.total += r.amount;
+    e.spellings.set(r.vendor, (e.spellings.get(r.vendor)||0)+1);
+  }
+  // Pick the most frequent raw spelling as the display label for each norm key.
+  for(const e of byNorm.values()){
+    e.label = [...e.spellings.entries()].sort((a,b)=>b[1]-a[1])[0][0];
+  }
+  const lines = [...byNorm.values()].sort((a,b)=>b.total-a.total);
+
+  if(!grp.isParent && lines.length <= 1){ panel.style.display='none'; return; }
+  panel.style.display = '';
+  document.getElementById('members-label').textContent =
+    grp.isParent ? 'Names rolled up into this total' : 'Name spellings in this total';
+  document.getElementById('members-cap').textContent =
+    lines.length + ' name' + (lines.length===1?'':'s') + ' · ' + fmtMoney(grp.total) + ' total';
+  document.getElementById('members-body').innerHTML = lines.map(e=>`<tr>
+    <td class="mname">${esc(e.label)}</td>
+    <td class="num">${fmtInt(e.n)}</td>
+    <td class="num amt">${fmtMoney(e.total)}</td>
+  </tr>`).join('');
 }
 
 document.getElementById('go').addEventListener('click', ()=>runSearch(document.getElementById('q').value));
 document.getElementById('q').addEventListener('keydown', e=>{ if(e.key==='Enter') runSearch(e.target.value); });
 
-(function init(){
+(async function init(){
   loadStarter().catch(()=>{});
+  await loadAliases();          // grouping must be ready before the first search
   const q = new URLSearchParams(location.search).get('q');
   if(q) runSearch(q);
 })();
