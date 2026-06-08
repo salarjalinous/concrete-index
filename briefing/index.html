@@ -268,6 +268,7 @@ function trendWord(d){
   return 'surged';
 }
 function num(s){ return `<span class="num">${s}</span>`; }
+function capFirst(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
 
 /* ================= composition ================= */
 function compose(){
@@ -292,9 +293,9 @@ function compose(){
 
   const paras = [
     ['The award market',
-     `New York City agencies awarded ${num(fmtMoney(D.awardTTM))} of construction and construction-services work over the trailing twelve months, across ${num(fmtInt(D.awardCount))} contract awards. Award volume has ${trendWord(D.awardDelta)} — ${D.awardDelta!==null ? num((D.awardDelta>=0?'+':'−')+fmtPct(D.awardDelta)) + ' versus the preceding twelve months' : 'with no prior-year comparison available'}. Hard construction makes up ${num(fmtPct(D.hardShare))} of awarded value; design, engineering, and construction management make up the rest. ${AWARD_AGENCY_SHORT[D.topAwardAgency.agency_name]||D.topAwardAgency.agency_name} is the busiest buyer, accounting for ${num(fmtPct(D.topAwardShare))} of trailing-year award value.`],
+     `New York City agencies awarded ${num(fmtMoney(D.awardTTM))} of construction and construction-services work over the trailing twelve months, across ${num(fmtInt(D.awardCount))} contract awards. Award volume has ${trendWord(D.awardDelta)} — ${D.awardDelta!==null ? num((D.awardDelta>=0?'+':'−')+fmtPct(D.awardDelta)) + ' versus the preceding twelve months' : 'with no prior-year comparison available'}. Hard construction makes up ${num(fmtPct(D.hardShare))} of awarded value; design, engineering, and construction management make up the rest. ${capFirst(AWARD_AGENCY_SHORT[D.topAwardAgency.agency_name]||D.topAwardAgency.agency_name)} is the busiest buyer, accounting for ${num(fmtPct(D.topAwardShare))} of trailing-year award value.`],
     ['The pipeline behind it',
-     `Behind the award market sits a funded pipeline of ${num(fmtMoney(D.pipe))} — budgets committed to ${num(fmtInt(D.pipeCount))} open capital projects in the City's ${latestPlan} plan that have not yet been spent. ${num(fmtPct(D.pipePre/D.pipe*100))} of that money is attached to projects still in pre-construction phases — pending, design, or procurement — demand that has not yet reached the market. ${AGENCY_FULL[D.topPipeAgency[0]]||D.topPipeAgency[0]} holds the largest share of the pipeline at ${num(fmtMoney(D.topPipeAgency[1]))}.`],
+     `Behind the award market sits a funded pipeline of ${num(fmtMoney(D.pipe))} — budgets committed to ${num(fmtInt(D.pipeCount))} open capital projects in the City's ${latestPlan} plan that have not yet been spent. ${num(fmtPct(D.pipePre/D.pipe*100))} of that money is attached to projects still in pre-construction phases — pending, design, or procurement — demand that has not yet reached the market. ${capFirst(AGENCY_FULL[D.topPipeAgency[0]]||D.topPipeAgency[0])} holds the largest share of the pipeline at ${num(fmtMoney(D.topPipeAgency[1]))}.`],
     ['The pace of conversion',
      `The City paid out ${num(fmtMoney(D.spendTTM))} on capital projects over the trailing year of plan snapshots. At that pace, the current funded pipeline represents ${num(D.coverage.toFixed(1)+' years')} of work — the demand-side equivalent of a contractor's backlog ratio. ${market}`]
   ];
