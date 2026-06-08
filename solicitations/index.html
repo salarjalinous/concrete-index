@@ -82,7 +82,14 @@ footer .brand{font-size:15px}
 @media(max-width:720px){
   .sol{flex-direction:column;gap:8px}
   .sol .s-side{text-align:left}
-  .nav-links a.hide-m{display:none}
+}
+.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
+@media(max-width:1023px){
+  .menu-btn{display:block}
+  .nav{position:relative}
+  .nav-links{display:none;position:absolute;top:59px;left:-24px;right:-24px;background:var(--card);border-bottom:2px solid var(--ink);flex-direction:column;align-items:flex-start;padding:14px 24px;gap:13px;box-shadow:0 10px 20px rgba(63,53,33,.15);z-index:60}
+  .nav-links.open{display:flex}
+  .nav-links a.hide-m{display:inline}
 }
 </style>
 </head>
@@ -91,6 +98,7 @@ footer .brand{font-size:15px}
 <header>
   <div class="wrap nav">
     <a href="/" style="text-decoration:none"><div class="brand">The Concrete Index<span class="tick">.</span></div></a>
+    <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
     <nav class="nav-links">
       <a href="/pipeline/" class="hide-m">Pipeline</a>
       <a href="/solicitations/" class="active">Bidding</a>
@@ -107,7 +115,7 @@ footer .brand{font-size:15px}
 
 <div class="wrap hero">
   <h1>What's bidding right now.</h1>
-  <p class="sub">Every open construction solicitation in the City Record, the moment between the pipeline and the award. Sorted by due date, refreshed from the public record on every load.</p>
+  <p class="sub">Every construction solicitation currently open in the City Record, sorted by what's due next. Each notice carries its procurement method, PIN, and the agency contact who answers questions. The list re-pulls from the City's API on every load.</p>
   <p class="asof" id="asof">Loading open solicitations…</p>
 </div>
 
