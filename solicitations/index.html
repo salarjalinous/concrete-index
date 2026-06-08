@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Open Solicitations — The Concrete Index</title>
-<meta name="description" content="Every open NYC construction solicitation in one place — what's bidding right now, from the City Record, refreshed on every load.">
-<meta property="og:title" content="The Concrete Index — Open Solicitations">
+<title>Open Solicitations · The Concrete Index</title>
+<meta name="description" content="Every open NYC construction solicitation in one place, what's bidding right now, from the City Record, refreshed on every load.">
+<meta property="og:title" content="The Concrete Index · Open Solicitations">
 <meta property="og:description" content="NYC construction work bidding right now.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23c2570f'/%3E%3Crect x='25' y='55' width='50' height='20' rx='4' fill='white'/%3E%3Crect x='35' y='30' width='30' height='18' rx='4' fill='white'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -106,7 +106,7 @@ footer .brand{font-size:15px}
 
 <div class="wrap hero">
   <h1>What's bidding right now.</h1>
-  <p class="sub">Every open construction solicitation in the City Record — the moment between the pipeline and the award. Sorted by due date, refreshed from the public record on every load.</p>
+  <p class="sub">Every open construction solicitation in the City Record, the moment between the pipeline and the award. Sorted by due date, refreshed from the public record on every load.</p>
   <p class="asof" id="asof">Loading open solicitations…</p>
 </div>
 
@@ -140,7 +140,7 @@ footer .brand{font-size:15px}
     <div class="card">
       <h2>About this page</h2>
       <h3>Source</h3>
-      <p>Open solicitation notices from <a href="https://data.cityofnewyork.us/City-Government/Current-Solicitations/3khw-qi8f" target="_blank" rel="noopener">Current Solicitations</a> on NYC Open Data (dataset <code>3khw-qi8f</code>) — the City Record's notice of procurement opportunities, in the two construction categories, with a due date that hasn't passed. Always confirm requirements and deadlines with the issuing agency; the contact listed on each notice is the authoritative source.</p>
+      <p>Open solicitation notices from <a href="https://data.cityofnewyork.us/City-Government/Current-Solicitations/3khw-qi8f" target="_blank" rel="noopener">Current Solicitations</a> on NYC Open Data (dataset <code>3khw-qi8f</code>), the City Record's notice of procurement opportunities, in the two construction categories, with a due date that hasn't passed. Always confirm requirements and deadlines with the issuing agency; the contact listed on each notice is the authoritative source.</p>
       <h3>Where this sits in the funnel</h3>
       <p>A solicitation is the moment committed money (the <a href="/pipeline/">Pipeline</a>) reaches the market, before it becomes an <a href="/">award</a>. Watching this page is watching next quarter's award flow form.</p>
     </div>
@@ -156,7 +156,7 @@ footer .brand{font-size:15px}
     </div>
     <div style="text-align:right">
       <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
-      <div style="margin-top:4px">© 2026 Salar Jalinous</div>
+      <div style="margin-top:4px">© 2026 <a href="/about/">Salar Jalinous</a></div>
     </div>
   </div>
 </footer>
@@ -189,7 +189,7 @@ async function fetchSolicitations(){
     seen.add(k); return true;
   }).map(r => ({
     title: r.short_title || '(untitled)',
-    agency: r.agency_name || '—',
+    agency: r.agency_name || '–',
     cat: r.category_description === HARD ? 'hard' : 'rel',
     method: r.selection_method_description || '',
     pin: r.pin || '',
