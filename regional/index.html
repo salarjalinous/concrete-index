@@ -79,12 +79,19 @@ footer .brand{font-size:15px}
 @media(max-width:880px){
   .kpis{grid-template-columns:repeat(2,1fr)}
   .grid.two{grid-template-columns:1fr}
-  .nav-links a.hide-m{display:none}
 }
 @media(max-width:560px){
   .kpis{grid-template-columns:1fr 1fr}
   .kpi .k-value{font-size:24px}
   .hero{padding-top:30px}
+}
+.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
+@media(max-width:1023px){
+  .menu-btn{display:block}
+  .nav{position:relative}
+  .nav-links{display:none;position:absolute;top:59px;left:-24px;right:-24px;background:var(--card);border-bottom:2px solid var(--ink);flex-direction:column;align-items:flex-start;padding:14px 24px;gap:13px;box-shadow:0 10px 20px rgba(63,53,33,.15);z-index:60}
+  .nav-links.open{display:flex}
+  .nav-links a.hide-m{display:inline}
 }
 </style>
 </head>
@@ -93,6 +100,7 @@ footer .brand{font-size:15px}
 <header>
   <div class="wrap nav">
     <a href="/" style="text-decoration:none"><div class="brand">The Concrete Index<span class="tick">.</span></div></a>
+    <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
     <nav class="nav-links">
       <a href="/pipeline/" class="hide-m">Pipeline</a>
       <a href="/solicitations/" class="hide-m">Bidding</a>
@@ -110,7 +118,7 @@ footer .brand{font-size:15px}
 <div class="wrap hero">
   <div class="kicker">Regional Builders</div>
   <h1>Beyond City Hall.</h1>
-  <p class="sub">City agencies aren't New York's only public builders. The School Construction Authority runs its own program, and the MTA runs the region's largest. Both publish their books, here they are, measured the same way as the City funnel.</p>
+  <p class="sub">City agencies aren't New York's only public builders. The School Construction Authority runs its own program, and the MTA runs the region's largest. Both publish their books. This page reads them with the same normalization rules as the City funnel, including the conversion of MTA figures from their source units of thousands of dollars.</p>
   <p class="asof" id="asof">Reading the SCA and MTA records…</p>
 </div>
 
@@ -172,7 +180,7 @@ footer .brand{font-size:15px}
       <h3>MTA</h3>
       <p>MTA figures come from the <a href="https://data.ny.gov/Transportation/Metropolitan-Transportation-Authority-MTA-Capital-/kizb-nxtu" target="_blank" rel="noopener">MTA Capital Dashboard: Agencies Detail</a> on data.ny.gov (dataset <code>kizb-nxtu</code>), using each project's current budget submission. Source values are reported in thousands of dollars and converted here. Allocations measure planned capital budgets by plan, not construction contract awards, the MTA stage is most comparable to the City's <a href="/pipeline/">Pipeline</a>, not its award flow.</p>
       <h3>Why these aren't merged into the City funnel</h3>
-      <p>The SCA and MTA publish on their own ledgers, with different definitions than the City Record and OMB plan. The Concrete Index presents them side by side rather than blending incompatible measures, same discipline, separate books.</p>
+      <p>The SCA and MTA publish on their own ledgers, with different definitions than the City Record and OMB plan. Blending them would manufacture precision that isn't there, so they stay side by side: same treatment, separate books.</p>
     </div>
   </section>
 
@@ -268,7 +276,7 @@ function render(){
     D.boro.map(r=>fmtInt(parseInt(r.n)||0)+' projects'));
   const cip = D.type.find(t=>t.consttype==='CIP'), cap = D.type.find(t=>t.consttype==='Capacity');
   document.getElementById('sca-reading').innerHTML =
-    `<strong>Reading:</strong> ${cip&&cap ? `capital improvements (roofs, masonry, systems) make up ${fmtMoney(parseFloat(cip.s))} of the active program; new capacity, new schools and additions, ${fmtMoney(parseFloat(cap.s))}.` : ''} School construction is steady, borough-spread demand, the counter-cyclical base under the city's construction market.`;
+    `<strong>Reading:</strong> ${cip&&cap ? `capital improvements (roofs, masonry, systems) make up ${fmtMoney(parseFloat(cip.s))} of the active program; new capacity (new schools and additions) accounts for ${fmtMoney(parseFloat(cap.s))}.` : ''} School construction is steady, borough-spread demand: the countercyclical base under the city's construction market.`;
 
   document.querySelector('#tbl-sca tbody').innerHTML = D.top.map((r,i)=>`<tr>
     <td class="rank">${i+1}</td>
@@ -285,7 +293,7 @@ function render(){
     }
   });
   document.getElementById('mta-reading').innerHTML =
-    `<strong>Reading:</strong> the MTA's plan has grown every cycle, the 2025–29 program, at <strong>${fmtMoney(plan29.s)}</strong>, is ${(plan29.s/plan24.s).toFixed(1)}× the 2020–24 plan's current allocation. For the region's contractors, the MTA is the single largest pool of public work in New York.`;
+    `<strong>Reading:</strong> the MTA's plan has grown every cycle. The 2025–29 program, at <strong>${fmtMoney(plan29.s)}</strong>, runs ${(plan29.s/plan24.s).toFixed(1)}× the current allocation of the 2020–24 plan. For the region's contractors, the MTA is the single largest pool of public work in New York.`;
 }
 
 (async function init(){
