@@ -7,94 +7,134 @@
 <meta name="description" content="Market structure of NYC public construction awards by award value: count share, dollar share, top-N share, and an HHI concentration index across four size bands. Awardee names are a grouping key only, never published or ranked.">
 <meta property="og:title" content="The Concrete Index · Competitive Set">
 <meta property="og:description" content="How NYC construction award dollars and counts distribute across size bands, and how concentrated each band is.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23c2570f'/%3E%3Crect x='25' y='55' width='50' height='20' rx='4' fill='white'/%3E%3Crect x='35' y='30' width='30' height='18' rx='4' fill='white'/%3E%3C/svg%3E">
+<!-- BROADSHEET-V1 -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23b5482a%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root{
-  --bg:#ece4d2; --card:#faf6ec; --ink:#26231d; --muted:#6e6657; --faint:#9a9081;
-  --line:#d9cdb4; --accent:#c2570f; --accent-deep:#9a4509; --blue:#2e5a88;
-  --green:#3f6f3f; --red:#a83232;
-  --radius:4px; --shadow:0 1px 0 rgba(63,53,33,.06);
+  --paper:#fbf2ea; --surface:#fffaf4; --band:#f6ece2;
+  --ink:#22150e; --navy:#243b53; --muted:#6e5d52; --faint:#9b8979;
+  --line:#e4d4c5; --rule:#22150e;
+  --accent:#b5482a; --accent-deep:#9a4509; --accent-soft:#f1d9cd; --steel:#2f5d8f; --blue:#2f5d8f;
+  --pos:#2f7d52; --neg:#a3302a; --red:#a3302a; --radius:3px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
-a{color:var(--accent-deep);text-decoration:none}
+body{font-family:'Public Sans',-apple-system,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--steel);text-decoration:none}
 a:hover{text-decoration:underline}
-.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
-header{border-bottom:2px solid var(--ink);background:var(--card);position:sticky;top:0;z-index:50}
-.nav{display:flex;align-items:center;justify-content:space-between;height:60px}
-.brand{font-family:'Fraunces',serif;font-weight:700;font-size:19px;letter-spacing:.01em;color:var(--ink)}
+.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+
+/* ---------- header ---------- */
+header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2px solid var(--ink)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:62px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:20px;letter-spacing:-.01em;color:var(--ink)}
+.brand svg{color:var(--navy);flex-shrink:0}
 .brand .tick{color:var(--accent)}
-.nav-links{display:flex;gap:22px;align-items:center;font-size:13.5px;font-weight:500}
+.nav-links{display:flex;gap:17px;align-items:center;font-size:13.5px;font-weight:500}
 .nav-links a{color:var(--muted)}
 .nav-links a:hover{color:var(--ink);text-decoration:none}
-.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent)}
-.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green);background:#e8eedd;border:1px solid #c2cfa8;border-radius:var(--radius);padding:3px 10px}
-.badge-live .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2.4s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-.hero{padding:44px 0 10px}
-.hero .kicker{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:10px}
-.hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(28px,4vw,40px);line-height:1.15;max-width:760px}
-.hero p.sub{margin-top:12px;font-size:16px;color:var(--muted);max-width:680px}
-.hero .asof{margin-top:14px;font-size:13px;color:var(--faint)}
+.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px}
+.badge-live{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--pos);background:rgba(47,125,82,.1);border:1px solid rgba(47,125,82,.34);border-radius:3px;padding:3px 9px}
+.badge-live .dot{width:6px;height:6px;border-radius:50%;background:var(--pos);animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ---------- release-series bar ---------- */
+.series-bar{background:var(--band);border-bottom:1px solid var(--line)}
+.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px 28px;max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.series-bar b{color:var(--ink);font-weight:600}
+.series-bar .sep{color:var(--faint);padding:0 12px}
+@media(max-width:720px){.series-bar .inner{white-space:normal}}
+
+/* ---------- hero ---------- */
+.hero{padding:46px 0 14px}
+.hero .kicker{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:14px}
+.hero h1{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(32px,4.6vw,46px);line-height:1.06;letter-spacing:-.012em;max-width:840px;color:var(--ink)}
+.hero p.sub{margin-top:17px;font-size:16px;color:var(--muted);max-width:700px}
+.hero .asof{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--faint)}
 .hero .asof strong{color:var(--muted);font-weight:600}
-.controls{display:flex;flex-wrap:wrap;gap:18px;padding:20px 0 4px}
-.ctl-group{display:flex;flex-direction:column;gap:6px}
-.ctl-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--card)}
-.seg button{font:inherit;font-size:13px;font-weight:500;border:0;background:transparent;color:var(--muted);padding:7px 14px;cursor:pointer;border-left:1px solid var(--line)}
-.seg button:first-child{border-left:0}
-.seg button.on{background:var(--accent);color:#fff;font-weight:600}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:26px 0 8px}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
-.kpi .k-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
-.kpi .k-value{font-family:'Fraunces',serif;font-size:30px;font-weight:600;margin-top:6px;letter-spacing:-.01em}
-.kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:4px}
-.kpi.hl{border-color:#e0bd92;background:#f6efdd}
-.grid{display:grid;gap:14px;padding:8px 0}
+
+/* ---------- controls ---------- */
+.controls{display:flex;flex-wrap:wrap;gap:14px 18px;align-items:flex-end;padding:30px 0 4px}
+.ctl-group{display:flex;flex-direction:column;gap:7px}
+.ctl-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:2px}
+.seg button{border:0;background:transparent;font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:6px 13px;border-radius:2px;cursor:pointer;transition:all .12s}
+.seg button:hover{color:var(--ink)}
+.seg button.on{background:var(--ink);color:var(--paper)}
+
+/* ---------- KPI tape ---------- */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:28px 0 8px;border-left:1px solid var(--line)}
+.kpi{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px 18px}
+.kpi.hl{border-top-color:var(--accent)}
+.kpi .k-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
+.kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--navy);line-height:1}
+.kpi.hl .k-value{color:var(--ink)}
+.kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:8px}
+
+/* ---------- section heads ---------- */
+.card .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:0}
+.card h2{font-family:'Source Serif 4',Georgia,serif;font-size:21px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+.card .cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em;text-align:right;white-space:nowrap}
+
+.grid{display:grid;gap:22px;padding:30px 0 0}
 .grid.two{grid-template-columns:1fr 1fr}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
-.card h2{font-size:15px;font-weight:700;letter-spacing:-.01em}
-.card .h-sub{font-size:12.5px;color:var(--muted);margin-top:2px;margin-bottom:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 22px;box-shadow:0 1px 0 rgba(34,21,14,.04)}
+.card .h-sub{font-size:12.5px;color:var(--muted);margin-top:9px;margin-bottom:18px}
 .chart-box{position:relative;height:300px}
-.reading{background:#f3edde;border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px}
-.reading h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin-bottom:8px}
-.reading p{font-size:14.5px;color:#3c3829;max-width:880px}
+
+/* ---------- structural read box ---------- */
+.reading{background:var(--band);border-left:3px solid var(--accent);border-radius:0;padding:18px 22px}
+.reading h2{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-bottom:8px;border:0;padding:0}
+.reading p{font-size:14.5px;color:var(--muted);max-width:880px}
 .reading p+p{margin-top:9px}
+
 table{width:100%;border-collapse:collapse;font-size:13.5px}
-th{text-align:left;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);padding:8px 10px;border-bottom:1px solid var(--line)}
-td{padding:10px;border-bottom:1px solid #e7ddc9;vertical-align:top}
+th{text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);padding:0 10px 8px;border-bottom:1px solid var(--ink)}
+td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:top}
 tr:last-child td{border-bottom:0}
-td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td.num,th.num{text-align:right}
+td.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
 td .t-title{font-weight:600;color:var(--ink)}
-td .t-sub{font-size:11.5px;color:var(--faint)}
+td .t-sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint)}
 .amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
-.conc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.conc{border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;background:#fbf8ef}
-.conc .c-band{font-weight:700;font-size:14px}
-.conc .c-range{font-size:11.5px;color:var(--faint);margin-bottom:12px}
-.conc .c-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid #ece2cd;font-size:13px}
+
+/* ---------- concentration panels ---------- */
+.conc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0;border-left:1px solid var(--line)}
+.conc{border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px;background:var(--surface)}
+.conc .c-band{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:16px;letter-spacing:-.01em;color:var(--ink)}
+.conc .c-range{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);margin-bottom:12px;letter-spacing:.02em}
+.conc .c-row{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}
 .conc .c-row:last-child{border-bottom:0}
 .conc .c-row .lab{color:var(--muted)}
-.conc .c-row .val{font-family:'Fraunces',serif;font-weight:600;font-size:16px;font-variant-numeric:tabular-nums}
-.pill{display:inline-block;font-size:11px;font-weight:600;border-radius:3px;padding:2px 8px}
-.pill.frag{background:#dde6ee;color:var(--blue)}
-.pill.mod{background:#f3e0c8;color:var(--accent-deep)}
+.conc .c-row .val{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:15px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.03em;border-radius:3px;padding:2px 7px}
+.pill.frag{background:#dde6ee;color:var(--steel)}
+.pill.mod{background:var(--accent-soft);color:var(--accent-deep)}
 .pill.conc{background:#f1d6d1;color:var(--red)}
-.method{padding:30px 0 10px}
-.method .card{padding:30px 34px}
-.method h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:4px}
-.method h3{font-size:14px;font-weight:700;margin:20px 0 6px}
-.method p{font-size:14px;color:#46412f;max-width:820px}
+
+/* ---------- methodology ---------- */
+.method{padding:44px 0 10px}
+.method .card{padding:20px 22px 22px}
+.method .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:0}
+.method h2{font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:700;letter-spacing:-.012em;color:var(--ink)}
+.method .m-cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em}
+.method h3{font-family:'Public Sans',sans-serif;font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin:24px 0 6px;color:var(--ink)}
+.method p{font-size:14px;color:var(--muted);max-width:820px}
 .method p+p{margin-top:8px}
-.method code{background:#efe7d4;padding:1px 5px;border-radius:3px;font-size:12.5px}
-footer{margin-top:40px;border-top:2px solid var(--ink);padding:26px 0 38px;font-size:13px;color:var(--muted)}
+.method code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:var(--band);padding:1px 5px;border-radius:3px;border:1px solid var(--line)}
+
+/* ---------- footer ---------- */
+footer{margin-top:54px;background:var(--band);border-top:2px solid var(--ink);padding:30px 0 40px;font-size:13px;color:var(--muted)}
+footer a{color:var(--steel)}
 footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-footer .brand{font-size:15px}
+footer .brand{font-size:17px;color:var(--ink)}
+footer .brand svg{color:var(--navy)}
+footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em}
 #loader{padding:80px 0;text-align:center;color:var(--muted)}
 .spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -102,19 +142,23 @@ footer .brand{font-size:15px}
 #app{display:none}
 @media(max-width:880px){
   .kpis{grid-template-columns:repeat(2,1fr)}
+  .kpi:nth-child(2){border-right:0}
   .grid.two{grid-template-columns:1fr}
-  .conc-grid{grid-template-columns:1fr}
+  .conc-grid{grid-template-columns:1fr;border-left:0}
+  .conc{border-right:0;border-left:1px solid var(--line)}
 }
 @media(max-width:560px){
   .kpis{grid-template-columns:1fr 1fr}
-  .kpi .k-value{font-size:24px}
-  .hero{padding-top:30px}
+  .kpi .k-value{font-size:26px}
+  .hero{padding-top:34px}
+  .wrap{padding:0 18px}
+  .series-bar .inner{padding-left:18px;padding-right:18px}
 }
 .menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
 @media(max-width:1023px){
   .menu-btn{display:block}
   .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:59px;left:-24px;right:-24px;background:var(--card);border-bottom:2px solid var(--ink);flex-direction:column;align-items:flex-start;padding:14px 24px;gap:13px;box-shadow:0 10px 20px rgba(63,53,33,.15);z-index:60}
+  .nav-links{display:none;position:absolute;top:61px;left:-28px;right:-28px;background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60}
   .nav-links.open{display:flex}
   .nav-links a.hide-m{display:inline}
 }
@@ -124,7 +168,10 @@ footer .brand{font-size:15px}
 
 <header>
   <div class="wrap nav">
-    <a href="/" style="text-decoration:none"><div class="brand">The Concrete Index<span class="tick">.</span></div></a>
+    <div class="brand">
+      <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#b5482a"/></svg>
+      <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
+    </div>
     <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">&#9776;</button>
     <nav class="nav-links">
       <a href="/pipeline/">Pipeline</a>
@@ -141,6 +188,10 @@ footer .brand{font-size:15px}
     </nav>
   </div>
 </header>
+
+<div class="series-bar">
+  <div class="inner">SERIES&nbsp;·&nbsp;<b>CI-MARKET</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CITY RECORD (qyyg-4tf5)</b><span class="sep">·</span>DEDUPE&nbsp;·&nbsp;<b>ONE PER PIN</b><span class="sep">·</span>UPDATED&nbsp;·&nbsp;<b>ON LOAD</b></div>
+</div>
 
 <div class="wrap hero">
   <div class="kicker">Competitive set by wins</div>
@@ -194,7 +245,7 @@ footer .brand{font-size:15px}
 
   <section class="grid">
     <div class="card">
-      <h2>Count share versus dollar share, by band</h2>
+      <div class="sec-head"><h2>Count share versus dollar share, by band</h2><span class="cap">SHARE OF SET</span></div>
       <div class="h-sub">Each band's share of all awards by count, set against its share of all award dollars. The gap between the two bars is the small-awards / mega-dollars inversion.</div>
       <div class="chart-box"><canvas id="chart-bands"></canvas></div>
     </div>
@@ -202,7 +253,7 @@ footer .brand{font-size:15px}
 
   <section class="grid">
     <div class="card">
-      <h2>Band detail</h2>
+      <div class="sec-head"><h2>Band detail</h2><span class="cap">BY AWARD VALUE</span></div>
       <div class="h-sub">Counts, dollars, and their shares of the set. Bands are fixed by award value, not by who won.</div>
       <table id="tbl-bands">
         <thead><tr>
@@ -216,7 +267,7 @@ footer .brand{font-size:15px}
 
   <section class="grid">
     <div class="card">
-      <h2>Concentration within each band</h2>
+      <div class="sec-head"><h2>Concentration within each band</h2><span class="cap">TOP-N · HHI</span></div>
       <div class="h-sub">Share of the band's dollars accounted for by its top 3, top 5, and top 10 awardees by count, and an HHI concentration index. No awardee is named. Counts only, no leaderboard.</div>
       <div class="conc-grid" id="conc-grid"></div>
     </div>
@@ -224,7 +275,7 @@ footer .brand{font-size:15px}
 
   <section class="method" id="methodology">
     <div class="card">
-      <h2>Methodology &amp; definitions</h2>
+      <div class="sec-head"><h2>Methodology &amp; definitions</h2><span class="m-cap">SERIES NOTES</span></div>
       <h3>What this page measures</h3>
       <p>Competitive set by wins groups NYC City Record construction award notices (winners only; no co-bidders) by award value into four bands and reports market-structure statistics, count share, dollar share, top-N share and an HHI concentration index, computed over exact normalized awardee names. Awardee names are used only as a deterministic grouping key and are never published, ranked, scored, or presented as a measure of any contractor's standing or creditworthiness. Award notices are deduped to one record per procurement (pin), renewals are flagged, and awards of $500M or more are excluded to match the index.</p>
       <h3>Universe and window</h3>
@@ -243,12 +294,15 @@ footer .brand{font-size:15px}
 <footer>
   <div class="wrap f-row">
     <div>
-      <div class="brand">The Concrete Index<span class="tick">.</span></div>
-      <div style="margin-top:4px">NYC public construction capital, from commitment to cash.</div>
+      <div class="brand">
+        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#b5482a"/></svg>
+        <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.01em">The Concrete Index<span class="tick" style="color:var(--accent)">.</span></span>
+      </div>
+      <div style="margin-top:8px">NYC public construction capital, from commitment to cash.</div>
     </div>
-    <div style="text-align:right">
+    <div style="text-align:right" class="f-meta">
       <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> &middot; refreshed on load</div>
-      <div style="margin-top:4px">&copy; 2026 <a href="/about/">Salar Jalinous</a></div>
+      <div style="margin-top:5px">&copy; 2026 <a href="/about/">Salar Jalinous</a></div>
     </div>
   </div>
 </footer>
@@ -431,15 +485,15 @@ function fmtPct(v){ return v === null ? '&ndash;' : (v*100).toFixed(1) + '%'; }
 function esc(s){ const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
 /* ===== chart defaults ===== */
-const COLOR_A = '#c2570f', COLOR_B = '#2e5a88';
-Chart.defaults.font.family = "'Inter',sans-serif";
-Chart.defaults.font.size = 12;
-Chart.defaults.color = '#6e6657';
+const COLOR_A = '#b5482a', COLOR_B = '#243b53', GRID = '#ead9c9';
+Chart.defaults.font.family = "'IBM Plex Mono',monospace";
+Chart.defaults.font.size = 10;
+Chart.defaults.color = '#6e5d52';
 Object.assign(Chart.defaults.plugins.tooltip, {
-  backgroundColor:'#faf6ec', titleColor:'#26231d', bodyColor:'#46412f',
-  borderColor:'#c2570f', borderWidth:1, cornerRadius:4, padding:10, displayColors:true,
+  backgroundColor:'#fffaf4', titleColor:'#22150e', bodyColor:'#6e5d52',
+  borderColor:'#b5482a', borderWidth:1, cornerRadius:2, padding:10, displayColors:true,
   boxWidth:10, boxHeight:10,
-  titleFont:{family:"'Inter',sans-serif",weight:'600',size:12}, bodyFont:{family:"'Inter',sans-serif",size:12},
+  titleFont:{family:"'Public Sans',sans-serif",weight:'600',size:12}, bodyFont:{family:"'IBM Plex Mono',monospace",size:12},
   caretSize:5
 });
 
@@ -473,7 +527,7 @@ function renderBandsChart(a){
         tooltip:{callbacks:{label:(c)=> c.dataset.label + ': ' + c.parsed.y.toFixed(1) + '%'}} },
       scales:{
         x:{grid:{display:false}, ticks:{maxRotation:0, autoSkip:false, font:{size:11}}},
-        y:{grid:{color:'#e4dac4'}, border:{display:false}, ticks:{callback:(v)=>v+'%', maxTicksLimit:6}, title:{display:true, text:'Share of set', color:'#9a9081', font:{size:11}}}
+        y:{grid:{color:GRID}, border:{display:false}, ticks:{callback:(v)=>v+'%', maxTicksLimit:6}, title:{display:true, text:'Share of set', color:'#9b8979', font:{size:11}}}
       }
     }
   });
