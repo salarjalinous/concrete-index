@@ -7,40 +7,41 @@
 <meta name="description" content="The Concrete Index tracks NYC public construction capital, which agencies are awarding work, to whom, and how fast. Built on NYC Open Data, refreshed daily.">
 <meta property="og:title" content="The Concrete Index">
 <meta property="og:description" content="NYC public construction capital, from commitment to cash.">
-<!-- STATLEDGER-V1 -->
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%231c2530%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23d4631d%22/%3E%3C/svg%3E">
+<!-- BROADSHEET-V1 -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23b5482a%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&family=Space+Grotesk:wght@600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root{
-  --page:#ffffff; --band:#f6f7f9; --surface:#ffffff;
-  --ink:#0f1115; --ink-band:#1c2530; --muted:#5d636b; --faint:#8b9099;
-  --line:#e2e5e9; --rule:#0f1115;
-  --accent:#d4631d; --accent-soft:#fbeada; --steel:#2f5d8f;
-  --pos:#2f7d52; --neg:#b4462f; --radius:4px;
+  --paper:#fbf2ea; --surface:#fffaf4; --band:#f6ece2;
+  --ink:#22150e; --navy:#243b53; --muted:#6e5d52; --faint:#9b8979;
+  --line:#e4d4c5; --rule:#22150e;
+  --accent:#b5482a; --accent-soft:#f1d9cd; --steel:#2f5d8f;
+  --pos:#2f7d52; --neg:#a3302a; --radius:3px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:'Public Sans',-apple-system,sans-serif;background:var(--page);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+body{font-family:'Public Sans',-apple-system,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
 a{color:var(--steel);text-decoration:none}
 a:hover{text-decoration:underline}
 .mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+.serif{font-family:'Source Serif 4',Georgia,serif}
 .wrap{max-width:1180px;margin:0 auto;padding:0 28px}
 
 /* ---------- header ---------- */
-header{background:var(--ink-band);position:sticky;top:0;z-index:50}
-.nav{display:flex;align-items:center;justify-content:space-between;height:60px}
-.brand{display:flex;align-items:center;gap:9px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;letter-spacing:-.02em;color:#fff}
-.brand svg{color:#fff;flex-shrink:0}
+header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2px solid var(--ink)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:62px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:20px;letter-spacing:-.01em;color:var(--ink)}
+.brand svg{color:var(--navy);flex-shrink:0}
 .brand .tick{color:var(--accent)}
-.nav-links{display:flex;gap:18px;align-items:center;font-size:13.5px;font-weight:500}
-.nav-links a{color:#aab2bd}
-.nav-links a:hover{color:#fff;text-decoration:none}
-.nav-links a.active{color:#fff;font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px}
-.badge-live{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:#9fe0bd;background:rgba(47,125,82,.16);border:1px solid rgba(47,125,82,.5);border-radius:3px;padding:3px 9px}
-.badge-live .dot{width:6px;height:6px;border-radius:50%;background:#46c98c;animation:pulse 2.4s infinite}
+.nav-links{display:flex;gap:17px;align-items:center;font-size:13.5px;font-weight:500}
+.nav-links a{color:var(--muted)}
+.nav-links a:hover{color:var(--ink);text-decoration:none}
+.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px}
+.badge-live{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--pos);background:rgba(47,125,82,.1);border:1px solid rgba(47,125,82,.34);border-radius:3px;padding:3px 9px}
+.badge-live .dot{width:6px;height:6px;border-radius:50%;background:var(--pos);animation:pulse 2.4s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* ---------- release-series bar ---------- */
@@ -51,11 +52,11 @@ header{background:var(--ink-band);position:sticky;top:0;z-index:50}
 @media(max-width:720px){.series-bar .inner{white-space:normal}}
 
 /* ---------- hero ---------- */
-.hero{padding:46px 0 8px}
+.hero{padding:46px 0 14px}
 .kicker{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:14px}
-.hero h1{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(30px,4.4vw,44px);line-height:1.08;letter-spacing:-.02em;max-width:780px}
-.hero p.sub{margin-top:16px;font-size:16px;color:var(--muted);max-width:680px}
-.hero .asof{margin-top:18px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--faint)}
+.hero h1{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(32px,4.6vw,46px);line-height:1.06;letter-spacing:-.012em;max-width:840px;color:var(--ink)}
+.hero p.sub{margin-top:17px;font-size:16px;color:var(--muted);max-width:700px}
+.hero .asof{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--faint)}
 .hero .asof strong{color:var(--muted);font-weight:600}
 
 /* ---------- controls ---------- */
@@ -63,32 +64,35 @@ header{background:var(--ink-band);position:sticky;top:0;z-index:50}
 .seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:2px}
 .seg button{border:0;background:transparent;font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:6px 13px;border-radius:2px;cursor:pointer;transition:all .12s}
 .seg button:hover{color:var(--ink)}
-.seg button.on{background:var(--ink);color:#fff}
+.seg button.on{background:var(--ink);color:var(--paper)}
 .ctl-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-right:-4px}
 .wt-select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:6px 10px;cursor:pointer}
 .wt-select:focus{outline:2px solid var(--accent)}
 
 /* ---------- KPI tape ---------- */
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:26px 0 8px;border-left:1px solid var(--line)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:28px 0 8px;border-left:1px solid var(--line)}
 .kpi{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px 18px}
 .kpi.hero-kpi{border-top-color:var(--accent)}
 .kpi .k-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
-.kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;margin-top:10px;letter-spacing:-.01em;color:var(--ink);line-height:1}
+.kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--ink);line-height:1}
+.kpi.hero-kpi .k-value{font-size:38px;color:var(--ink)}
+.kpi:not(.hero-kpi) .k-value{color:var(--navy)}
 .kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:8px}
 .kpi .up,.kpi .down{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums;padding:0}
 .kpi .up{color:var(--pos)}
 .kpi .down{color:var(--neg)}
-.kpi.hero-kpi .k-value{font-size:38px}
 @media(max-width:560px){.kpi.hero-kpi .k-value{font-size:30px}}
 
 /* ---------- section heads ---------- */
 .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:0}
-.sec-head h2{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;letter-spacing:-.01em}
+.sec-head h2{font-family:'Source Serif 4',Georgia,serif;font-size:21px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
 .sec-head .cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em;text-align:right;white-space:nowrap}
 
 /* ---------- cards & grid ---------- */
 .grid{display:grid;gap:22px;padding:30px 0 0}
 .grid.two{grid-template-columns:3fr 2fr}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 22px;box-shadow:0 1px 0 rgba(34,21,14,.04)}
+.card .sec-head{border-bottom-color:var(--ink)}
 .card .h-sub{font-size:12.5px;color:var(--muted);margin-top:9px;margin-bottom:18px}
 .chart-box{position:relative;height:300px}
 .chart-box.tall{height:340px}
@@ -105,7 +109,7 @@ td .t-sub{font-size:12px;color:var(--muted);margin-top:3px;font-family:'Public S
 .amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
 .pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.03em;border-radius:3px;padding:2px 6px;white-space:nowrap}
 .pill.hard{background:var(--accent-soft);color:var(--accent)}
-.pill.rel{background:#dde7f1;color:var(--steel)}
+.pill.rel{background:#dde6ee;color:var(--steel)}
 .rank{color:var(--faint);font-weight:600;width:28px;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
 
 /* ---------- reading box ---------- */
@@ -114,20 +118,20 @@ td .t-sub{font-size:12px;color:var(--muted);margin-top:3px;font-family:'Public S
 
 /* ---------- methodology ---------- */
 .method{padding:44px 0 10px}
-.method h2{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:600;letter-spacing:-.015em}
+.method h2{font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:700;letter-spacing:-.012em;color:var(--ink)}
 .method .m-cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em}
 .method-body{margin-top:24px}
-.method h3{font-family:'Space Grotesk',sans-serif;font-size:13.5px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;margin:24px 0 6px;color:var(--ink)}
+.method h3{font-family:'Public Sans',sans-serif;font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin:24px 0 6px;color:var(--ink)}
 .method p{font-size:14px;color:var(--muted);max-width:820px}
 .method p+p{margin-top:8px}
 .method code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:var(--band);padding:1px 5px;border-radius:3px;border:1px solid var(--line)}
 
 /* ---------- footer ---------- */
-footer{margin-top:54px;background:var(--ink-band);border-top:2px solid var(--ink);padding:30px 0 40px;font-size:13px;color:#9aa3ae}
-footer a{color:#c6cdd6}
+footer{margin-top:54px;background:var(--band);border-top:2px solid var(--ink);padding:30px 0 40px;font-size:13px;color:var(--muted)}
+footer a{color:var(--steel)}
 footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-footer .brand{font-size:16px;color:#fff}
-footer .brand svg{color:#fff}
+footer .brand{font-size:17px;color:var(--ink)}
+footer .brand svg{color:var(--navy)}
 footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em}
 
 /* ---------- loading / error ---------- */
@@ -149,11 +153,11 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   .wrap{padding:0 18px}
   .series-bar .inner{padding-left:18px;padding-right:18px}
 }
-.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid rgba(255,255,255,.25);border-radius:var(--radius);padding:5px 10px;color:#fff;cursor:pointer}
+.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
 @media(max-width:1023px){
   .menu-btn{display:block}
   .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:59px;left:-28px;right:-28px;background:var(--ink-band);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(15,17,21,.4);z-index:60}
+  .nav-links{display:none;position:absolute;top:61px;left:-28px;right:-28px;background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60}
   .nav-links.open{display:flex}
   .nav-links a.hide-m{display:inline}
 }
@@ -164,7 +168,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 <header>
   <div class="wrap nav">
     <div class="brand">
-      <svg viewBox="0 0 120 120" width="24" height="24" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#d4631d"/></svg>
+      <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#b5482a"/></svg>
       <span>The Concrete Index<span class="tick">.</span></span>
     </div>
     <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
@@ -318,8 +322,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <div class="wrap f-row">
     <div>
       <div class="brand">
-        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#d4631d"/></svg>
-        <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-.02em">The Concrete Index<span class="tick" style="color:var(--accent)">.</span></span>
+        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#b5482a"/></svg>
+        <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.01em">The Concrete Index<span class="tick" style="color:var(--accent)">.</span></span>
       </div>
       <div style="margin-top:8px">NYC public construction capital, from commitment to cash.</div>
     </div>
@@ -504,22 +508,18 @@ function esc(s){ const d = document.createElement('div'); d.textContent = s; ret
 const WINDOW_LABEL = { 12:'trailing 12 months', 36:'trailing 3 years', 60:'trailing 5 years' };
 
 /* ================= rendering ================= */
-const COLOR_HARD = '#d4631d', COLOR_REL = '#2f5d8f', GRID = '#eef0f3';
+const COLOR_HARD = '#b5482a', COLOR_REL = '#243b53', GRID = '#ead9c9';
 let charts = {};
 
 Chart.defaults.font.family = "'IBM Plex Mono',monospace";
 Chart.defaults.font.size = 10;
-Chart.defaults.color = '#5d636b';
+Chart.defaults.color = '#6e5d52';
 Object.assign(Chart.defaults.plugins.tooltip, {
-  backgroundColor:'#ffffff', titleColor:'#0f1115', bodyColor:'#5d636b',
-  borderColor:'#d4631d', borderWidth:0, cornerRadius:2, padding:10, displayColors:false,
+  backgroundColor:'#fffaf4', titleColor:'#22150e', bodyColor:'#6e5d52',
+  borderColor:'#b5482a', borderWidth:1, cornerRadius:2, padding:10, displayColors:false,
   titleFont:{family:"'Public Sans',sans-serif",weight:'600',size:12}, bodyFont:{family:"'IBM Plex Mono',monospace",size:12},
-  caretSize:5,
-  // left accent border drawn via a custom external box: emulate with borderWidth on left only is not supported;
-  // keep a thin amber border to retain the terminal cue
+  caretSize:5
 });
-Chart.defaults.plugins.tooltip.borderColor = '#d4631d';
-Chart.defaults.plugins.tooltip.borderWidth = 1;
 
 function destroyChart(k){ if(charts[k]){ charts[k].destroy(); delete charts[k]; } }
 
