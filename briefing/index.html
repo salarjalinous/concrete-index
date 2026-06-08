@@ -7,53 +7,77 @@
 <meta name="description" content="The state of NYC public construction demand, written from the live public record every time the page loads.">
 <meta property="og:title" content="The Concrete Index · Demand Briefing">
 <meta property="og:description" content="The state of NYC construction demand, generated from the live public record.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23c2570f'/%3E%3Crect x='25' y='55' width='50' height='20' rx='4' fill='white'/%3E%3Crect x='35' y='30' width='30' height='18' rx='4' fill='white'/%3E%3C/svg%3E">
+<!-- BROADSHEET-V1 -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23b5482a%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#ece4d2; --card:#faf6ec; --ink:#26231d; --muted:#6e6657; --faint:#9a9081;
-  --line:#d9cdb4; --accent:#c2570f; --accent-deep:#9a4509; --steel:#2e5a88;
-  --green:#3f6f3f; --red:#a83232;
-  --radius:4px; --shadow:0 1px 0 rgba(63,53,33,.06);
+  --paper:#fbf2ea; --surface:#fffaf4; --band:#f6ece2;
+  --ink:#22150e; --navy:#243b53; --muted:#6e5d52; --faint:#9b8979;
+  --line:#e4d4c5; --rule:#22150e;
+  --accent:#b5482a; --accent-soft:#f1d9cd; --steel:#2f5d8f;
+  --pos:#2f7d52; --neg:#a3302a; --radius:3px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
-a{color:var(--accent-deep);text-decoration:none}
+html{scroll-behavior:smooth}
+body{font-family:'Public Sans',-apple-system,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--steel);text-decoration:none}
 a:hover{text-decoration:underline}
-.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
-header{border-bottom:2px solid var(--ink);background:var(--card);position:sticky;top:0;z-index:50}
-.nav{display:flex;align-items:center;justify-content:space-between;height:60px}
-.brand{font-family:'Fraunces',serif;font-weight:700;font-size:19px;letter-spacing:.01em;color:var(--ink)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+
+/* ---------- header ---------- */
+header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2px solid var(--ink)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:62px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:20px;letter-spacing:-.01em;color:var(--ink)}
+.brand svg{color:var(--navy);flex-shrink:0}
 .brand .tick{color:var(--accent)}
-.nav-links{display:flex;gap:22px;align-items:center;font-size:13.5px;font-weight:500}
+.nav-links{display:flex;gap:17px;align-items:center;font-size:13.5px;font-weight:500}
 .nav-links a{color:var(--muted)}
 .nav-links a:hover{color:var(--ink);text-decoration:none}
-.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent)}
-.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green);background:#e8eedd;border:1px solid #c2cfa8;border-radius:var(--radius);padding:3px 10px}
-.badge-live .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2.4s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-.hero{padding:44px 0 6px}
-.kicker{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent-deep)}
-.hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(28px,4vw,40px);line-height:1.15;max-width:760px;margin-top:8px}
-.hero .asof{margin-top:12px;font-size:13px;color:var(--faint)}
+.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px}
+.badge-live{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--pos);background:rgba(47,125,82,.1);border:1px solid rgba(47,125,82,.34);border-radius:3px;padding:3px 9px}
+.badge-live .dot{width:6px;height:6px;border-radius:50%;background:var(--pos);animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ---------- release-series bar ---------- */
+.series-bar{background:var(--band);border-bottom:1px solid var(--line)}
+.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px 28px;max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.series-bar b{color:var(--ink);font-weight:600}
+.series-bar .sep{color:var(--faint);padding:0 12px}
+@media(max-width:720px){.series-bar .inner{white-space:normal}}
+
+/* ---------- hero ---------- */
+.hero{padding:46px 0 14px}
+.kicker{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:14px}
+.hero h1{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(32px,4.6vw,46px);line-height:1.06;letter-spacing:-.012em;max-width:840px;color:var(--ink)}
+.hero .asof{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--faint)}
 .hero .asof strong{color:var(--muted);font-weight:600}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:26px 0 6px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
-.stat .s-label{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
-.stat .s-value{font-family:'Fraunces',serif;font-size:26px;font-weight:600;margin-top:4px}
-.brief{padding:18px 0}
-.brief .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:36px 40px;box-shadow:var(--shadow)}
-.brief h2{font-family:'Fraunces',serif;font-size:19px;font-weight:600;margin:22px 0 8px}
+
+/* ---------- stat tape ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:28px 0 8px;border-left:1px solid var(--line)}
+.stat{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px 18px}
+.stat:first-child{border-top-color:var(--accent)}
+.stat .s-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
+.stat .s-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:28px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--navy);line-height:1}
+.stat:first-child .s-value{color:var(--ink)}
+
+/* ---------- briefing body ---------- */
+.brief{padding:30px 0 0}
+.brief .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:36px 40px;box-shadow:0 1px 0 rgba(34,21,14,.04)}
+.brief h2{font-family:'Source Serif 4',Georgia,serif;font-size:21px;font-weight:700;letter-spacing:-.01em;color:var(--ink);border-bottom:2px solid var(--ink);padding-bottom:7px;margin:30px 0 14px}
 .brief h2:first-child{margin-top:0}
-.brief p{font-size:15.5px;color:#46412f;max-width:760px;line-height:1.7}
+.brief p{font-size:15.5px;color:var(--muted);max-width:760px;line-height:1.7}
 .brief p+p{margin-top:12px}
-.brief .num{font-weight:600;color:var(--ink)}
+.brief .num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink)}
 .sig{margin-top:26px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);max-width:760px}
-footer{margin-top:40px;border-top:2px solid var(--ink);padding:26px 0 38px;font-size:13px;color:var(--muted)}
+footer{margin-top:54px;background:var(--band);border-top:2px solid var(--ink);padding:30px 0 40px;font-size:13px;color:var(--muted)}
+footer a{color:var(--steel)}
 footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-footer .brand{font-size:15px}
+footer .brand{font-size:17px;color:var(--ink)}
+footer .brand svg{color:var(--navy)}
+footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em}
 #loader{padding:80px 0;text-align:center;color:var(--muted)}
 .spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -61,13 +85,20 @@ footer .brand{font-size:15px}
 #app{display:none}
 @media(max-width:880px){
   .stats{grid-template-columns:repeat(2,1fr)}
+  .stat:nth-child(2){border-right:0}
   .brief .card{padding:26px 22px}
+}
+@media(max-width:560px){
+  .stats{grid-template-columns:1fr 1fr}
+  .hero{padding-top:34px}
+  .wrap{padding:0 18px}
+  .series-bar .inner{padding-left:18px;padding-right:18px}
 }
 .menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
 @media(max-width:1023px){
   .menu-btn{display:block}
   .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:59px;left:-24px;right:-24px;background:var(--card);border-bottom:2px solid var(--ink);flex-direction:column;align-items:flex-start;padding:14px 24px;gap:13px;box-shadow:0 10px 20px rgba(63,53,33,.15);z-index:60}
+  .nav-links{display:none;position:absolute;top:61px;left:-28px;right:-28px;background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60}
   .nav-links.open{display:flex}
   .nav-links a.hide-m{display:inline}
 }
@@ -77,7 +108,10 @@ footer .brand{font-size:15px}
 
 <header>
   <div class="wrap nav">
-    <a href="/" style="text-decoration:none"><div class="brand">The Concrete Index<span class="tick">.</span></div></a>
+    <div class="brand">
+      <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#b5482a"/></svg>
+      <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
+    </div>
     <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
     <nav class="nav-links">
       <a href="/pipeline/">Pipeline</a>
@@ -94,6 +128,10 @@ footer .brand{font-size:15px}
     </nav>
   </div>
 </header>
+
+<div class="series-bar">
+  <div class="inner">SERIES&nbsp;·&nbsp;<b>CI-BRIEFING</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CITY RECORD (qyyg-4tf5) · CAPITAL PLAN (fb86-vt7u)</b><span class="sep">·</span>COMPOSED&nbsp;·&nbsp;<b>ON LOAD</b></div>
+</div>
 
 <div class="wrap hero">
   <div class="kicker">Demand Briefing</div>
@@ -127,12 +165,15 @@ footer .brand{font-size:15px}
 <footer>
   <div class="wrap f-row">
     <div>
-      <div class="brand">The Concrete Index<span class="tick">.</span></div>
-      <div style="margin-top:4px">NYC public construction capital, from commitment to cash.</div>
+      <div class="brand">
+        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#b5482a"/></svg>
+        <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.01em">The Concrete Index<span class="tick" style="color:var(--accent)">.</span></span>
+      </div>
+      <div style="margin-top:8px">NYC public construction capital, from commitment to cash.</div>
     </div>
-    <div style="text-align:right">
+    <div style="text-align:right" class="f-meta">
       <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
-      <div style="margin-top:4px">© 2026 <a href="/about/">Salar Jalinous</a></div>
+      <div style="margin-top:5px">© 2026 <a href="/about/">Salar Jalinous</a></div>
     </div>
   </div>
 </footer>
