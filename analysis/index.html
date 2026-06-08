@@ -7,72 +7,111 @@
 <meta name="description" content="The Concrete Index: a composite measure of NYC public construction demand since 2004, plus seasonality, budget escalation, and pipeline conversion analysis.">
 <meta property="og:title" content="The Concrete Index · Analysis">
 <meta property="og:description" content="Two decades of NYC construction demand, in one number.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23c2570f'/%3E%3Crect x='25' y='55' width='50' height='20' rx='4' fill='white'/%3E%3Crect x='35' y='30' width='30' height='18' rx='4' fill='white'/%3E%3C/svg%3E">
+<!-- BROADSHEET-V1 -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23b5482a%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root{
-  --bg:#ece4d2; --card:#faf6ec; --ink:#26231d; --muted:#6e6657; --faint:#9a9081;
-  --line:#d9cdb4; --accent:#c2570f; --accent-deep:#9a4509; --steel:#2e5a88;
-  --green:#3f6f3f; --red:#a83232;
-  --radius:4px; --shadow:0 1px 0 rgba(63,53,33,.06);
+  --paper:#fbf2ea; --surface:#fffaf4; --band:#f6ece2;
+  --ink:#22150e; --navy:#243b53; --muted:#6e5d52; --faint:#9b8979;
+  --line:#e4d4c5; --rule:#22150e;
+  --accent:#b5482a; --accent-soft:#f1d9cd; --steel:#2f5d8f;
+  --pos:#2f7d52; --neg:#a3302a; --radius:3px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
-a{color:var(--accent-deep);text-decoration:none}
+html{scroll-behavior:smooth}
+body{font-family:'Public Sans',-apple-system,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--steel);text-decoration:none}
 a:hover{text-decoration:underline}
-.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
-header{border-bottom:2px solid var(--ink);background:var(--card);position:sticky;top:0;z-index:50}
-.nav{display:flex;align-items:center;justify-content:space-between;height:60px}
-.brand{font-family:'Fraunces',serif;font-weight:700;font-size:19px;letter-spacing:.01em;color:var(--ink)}
+.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+.serif{font-family:'Source Serif 4',Georgia,serif}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+
+/* ---------- header ---------- */
+header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2px solid var(--ink)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:62px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:20px;letter-spacing:-.01em;color:var(--ink)}
+.brand svg{color:var(--navy);flex-shrink:0}
 .brand .tick{color:var(--accent)}
-.nav-links{display:flex;gap:18px;align-items:center;font-size:13.5px;font-weight:500}
+.nav-links{display:flex;gap:17px;align-items:center;font-size:13.5px;font-weight:500}
 .nav-links a{color:var(--muted)}
 .nav-links a:hover{color:var(--ink);text-decoration:none}
-.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent)}
-.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green);background:#e8eedd;border:1px solid #c2cfa8;border-radius:var(--radius);padding:3px 10px}
-.badge-live .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2.4s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-.hero{padding:44px 0 6px}
-.kicker{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent-deep)}
-.hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(28px,4vw,40px);line-height:1.15;max-width:780px;margin-top:8px}
-.hero p.sub{margin-top:12px;font-size:16px;color:var(--muted);max-width:680px}
-.hero .asof{margin-top:12px;font-size:13px;color:var(--faint)}
+.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px}
+.badge-live{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--pos);background:rgba(47,125,82,.1);border:1px solid rgba(47,125,82,.34);border-radius:3px;padding:3px 9px}
+.badge-live .dot{width:6px;height:6px;border-radius:50%;background:var(--pos);animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ---------- release-series bar ---------- */
+.series-bar{background:var(--band);border-bottom:1px solid var(--line)}
+.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px 28px;max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.series-bar b{color:var(--ink);font-weight:600}
+.series-bar .sep{color:var(--faint);padding:0 12px}
+@media(max-width:720px){.series-bar .inner{white-space:normal}}
+
+/* ---------- hero ---------- */
+.hero{padding:46px 0 14px}
+.kicker{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:14px}
+.hero h1{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(32px,4.6vw,46px);line-height:1.06;letter-spacing:-.012em;max-width:840px;color:var(--ink)}
+.hero p.sub{margin-top:17px;font-size:16px;color:var(--muted);max-width:700px}
+.hero .asof{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--faint)}
 .hero .asof strong{color:var(--muted);font-weight:600}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:26px 0 8px}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
-.kpi.hl{border-color:#e0bd92;background:#f6efdd}
-.kpi .k-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
-.kpi .k-value{font-family:'Fraunces',serif;font-size:30px;font-weight:600;margin-top:6px;letter-spacing:-.01em}
-.kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:4px}
-.kpi .up{display:inline-block;font-size:12px;font-weight:600;padding:1px 7px;border-radius:3px;color:var(--green);background:#e8eedd}
-.kpi .down{display:inline-block;font-size:12px;font-weight:600;padding:1px 7px;border-radius:3px;color:var(--red);background:#f6e3e0}
-.grid{display:grid;gap:14px;padding:8px 0}
+
+/* ---------- KPI tape ---------- */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:28px 0 8px;border-left:1px solid var(--line)}
+.kpi{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px 18px}
+.kpi.hl{border-top-color:var(--accent)}
+.kpi .k-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
+.kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--navy);line-height:1}
+.kpi.hl .k-value{color:var(--ink)}
+.kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:8px}
+.kpi .up,.kpi .down{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.kpi .up{color:var(--pos)}
+.kpi .down{color:var(--neg)}
+
+/* ---------- section heads (card) ---------- */
+.card .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:0}
+.card h2{font-family:'Source Serif 4',Georgia,serif;font-size:21px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+.card .cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em;text-align:right;white-space:nowrap}
+
+.grid{display:grid;gap:22px;padding:30px 0 0}
 .grid.two{grid-template-columns:1fr 1fr}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
-.card h2{font-size:15px;font-weight:700;letter-spacing:-.01em}
-.card .h-sub{font-size:12.5px;color:var(--muted);margin-top:2px;margin-bottom:16px;max-width:760px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 22px;box-shadow:0 1px 0 rgba(34,21,14,.04)}
+.card .h-sub{font-size:12.5px;color:var(--muted);margin-top:9px;margin-bottom:18px;max-width:760px}
 .chart-box{position:relative;height:300px}
 .chart-box.tall{height:360px}
-.reading{font-size:13.5px;color:#46412f;background:#f3edde;border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-top:14px;max-width:860px}
-.reading strong{color:var(--ink)}
+.reading{font-size:13.5px;color:var(--muted);background:var(--band);border-left:3px solid var(--accent);border-radius:0;padding:16px 20px;margin-top:20px;max-width:880px}
+.reading strong{color:var(--ink);font-weight:600}
 table{width:100%;border-collapse:collapse;font-size:13.5px}
-th{text-align:left;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);padding:8px 10px;border-bottom:1px solid var(--line)}
-td{padding:10px;border-bottom:1px solid #e7ddc9}
+th{text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);padding:0 10px 8px;border-bottom:1px solid var(--ink)}
+td{padding:11px 10px;border-bottom:1px solid var(--line)}
 tr:last-child td{border-bottom:0}
-td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td.num,th.num{text-align:right}
+td.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
 .amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
-.pct{font-weight:700;font-variant-numeric:tabular-nums}
-.method{padding:30px 0 10px}
-.method .card{padding:30px 34px}
-.method h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:4px}
-.method h3{font-size:14px;font-weight:700;margin:20px 0 6px}
-.method p{font-size:14px;color:#46412f;max-width:780px}
-footer{margin-top:40px;border-top:2px solid var(--ink);padding:26px 0 38px;font-size:13px;color:var(--muted)}
+.pct{font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink)}
+
+/* ---------- methodology ---------- */
+.method{padding:44px 0 10px}
+.method .card{padding:20px 22px 22px}
+.method .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:0}
+.method h2{font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:700;letter-spacing:-.012em;color:var(--ink)}
+.method .m-cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em}
+.method h3{font-family:'Public Sans',sans-serif;font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin:24px 0 6px;color:var(--ink)}
+.method p{font-size:14px;color:var(--muted);max-width:820px}
+.method p+p{margin-top:8px}
+.method code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:var(--band);padding:1px 5px;border-radius:3px;border:1px solid var(--line)}
+
+/* ---------- footer ---------- */
+footer{margin-top:54px;background:var(--band);border-top:2px solid var(--ink);padding:30px 0 40px;font-size:13px;color:var(--muted)}
+footer a{color:var(--steel)}
 footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-footer .brand{font-size:15px}
+footer .brand{font-size:17px;color:var(--ink)}
+footer .brand svg{color:var(--navy)}
+footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em}
+
 #loader{padding:80px 0;text-align:center;color:var(--muted)}
 .spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -80,18 +119,21 @@ footer .brand{font-size:15px}
 #app{display:none}
 @media(max-width:880px){
   .kpis{grid-template-columns:repeat(2,1fr)}
+  .kpi:nth-child(2){border-right:0}
   .grid.two{grid-template-columns:1fr}
 }
 @media(max-width:560px){
   .kpis{grid-template-columns:1fr 1fr}
-  .kpi .k-value{font-size:24px}
-  .hero{padding-top:30px}
+  .kpi .k-value{font-size:26px}
+  .hero{padding-top:34px}
+  .wrap{padding:0 18px}
+  .series-bar .inner{padding-left:18px;padding-right:18px}
 }
 .menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
 @media(max-width:1023px){
   .menu-btn{display:block}
   .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:59px;left:-24px;right:-24px;background:var(--card);border-bottom:2px solid var(--ink);flex-direction:column;align-items:flex-start;padding:14px 24px;gap:13px;box-shadow:0 10px 20px rgba(63,53,33,.15);z-index:60}
+  .nav-links{display:none;position:absolute;top:61px;left:-28px;right:-28px;background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60}
   .nav-links.open{display:flex}
   .nav-links a.hide-m{display:inline}
 }
@@ -101,7 +143,10 @@ footer .brand{font-size:15px}
 
 <header>
   <div class="wrap nav">
-    <a href="/" style="text-decoration:none"><div class="brand">The Concrete Index<span class="tick">.</span></div></a>
+    <div class="brand">
+      <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#b5482a"/></svg>
+      <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
+    </div>
     <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
     <nav class="nav-links">
       <a href="/pipeline/" class="hide-m">Pipeline</a>
@@ -118,6 +163,10 @@ footer .brand{font-size:15px}
     </nav>
   </div>
 </header>
+
+<div class="series-bar">
+  <div class="inner">SERIES&nbsp;·&nbsp;<b>CI-ANALYSIS</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CITY RECORD (qyyg-4tf5) · CAPITAL PLAN (fb86-vt7u)</b><span class="sep">·</span>BASE&nbsp;·&nbsp;<b>2019 = 100</b><span class="sep">·</span>UPDATED&nbsp;·&nbsp;<b>ON LOAD</b></div>
+</div>
 
 <div class="wrap hero">
   <div class="kicker">Analysis</div>
@@ -147,7 +196,7 @@ footer .brand{font-size:15px}
 
   <section class="grid" id="index">
     <div class="card">
-      <h2>The Concrete Index, 2004 → today</h2>
+      <div class="sec-head"><h2>The Concrete Index, 2004 → today</h2><span class="cap">2019 = 100</span></div>
       <div class="h-sub">Composite of trailing-twelve-month new-award value and award count, megaprojects excluded, 2019 average = 100. One line for the demand cycle: the GFC, the 2010s build-up, COVID, and the current correction.</div>
       <div class="chart-box tall"><canvas id="chart-idx"></canvas></div>
       <div class="reading" id="idx-reading"></div>
@@ -156,13 +205,13 @@ footer .brand{font-size:15px}
 
   <section class="grid two">
     <div class="card" id="seasonality">
-      <h2>When the City buys</h2>
+      <div class="sec-head"><h2>When the City buys</h2><span class="cap">×AVG MONTH</span></div>
       <div class="h-sub">Typical share of annual new-award value by month, 2004–2025. 1.0× = an average month.</div>
       <div class="chart-box"><canvas id="chart-season"></canvas></div>
       <div class="reading" id="season-reading"></div>
     </div>
     <div class="card" id="conversion">
-      <h2>How the pipeline converts</h2>
+      <div class="sec-head"><h2>How the pipeline converts</h2><span class="cap">PHASE ADVANCEMENT</span></div>
       <div class="h-sub" id="conv-sub"></div>
       <table id="tbl-conv">
         <thead><tr><th>Phase</th><th class="num">Projects tracked</th><th class="num">Advanced</th><th class="num">Held in phase</th></tr></thead>
@@ -174,7 +223,7 @@ footer .brand{font-size:15px}
 
   <section class="grid" id="escalation">
     <div class="card">
-      <h2>How project budgets grow</h2>
+      <div class="sec-head"><h2>How project budgets grow</h2><span class="cap">MEDIAN · BY AGENCY</span></div>
       <div class="h-sub" id="esc-sub"></div>
       <div class="chart-box"><canvas id="chart-esc"></canvas></div>
       <div class="reading" id="esc-reading"></div>
@@ -183,7 +232,7 @@ footer .brand{font-size:15px}
 
   <section class="method" id="methodology">
     <div class="card">
-      <h2>Methodology &amp; definitions</h2>
+      <div class="sec-head"><h2>Methodology &amp; definitions</h2><span class="m-cap">SERIES NOTES</span></div>
       <h3>The Concrete Index</h3>
       <p>For each month since 2004, the index combines trailing-twelve-month value and trailing-twelve-month count of <strong>new</strong> construction awards (renewals and extensions excluded by selection method; awards of $500M and above excluded so single megaprojects don't move the cycle reading). The two components are expressed relative to their 2019 averages and blended geometrically; 2019 = 100. Dollars are nominal; the index reads demand activity rather than inflation-adjusted volume.</p>
       <p><strong>Why this differs from the Awarded page total.</strong> The trailing-twelve award figure on the <a href="/">Awarded</a> page is a raw sum of every construction award in the window, including renewals, extensions, and awards of $500M and above. This index deliberately strips all three out to isolate the cycle in genuinely new work. Both numbers are correct for their purpose, so the two pages will show different trailing-twelve totals by design.</p>
@@ -203,12 +252,15 @@ footer .brand{font-size:15px}
 <footer>
   <div class="wrap f-row">
     <div>
-      <div class="brand">The Concrete Index<span class="tick">.</span></div>
-      <div style="margin-top:4px">NYC public construction capital, from commitment to cash.</div>
+      <div class="brand">
+        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#b5482a"/></svg>
+        <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.01em">The Concrete Index<span class="tick" style="color:var(--accent)">.</span></span>
+      </div>
+      <div style="margin-top:8px">NYC public construction capital, from commitment to cash.</div>
     </div>
-    <div style="text-align:right">
+    <div style="text-align:right" class="f-meta">
       <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
-      <div style="margin-top:4px">© 2026 <a href="/about/">Salar Jalinous</a></div>
+      <div style="margin-top:5px">© 2026 <a href="/about/">Salar Jalinous</a></div>
     </div>
   </div>
 </footer>
@@ -413,14 +465,14 @@ function fmtYM(m){ return MONTH_SHORT[+m.slice(5,7)-1] + ' ' + m.slice(0,4); }
 function fmtPeriodLong(p){ return MONTH_NAMES[+p.slice(4,6)-1] + ' ' + p.slice(0,4); }
 
 /* ================= rendering ================= */
-const COLOR_A = '#c2570f', COLOR_B = '#2e5a88', COLOR_C = '#3f6f3f';
-Chart.defaults.font.family = "'Inter',sans-serif";
-Chart.defaults.font.size = 12;
-Chart.defaults.color = '#6e6657';
+const COLOR_A = '#b5482a', COLOR_B = '#243b53', COLOR_C = '#2f7d52', GRID = '#ead9c9';
+Chart.defaults.font.family = "'IBM Plex Mono',monospace";
+Chart.defaults.font.size = 10;
+Chart.defaults.color = '#6e5d52';
 Object.assign(Chart.defaults.plugins.tooltip, {
-  backgroundColor:'#faf6ec', titleColor:'#26231d', bodyColor:'#46412f',
-  borderColor:'#c2570f', borderWidth:1, cornerRadius:4, padding:10, displayColors:false,
-  titleFont:{family:"'Inter',sans-serif",weight:'600',size:12}, bodyFont:{family:"'Inter',sans-serif",size:12},
+  backgroundColor:'#fffaf4', titleColor:'#22150e', bodyColor:'#6e5d52',
+  borderColor:'#b5482a', borderWidth:1, cornerRadius:2, padding:10, displayColors:false,
+  titleFont:{family:"'Public Sans',sans-serif",weight:'600',size:12}, bodyFont:{family:"'IBM Plex Mono',monospace",size:12},
   caretSize:5
 });
 
@@ -444,7 +496,7 @@ function renderIndexChart(){
     type:'line',
     data:{ labels: months.map(fmtYM), datasets:[{
       data: values, borderColor: COLOR_A, borderWidth: 2.2, pointRadius: 0,
-      fill: {target:'origin'}, backgroundColor: 'rgba(194,87,15,0.07)', tension: .25
+      fill: {target:'origin'}, backgroundColor: 'rgba(181,72,42,0.07)', tension: .25
     }]},
     options:{
       responsive:true, maintainAspectRatio:false,
@@ -452,7 +504,7 @@ function renderIndexChart(){
         tooltip:{callbacks:{label:(c)=>'Index: '+c.parsed.y.toFixed(1)}} },
       scales:{
         x:{grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:12}},
-        y:{grid:{color:'#e4dac4'}, border:{display:false}, ticks:{maxTicksLimit:6}}
+        y:{grid:{color:GRID}, border:{display:false}, ticks:{maxTicksLimit:6}}
       }
     }
   });
@@ -478,7 +530,7 @@ function renderSeasonality(){
         tooltip:{callbacks:{label:(c)=> c.parsed.y.toFixed(2)+'× an average month'}} },
       scales:{
         x:{grid:{display:false}},
-        y:{grid:{color:'#e4dac4'}, border:{display:false}, ticks:{callback:v=>v.toFixed(1)+'×', maxTicksLimit:5}}
+        y:{grid:{color:GRID}, border:{display:false}, ticks:{callback:v=>v.toFixed(1)+'×', maxTicksLimit:5}}
       }
     }
   });
@@ -518,7 +570,7 @@ function renderEscalation(){
       plugins:{ legend:{display:false},
         tooltip:{callbacks:{label:(c)=> '+'+c.parsed.x.toFixed(1)+'% median · '+fmtInt(D.esc.agRows[c.dataIndex][2])+' projects'}} },
       scales:{
-        x:{grid:{color:'#e4dac4'}, border:{display:false}, ticks:{callback:v=>'+'+v+'%', maxTicksLimit:6}},
+        x:{grid:{color:GRID}, border:{display:false}, ticks:{callback:v=>'+'+v+'%', maxTicksLimit:6}},
         y:{grid:{display:false}, ticks:{autoSkip:false, font:{size:11.5}}}
       }
     }
