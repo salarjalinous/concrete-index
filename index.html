@@ -108,12 +108,19 @@ footer .brand{font-size:15px}
 @media(max-width:880px){
   .kpis{grid-template-columns:repeat(2,1fr)}
   .grid.two{grid-template-columns:1fr}
-  .nav-links a.hide-m{display:none}
 }
 @media(max-width:560px){
   .kpis{grid-template-columns:1fr 1fr}
   .kpi .k-value{font-size:24px}
   .hero{padding-top:30px}
+}
+.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
+@media(max-width:1023px){
+  .menu-btn{display:block}
+  .nav{position:relative}
+  .nav-links{display:none;position:absolute;top:59px;left:-24px;right:-24px;background:var(--card);border-bottom:2px solid var(--ink);flex-direction:column;align-items:flex-start;padding:14px 24px;gap:13px;box-shadow:0 10px 20px rgba(63,53,33,.15);z-index:60}
+  .nav-links.open{display:flex}
+  .nav-links a.hide-m{display:inline}
 }
 </style>
 </head>
@@ -122,6 +129,7 @@ footer .brand{font-size:15px}
 <header>
   <div class="wrap nav">
     <div class="brand">The Concrete Index<span class="tick">.</span></div>
+    <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
     <nav class="nav-links">
       <a href="/pipeline/">Pipeline</a>
       <a href="/solicitations/">Bidding</a>
@@ -138,7 +146,7 @@ footer .brand{font-size:15px}
 
 <div class="wrap hero">
   <h1>NYC public construction capital, from commitment to cash.</h1>
-  <p class="sub">The Concrete Index tracks the demand side of New York City public construction, which agencies are putting work into the market, who is winning it, and where the dollars are heading. Built entirely on the City's public record.</p>
+  <p class="sub">The Concrete Index reads the City Record the way an analyst would if they had the time: every construction award notice the City publishes, pulled through the Socrata API, deduplicated, classified by selection method, and totaled on the spot. It shows which agencies are letting work, who keeps winning it, and how the bid market is actually trending.</p>
   <p class="asof" id="asof">Loading latest award data…</p>
 </div>
 
@@ -236,7 +244,7 @@ footer .brand{font-size:15px}
       <h3>Source</h3>
       <p>All figures are drawn live from <a href="https://data.cityofnewyork.us/City-Government/Recent-Contract-Awards/qyyg-4tf5" target="_blank" rel="noopener">Recent Contract Awards</a> on NYC Open Data (dataset <code>qyyg-4tf5</code>), the City Record's public notice of contract awards, maintained by the NYC Department of Citywide Administrative Services. The dataset is updated daily; this page queries it directly every time it loads, so what you see is the current public record.</p>
       <h3>What counts as an award</h3>
-      <p>Each record is a contract award notice published in the City Record. Dollar values are the contract amounts as published at award. An award notice precedes contract registration with the Comptroller and actual spending, it measures demand entering the market, not cash out the door.</p>
+      <p>Each record is a contract award notice published in the City Record. Dollar values are the contract amounts as published at award. An award notice comes before contract registration with the Comptroller and well before any payment. It measures demand entering the market rather than cash out the door.</p>
       <h3>Scope</h3>
       <p>The index covers the two construction categories in the City's procurement taxonomy: <strong>Construction/Construction Services</strong> (hard construction) and <strong>Construction Related Services</strong> (design, engineering, construction management). The scope control above lets you view either or both. Awards with no positive published value are excluded.</p>
       <h3>Geography</h3>
