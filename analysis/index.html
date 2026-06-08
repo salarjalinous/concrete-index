@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analysis — The Concrete Index</title>
+<meta name="description" content="The Concrete Index: a composite measure of NYC public construction demand since 2004, plus seasonality, budget escalation, and pipeline conversion analysis.">
+<meta property="og:title" content="The Concrete Index — Analysis">
+<meta property="og:description" content="Two decades of NYC construction demand, in one number.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23d97706'/%3E%3Crect x='25' y='55' width='50' height='20' rx='4' fill='white'/%3E%3Crect x='35' y='30' width='30' height='18' rx='4' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#f7f6f3; --card:#ffffff; --ink:#1a1d21; --muted:#6b7280; --faint:#9ca3af;
+  --line:#e7e4dd; --accent:#d97706; --accent-deep:#b45309; --steel:#475569;
+  --green:#15803d; --red:#b91c1c;
+  --radius:10px; --shadow:0 1px 2px rgba(26,29,33,.05),0 4px 14px rgba(26,29,33,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--accent-deep);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+header{border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:50}
+.nav{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{font-family:'Fraunces',serif;font-weight:700;font-size:19px;letter-spacing:.01em;color:var(--ink)}
+.brand .tick{color:var(--accent)}
+.nav-links{display:flex;gap:18px;align-items:center;font-size:13.5px;font-weight:500}
+.nav-links a{color:var(--muted)}
+.nav-links a:hover{color:var(--ink);text-decoration:none}
+.nav-links a.active{color:var(--ink);font-weight:600}
+.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green);background:#f0fdf4;border:1px solid #bbf7d0;border-radius:999px;padding:3px 10px}
+.badge-live .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hero{padding:44px 0 6px}
+.kicker{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent-deep)}
+.hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(28px,4vw,40px);line-height:1.15;max-width:780px;margin-top:8px}
+.hero p.sub{margin-top:12px;font-size:16px;color:var(--muted);max-width:680px}
+.hero .asof{margin-top:12px;font-size:13px;color:var(--faint)}
+.hero .asof strong{color:var(--muted);font-weight:600}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:26px 0 8px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+.kpi.hl{border-color:#f3d9b5;background:#fffaf2}
+.kpi .k-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
+.kpi .k-value{font-family:'Fraunces',serif;font-size:30px;font-weight:600;margin-top:6px;letter-spacing:-.01em}
+.kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:4px}
+.kpi .up{color:var(--green);font-weight:600}
+.kpi .down{color:var(--red);font-weight:600}
+.grid{display:grid;gap:14px;padding:8px 0}
+.grid.two{grid-template-columns:1fr 1fr}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.card h2{font-size:15px;font-weight:700;letter-spacing:-.01em}
+.card .h-sub{font-size:12.5px;color:var(--muted);margin-top:2px;margin-bottom:16px;max-width:760px}
+.chart-box{position:relative;height:300px}
+.chart-box.tall{height:360px}
+.reading{font-size:13.5px;color:#374151;background:#faf9f6;border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-top:14px;max-width:860px}
+.reading strong{color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:10px;border-bottom:1px solid #f1efe9}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pct{font-weight:700;font-variant-numeric:tabular-nums}
+.method{padding:30px 0 10px}
+.method .card{padding:30px 34px}
+.method h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:4px}
+.method h3{font-size:14px;font-weight:700;margin:20px 0 6px}
+.method p{font-size:14px;color:#374151;max-width:780px}
+footer{margin-top:40px;border-top:1px solid var(--line);padding:26px 0 38px;font-size:13px;color:var(--muted)}
+footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer .brand{font-size:15px}
+#loader{padding:80px 0;text-align:center;color:var(--muted)}
+.spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#error{display:none;padding:60px 24px;text-align:center;color:var(--muted)}
+#app{display:none}
+@media(max-width:880px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .grid.two{grid-template-columns:1fr}
+  .nav-links a.hide-m{display:none}
+}
+@media(max-width:560px){
+  .kpis{grid-template-columns:1fr 1fr}
+  .kpi .k-value{font-size:24px}
+  .hero{padding-top:30px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="/" style="text-decoration:none"><div class="brand">The Concrete Index<span class="tick">.</span></div></a>
+    <nav class="nav-links">
+      <a href="/pipeline/" class="hide-m">Pipeline</a>
+      <a href="/solicitations/" class="hide-m">Bidding</a>
+      <a href="/">Awarded</a>
+      <a href="/funnel/" class="hide-m">Funnel</a>
+      <a href="/analysis/" class="active">Analysis</a>
+      <a href="/briefing/">Briefing</a>
+      <span class="badge-live"><span class="dot"></span>Live data</span>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <div class="kicker">Analysis</div>
+  <h1>Two decades of demand, in one number.</h1>
+  <p class="sub">The Concrete Index condenses the City's construction award record into a single composite measure, then digs into the patterns underneath: when the City buys, how project budgets grow, and how fast the pipeline converts.</p>
+  <p class="asof" id="asof">Computing from the public record…</p>
+</div>
+
+<div id="loader" class="wrap">
+  <div class="spinner"></div>
+  Computing two decades of award history and three capital plan snapshots…
+</div>
+
+<div id="error" class="wrap">
+  <p><strong>Couldn't reach NYC Open Data.</strong></p>
+  <p style="margin-top:6px">The City's API may be momentarily unavailable. Please refresh the page to try again.</p>
+</div>
+
+<main id="app" class="wrap">
+
+  <section class="kpis">
+    <div class="kpi hl"><div class="k-label">The Concrete Index</div><div class="k-value" id="kpi-idx">—</div><div class="k-note" id="kpi-idx-note"></div></div>
+    <div class="kpi"><div class="k-label">vs year ago</div><div class="k-value" id="kpi-yoy">—</div><div class="k-note">composite demand, new awards</div></div>
+    <div class="kpi"><div class="k-label">Next in line</div><div class="k-value" id="kpi-proc">—</div><div class="k-note">unspent $ in construction procurement — nearest-term award supply</div></div>
+    <div class="kpi"><div class="k-label">Budget escalation</div><div class="k-value" id="kpi-esc">—</div><div class="k-note" id="kpi-esc-note"></div></div>
+  </section>
+
+  <section class="grid" id="index">
+    <div class="card">
+      <h2>The Concrete Index, 2004 → today</h2>
+      <div class="h-sub">Composite of trailing-twelve-month new-award value and award count, megaprojects excluded, 2019 average = 100. One line for the demand cycle: the GFC, the 2010s build-up, COVID, and the current correction.</div>
+      <div class="chart-box tall"><canvas id="chart-idx"></canvas></div>
+      <div class="reading" id="idx-reading"></div>
+    </div>
+  </section>
+
+  <section class="grid two">
+    <div class="card" id="seasonality">
+      <h2>When the City buys</h2>
+      <div class="h-sub">Typical share of annual new-award value by month, 2004–2025. 1.0× = an average month.</div>
+      <div class="chart-box"><canvas id="chart-season"></canvas></div>
+      <div class="reading" id="season-reading"></div>
+    </div>
+    <div class="card" id="conversion">
+      <h2>How the pipeline converts</h2>
+      <div class="h-sub" id="conv-sub"></div>
+      <table id="tbl-conv">
+        <thead><tr><th>Phase</th><th class="num">Projects tracked</th><th class="num">Advanced</th><th class="num">Held in phase</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="reading" id="conv-reading"></div>
+    </div>
+  </section>
+
+  <section class="grid" id="escalation">
+    <div class="card">
+      <h2>How project budgets grow</h2>
+      <div class="h-sub" id="esc-sub"></div>
+      <div class="chart-box"><canvas id="chart-esc"></canvas></div>
+      <div class="reading" id="esc-reading"></div>
+    </div>
+  </section>
+
+  <section class="method" id="methodology">
+    <div class="card">
+      <h2>Methodology &amp; definitions</h2>
+      <h3>The Concrete Index</h3>
+      <p>For each month since 2004, the index combines trailing-twelve-month value and trailing-twelve-month count of <strong>new</strong> construction awards (renewals and extensions excluded by selection method; awards of $500M and above excluded so single megaprojects don't move the cycle reading). The two components are expressed relative to their 2019 averages and blended geometrically; 2019 = 100. Dollars are nominal — the index reads demand activity, not inflation-adjusted volume.</p>
+      <h3>Seasonality</h3>
+      <p>For each complete calendar year, each month's share of that year's new-award value is computed; the profile shows the median share across years, scaled so 1.0 equals an average month. Medians keep single unusual years from distorting the profile.</p>
+      <h3>Pipeline conversion</h3>
+      <p>Projects are matched across consecutive capital plan snapshots (roughly four months apart) by agency and FMS ID, pooled over the two most recent transitions. A project "advances" when its delivery phase moves forward in the sequence pending → pre-design → design → procurement → construction → close-out. Projects that leave the dataset between snapshots are not counted.</p>
+      <h3>Budget escalation</h3>
+      <p>Projects present in both the earliest available plan snapshot (May 2023) and the most recent one, with budgets above $1M in both, are matched by agency and FMS ID. Escalation is each project's total-budget growth across that span; the headline figure is the median. Budget growth blends scope changes and cost escalation — the public record doesn't separate the two, so neither does this page.</p>
+      <h3>Sources</h3>
+      <p>Award history: City Record Recent Contract Awards (<code>qyyg-4tf5</code>), 2003→present. Capital plan: Capital Projects Dashboard (<code>fb86-vt7u</code>), snapshots May 2023→present. Both on NYC Open Data, queried live on every page load.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap f-row">
+    <div>
+      <div class="brand">The Concrete Index<span class="tick">.</span></div>
+      <div style="margin-top:4px">NYC public construction capital, from commitment to cash.</div>
+    </div>
+    <div style="text-align:right">
+      <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
+      <div style="margin-top:4px">© 2026 Salar Jalinous</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+'use strict';
+/* ================= data ================= */
+const AWARD_API = 'https://data.cityofnewyork.us/resource/qyyg-4tf5.json';
+const PLAN_API = 'https://data.cityofnewyork.us/resource/fb86-vt7u.json';
+const MEGA = 500e6;
+
+async function getJSON(api, params){
+  const res = await fetch(api + '?' + new URLSearchParams(params));
+  if(!res.ok) throw new Error('API ' + res.status);
+  return res.json();
+}
+function isContinuation(m){ return /renewal|extension/i.test(m||''); }
+
+/* plan normalization — same rules as the rest of the site */
+const PHASE_MAP = {
+  'pending':'Pending','initiation':'Pending','pre-design':'Pre-Design','predesign':'Pre-Design',
+  'design':'Design','construction procurement':'Procurement','construction':'Construction',
+  'design build':'Construction','design built':'Construction','close-out':'Close-out','closeout':'Close-out'
+};
+const EXCLUDED = new Set(['completed','cancelled','inactive','on-hold','on hold','transferred',
+  'withdrawn','terminated','defaulted','capitally ineligible','expense']);
+const PHASE_ORDER = ['Pending','Pre-Design','Design','Procurement','Construction','Close-out'];
+function normPhase(raw){
+  const p = (raw||'').replace(/[()]/g,'').trim().toLowerCase();
+  if(EXCLUDED.has(p)) return 'excluded';
+  return PHASE_MAP[p] || 'Other active';
+}
+function rank(b){ return PHASE_ORDER.indexOf(b); } // -1 for Other active/excluded
+function collapseSnapshot(rows){
+  const m = new Map();
+  for(const r of rows){
+    const key = (r.managing_agency||'') + '|' + (r.fms_id||r.fms_project_name||'');
+    const bucket = normPhase(r.current_phase);
+    const rec = { spend:Math.max(parseFloat(r.spend_to_date)||0,0),
+      budget:Math.max(parseFloat(r.total_budget)||0,0), bucket };
+    const prev = m.get(key);
+    if(!prev || (rank(bucket) > rank(prev.bucket))) m.set(key, rec);
+  }
+  return m;
+}
+
+const D = {};
+
+async function fetchAll(){
+  // 1. full monthly award history with selection-method dimension, megas excluded server-side
+  const monthlyP = getJSON(AWARD_API, {
+    '$select':'date_trunc_ym(start_date) as m,selection_method_description as sm,sum(contract_amount) as s,count(*) as n',
+    '$where':`starts_with(category_description,'Construction') AND contract_amount>0 AND contract_amount<${MEGA}`,
+    '$group':'m,sm','$order':'m','$limit':'20000'
+  });
+  // 2. plan snapshots: earliest, prior two, latest
+  const periods = (await getJSON(PLAN_API, {
+    '$select':'reporting_period','$group':'reporting_period','$order':'reporting_period','$limit':'60'
+  })).map(p=>p.reporting_period);
+  const need = [periods[0], ...periods.slice(-3)]; // earliest + last three
+  const FIELDS = 'fms_id,fms_project_name,managing_agency,spend_to_date,total_budget,current_phase';
+  const snapRows = await Promise.all(need.map(p => getJSON(PLAN_API, {
+    '$select': FIELDS, '$where': `reporting_period='${p}'`, '$limit':'20000'
+  })));
+  D.periods = need;
+  D.snaps = snapRows.map(collapseSnapshot);
+  D.monthly = await monthlyP;
+}
+
+/* ================= the index ================= */
+function buildIndex(){
+  // monthly new-award value/count
+  const byMonth = new Map();
+  for(const r of D.monthly){
+    if(isContinuation(r.sm)) continue;
+    const m = r.m.slice(0,7);
+    const cur = byMonth.get(m) || {v:0,c:0};
+    cur.v += parseFloat(r.s)||0; cur.c += parseInt(r.n)||0;
+    byMonth.set(m, cur);
+  }
+  // continuous month list from 2003-01 through last complete month
+  const now = new Date();
+  const lastComplete = new Date(now.getFullYear(), now.getMonth(), 1); // exclude current month
+  const months = [];
+  const cur = new Date(2003, 0, 1);
+  while(cur < lastComplete){
+    months.push(cur.toISOString().slice(0,7));
+    cur.setMonth(cur.getMonth()+1);
+  }
+  const v = months.map(m => (byMonth.get(m)||{v:0}).v);
+  const c = months.map(m => (byMonth.get(m)||{c:0}).c);
+  // trailing-12 sums
+  const ttmMonths = [], ttmV = [], ttmC = [];
+  let sv=0, sc=0;
+  for(let i=0;i<months.length;i++){
+    sv+=v[i]; sc+=c[i];
+    if(i>=12){ sv-=v[i-12]; sc-=c[i-12]; }
+    if(i>=11){ ttmMonths.push(months[i]); ttmV.push(sv); ttmC.push(sc); }
+  }
+  // base = 2019 average
+  const baseIdx = ttmMonths.map((m,i)=>m.startsWith('2019')?i:-1).filter(i=>i>=0);
+  const mean = a => a.reduce((x,y)=>x+y,0)/a.length;
+  const baseV = baseIdx.length ? mean(baseIdx.map(i=>ttmV[i])) : ttmV[0];
+  const baseC = baseIdx.length ? mean(baseIdx.map(i=>ttmC[i])) : ttmC[0];
+  const idx = ttmMonths.map((m,i)=> 100*Math.sqrt((ttmV[i]/baseV)*(ttmC[i]/baseC)));
+  D.idx = { months: ttmMonths, values: idx };
+  D.monthlyNew = { months, v };
+}
+
+/* ================= seasonality ================= */
+function buildSeasonality(){
+  const { months, v } = D.monthlyNew;
+  const years = {};
+  months.forEach((m,i)=>{
+    const y = m.slice(0,4);
+    (years[y] = years[y] || Array(12).fill(0))[+m.slice(5,7)-1] += v[i];
+  });
+  const lastFullYear = new Date().getFullYear()-1;
+  const shares = Array.from({length:12}, ()=>[]);
+  for(const y of Object.keys(years)){
+    if(+y < 2004 || +y > lastFullYear) continue;
+    const tot = years[y].reduce((a,b)=>a+b,0);
+    if(tot<=0) continue;
+    years[y].forEach((mv,mi)=> shares[mi].push(mv/tot*12));
+  }
+  const median = a => { const s=[...a].sort((x,y)=>x-y); const m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; };
+  D.season = shares.map(median);
+}
+
+/* ================= conversion ================= */
+function buildConversion(){
+  // pooled over last two transitions: snaps[1]→snaps[2], snaps[2]→snaps[3]
+  const stats = {};
+  for(const ph of ['Pending','Pre-Design','Design','Procurement']) stats[ph] = {n:0, adv:0, held:0};
+  for(let t=1; t<3; t++){
+    const a = D.snaps[t], b = D.snaps[t+1];
+    for(const [key, ra] of a){
+      if(!(ra.bucket in stats)) continue;
+      const rb = b.get(key);
+      if(!rb || rb.bucket==='excluded') continue;
+      stats[ra.bucket].n++;
+      if(rank(rb.bucket) > rank(ra.bucket)) stats[ra.bucket].adv++;
+      else if(rb.bucket === ra.bucket) stats[ra.bucket].held++;
+    }
+  }
+  D.conv = stats;
+  // nearest-term award supply: unspent in Procurement, latest snapshot
+  let proc = 0;
+  for(const rec of D.snaps[3].values())
+    if(rec.bucket==='Procurement') proc += Math.max(rec.budget-rec.spend,0);
+  D.procUnspent = proc;
+}
+
+/* ================= escalation ================= */
+function buildEscalation(){
+  const a = D.snaps[0], b = D.snaps[3];
+  const growths = [];
+  let added = 0;
+  for(const [key, ra] of a){
+    const rb = b.get(key);
+    if(!rb || ra.budget < 1e6 || rb.budget < 1e6) continue;
+    growths.push({ key, g: rb.budget/ra.budget - 1 });
+    added += rb.budget - ra.budget;
+  }
+  growths.sort((x,y)=>x.g-y.g);
+  const median = growths.length ? growths[Math.floor(growths.length/2)].g : 0;
+  const grew = growths.filter(x=>x.g>0.05).length;
+  // per-agency medians (agency = key prefix), min 30 matched projects
+  const byAg = new Map();
+  for(const x of growths){
+    const ag = x.key.split('|')[0];
+    (byAg.get(ag) || byAg.set(ag, []).get(ag)).push(x.g);
+  }
+  const agRows = [...byAg.entries()].filter(([,v])=>v.length>=30)
+    .map(([ag,v])=>{ v.sort((x,y)=>x-y); return [ag, v[Math.floor(v.length/2)], v.length]; })
+    .sort((x,y)=>y[1]-x[1]).slice(0,8);
+  D.esc = { n: growths.length, median, grewShare: growths.length? grew/growths.length : 0, added, agRows };
+}
+
+/* ================= formatting ================= */
+const AGENCY_NAMES = {
+  DPR:'Parks & Recreation', DDC:'Design & Construction', DOT:'Transportation',
+  EDC:'Economic Development', DEP:'Environmental Protection', HHC:'NYC Health + Hospitals',
+  DCAS:'Citywide Admin Services', CUNY:'CUNY', NYPD:'Police', FDNY:'Fire',
+  DCLA:'Cultural Affairs', DHS:'Homeless Services', DSNY:'Sanitation',
+  QPL:'Queens Public Library', DOC:'Correction', DOHMH:'Health & Mental Hygiene',
+  BPL:'Brooklyn Public Library', NYPL:'New York Public Library', HRA:'Human Resources Admin',
+  DFTA:'Aging', ACS:'Children’s Services', HPD:'Housing Preservation & Dev'
+};
+function agencyLabel(c){ return AGENCY_NAMES[c] ? `${AGENCY_NAMES[c]} (${c})` : c; }
+function fmtMoney(v){
+  if(v >= 1e9) return '$' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2) + 'B';
+  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
+  return '$' + Math.round(v/1e3) + 'K';
+}
+function fmtInt(v){ return v.toLocaleString('en-US'); }
+function fmtPct(v){ return (v*100).toFixed(0) + '%'; }
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmtYM(m){ return MONTH_SHORT[+m.slice(5,7)-1] + ' ' + m.slice(0,4); }
+function fmtPeriodLong(p){ return MONTH_NAMES[+p.slice(4,6)-1] + ' ' + p.slice(0,4); }
+
+/* ================= rendering ================= */
+const COLOR_A = '#d97706', COLOR_B = '#64748b', COLOR_C = '#15803d';
+Chart.defaults.font.family = "'Inter',sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.color = '#6b7280';
+
+function renderKpis(){
+  const { months, values } = D.idx;
+  const last = values[values.length-1];
+  const yoy = values.length>12 ? (last/values[values.length-13]-1)*100 : null;
+  document.getElementById('kpi-idx').textContent = last.toFixed(1);
+  document.getElementById('kpi-idx-note').textContent = fmtYM(months[months.length-1]) + ' · 2019 = 100';
+  document.getElementById('kpi-yoy').innerHTML = yoy===null ? '—' :
+    `<span class="${yoy>=0?'up':'down'}">${yoy>=0?'▲':'▼'} ${Math.abs(yoy).toFixed(0)}%</span>`;
+  document.getElementById('kpi-proc').textContent = fmtMoney(D.procUnspent);
+  document.getElementById('kpi-esc').textContent = '+' + fmtPct(D.esc.median);
+  document.getElementById('kpi-esc-note').textContent =
+    `median project, ${fmtPeriodLong(D.periods[0])} → ${fmtPeriodLong(D.periods[3])}`;
+}
+
+function renderIndexChart(){
+  const { months, values } = D.idx;
+  new Chart(document.getElementById('chart-idx'), {
+    type:'line',
+    data:{ labels: months.map(fmtYM), datasets:[{
+      data: values, borderColor: COLOR_A, borderWidth: 2.2, pointRadius: 0,
+      fill: {target:'origin'}, backgroundColor: 'rgba(217,119,6,0.06)', tension: .25
+    }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false},
+        tooltip:{callbacks:{label:(c)=>'Index: '+c.parsed.y.toFixed(1)}} },
+      scales:{
+        x:{grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:12}},
+        y:{grid:{color:'#f1efe9'}, border:{display:false}, ticks:{maxTicksLimit:6}}
+      }
+    }
+  });
+  const { values: v, months: m } = D.idx;
+  const last = v[v.length-1];
+  const peak = v.reduce((a,x,i)=> x>v[a]?i:a, 0);
+  document.getElementById('idx-reading').innerHTML =
+    `<strong>Reading:</strong> the index stands at <strong>${last.toFixed(1)}</strong> — ` +
+    (last<90 ? 'below its 2019 baseline' : last>110 ? 'above its 2019 baseline' : 'near its 2019 baseline') +
+    `. The series peaked at <strong>${v[peak].toFixed(1)}</strong> in ${fmtYM(m[peak])}. ` +
+    `Because megaprojects and renewals are excluded, this line tracks the breadth-and-volume cycle of new work reaching the market, not one-off awards.`;
+}
+
+function renderSeasonality(){
+  new Chart(document.getElementById('chart-season'), {
+    type:'bar',
+    data:{ labels: MONTH_SHORT, datasets:[{
+      data: D.season, backgroundColor: D.season.map(s=> s===Math.max(...D.season) ? COLOR_A : COLOR_B), borderRadius:3
+    }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false},
+        tooltip:{callbacks:{label:(c)=> c.parsed.y.toFixed(2)+'× an average month'}} },
+      scales:{
+        x:{grid:{display:false}},
+        y:{grid:{color:'#f1efe9'}, border:{display:false}, ticks:{callback:v=>v.toFixed(1)+'×', maxTicksLimit:5}}
+      }
+    }
+  });
+  const hi = D.season.indexOf(Math.max(...D.season));
+  const lo = D.season.indexOf(Math.min(...D.season));
+  document.getElementById('season-reading').innerHTML =
+    `<strong>Reading:</strong> ${MONTH_NAMES[hi]} is the City's heaviest awarding month (${D.season[hi].toFixed(2)}× average) and ${MONTH_NAMES[lo]} the lightest (${D.season[lo].toFixed(2)}×). The fiscal-year rhythm matters: a slow ${MONTH_NAMES[lo]} isn't a slowdown, and a strong ${MONTH_NAMES[hi]} isn't a boom.`;
+}
+
+function renderConversion(){
+  document.getElementById('conv-sub').textContent =
+    `Phase advancement across the last two plan-to-plan transitions (${fmtPeriodLong(D.periods[1])} → ${fmtPeriodLong(D.periods[3])})`;
+  const tb = document.querySelector('#tbl-conv tbody');
+  tb.innerHTML = ['Pending','Pre-Design','Design','Procurement'].map(ph=>{
+    const s = D.conv[ph];
+    return `<tr><td><span style="font-weight:600">${ph}</span></td>
+      <td class="num">${fmtInt(s.n)}</td>
+      <td class="num"><span class="pct">${s.n? fmtPct(s.adv/s.n) : '—'}</span></td>
+      <td class="num">${s.n? fmtPct(s.held/s.n) : '—'}</td></tr>`;
+  }).join('');
+  const p = D.conv['Procurement'];
+  const rate = p.n ? p.adv/p.n : 0;
+  document.getElementById('conv-reading').innerHTML =
+    `<strong>Reading:</strong> ${fmtPct(rate)} of procurement-phase projects reach construction within ~4 months — the fastest gate in the sequence. Applied to the <strong>${fmtMoney(D.procUnspent)}</strong> currently sitting in procurement, that is the nearest-term supply of new awards.`;
+}
+
+function renderEscalation(){
+  document.getElementById('esc-sub').textContent =
+    `Median total-budget growth for projects tracked from ${fmtPeriodLong(D.periods[0])} to ${fmtPeriodLong(D.periods[3])} — agencies with 30+ matched projects`;
+  new Chart(document.getElementById('chart-esc'), {
+    type:'bar',
+    data:{ labels: D.esc.agRows.map(r=>agencyLabel(r[0])), datasets:[{
+      data: D.esc.agRows.map(r=>r[1]*100), backgroundColor: COLOR_A, borderRadius:3, barThickness:18
+    }]},
+    options:{
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false},
+        tooltip:{callbacks:{label:(c)=> '+'+c.parsed.x.toFixed(1)+'% median · '+fmtInt(D.esc.agRows[c.dataIndex][2])+' projects'}} },
+      scales:{
+        x:{grid:{color:'#f1efe9'}, border:{display:false}, ticks:{callback:v=>'+'+v+'%', maxTicksLimit:6}},
+        y:{grid:{display:false}, ticks:{autoSkip:false, font:{size:11.5}}}
+      }
+    }
+  });
+  document.getElementById('esc-reading').innerHTML =
+    `<strong>Reading:</strong> across <strong>${fmtInt(D.esc.n)}</strong> projects tracked over the span, the median budget grew <strong>+${fmtPct(D.esc.median)}</strong> and ${fmtPct(D.esc.grewShare)} of projects grew more than 5%. In aggregate the City added <strong>${fmtMoney(Math.abs(D.esc.added))}</strong> ${D.esc.added>=0?'to':'(net reduction) from'} the budgets of already-planned projects — demand growth that never appears as a new project announcement.`;
+}
+
+(async function init(){
+  try{
+    await fetchAll();
+    buildIndex(); buildSeasonality(); buildConversion(); buildEscalation();
+  }catch(e){
+    document.getElementById('loader').style.display='none';
+    document.getElementById('error').style.display='block';
+    return;
+  }
+  document.getElementById('asof').innerHTML =
+    `Award history since 2003 · capital plan snapshots ${fmtPeriodLong(D.periods[0])} → ${fmtPeriodLong(D.periods[3])} · recomputed live on every load`;
+  document.getElementById('loader').style.display='none';
+  document.getElementById('app').style.display='block';
+  renderKpis(); renderIndexChart(); renderSeasonality(); renderConversion(); renderEscalation();
+})();
+
+</script>
+</body>
+</html>
