@@ -7,73 +7,107 @@
 <meta name="description" content="Every open NYC construction solicitation in one place, what's bidding right now, from the City Record, refreshed on every load.">
 <meta property="og:title" content="The Concrete Index · Open Solicitations">
 <meta property="og:description" content="NYC construction work bidding right now.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23c2570f'/%3E%3Crect x='25' y='55' width='50' height='20' rx='4' fill='white'/%3E%3Crect x='35' y='30' width='30' height='18' rx='4' fill='white'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23b5482a%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#ece4d2; --card:#faf6ec; --ink:#26231d; --muted:#6e6657; --faint:#9a9081;
-  --line:#d9cdb4; --accent:#c2570f; --accent-deep:#9a4509; --steel:#2e5a88;
-  --green:#3f6f3f; --red:#a83232;
-  --radius:4px; --shadow:0 1px 0 rgba(63,53,33,.06);
+  --paper:#fbf2ea; --surface:#fffaf4; --band:#f6ece2;
+  --ink:#22150e; --navy:#243b53; --muted:#6e5d52; --faint:#9b8979;
+  --line:#e4d4c5; --rule:#22150e;
+  --accent:#b5482a; --accent-soft:#f1d9cd; --steel:#2f5d8f;
+  --pos:#2f7d52; --neg:#a3302a; --radius:3px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
-a{color:var(--accent-deep);text-decoration:none}
+html{scroll-behavior:smooth}
+body{font-family:'Public Sans',-apple-system,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--steel);text-decoration:none}
 a:hover{text-decoration:underline}
-.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
-header{border-bottom:2px solid var(--ink);background:var(--card);position:sticky;top:0;z-index:50}
-.nav{display:flex;align-items:center;justify-content:space-between;height:60px}
-.brand{font-family:'Fraunces',serif;font-weight:700;font-size:19px;letter-spacing:.01em;color:var(--ink)}
+.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+.serif{font-family:'Source Serif 4',Georgia,serif}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+
+/* ---------- header ---------- */
+header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2px solid var(--ink)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:62px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:20px;letter-spacing:-.01em;color:var(--ink)}
+.brand svg{color:var(--navy);flex-shrink:0}
 .brand .tick{color:var(--accent)}
-.nav-links{display:flex;gap:20px;align-items:center;font-size:13.5px;font-weight:500}
+.nav-links{display:flex;gap:17px;align-items:center;font-size:13.5px;font-weight:500}
 .nav-links a{color:var(--muted)}
 .nav-links a:hover{color:var(--ink);text-decoration:none}
-.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent)}
-.badge-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green);background:#e8eedd;border:1px solid #c2cfa8;border-radius:var(--radius);padding:3px 10px}
-.badge-live .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2.4s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-.hero{padding:44px 0 10px}
-.hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(28px,4vw,40px);line-height:1.15;max-width:760px}
-.hero p.sub{margin-top:12px;font-size:16px;color:var(--muted);max-width:660px}
-.hero .asof{margin-top:14px;font-size:13px;color:var(--faint)}
+.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px}
+.badge-live{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--pos);background:rgba(47,125,82,.1);border:1px solid rgba(47,125,82,.34);border-radius:3px;padding:3px 9px}
+.badge-live .dot{width:6px;height:6px;border-radius:50%;background:var(--pos);animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ---------- release-series bar ---------- */
+.series-bar{background:var(--band);border-bottom:1px solid var(--line)}
+.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px 28px;max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.series-bar b{color:var(--ink);font-weight:600}
+.series-bar .sep{color:var(--faint);padding:0 12px}
+@media(max-width:720px){.series-bar .inner{white-space:normal}}
+
+/* ---------- hero ---------- */
+.hero{padding:46px 0 14px}
+.kicker{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:14px}
+.hero h1{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(32px,4.6vw,46px);line-height:1.06;letter-spacing:-.012em;max-width:840px;color:var(--ink)}
+.hero p.sub{margin-top:17px;font-size:16px;color:var(--muted);max-width:700px}
+.hero .asof{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--faint)}
 .hero .asof strong{color:var(--muted);font-weight:600}
-.controls{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:22px 0 6px}
-.seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:3px;box-shadow:var(--shadow);flex-wrap:wrap}
-.seg button{border:0;background:transparent;font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:6px 14px;border-radius:3px;cursor:pointer;transition:all .15s}
+
+/* ---------- controls ---------- */
+.controls{display:flex;flex-wrap:wrap;gap:14px 16px;align-items:center;padding:30px 0 4px}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:6px 13px;border-radius:2px;cursor:pointer;transition:all .12s}
 .seg button:hover{color:var(--ink)}
-.seg button.on{background:var(--ink);color:#fff}
-.ctl-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin-right:-4px}
+.seg button.on{background:var(--ink);color:var(--paper)}
+.ctl-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-right:-4px}
 .search{flex:1;min-width:200px;max-width:340px}
-.search input{width:100%;font:inherit;font-size:13.5px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
-.search input:focus{outline:2px solid #e0bd92}
-.grid{display:grid;gap:14px;padding:14px 0}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
-.sol{display:flex;gap:18px;justify-content:space-between;border-bottom:1px solid #e7ddc9;padding:16px 0}
+.search input{width:100%;font:inherit;font-size:13.5px;padding:8px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink)}
+.search input:focus{outline:2px solid var(--accent)}
+
+/* ---------- section heads ---------- */
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:0}
+.sec-head h2{font-family:'Source Serif 4',Georgia,serif;font-size:21px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+.sec-head .cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em;text-align:right;white-space:nowrap}
+
+.grid{display:grid;gap:22px;padding:24px 0 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:8px 22px 14px;box-shadow:0 1px 0 rgba(34,21,14,.04)}
+.sol{display:flex;gap:18px;justify-content:space-between;border-bottom:1px solid var(--line);padding:16px 0}
 .sol:last-child{border-bottom:0}
 .sol .s-main{min-width:0}
 .sol .s-title{font-weight:600;font-size:14.5px}
 .sol .s-meta{font-size:12.5px;color:var(--muted);margin-top:3px}
-.sol .s-desc{font-size:13px;color:#5a5343;margin-top:6px;max-width:720px}
+.sol .s-desc{font-size:13px;color:var(--muted);margin-top:6px;max-width:720px}
 .sol .s-side{flex-shrink:0;text-align:right;min-width:130px}
-.due{font-weight:700;font-size:13.5px;white-space:nowrap}
-.due.soon{color:var(--red)}
+.due{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.due.soon{color:var(--neg)}
 .due.ok{color:var(--ink)}
-.due-sub{font-size:11.5px;color:var(--faint);margin-top:2px}
-.pill{display:inline-block;font-size:11px;font-weight:600;border-radius:3px;padding:2px 7px;white-space:nowrap}
-.pill.hard{background:#f3e0c8;color:var(--accent-deep)}
+.due-sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);margin-top:3px}
+.pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.03em;border-radius:3px;padding:2px 6px;white-space:nowrap}
+.pill.hard{background:var(--accent-soft);color:var(--accent)}
 .pill.rel{background:#dde6ee;color:var(--steel)}
 .contact{font-size:12px;color:var(--muted);margin-top:6px}
 .empty{padding:40px;text-align:center;color:var(--muted)}
-.method{padding:30px 0 10px}
-.method .card{padding:30px 34px}
-.method h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:4px}
-.method h3{font-size:14px;font-weight:700;margin:20px 0 6px}
-.method p{font-size:14px;color:#46412f;max-width:780px}
-footer{margin-top:40px;border-top:2px solid var(--ink);padding:26px 0 38px;font-size:13px;color:var(--muted)}
+
+/* ---------- methodology ---------- */
+.method{padding:44px 0 10px}
+.method h2{font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:700;letter-spacing:-.012em;color:var(--ink)}
+.method-body{margin-top:24px}
+.method h3{font-family:'Public Sans',sans-serif;font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin:24px 0 6px;color:var(--ink)}
+.method p{font-size:14px;color:var(--muted);max-width:820px}
+.method code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:var(--band);padding:1px 5px;border-radius:3px;border:1px solid var(--line)}
+
+/* ---------- footer ---------- */
+footer{margin-top:54px;background:var(--band);border-top:2px solid var(--ink);padding:30px 0 40px;font-size:13px;color:var(--muted)}
+footer a{color:var(--steel)}
 footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-footer .brand{font-size:15px}
+footer .brand{font-size:17px;color:var(--ink)}
+footer .brand svg{color:var(--navy)}
+footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em}
+
 #loader{padding:80px 0;text-align:center;color:var(--muted)}
 .spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -83,11 +117,16 @@ footer .brand{font-size:15px}
   .sol{flex-direction:column;gap:8px}
   .sol .s-side{text-align:left}
 }
+@media(max-width:560px){
+  .hero{padding-top:34px}
+  .wrap{padding:0 18px}
+  .series-bar .inner{padding-left:18px;padding-right:18px}
+}
 .menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
 @media(max-width:1023px){
   .menu-btn{display:block}
   .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:59px;left:-24px;right:-24px;background:var(--card);border-bottom:2px solid var(--ink);flex-direction:column;align-items:flex-start;padding:14px 24px;gap:13px;box-shadow:0 10px 20px rgba(63,53,33,.15);z-index:60}
+  .nav-links{display:none;position:absolute;top:61px;left:-28px;right:-28px;background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60}
   .nav-links.open{display:flex}
   .nav-links a.hide-m{display:inline}
 }
@@ -97,7 +136,10 @@ footer .brand{font-size:15px}
 
 <header>
   <div class="wrap nav">
-    <a href="/" style="text-decoration:none"><div class="brand">The Concrete Index<span class="tick">.</span></div></a>
+    <div class="brand">
+      <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#b5482a"/></svg>
+      <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
+    </div>
     <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
     <nav class="nav-links">
       <a href="/pipeline/" class="hide-m">Pipeline</a>
@@ -115,10 +157,17 @@ footer .brand{font-size:15px}
   </div>
 </header>
 
-<div class="wrap hero">
-  <h1>What's bidding right now.</h1>
-  <p class="sub">Every construction solicitation currently open in the City Record, sorted by what's due next. Each notice carries its procurement method, PIN, and the agency contact who answers questions. The list re-pulls from the City's API on every load.</p>
-  <p class="asof" id="asof">Loading open solicitations…</p>
+<div class="series-bar">
+  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-BIDDING</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>NYC CITY RECORD (3khw-qi8f)</b><span class="sep">·</span>UPDATED&nbsp;·&nbsp;<b>DAILY</b><span class="sep">·</span>OPEN&nbsp;·&nbsp;<b id="series-asof">–</b></div>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="kicker">NYC Open Construction Solicitations</div>
+    <h1>What's bidding right now.</h1>
+    <p class="sub">Every construction solicitation currently open in the City Record, sorted by what's due next. Each notice carries its procurement method, PIN, and the agency contact who answers questions. The list re-pulls from the City's API on every load.</p>
+    <p class="asof" id="asof">Loading open solicitations…</p>
+  </div>
 </div>
 
 <div id="loader" class="wrap">
@@ -144,16 +193,21 @@ footer .brand{font-size:15px}
   </div>
 
   <section class="grid">
-    <div class="card" id="list"></div>
+    <div class="card">
+      <div class="sec-head"><h2>Open solicitations</h2><span class="cap">SORTED BY DUE DATE</span></div>
+      <div id="list"></div>
+    </div>
   </section>
 
   <section class="method" id="methodology">
     <div class="card">
-      <h2>About this page</h2>
+      <div class="sec-head"><h2>About this page</h2><span class="cap">SERIES NOTES</span></div>
+      <div class="method-body">
       <h3>Source</h3>
       <p>Open solicitation notices from <a href="https://data.cityofnewyork.us/City-Government/Current-Solicitations/3khw-qi8f" target="_blank" rel="noopener">Current Solicitations</a> on NYC Open Data (dataset <code>3khw-qi8f</code>), the City Record's notice of procurement opportunities, in the two construction categories, with a due date that hasn't passed. Always confirm requirements and deadlines with the issuing agency; the contact listed on each notice is the authoritative source.</p>
       <h3>Where this sits in the funnel</h3>
       <p>A solicitation is the moment committed money (the <a href="/pipeline/">Pipeline</a>) reaches the market, before it becomes an <a href="/">award</a>. Watching this page is watching next quarter's award flow form.</p>
+      </div>
     </div>
   </section>
 
@@ -162,12 +216,15 @@ footer .brand{font-size:15px}
 <footer>
   <div class="wrap f-row">
     <div>
-      <div class="brand">The Concrete Index<span class="tick">.</span></div>
-      <div style="margin-top:4px">NYC public construction capital, from commitment to cash.</div>
+      <div class="brand">
+        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#b5482a"/></svg>
+        <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.01em">The Concrete Index<span class="tick" style="color:var(--accent)">.</span></span>
+      </div>
+      <div style="margin-top:8px">NYC public construction capital, from commitment to cash.</div>
     </div>
-    <div style="text-align:right">
+    <div style="text-align:right" class="f-meta">
       <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
-      <div style="margin-top:4px">© 2026 <a href="/about/">Salar Jalinous</a></div>
+      <div style="margin-top:5px">© 2026 <a href="/about/">Salar Jalinous</a></div>
     </div>
   </div>
 </footer>
@@ -261,6 +318,7 @@ function wireSeg(id, attr, initial, onChange){
   }
   document.getElementById('asof').innerHTML =
     `<strong>${state.rows.length}</strong> open construction solicitations · sorted by due date · source updated daily`;
+  document.getElementById('series-asof').textContent = state.rows.length + ' NOTICES';
   document.getElementById('loader').style.display='none';
   document.getElementById('app').style.display='block';
   let ready=false;
