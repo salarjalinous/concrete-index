@@ -251,10 +251,16 @@ async function fetchAll(){
 Chart.defaults.font.family = "'Inter',sans-serif";
 Chart.defaults.font.size = 12;
 Chart.defaults.color = '#6e6657';
+Object.assign(Chart.defaults.plugins.tooltip, {
+  backgroundColor:'#faf6ec', titleColor:'#26231d', bodyColor:'#46412f',
+  borderColor:'#c2570f', borderWidth:1, cornerRadius:4, padding:10, displayColors:false,
+  titleFont:{family:"'Inter',sans-serif",weight:'600',size:12}, bodyFont:{family:"'Inter',sans-serif",size:12},
+  caretSize:5
+});
 function hBar(canvasId, labels, data, color, countFor){
   new Chart(document.getElementById(canvasId), {
     type:'bar',
-    data:{ labels, datasets:[{ data, backgroundColor: color, borderRadius:2, barThickness:18 }]},
+    data:{ labels, datasets:[{ data, backgroundColor: color, borderRadius:1, barThickness:18 }]},
     options:{
       indexAxis:'y', responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{display:false},
@@ -292,7 +298,7 @@ function render(){
   hBar('chart-mta-agency', D.mtaAg.map(r=>r.a), D.mtaAg.map(r=>r.s), COLOR_A);
   new Chart(document.getElementById('chart-mta-plans'), {
     type:'bar',
-    data:{ labels: D.mtaPlans.map(p=>p.p), datasets:[{ data: D.mtaPlans.map(p=>p.s), backgroundColor: COLOR_B, borderRadius:2 }]},
+    data:{ labels: D.mtaPlans.map(p=>p.p), datasets:[{ data: D.mtaPlans.map(p=>p.s), backgroundColor: COLOR_B, borderRadius:1 }]},
     options:{ responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>fmtMoney(c.parsed.y)}} },
       scales:{ x:{grid:{display:false}}, y:{grid:{color:'#e4dac4'}, border:{display:false}, ticks:{callback:v=>fmtMoney(v), maxTicksLimit:5}} }
