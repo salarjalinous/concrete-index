@@ -88,13 +88,20 @@ footer .brand{font-size:15px}
 @media(max-width:880px){
   .kpis{grid-template-columns:repeat(2,1fr)}
   .grid.two{grid-template-columns:1fr}
-  .nav-links a.hide-m{display:none}
   .stage-name{width:110px}
 }
 @media(max-width:560px){
   .kpis{grid-template-columns:1fr 1fr}
   .kpi .k-value{font-size:24px}
   .hero{padding-top:30px}
+}
+.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
+@media(max-width:1023px){
+  .menu-btn{display:block}
+  .nav{position:relative}
+  .nav-links{display:none;position:absolute;top:59px;left:-24px;right:-24px;background:var(--card);border-bottom:2px solid var(--ink);flex-direction:column;align-items:flex-start;padding:14px 24px;gap:13px;box-shadow:0 10px 20px rgba(63,53,33,.15);z-index:60}
+  .nav-links.open{display:flex}
+  .nav-links a.hide-m{display:inline}
 }
 </style>
 </head>
@@ -103,6 +110,7 @@ footer .brand{font-size:15px}
 <header>
   <div class="wrap nav">
     <a href="/" style="text-decoration:none"><div class="brand">The Concrete Index<span class="tick">.</span></div></a>
+    <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
     <nav class="nav-links">
       <a href="/pipeline/">Pipeline</a>
       <a href="/solicitations/">Bidding</a>
@@ -119,7 +127,7 @@ footer .brand{font-size:15px}
 
 <div class="wrap hero">
   <h1>From commitment to cash.</h1>
-  <p class="sub">The full picture: what New York City has committed to build, what's reaching contractors as awards, and what's actually being paid out, with the speed of that flow measured agency by agency.</p>
+  <p class="sub">Commitments, awards, and outlays live in three separate City systems with three separate formats. This page joins them: how much funded work is stacked upstream, how fast it converts to contracts, and how fast contracts turn into cash, agency by agency.</p>
   <p class="asof" id="asof">Assembling the funnel from live City data…</p>
 </div>
 
@@ -178,11 +186,11 @@ footer .brand{font-size:15px}
     <div class="card">
       <h2>Methodology &amp; definitions</h2>
       <h3>The three measures</h3>
-      <p><strong>Committed, unspent</strong> is the forward pipeline from the <a href="/pipeline/">Pipeline</a> page: total project budgets minus spending to date across active capital projects in the City's most recent capital plan snapshot (NYC OMB, dataset <code>fb86-vt7u</code>). <strong>Awarded</strong> is trailing-twelve-month construction award value from the City Record (dataset <code>qyyg-4tf5</code>), as on the <a href="/">Awarded</a> page. <strong>Spent</strong> is trailing-year capital outlays, measured as the growth in each project's cumulative spend-to-date between capital plan snapshots, the City's own FMS ledger, the same accounting that powers Checkbook NYC.</p>
+      <p><strong>Committed, unspent</strong> is the forward pipeline from the <a href="/pipeline/">Pipeline</a> page: total project budgets minus spending to date across active capital projects in the City's most recent capital plan snapshot (NYC OMB, dataset <code>fb86-vt7u</code>). <strong>Awarded</strong> is trailing-twelve-month construction award value from the City Record (dataset <code>qyyg-4tf5</code>), as on the <a href="/">Awarded</a> page. <strong>Spent</strong> is trailing-year capital outlays, measured as the growth in each project's cumulative spend-to-date between capital plan snapshots. The underlying ledger is the City's FMS, the same accounting that feeds Checkbook NYC.</p>
       <h3>How spending pace is computed</h3>
-      <p>OMB publishes a plan snapshot roughly every four months. For each project, spending in a period is its cumulative spend-to-date in one snapshot minus the prior snapshot, floored at zero; new projects count from zero. Projects are matched across snapshots by agency and FMS ID, with sub-project rows collapsed first so nothing is double-counted. Projects that leave the dataset between snapshots stop contributing, a conservative treatment.</p>
+      <p>OMB publishes a plan snapshot roughly every four months. For each project, spending in a period is its cumulative spend-to-date in one snapshot minus the prior snapshot, floored at zero; new projects count from zero. Projects are matched across snapshots by agency and FMS ID, with sub-project rows collapsed first so nothing is double-counted. Projects that leave the dataset between snapshots stop contributing, which biases the spend estimate low rather than high.</p>
       <h3>Backlog coverage</h3>
-      <p>Unspent committed dollars divided by trailing-year spending: how many years the current funded pipeline would take to deliver at today's pace. It's the demand-side counterpart to a contractor's backlog ratio, higher means more future work stacked behind the same delivery capacity.</p>
+      <p>Unspent committed dollars divided by trailing-year spending: how many years the current funded pipeline would take to deliver at today's pace. It's the demand-side counterpart to a contractor's backlog ratio. A higher number means more future work stacked behind the same delivery capacity.</p>
       <h3>Scope</h3>
       <p>Committed and Spent cover the City's full capital plan, buildings, transportation, water, parks, because capital budgets aren't divided by procurement category. Awarded covers the City Record's two construction procurement categories. The three measures answer one question from different ledgers: how demand is moving. They are not a single cohort traced end-to-end, and the methodology keeps each measure on its own source's terms.</p>
       <h3>Agency velocity</h3>
@@ -414,7 +422,7 @@ function renderStages(){
       <div class="stage-val">${fmtMoney(s.v)}</div>
     </div>`).join('');
   document.getElementById('stages-sub').textContent =
-    'Three ledgers, one flow, stock of funded work vs. trailing-year flows of awards and cash';
+    'Stock of funded work against trailing-year flows of awards and cash. The sources differ; the methodology explains what each one measures.';
 }
 
 function vBar(canvasId, labels, data, color){
