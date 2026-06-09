@@ -155,12 +155,11 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 @keyframes spin{to{transform:rotate(360deg)}}
 #profile{display:none}
 .menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
-@media(max-width:1023px){
+@media(max-width:1180px){
   .menu-btn{display:block}
   .nav{position:relative}
   .nav-links{display:none;position:absolute;top:61px;left:-28px;right:-28px;background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60}
   .nav-links.open{display:flex}
-  .nav-links a.hide-m{display:inline}
 }
 @media(max-width:880px){
   .kpis{grid-template-columns:repeat(2,1fr)}
@@ -182,21 +181,22 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 <header>
   <div class="wrap nav">
     <div class="brand">
-      <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#b5482a"/></svg>
+      <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
       <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
     </div>
     <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
     <nav class="nav-links">
-      <a href="/pipeline/" class="hide-m">Pipeline</a>
-      <a href="/solicitations/" class="hide-m">Bidding</a>
+      <a href="/pipeline/">Pipeline</a>
+      <a href="/solicitations/">Bidding</a>
       <a href="/">Awarded</a>
       <a href="/vendors/" class="active">Vendors</a>
-      <a href="/funnel/" class="hide-m">Funnel</a>
+      <a href="/funnel/">Funnel</a>
+      <a href="/velocity/">Velocity</a>
       <a href="/competitive/">Market</a>
-      <a href="/analysis/" class="hide-m">Analysis</a>
-      <a href="/regional/" class="hide-m">Regional</a>
+      <a href="/analysis/">Analysis</a>
+      <a href="/regional/">Regional</a>
       <a href="/briefing/">Briefing</a>
-      <a href="#methodology" class="hide-m">Methodology</a>
+      <a href="#methodology">Methodology</a>
       <span class="badge-live"><span class="dot"></span>Live data</span>
     </nav>
   </div>
@@ -301,7 +301,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <div class="wrap f-row">
     <div>
       <div class="brand">
-        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#b5482a"/></svg>
+        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
         <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.01em">The Concrete Index<span class="tick" style="color:var(--accent)">.</span></span>
       </div>
       <div style="margin-top:8px">NYC public construction capital, from commitment to cash.</div>
