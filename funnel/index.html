@@ -209,7 +209,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 
   <section class="grid" id="stages">
     <div class="card">
-      <div class="sec-head"><h2>Three gauges, not one flow</h2><span class="cap">USD · TTM</span></div>
+      <div class="sec-head"><h2 id="stages-title">Three gauges, not one flow</h2><span class="cap">USD · TTM</span></div>
       <div class="h-sub" id="stages-sub"></div>
       <div id="stage-rows"></div>
     </div>
@@ -243,8 +243,9 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     <div class="card">
       <div class="sec-head"><h2>Methodology &amp; definitions</h2><span class="cap">SERIES NOTES</span></div>
       <div class="method-body">
-      <h3>The three measures</h3>
+      <h3>The measures</h3>
       <p><strong>Committed, unspent</strong> is the forward pipeline from the <a href="/pipeline/">Pipeline</a> page: total project budgets minus spending to date across active capital projects in the City's most recent capital plan snapshot (NYC OMB, dataset <code>fb86-vt7u</code>). <strong>Awarded</strong> is trailing-twelve-month construction award value from the City Record (dataset <code>qyyg-4tf5</code>), as on the <a href="/">Awarded</a> page. <strong>Spent</strong> is trailing-year capital outlays, measured as the growth in each project's cumulative spend-to-date between capital plan snapshots. The underlying ledger is the City's FMS, the same accounting that feeds Checkbook NYC.</p>
+      <p><strong>Paid (Checkbook)</strong> is a separate, fourth reading drawn from the Comptroller's Checkbook NYC: total disbursements on registered construction contracts to named vendors, City scope, fiscal years 2021 to 2025. It is the demand-to-cash payoff at the vendor level, the same figures shown on the <a href="/vendors/">Vendors</a> page, summed across all construction vendor groups. It is not the same number as Spent. Spent is capital-plan outlays across all construction measured between plan snapshots; Paid is disbursements on the subset of work that has been registered as a contract to a named vendor. The two sit on different ledgers and different scopes and are never added together.</p>
       <h3>How spending pace is computed</h3>
       <p>OMB publishes a plan snapshot roughly every four months. For each project, spending in a period is its cumulative spend-to-date in one snapshot minus the prior snapshot, floored at zero; new projects count from zero. Projects are matched across snapshots by agency and FMS ID, with sub-project rows collapsed first so nothing is double-counted. Projects that leave the dataset between snapshots stop contributing, which biases the spend estimate low rather than high.</p>
       <h3>Backlog coverage</h3>
@@ -270,6 +271,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     </div>
     <div style="text-align:right" class="f-meta">
       <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
+      <div style="margin-top:5px"><a href="https://github.com/salarjalinous/concrete-index" target="_blank" rel="noopener">Source on GitHub</a></div>
       <div style="margin-top:5px">© 2026 <a href="/about/">Salar Jalinous</a></div>
     </div>
   </div>
@@ -287,7 +289,8 @@ const state = {
   snap: {},             // period -> Map(key -> {spend,budget,bucket,agency})
   spendPeriods: [],     // [{label, total, byAgency:Map}]
   pipeline: { total:0, byAgency:new Map() },
-  awards: { ttm:0, count:0, byAgency:new Map(), byQuarter:[] }
+  awards: { ttm:0, count:0, byAgency:new Map(), byQuarter:[] },
+  checkbook: { paid:0, ok:false, meta:null }
 };
 
 async function getJSON(api, params){
@@ -404,6 +407,23 @@ async function fetchAwards(){
   state.awards.byAgency = byAgency;
   const monthRows = [...byMonth.entries()].sort((a,b)=>a[0]<b[0]?-1:1).map(([m,s])=>({m, s}));
   state.awards.byQuarter = toQuarters(monthRows);
+}
+
+/* Paid to date from Checkbook NYC: a static file built nightly server-side
+   (the Comptroller's API blocks browsers). Same-origin, so a plain fetch, no
+   app token. Sums the paid figure across every construction vendor group. This
+   is a DIFFERENT ledger and scope from the OMB Spent gauge and is never summed
+   with it. Failure is quiet: the Paid figure is simply omitted. */
+async function fetchCheckbook(){
+  const res = await fetch('/data/checkbook-vendors.json');
+  if(!res.ok) throw new Error('checkbook ' + res.status);
+  const d = await res.json();
+  const vendors = d.vendors || {};
+  let paid = 0;
+  for(const k in vendors){ paid += (parseFloat(vendors[k].paid) || 0); }
+  state.checkbook.paid = paid;
+  state.checkbook.meta = d.meta || null;
+  state.checkbook.ok = true;
 }
 
 /* Paged pull of construction award rows in the window, only the fields used. */
@@ -533,15 +553,33 @@ function renderStages(){
     { t:'Awarded', s:'flow · construction awards, TTM', v: state.awards.ttm, c: COLOR_A },
     { t:'Spent', s:'flow · capital outlays, trailing year', v: ttmSpend(), c: COLOR_C }
   ];
+  // Paid (Checkbook): a fourth, separate ledger. Disbursements on registered
+  // construction contracts to named vendors, City scope, FY2021-2025. Shown
+  // only when the static Checkbook file loaded; never summed with Spent.
+  if(state.checkbookOk){
+    stages.push({ t:'Paid (Checkbook)', s:'disbursed · registered contracts, FY21–25',
+      v: state.checkbook.paid, c: COLOR_B });
+  }
+  document.getElementById('stages-title').textContent =
+    state.checkbookOk ? 'Four gauges, not one flow' : 'Three gauges, not one flow';
   const max = Math.max(...stages.map(s=>s.v));
   document.getElementById('stage-rows').innerHTML = stages.map(s=>`
     <div class="stage-row">
-      <div class="stage-name"><div class="s-t">${s.t}</div><div class="s-s">${s.s}</div></div>
+      <div class="stage-name"><div class="s-t">${esc(s.t)}</div><div class="s-s">${esc(s.s)}</div></div>
       <div class="stage-bar-track"><div class="stage-bar" style="width:${(s.v/max*100).toFixed(1)}%;background:${s.c}"></div></div>
       <div class="stage-val">${fmtMoney(s.v)}</div>
     </div>`).join('');
-  document.getElementById('stages-sub').textContent =
-    'Read these as three separate readings, not a draining funnel. Committed is a stock from the full capital plan; Awarded covers two City Record procurement categories; Spent is full-plan outlays. The scopes differ, so the bars are not meant to net against each other. The bar lengths share a scale only to make the magnitudes comparable.';
+  const base = 'Read these as separate readings, not a draining funnel. '
+    + 'Committed is a stock from the full capital plan; Awarded covers two City Record procurement categories; '
+    + 'Spent is full-plan outlays measured between plan snapshots. The scopes differ, so the bars are not meant to net against each other. '
+    + 'The bar lengths share a scale only to make the magnitudes comparable.';
+  const cbkNote = state.checkbookOk
+    ? ' Paid (Checkbook) is a different ledger again: disbursements on registered construction contracts to named vendors, '
+      + 'NYC City scope, fiscal years 2021 to 2025, from the Comptroller’s Checkbook NYC. '
+      + 'It is not the same number as Spent, which is capital-plan outlays across all construction between plan snapshots, '
+      + 'and the two are not added together.'
+    : '';
+  document.getElementById('stages-sub').textContent = base + cbkNote;
 }
 
 function vBar(canvasId, labels, data, color){
@@ -600,9 +638,10 @@ function unavailNote(host){
 }
 
 (async function init(){
-  const [planR, awardsR] = await Promise.allSettled([fetchPlan(), fetchAwards()]);
+  const [planR, awardsR, cbkR] = await Promise.allSettled([fetchPlan(), fetchAwards(), fetchCheckbook()]);
   state.planOk = planR.status === 'fulfilled';
   state.awardsOk = awardsR.status === 'fulfilled';
+  state.checkbookOk = cbkR.status === 'fulfilled' && state.checkbook.ok;
 
   // The capital plan anchors the page (committed, spent, velocity, the as-of
   // line). If it is unavailable there is nothing to scaffold, so show the error.
