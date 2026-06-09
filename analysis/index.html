@@ -540,7 +540,7 @@ function renderKpis(){
     document.getElementById('kpi-idx').textContent = last.toFixed(1);
     document.getElementById('kpi-idx-note').textContent = fmtYM(months[months.length-1]) + ' · 2019 = 100';
     document.getElementById('kpi-yoy').innerHTML = yoy===null ? '–' :
-      `<span class="${yoy>=0?'up':'down'}">${yoy>=0?'▲':'▼'} ${Math.abs(yoy).toFixed(0)}%</span>`;
+      `<span class="${yoy>=0?'up':'down'}">${yoy>=0?'+':'−'}${Math.abs(yoy).toFixed(0)}%</span>`;
   } else {
     document.getElementById('kpi-idx').textContent = '–';
     document.getElementById('kpi-yoy').textContent = '–';
