@@ -79,6 +79,7 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 22px;box-shadow:0 1px 0 rgba(34,21,14,.04)}
 .card .h-sub{font-size:12.5px;color:var(--muted);margin-top:9px;margin-bottom:18px}
 .chart-box{position:relative;height:280px}
+.tnote{font-size:11.5px;line-height:1.55;color:var(--muted);margin-top:13px;padding-top:9px;border-top:1px solid var(--line)}
 
 .unavail{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);background:var(--band);border-left:3px solid var(--faint);border-radius:0;padding:12px 16px;margin-top:14px}
 
@@ -228,6 +229,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2 id="stages-title">Three gauges, not one flow</h2><span class="cap">USD · TTM</span></div>
       <div class="h-sub" id="stages-sub"></div>
       <div id="stage-rows"></div>
+      <div class="tnote">Each gauge is a separate measure from a separate source and is never summed with the others. Committed is unspent capital in the OMB plan (budget minus spend-to-date, floored at zero, over construction projects). Awarded is the trailing-twelve-month City Record construction total, deduplicated to one record per procurement. Spent is the snapshot-over-snapshot growth in cumulative outlays. They describe the same market at different stages, not the same dollars followed through.</div>
     </div>
   </section>
 
@@ -236,11 +238,13 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2>Pace of spending</h2><span class="cap">PLAN-TO-PLAN · USD</span></div>
       <div class="h-sub">Capital dollars paid out between plan snapshots (≈4-month periods)</div>
       <div class="chart-box"><canvas id="chart-spend"></canvas></div>
+      <div class="tnote">Each bar is capital paid out in one plan period, computed as the increase in cumulative spend-to-date between two consecutive OMB plan snapshots (published roughly every four months), floored at zero. A restatement that lowers a cumulative figure reads as zero rather than negative spend, so the series understates rather than overstates outlays.</div>
     </div>
     <div class="card" id="award-trend">
       <div class="sec-head"><h2>Pace of awarding</h2><span class="cap">BY QUARTER · USD</span></div>
       <div class="h-sub">Construction award value entering the market, by quarter</div>
       <div class="chart-box"><canvas id="chart-award"></canvas></div>
+      <div class="tnote">Each bar is the construction award value entering the market in one calendar quarter, on the deduplicated set (one record per procurement, keeping the largest amount). Award value is the figure stated at the notice, a floor that later change orders and registrations can grow.</div>
     </div>
   </section>
 
@@ -252,6 +256,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <thead><tr><th>Agency</th><th class="num">Open pipeline</th><th class="num">Spent (TTM)</th><th class="num">Awarded (TTM)</th><th class="num">Backlog, years</th></tr></thead>
         <tbody></tbody>
       </table>
+      <div class="tnote">The ten agencies with the most open pipeline. Backlog, years = open pipeline ÷ trailing-year spend, how long the committed-but-unspent work would last at the current pace of outlays. A high figure means funded work is accumulating faster than it is being delivered. It is a structural ratio (a stock over a flow), not a delivery schedule or a forecast.</div>
     </div>
   </section>
 
