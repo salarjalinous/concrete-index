@@ -61,6 +61,16 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .hero .asof{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--faint)}
 .hero .asof strong{color:var(--muted);font-weight:600}
 
+/* ---------- value strip ---------- */
+.valstrip{display:grid;grid-template-columns:repeat(3,1fr);margin-top:22px;border:1px solid var(--line);border-top:2px solid var(--ink);background:var(--surface)}
+.valstrip a{display:flex;flex-direction:column;gap:3px;padding:13px 18px;border-left:1px solid var(--line);color:var(--ink)}
+.valstrip a:first-child{border-left:0}
+.valstrip a:hover{background:var(--band);text-decoration:none}
+.valstrip a:hover .vs-k{color:var(--accent)}
+.valstrip .vs-k{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink);transition:color .12s}
+.valstrip .vs-d{font-size:12.5px;color:var(--muted)}
+@media(max-width:680px){.valstrip{grid-template-columns:1fr}.valstrip a{border-left:0;border-top:1px solid var(--line)}.valstrip a:first-child{border-top:0}}
+
 /* ---------- controls ---------- */
 .controls{display:flex;flex-wrap:wrap;gap:14px 16px;align-items:center;padding:30px 0 4px}
 .seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:2px}
@@ -74,16 +84,16 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 /* ---------- KPI tape ---------- */
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:28px 0 8px;border-left:1px solid var(--line)}
 .kpi{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px 18px}
-.kpi.hero-kpi{border-top-color:var(--accent)}
+.kpi.hl{border-top-color:var(--accent)}
 .kpi .k-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
 .kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--ink);line-height:1}
-.kpi.hero-kpi .k-value{font-size:38px;color:var(--ink)}
-.kpi:not(.hero-kpi) .k-value{color:var(--navy)}
+.kpi.hl .k-value{font-size:38px;color:var(--ink)}
+.kpi:not(.hl) .k-value{color:var(--navy)}
 .kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:8px}
 .kpi .up,.kpi .down{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums;padding:0}
 .kpi .up{color:var(--pos)}
 .kpi .down{color:var(--neg)}
-@media(max-width:560px){.kpi.hero-kpi .k-value{font-size:30px}}
+@media(max-width:560px){.kpi.hl .k-value{font-size:30px}}
 
 /* ---------- section heads ---------- */
 .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:0}
@@ -198,9 +208,14 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <div class="hero">
     <div class="kicker">NYC Public Construction Capital</div>
     <h1>NYC public construction capital, from commitment to cash.</h1>
-    <p class="sub">The Concrete Index reads the City Record the way an analyst would if they had the time: every construction award notice the City publishes, pulled through the Socrata API, classified by selection method, and totaled on the spot. It shows which agencies are letting work and who keeps winning it. It also tracks how the bid market is trending.</p>
+    <p class="sub">The demand side of NYC public construction, measured from commitment to cash: the half of the market the supply-side tools cannot see. The Concrete Index reads the City Record the way an analyst would if they had the time, pulling every construction award notice the City publishes, classifying it by selection method, and totaling it on the spot. It shows which agencies are letting work and who keeps winning it.</p>
     <p class="asof" id="asof">Loading latest award data…</p>
   </div>
+  <nav class="valstrip" aria-label="Key views">
+    <a href="/funnel/"><span class="vs-k">Funnel</span><span class="vs-d">commitment to cash</span></a>
+    <a href="/velocity/"><span class="vs-k">Velocity</span><span class="vs-d">which agencies move money fast</span></a>
+    <a href="/vendors/"><span class="vs-k">Vendors</span><span class="vs-d">any contractor's public award record</span></a>
+  </nav>
 </div>
 
 <div id="loader" class="wrap">
@@ -244,7 +259,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   </div>
 
   <section class="kpis">
-    <div class="kpi hero-kpi"><div class="k-label">Awarded</div><div class="k-value" id="kpi-total">–</div><div class="k-note" id="kpi-total-note"></div></div>
+    <div class="kpi hl"><div class="k-label">Awarded</div><div class="k-value" id="kpi-total">–</div><div class="k-note" id="kpi-total-note"></div></div>
     <div class="kpi"><div class="k-label">Awards</div><div class="k-value" id="kpi-count">–</div><div class="k-note" id="kpi-count-note"></div></div>
     <div class="kpi"><div class="k-label">Median award</div><div class="k-value" id="kpi-median">–</div><div class="k-note">published contract value</div></div>
     <div class="kpi"><div class="k-label">Largest award</div><div class="k-value" id="kpi-max">–</div><div class="k-note" id="kpi-max-note"></div></div>
