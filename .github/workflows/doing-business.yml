@@ -1,0 +1,40 @@
+name: Doing Business corroboration
+
+# Pulls NYC's Doing Business "People" dataset (NYC Open Data 2sps-j9st) and writes
+# data/doing-business-corroboration.json: an ORGANIZATION-LEVEL corroboration of the
+# vendor alias map (per group: how many spellings appear in Doing Business, how many
+# distinctive principals they share, and a status). It names NO individuals and
+# asserts NO cross-firm relationship. The name-bearing candidate-merge discovery in
+# tools/doing-business.py runs ONLY when DB_CANDIDATES=1 (set locally, never here),
+# so CI can never produce or commit individual names. Stdlib Python only.
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '50 6 * * *'   # 06:50 UTC daily (~1:50am New York), after the checkbook job
+
+permissions:
+  contents: write
+
+jobs:
+  doing-business:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build doing-business-corroboration.json
+        run: |
+          mkdir -p data
+          python3 tools/doing-business.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name "concrete-index-doingbusiness"
+          git config user.email "actions@users.noreply.github.com"
+          # Add ONLY the safe, organization-level corroboration file. Never -A, so a
+          # local candidate file (db-merge-candidates.txt) can never be committed here.
+          git add data/doing-business-corroboration.json
+          git diff --cached --quiet && echo "No changes today" || {
+            git commit -m "Doing Business corroboration $(date -u +%Y-%m-%d)"
+            git push
+          }
