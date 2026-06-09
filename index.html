@@ -330,6 +330,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <p>Awards are the middle of the capital flow. The <a href="/pipeline/">Pipeline</a> page tracks the stage before this one: dollars the City has committed to capital projects that haven't yet reached the market.</p>
       <h3>Coverage</h3>
       <p>The dataset extends back to 2003. The Concrete Index presents the trailing five years, where publication practice is consistent and comparable.</p>
+      <p id="trunc-note" style="display:none;color:var(--accent)">Note: this load reached the row cap on the award pull, so the figures above may be capped and could understate the true totals. Refresh to retry; if it persists the pull will be paged.</p>
       </div>
     </div>
   </section>
@@ -359,7 +360,7 @@ const API = 'https://data.cityofnewyork.us/resource/qyyg-4tf5.json';
 const HARD = 'Construction/Construction Services';
 const REL  = 'Construction Related Services';
 
-const state = { windowMonths: 12, scope: 'all', type: 'all', size: 'all', worktype: 'all', rows: [] };
+const state = { windowMonths: 12, scope: 'all', type: 'all', size: 'all', worktype: 'all', rows: [], truncated: false };
 const WT_LEXICON={
   paving_roadway:{label:"Paving & Roadway",include:[/\basphalt\b/,/\bpaving\b/,/\bpavement\b/,/\brepaving\b/,/\bresurfac/,/\broadway\b/,/\bparkway\b/,/\broad repair/,/\bmilling\b/,/\bstreetscape/,/\bcrosstown/,/\bselect bus service\b|\bSBS\b/,/\btouring route/,/pavement marking/,/reconstruction of .*\b(street|avenue|ave|road|boulevard|blvd)\b/,/\bkill road\b/,/\broad repair agreement/,/street name sign/]},
   sidewalk_curb_ramp:{label:"Sidewalk, Curb & Pedestrian Ramp",include:[/\bsidewalk/,/\bpedestrian ramp/,/\bcurb/,/\bstep street/,/\bprior notice sidewalk/,/\broadway restoration/],exclude:[/sidewalk (?:shed|protection)/]},
@@ -406,17 +407,26 @@ function dedupeByPin(raw){
   return [...byPin.values()];
 }
 
+const AWARD_LIMIT = 20000;
 async function fetchAwards(){
   const params = new URLSearchParams({
     '$select': 'pin,request_id,start_date,agency_name,category_description,short_title,selection_method_description,vendor_name,contract_amount,additional_description_1',
     '$where': `starts_with(category_description,'Construction') AND start_date>'${isoDaysAgo(5)}' AND contract_amount>0`,
     '$order': 'start_date DESC',
-    '$limit': '20000'
+    '$limit': String(AWARD_LIMIT)
   });
   params.set('$$app_token', '3TAzQQPiSG2T4WGWfYYUxxqfJ');
   const res = await fetch(`${API}?${params}`);
   if(!res.ok) throw new Error('API ' + res.status);
   const raw = await res.json();
+  // Truncation guard: if the returned row count equals the cap, the single-page
+  // pull may be clipping the universe. The 5-year construction slice is well
+  // under 20k today (all-time is ~8,200 rows), so this never fires now, but it
+  // keeps a future data-growth truncation from silently understating KPIs.
+  state.truncated = raw.length >= AWARD_LIMIT;
+  if(state.truncated){
+    console.warn('Award pull hit the ' + AWARD_LIMIT + '-row cap; the view may be capped and totals may be understated.');
+  }
   return dedupeByPin(raw).map(normalize);
 }
 
@@ -712,6 +722,10 @@ function wireSeg(id, attr, initial, onChange){
   }
   document.getElementById('loader').style.display = 'none';
   document.getElementById('app').style.display = 'block';
+  if(state.truncated){
+    const tn = document.getElementById('trunc-note');
+    if(tn) tn.style.display = '';
+  }
   let ready = false;
   wireSeg('seg-window','w', '12', v => { state.windowMonths = +v; if(ready) renderAll(); });
   wireSeg('seg-scope','s', 'all', v => { state.scope = v; if(ready) renderAll(); });
