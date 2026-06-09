@@ -62,26 +62,55 @@ jobs:
                       "<response_columns>%s</response_columns>"
                       "</request>") % (type_of_data, records_from, MAX_RECORDS, crit_xml, cols_xml)
 
-          def post(xml_body, tries=4):
+          UA = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/124.0 Safari/537.36 "
+                "ConcreteIndex/1.0 (+https://concreteindex.co)")
+
+          def post(xml_body, tries=5):
               last = None
               for attempt in range(tries):
                   try:
-                      req = urllib.request.Request(API, data=xml_body.encode("utf-8"),
-                                                   headers={"Content-Type": "text/xml"}, method="POST")
+                      req = urllib.request.Request(
+                          API, data=xml_body.encode("utf-8"),
+                          headers={"Content-Type": "text/xml", "Accept": "text/xml",
+                                   "User-Agent": UA},
+                          method="POST")
                       with urllib.request.urlopen(req, timeout=120) as r:
                           return r.read().decode("utf-8", "replace")
+                  except urllib.error.HTTPError as e:
+                      last = e
+                      log("  POST attempt %d failed: HTTP %s" % (attempt + 1, e.code))
+                      # 403/429 = rate-limited: back off longer
+                      time.sleep((6 if e.code in (403, 429) else 3) * (attempt + 1))
                   except Exception as e:
                       last = e
                       log("  POST attempt %d failed: %s" % (attempt + 1, e))
-                      time.sleep(2 * (attempt + 1))
+                      time.sleep(3 * (attempt + 1))
               raise RuntimeError("POST failed after %d tries: %s" % (tries, last))
 
           def parse_records(xml_text):
+              # Returns (recs, raw). recs is None on hard error (parse fail or API
+              # <result>failure</result>); [] on a clean empty page.
               try:
                   root = ET.fromstring(xml_text)
               except ET.ParseError as e:
                   log("  XML parse error:", e)
                   log("  first 600 chars:", xml_text[:600])
+                  return None, xml_text
+              # API-level failure: dump every <message> so we can read the contract.
+              result = None
+              for el in root.iter():
+                  if el.tag.lower() == "result":
+                      result = (el.text or "").strip().lower()
+                      break
+              if result == "failure":
+                  msgs = []
+                  for m in root.iter():
+                      if m.tag.lower() == "description":
+                          msgs.append((m.text or "").strip())
+                  log("  API returned failure. messages:")
+                  for m in msgs:
+                      log("    -", m)
                   return None, xml_text
               recs = []
               for rec in root.iter():
@@ -117,9 +146,11 @@ jobs:
                   if got < MAX_RECORDS:
                       break
                   rf += MAX_RECORDS
+                  time.sleep(1.0)   # pace paging to avoid 403 rate-limit
                   if rf > 300000:
                       log("  WARNING paging cap hit for", type_of_data, fy)
                       break
+              time.sleep(0.7)       # pace between (domain, fy) combinations
               return rows, raw_first
 
           def to_int_amount(s):
@@ -153,26 +184,35 @@ jobs:
           spending_cols = ["vendor", "agency", "industry", "fiscal_year",
                            "check_amount", "contract_id", "document_id"]
 
+          # The live API requires category + status on Contracts and category on
+          # Spending (run #1 returned "Required parameter(s) 'status'/'category'
+          # is not provided"). category=expense = money the City pays out;
+          # status=active = currently-active contracts (carry current_amount as
+          # the registered value).
+          CONTRACTS_BASE = [("category", "value", "expense"),
+                            ("status", "value", "active")]
+          SPENDING_BASE = [("category", "value", "expense"),
+                           ("spending_category", "value", "contract")]
+
           # ---- probe server-side industry filter on one FY of Contracts ----
           log("=== PROBE: server-side industry=Construction on Contracts FY%d ===" % FYS[-1])
-          probe_rows, probe_raw = fetch_all("Contracts", contracts_cols, [], FYS[-1], industry_server=True)
+          probe_rows, probe_raw = fetch_all("Contracts", contracts_cols, CONTRACTS_BASE, FYS[-1], industry_server=True)
           log("  server-side probe returned %d contract rows" % len(probe_rows))
           industry_mode = "server" if probe_rows else "client"
           log("  -> industry_filter_mode =", industry_mode)
-          log("=== SAMPLE raw Contracts first-page XML (first 1500 chars) ===")
-          log((probe_raw or "")[:1500])
+          log("=== SAMPLE raw Contracts first-page XML (first 1800 chars) ===")
+          log((probe_raw or "")[:1800])
           server = (industry_mode == "server")
 
           all_contracts, all_spending = [], []
           for fy in FYS:
               log("--- Contracts FY%d ---" % fy)
-              rows, _ = fetch_all("Contracts", contracts_cols, [], fy, industry_server=server)
+              rows, _ = fetch_all("Contracts", contracts_cols, CONTRACTS_BASE, fy, industry_server=server)
               log("  %d contract rows" % len(rows))
               all_contracts.extend(rows)
           for fy in FYS:
               log("--- Spending FY%d ---" % fy)
-              rows, _ = fetch_all("Spending", spending_cols,
-                                  [("spending_category", "value", "contract")], fy, industry_server=server)
+              rows, _ = fetch_all("Spending", spending_cols, SPENDING_BASE, fy, industry_server=server)
               log("  %d spending rows" % len(rows))
               all_spending.extend(rows)
 
