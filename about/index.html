@@ -153,7 +153,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="card">
         <h2>The mission</h2>
         <p>The data behind public construction is public in name only. Award notices sit in one system, capital budgets in another, payments in a third, and none of them were built to be read together. The agencies that fund work, the contractors who build it, the brokers and underwriters who stand behind it, and the analysts who measure it all make decisions about the same market, usually with different, partial views of it.</p>
-        <p>The Concrete Index exists to close that gap. Every figure on this site comes from the public record, normalized and read the same way for everyone: what's funded, what's bidding, what's awarded, and what's actually being paid. When everyone prices against the same picture of demand, bids get sharper and bonding and credit decisions rest on evidence instead of anecdote. Capital also finds the work earlier.</p>
+        <p>The Concrete Index exists to close that gap. Underneath, it is an automated pipeline that resolves those fragmented public records into one contractor-attributed picture and refreshes itself nightly. Every figure on this site comes from the public record, normalized and read the same way for everyone: what's funded, what's bidding, what's awarded, and what's actually being paid. When everyone prices against the same picture of demand, bids get sharper and bonding and credit decisions rest on evidence instead of anecdote. Capital also finds the work earlier.</p>
         <p>My background is in contract surety, so I built the demand side of that picture in the open. This site is a personal project. It is built entirely from public data on my own time, it is not affiliated with, endorsed by, or speaking for any employer, and nothing on it represents any employer's view of any company named in the public record.</p>
         <div class="btn-row">
           <a class="btn primary" href="https://www.linkedin.com/in/salar-jalinous/" target="_blank" rel="noopener">Connect on LinkedIn</a>
@@ -167,7 +167,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <section class="what">
     <div class="card">
       <h2>What this site actually does</h2>
-      <p class="lede">The Concrete Index is a live reading of New York City's public construction market, built directly on the government's own records. Nothing here is estimated or scraped. Each page queries the official datasets at the moment you load it, runs the numbers in your browser, and renders the result. There is no database to go stale and no analyst refresh to wait for.</p>
+      <p class="lede">The Concrete Index is a live reading of New York City's public construction market, built directly on the government's own records. Nothing here is estimated or scraped. Most pages query the official datasets at the moment you load it, run the numbers in your browser, and render the result. The few sources a browser cannot reach are pulled and normalized overnight by an automated job and read back from a compact static file. There is no analyst refresh to wait for.</p>
       <div class="how">
         <div class="step">
           <div class="s-t">1 · Pull</div>
@@ -180,6 +180,17 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <div class="step">
           <div class="s-t">3 · Read</div>
           <div class="s-d">From the cleaned data the site computes the demand funnel from commitment to cash, phase-conversion rates by agency, a composite index back to 2004, and a briefing that rewrites itself from the live record on every visit.</div>
+        </div>
+      </div>
+      <div class="who">
+        <h3>The pipeline underneath</h3>
+        <p class="who-lede">Those three steps run on top of a record-linkage and aggregation pipeline that does the work a public-records analyst would otherwise do by hand. The City's construction record is split across systems that were never built to be read together, and each is loosely aggregated inside itself. The pipeline resolves that into one current, contractor-attributed picture, and re-runs itself nightly with no manual pull.</p>
+        <div class="who-stack">
+          <div class="w-block"><strong>Ingestion.</strong> It reads several public sources: the City Record for award notices, the OMB capital plan for committed budgets, the School Construction Authority and MTA capital datasets, and Checkbook NYC, the Comptroller's system of record for registered and paid amounts.</div>
+          <div class="w-block"><strong>Record linkage.</strong> One contractor files under many legal-name spellings and joint-venture entities. The pipeline links those to a single parent through a deterministic, hand-verified alias map corroborated by shared business address. High-occupancy addresses, the shared office towers and registered-agent suites, are excluded, so a common address can never merge two unrelated firms. The match is exact and rule-based, not probabilistic and not machine-learned.</div>
+          <div class="w-block"><strong>Deduplication.</strong> Award notices collapse to one record per procurement, and capital-plan budgets collapse to one record per project, since the source repeats a project's budget across every sub-project row.</div>
+          <div class="w-block"><strong>Reconciliation.</strong> It carries three dollar measures per contractor: award-notice value from the City Record, plus registered contract value and paid to date, both from Checkbook NYC. They are held as separate reconciled figures and never blended into one number.</div>
+          <div class="w-block"><strong>Nightly self-refresh.</strong> An automated job re-runs the ingestion and aggregation every night. Where a source cannot be read from the browser (Checkbook NYC allows no cross-origin request and returns a paged XML feed), the job fetches and normalizes it server-side and writes the compact static file the site reads, so the picture stays current without an analyst in the loop.</div>
         </div>
       </div>
       <div class="who">
