@@ -417,10 +417,20 @@ jobs:
           tp_key = norm_name("Tutor Perini")
           log("Tutor Perini key = %r -> %s" % (tp_key, json.dumps(vendors.get(tp_key, "MISSING"))))
 
-          assert len(contracts) > 0, "contracts_rows == 0 (partial/failed fetch)"
-          assert spending_rows > 0, "no paid (spent-to-date) figures (partial/failed fetch)"
-          assert group_count >= 50, "groups < 50 (too few; partial fetch?)"
-          assert total_registered >= 1_000_000_000, "total registered < $1B (degraded pull)"
+          # Quality gate. On a thin or partial pull, KEEP the last good data file
+          # and exit cleanly (exit 0) instead of failing the job. A failed job
+          # emails the repo owner, and a nightly data-refresh should never do that
+          # for a transient upstream hiccup: the previously committed file stays in
+          # place and the page keeps showing the last good numbers. Only a genuine
+          # code error (an uncaught exception) will fail the job and notify.
+          ok = (len(contracts) > 0 and spending_rows > 0
+                and group_count >= 50 and total_registered >= 1_000_000_000)
+          if not ok:
+              log("WARNING: Checkbook pull looks partial or degraded "
+                  "(contracts=%d, paid_rows=%d, groups=%d, registered=$%d). "
+                  "Keeping the existing data file and exiting without committing."
+                  % (len(contracts), spending_rows, group_count, total_registered))
+              sys.exit(0)
 
           with open("data/checkbook-vendors.json", "w") as f:
               json.dump(out, f, separators=(",", ":"), ensure_ascii=False)
