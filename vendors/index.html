@@ -360,7 +360,7 @@ function normName(s){
     .trim()
     .replace(/\s+/g,' ')
     .toUpperCase()
-    .replace(/[.,;:&/'"`\-\s]+$/,'')
+    .replace(/[.,;:&/\\'"`\-\s]+$/,'')   // strip trailing punctuation incl. backslash and whitespace
     .trim();
 }
 
