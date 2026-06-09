@@ -88,6 +88,7 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 22px;box-shadow:0 1px 0 rgba(34,21,14,.04)}
 .card .h-sub{font-size:12.5px;color:var(--muted);margin-top:9px;margin-bottom:18px}
 .chart-box{position:relative;height:300px}
+.tnote{font-size:11.5px;line-height:1.55;color:var(--muted);margin-top:13px;padding-top:9px;border-top:1px solid var(--line)}
 
 /* ---------- structural read box ---------- */
 .reading{background:var(--band);border-left:3px solid var(--accent);border-radius:0;padding:18px 22px}
@@ -266,6 +267,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2>Count share versus dollar share, by band</h2><span class="cap">SHARE OF SET</span></div>
       <div class="h-sub">Each band's share of all awards by count, set against its share of all award dollars. The gap between the two bars is the small-awards / mega-dollars inversion.</div>
       <div class="chart-box"><canvas id="chart-bands"></canvas></div>
+      <div class="tnote">For each award-size band, two bars: its share of all awards by count (count share = awards in band ÷ total awards) and its share of all award dollars (dollar share = band dollars ÷ total dollars), on the deduplicated set. The gap is the inversion where many small awards hold a thin slice of dollars while a few large ones hold most.</div>
     </div>
   </section>
 
@@ -280,6 +282,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         </tr></thead>
         <tbody></tbody>
       </table>
+      <div class="tnote">Award-size bands fixed by published contract value. For each band: the number of awards, its count share and dollar share of the deduplicated set, and the count of distinct awardees by published name (not grouped across spellings). No contractor is named on this page.</div>
     </div>
   </section>
 
@@ -288,6 +291,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2>Concentration within each band</h2><span class="cap">TOP-N BY COUNT · DOLLAR SHARE · HHI</span></div>
       <div class="h-sub">For the 3, 5, and 10 awardees that won the most awards by count, their combined share of the band's dollars, plus an HHI concentration index. The awardees are selected by award count; the figure shown is their share of dollars.</div>
       <div class="conc-grid" id="conc-grid"></div>
+      <div class="tnote">For each band, the combined dollar share of the top 3, 5, and 10 awardees ranked by award count, plus a Herfindahl-Hirschman index. HHI = the sum of each awardee's squared dollar share within the band, on a 0 to 10,000 scale; a higher value means the band's dollars sit with fewer firms. Awardees are ranked by count, so the dollar share shown is what those count-leaders hold.</div>
     </div>
   </section>
 
