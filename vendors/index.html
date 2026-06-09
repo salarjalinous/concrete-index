@@ -247,6 +247,14 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <div class="readstrip" id="readstrip"></div>
       </div>
     </section>
+    <section class="grid">
+      <div class="card">
+        <div class="sec-head"><h2>Registered and paid</h2><span class="cap">CHECKBOOK NYC · USD</span></div>
+        <div class="h-sub">Three different measures of this firm's City work, shown side by side and never added together. The award-notice value is the amount stated when a contract is awarded. Registered is the contract value the Comptroller has registered. Paid to date is how much the City has actually disbursed against those registered contracts. Each answers a different question, and the gaps between them are normal.</div>
+        <div class="readstrip" id="cbk-strip"></div>
+        <div class="h-sub" id="cbk-note" style="margin-top:14px;margin-bottom:0"></div>
+      </div>
+    </section>
     <section class="grid two">
       <div class="card">
         <div class="sec-head"><h2>Awarded value by year</h2><span class="cap">BY YEAR · USD</span></div>
@@ -396,6 +404,22 @@ async function loadAliases(){
   }catch(e){ /* page still works ungrouped if aliases fail to load */ }
 }
 
+// Checkbook NYC registered/paid data, keyed by normName(group label). Built
+// nightly by the checkbook.yml Action against the SAME normName() used here, so
+// the lookup key is data.checkbook.vendors[ normName(group.key) ]. Loaded once
+// on init; the page works fine if it fails (each group just shows no match).
+const checkbook = { loaded: false, meta: null, vendors: {} };
+async function loadCheckbook(){
+  try{
+    const res = await fetch('/data/checkbook-vendors.json');
+    if(!res.ok) throw new Error('checkbook ' + res.status);
+    const d = await res.json();
+    checkbook.meta = d.meta || null;
+    checkbook.vendors = d.vendors || {};
+    checkbook.loaded = true;
+  }catch(e){ /* page still works without the Checkbook block */ }
+}
+
 // Resolve a raw vendor_name to its group key: parent label if in the alias map,
 // else the raw name stands alone as its own group.
 function groupKeyFor(vendorName){
@@ -529,6 +553,55 @@ function selectGroup(key){
   renderProfile();
 }
 
+// Registered + Paid from Checkbook NYC, shown alongside the award-notice total
+// as three separate measures. Lookup key is normName(group.key), the verbatim
+// normalizer that the nightly Action keyed the JSON on. Never sums the three.
+function renderCheckbook(grp, awardNotice){
+  const strip = document.getElementById('cbk-strip');
+  const note = document.getElementById('cbk-note');
+  const cbk = checkbook.loaded ? checkbook.vendors[normName(grp.key)] : null;
+
+  // Disclosure copy (house voice, no em dashes). Always shown.
+  const disclosure = 'Registered, paid to date, and the award-notice value are '
+    + 'three different measures and are never added together. Checkbook coverage '
+    + 'is New York City entities only, so work let by the MTA, the Port Authority, '
+    + 'or New York State is out of scope here. Names are matched to the award '
+    + 'record exactly after normalization, so a firm with no exact match shows no '
+    + 'Checkbook figure rather than a guess. Checkbook figures refresh nightly.';
+
+  if(!cbk){
+    strip.innerHTML = `<div class="rd"><div class="rd-label">Award-notice value</div>`
+      + `<div class="rd-value">${fmtMoney(awardNotice)}</div>`
+      + `<div class="rd-note">Total of the amounts stated in this group's award notices in the City Record. This is the award-side measure already shown above.</div></div>`
+      + `<div class="rd"><div class="rd-label">Registered (Checkbook)</div>`
+      + `<div class="rd-value">–</div>`
+      + `<div class="rd-note">No Checkbook match for this group. Either there is no exact name match after normalization, or this firm's City-registered construction work falls outside the trailing five fiscal years.</div></div>`
+      + `<div class="rd"><div class="rd-label">Paid to date (Checkbook)</div>`
+      + `<div class="rd-value">–</div>`
+      + `<div class="rd-note">Shown only when a Checkbook match exists.</div></div>`;
+    note.textContent = disclosure;
+    return;
+  }
+
+  const span = (cbk.fy_first && cbk.fy_last)
+    ? (cbk.fy_first === cbk.fy_last ? ('FY' + cbk.fy_first) : ('FY' + cbk.fy_first + '–FY' + cbk.fy_last))
+    : '';
+  const agencyTxt = (typeof cbk.agencies === 'number' && cbk.agencies > 0)
+    ? (cbk.agencies + ' City ' + (cbk.agencies === 1 ? 'agency' : 'agencies')) : '';
+
+  strip.innerHTML =
+      `<div class="rd"><div class="rd-label">Award-notice value</div>`
+    + `<div class="rd-value">${fmtMoney(awardNotice)}</div>`
+    + `<div class="rd-note">Total of the amounts stated in this group's award notices in the City Record. The award-side measure shown above.</div></div>`
+    + `<div class="rd flag"><div class="rd-label">Registered (Checkbook)</div>`
+    + `<div class="rd-value">${fmtMoney(cbk.registered)}</div>`
+    + `<div class="rd-note">Value of this group's contracts registered with the Comptroller${span?(', '+span):''}${agencyTxt?(', across '+agencyTxt):''}. A separate measure from the award notice, not a sum of it.</div></div>`
+    + `<div class="rd flag"><div class="rd-label">Paid to date (Checkbook)</div>`
+    + `<div class="rd-value">${fmtMoney(cbk.paid)}</div>`
+    + `<div class="rd-note">Amount the City has disbursed against those registered contracts so far. Lower than registered while work is in progress.</div></div>`;
+  note.textContent = disclosure;
+}
+
 function renderReadStrip(rows, agSorted, all){
   const el = document.getElementById('readstrip');
   const cells = [];
@@ -607,6 +680,7 @@ function renderProfile(){
   document.getElementById('kpi-ag-note').textContent = all>0 ? (agSorted[0][1]/all*100).toFixed(0)+'% of awarded value' : '';
 
   renderReadStrip(rows, agSorted, all);
+  renderCheckbook(grp, all);
 
   const byYear = new Map();
   for(const r of rows) byYear.set(r.year, (byYear.get(r.year)||0)+r.amount);
@@ -679,7 +753,9 @@ document.getElementById('q').addEventListener('keydown', e=>{ if(e.key==='Enter'
 
 (async function init(){
   loadStarter().catch(()=>{});
-  await loadAliases();          // grouping must be ready before the first search
+  // Aliases must be ready before the first search; Checkbook should be ready so
+  // a deep-linked ?q= populates the registered/paid block on first render.
+  await Promise.all([ loadAliases(), loadCheckbook() ]);
   const q = new URLSearchParams(location.search).get('q');
   if(q) runSearch(q);
 })();
