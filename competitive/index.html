@@ -157,12 +157,11 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   .series-bar .inner{padding-left:18px;padding-right:18px}
 }
 .menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
-@media(max-width:1023px){
+@media(max-width:1180px){
   .menu-btn{display:block}
   .nav{position:relative}
   .nav-links{display:none;position:absolute;top:61px;left:-28px;right:-28px;background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60}
   .nav-links.open{display:flex}
-  .nav-links a.hide-m{display:inline}
 }
 </style>
 </head>
@@ -171,7 +170,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 <header>
   <div class="wrap nav">
     <div class="brand">
-      <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#b5482a"/></svg>
+      <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
       <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
     </div>
     <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">&#9776;</button>
@@ -179,13 +178,14 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <a href="/pipeline/">Pipeline</a>
       <a href="/solicitations/">Bidding</a>
       <a href="/">Awarded</a>
-      <a href="/vendors/" class="hide-m">Vendors</a>
+      <a href="/vendors/">Vendors</a>
       <a href="/funnel/">Funnel</a>
+      <a href="/velocity/">Velocity</a>
       <a href="/competitive/" class="active">Market</a>
       <a href="/analysis/">Analysis</a>
       <a href="/regional/">Regional</a>
       <a href="/briefing/">Briefing</a>
-      <a href="#methodology" class="hide-m">Methodology</a>
+      <a href="#methodology">Methodology</a>
       <span class="badge-live"><span class="dot"></span>Live data</span>
     </nav>
   </div>
@@ -198,7 +198,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 <div class="wrap hero">
   <div class="kicker">Competitive set by wins</div>
   <h1>How award dollars and counts spread across the market.</h1>
-  <p class="sub">Construction award notices grouped by award value into four size bands. For each band: how many awards land there, how many dollars, how much of the band one handful of awardees accounts for, and how concentrated the band is. Awardee names are a grouping key only. None are published, ranked, or scored.</p>
+  <p class="sub">Construction award notices grouped by award value into four size bands. For each band: how many awards land there, how many dollars they carry, and how concentrated the band is. Awardee names are a grouping key only. None are published, ranked, or scored.</p>
   <p class="asof" id="asof">Assembling the competitive set from live City Record data&hellip;</p>
 </div>
 
@@ -256,7 +256,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <section class="grid">
     <div class="card">
       <div class="sec-head"><h2>Band detail</h2><span class="cap">BY AWARD VALUE</span></div>
-      <div class="h-sub">Counts, dollars, and their shares of the set. Bands are fixed by award value, not by who won.</div>
+      <div class="h-sub">Counts, dollars, and their shares of the set. Bands are fixed by award value.</div>
       <table id="tbl-bands">
         <thead><tr>
           <th>Band</th><th class="num">Awards</th><th class="num">Count share</th>
@@ -270,7 +270,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <section class="grid">
     <div class="card">
       <div class="sec-head"><h2>Concentration within each band</h2><span class="cap">TOP-N BY COUNT · DOLLAR SHARE · HHI</span></div>
-      <div class="h-sub">For the 3, 5, and 10 awardees that won the most awards by count, their combined share of the band's dollars, plus an HHI concentration index. The awardees are selected by award count; the figure shown is their share of dollars. No awardee is named. Counts only, no leaderboard.</div>
+      <div class="h-sub">For the 3, 5, and 10 awardees that won the most awards by count, their combined share of the band's dollars, plus an HHI concentration index. The awardees are selected by award count; the figure shown is their share of dollars.</div>
       <div class="conc-grid" id="conc-grid"></div>
     </div>
   </section>
@@ -297,7 +297,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <div class="wrap f-row">
     <div>
       <div class="brand">
-        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#b5482a"/></svg>
+        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
         <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.01em">The Concrete Index<span class="tick" style="color:var(--accent)">.</span></span>
       </div>
       <div style="margin-top:8px">NYC public construction capital, from commitment to cash.</div>
