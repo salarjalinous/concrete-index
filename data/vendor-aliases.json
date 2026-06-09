@@ -1459,5 +1459,29 @@
       "Xbr Inc",
       "Xbr, Inc"
     ]
+  },
+  {
+    "parent": "Skanska USA Civil Northeast",
+    "variants": [
+      "SKANSKA USA CIVIL NORTHEAST INC.",
+      "SKANSKA USA CIVIL NORTHEAST INC",
+      "Skanska USA Civil Northeast Inc."
+    ]
+  },
+  {
+    "parent": "L.K. Comstock",
+    "variants": [
+      "L.K. COMSTOCK AND COMPANY LLC",
+      "L.K. COMSTOCK & COMPANY, INC.",
+      "L K COMSTOCK AND COMPANY LLC"
+    ]
+  },
+  {
+    "parent": "Halmar International",
+    "variants": [
+      "HALMAR INTERNATIONAL LLC",
+      "HALMAR INTERNATIONAL, LLC",
+      "Halmar International LLC"
+    ]
   }
 ]
