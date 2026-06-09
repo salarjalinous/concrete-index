@@ -301,12 +301,13 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <p>All figures are drawn live from <a href="https://data.cityofnewyork.us/City-Government/Recent-Contract-Awards/qyyg-4tf5" target="_blank" rel="noopener">Recent Contract Awards</a> on NYC Open Data (dataset <code>qyyg-4tf5</code>), the City Record's public notice of contract awards, maintained by the NYC Department of Citywide Administrative Services. The dataset is updated daily; this page queries it directly every time it loads, so what you see is the current public record.</p>
       <h3>What counts as an award</h3>
       <p>Each record is a contract award notice published in the City Record. Dollar values are the contract amounts as published at award. An award notice comes before contract registration with the Comptroller and well before any payment. It measures demand entering the market rather than cash out the door.</p>
+      <p>A single procurement can be published as more than one notice. To avoid counting the same award twice, notices are deduplicated to one record per procurement (the City Record <code>pin</code>), keeping the largest published contract amount for that procurement. Every dollar total on this page is computed on that deduplicated set, the same rule used across the Funnel, Briefing, and Market pages.</p>
       <h3>Scope</h3>
       <p>The index covers the two construction categories in the City's procurement taxonomy: <strong>Construction/Construction Services</strong> (hard construction) and <strong>Construction Related Services</strong> (design, engineering, construction management). The scope control above lets you view either or both. Awards with no positive published value are excluded.</p>
       <h3>Geography</h3>
       <p>The source data does not carry a structured borough field. The Concrete Index derives borough from the award's title and description text. Awards referencing multiple boroughs are shown as multi-borough; awards with no borough reference, typically citywide programs or requirements contracts, are shown as citywide / unspecified.</p>
       <h3>Award types and sizes</h3>
-      <p>The type control separates <strong>new awards</strong> from <strong>continuations</strong>, renewals and extensions of existing contracts, identified by the published selection method. New awards measure fresh demand reaching the market; continuations measure work staying in place. The size control excludes awards of $500M and above, so trend readings aren't dominated by a handful of megaprojects.</p>
+      <p>The type control separates <strong>new awards</strong> from <strong>continuations</strong>, renewals of existing contracts, identified by the published selection method. New awards measure fresh demand reaching the market; continuations measure work staying in place. The size control excludes awards of $500M and above, so trend readings aren't dominated by a handful of megaprojects.</p>
       <h3>Work-type tags</h3>
       <p>The work-type filter tags each award by keyword matching on its public short title. Tags are non-exclusive, so one award can carry several (a garage HVAC job is both mechanical and a building). They are descriptive aids, not official classifications. Roughly one award in ten carries no work-type keyword in its title and is shown as Uncategorized, which is most often a professional-services, IT, or design contract with no physical scope named.</p>
       <p>The headline awarded total above includes everything by default: new work, continuations, and megaprojects. The composite index on the <a href="/analysis/">Analysis</a> page strips all three out to isolate the cycle in new work, so its trailing-twelve total reads lower than this one. Both are correct for their purpose.</p>
@@ -373,9 +374,26 @@ function isoDaysAgo(years){
   return d.toISOString().slice(0,10);
 }
 
+/* Canonical construction-awards dedupe: one row per procurement (pin), keeping
+   the maximum contract_amount seen for that pin. The same award can be published
+   as several near-duplicate notices; summing raw rows overstates the total by the
+   duplicate share. Rows with no pin stand alone under a stable per-row surrogate. */
+function dedupeByPin(raw){
+  const byPin = new Map();
+  for(let i=0; i<raw.length; i++){
+    const r = raw[i];
+    const amt = parseFloat(r.contract_amount);
+    if(!(amt > 0)) continue;
+    const pin = r.pin || ('_np_' + i);
+    const prev = byPin.get(pin);
+    if(!prev || amt > (parseFloat(prev.contract_amount)||0)) byPin.set(pin, r);
+  }
+  return [...byPin.values()];
+}
+
 async function fetchAwards(){
   const params = new URLSearchParams({
-    '$select': 'request_id,start_date,agency_name,category_description,short_title,selection_method_description,vendor_name,contract_amount,additional_description_1',
+    '$select': 'pin,request_id,start_date,agency_name,category_description,short_title,selection_method_description,vendor_name,contract_amount,additional_description_1',
     '$where': `starts_with(category_description,'Construction') AND start_date>'${isoDaysAgo(5)}' AND contract_amount>0`,
     '$order': 'start_date DESC',
     '$limit': '20000'
@@ -384,7 +402,7 @@ async function fetchAwards(){
   const res = await fetch(`${API}?${params}`);
   if(!res.ok) throw new Error('API ' + res.status);
   const raw = await res.json();
-  return raw.map(normalize);
+  return dedupeByPin(raw).map(normalize);
 }
 
 const BORO_PATTERNS = [
