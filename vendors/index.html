@@ -19,7 +19,7 @@
   --paper:#fbf2ea; --surface:#fffaf4; --band:#f6ece2;
   --ink:#22150e; --navy:#243b53; --muted:#6e5d52; --faint:#9b8979;
   --line:#e4d4c5; --rule:#22150e;
-  --accent:#b5482a; --accent-soft:#f1d9cd; --steel:#2f5d8f; --blue:#2f5d8f;
+  --accent:#b5482a; --accent-soft:#f1d9cd; --steel:#2f5d8f;
   --pos:#2f7d52; --neg:#a3302a; --radius:3px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -81,6 +81,8 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:0}
 .sec-head h2{font-family:'Source Serif 4',Georgia,serif;font-size:21px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
 .sec-head .cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em;text-align:right;white-space:nowrap}
+.csv-link{color:var(--accent);font-weight:500}
+.csv-link:hover{text-decoration:underline}
 
 .grid{display:grid;gap:22px;padding:22px 0 0}
 .grid.two{grid-template-columns:1fr 1fr}
@@ -100,7 +102,7 @@ td .t-sub{font-size:12px;color:var(--muted);margin-top:3px;font-family:'Public S
 .amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
 .pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.03em;border-radius:3px;padding:2px 6px;white-space:nowrap}
 .pill.hard{background:var(--accent-soft);color:var(--accent)}
-.pill.rel{background:#dde6ee;color:var(--blue)}
+.pill.rel{background:#dde6ee;color:var(--steel)}
 .starter{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
 .starter button{font:inherit;text-align:left;font-size:13.5px;font-weight:600;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink);cursor:pointer}
 .starter button:hover{border-color:var(--accent)}
@@ -175,6 +177,25 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   .wrap{padding:0 18px}
   .series-bar .inner{padding-left:18px;padding-right:18px}
 }
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce){
+  .badge-live .dot{animation:none}
+  .spinner{animation:none}
+  *{scroll-behavior:auto}
+}
+
+/* ---------- print ---------- */
+@media print{
+  header,.series-bar,.badge-live,.searchbar,.chips,.hint,#starter,.menu-btn{display:none !important}
+  body{background:#fff;color:#000}
+  .card,.kpi,.surface{background:#fff !important;box-shadow:none}
+  details.members > .mbody{display:block !important}
+  details.members{page-break-inside:avoid}
+  footer{background:#fff;border-top:1px solid #000;color:#000}
+  footer a{color:#000}
+  a{color:#000}
+}
 </style>
 </head>
 <body>
@@ -185,7 +206,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
       <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
     </div>
-    <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
+    <button class="menu-btn" aria-label="Menu" aria-expanded="false" onclick="const o=this.nextElementSibling.classList.toggle('open');this.setAttribute('aria-expanded',o)">☰</button>
     <nav class="nav-links">
       <a href="/pipeline/">Pipeline</a>
       <a href="/solicitations/">Bidding</a>
@@ -271,7 +292,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     </section>
     <section class="grid">
       <div class="card">
-        <div class="sec-head"><h2>Recent awards</h2><span class="cap">MOST RECENT</span></div>
+        <div class="sec-head"><h2>Recent awards</h2><span class="cap"><a href="#" id="csv-link" class="csv-link">↓ Download CSV</a> · MOST RECENT</span></div>
         <div class="h-sub" id="recent-sub"></div>
         <table id="tbl-recent">
           <thead><tr><th>Date</th><th>Award</th><th>Agency</th><th class="num">Value</th></tr></thead>
@@ -362,6 +383,46 @@ function fmtMoney(v){
 function fmtInt(v){ return v.toLocaleString('en-US'); }
 function fmtDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
 function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+// CSV cell escaper: wrap in quotes and double any embedded quote so commas,
+// newlines, and quotes in agency or title text never break a row.
+function csvCell(v){ const s=(v==null?'':String(v)); return '"'+s.replace(/"/g,'""')+'"'; }
+function isoDay(d){ return d instanceof Date && !isNaN(d) ? d.toISOString().slice(0,10) : ''; }
+function slugify(s){ return (s||'vendor').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60) || 'vendor'; }
+function downloadCSV(text, filename){
+  const blob = new Blob([text], { type:'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 0);
+}
+// Build a CSV for the selected group: a short measures header (the three
+// Checkbook-style measures, never summed), then a blank line, then one row per
+// award notice. Client-side Blob only, no network.
+function exportVendorCSV(){
+  const grp = state.groups.get(state.active);
+  if(!grp) return;
+  const rows = grp.rows;
+  const all = rows.reduce((a,r)=>a+r.amount,0);
+  const cbk = checkbook.loaded ? checkbook.vendors[normName(grp.key)] : null;
+  const lines = [];
+  lines.push(['Vendor group', grp.key].map(csvCell).join(','));
+  lines.push(['Measure','Value (USD)'].map(csvCell).join(','));
+  lines.push(['Award-notice value (City Record)', Math.round(all)].map(csvCell).join(','));
+  lines.push(['Registered (Checkbook)', cbk ? Math.round(cbk.registered) : 'no match'].map(csvCell).join(','));
+  lines.push(['Paid to date (Checkbook)', cbk ? Math.round(cbk.paid) : 'no match'].map(csvCell).join(','));
+  lines.push('');
+  lines.push(['Date','Award','Agency','Vendor (as published)','Category','Selection method','Amount (USD)'].map(csvCell).join(','));
+  rows.forEach(r => {
+    lines.push([
+      isoDay(r.date), r.title, r.agency, r.vendor,
+      r.cat==='hard'?'Construction':'Related services',
+      r.method, Math.round(r.amount)
+    ].map(csvCell).join(','));
+  });
+  downloadCSV(lines.join('\r\n'), 'concrete-index-' + slugify(grp.key) + '.csv');
+}
 function isoMonthsAgo(n){ const d=new Date(); d.setMonth(d.getMonth()-n); return d.toISOString().slice(0,10); }
 function isContinuation(m){ return /renewal|extension/i.test(m||''); }
 function median(a){ if(!a.length) return 0; const s=[...a].sort((x,y)=>x-y); const m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; }
@@ -786,6 +847,17 @@ function renderMembers(grp, rows){
 
 document.getElementById('go').addEventListener('click', ()=>runSearch(document.getElementById('q').value));
 document.getElementById('q').addEventListener('keydown', e=>{ if(e.key==='Enter') runSearch(e.target.value); });
+document.getElementById('csv-link').addEventListener('click', e=>{ e.preventDefault(); exportVendorCSV(); });
+// Expand the members breakdown for print so a printed vendor profile is complete,
+// then restore its prior state afterward.
+(function(){
+  let prevOpen = null;
+  function before(){ const m=document.getElementById('members'); if(m){ prevOpen=m.open; m.open=true; } }
+  function after(){ const m=document.getElementById('members'); if(m && prevOpen!==null){ m.open=prevOpen; } }
+  window.addEventListener('beforeprint', before);
+  window.addEventListener('afterprint', after);
+  if(window.matchMedia){ const mq=window.matchMedia('print'); if(mq.addEventListener) mq.addEventListener('change', e=>{ e.matches?before():after(); }); }
+})();
 
 (async function init(){
   loadStarter().catch(()=>{});
