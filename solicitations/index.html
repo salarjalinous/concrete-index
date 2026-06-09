@@ -91,6 +91,11 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.03em;border-radius:3px;padding:2px 6px;white-space:nowrap}
 .pill.hard{background:var(--accent-soft);color:var(--accent)}
 .pill.rel{background:#dde6ee;color:var(--steel)}
+.pill.wt{background:var(--band);color:var(--muted);border:1px solid var(--line);text-transform:none;letter-spacing:0}
+.pill.boro{background:#e7eef5;color:var(--navy)}
+.s-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.csv-link{color:var(--accent);font-weight:500}
+.csv-link:hover{text-decoration:underline}
 .contact{font-size:12px;color:var(--muted);margin-top:6px}
 .empty{padding:40px;text-align:center;color:var(--muted)}
 .s-intro{font-size:13px;color:var(--muted);padding:14px 0 2px;max-width:760px}
@@ -132,6 +137,23 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   .nav-links{display:none;position:absolute;top:61px;left:-28px;right:-28px;background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60}
   .nav-links.open{display:flex}
 }
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce){
+  .badge-live .dot{animation:none}
+  .spinner{animation:none}
+  *{scroll-behavior:auto}
+}
+
+/* ---------- print ---------- */
+@media print{
+  header,.series-bar,.badge-live,.controls,.seg,.search,.menu-btn{display:none !important}
+  body{background:#fff;color:#000}
+  .card{background:#fff !important;box-shadow:none}
+  .sol{page-break-inside:avoid}
+  footer{background:#fff;border-top:1px solid #000;color:#000}
+  footer a,a{color:#000}
+}
 </style>
 </head>
 <body>
@@ -142,7 +164,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
       <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
     </div>
-    <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
+    <button class="menu-btn" aria-label="Menu" aria-expanded="false" onclick="const o=this.nextElementSibling.classList.toggle('open');this.setAttribute('aria-expanded',o)">☰</button>
     <nav class="nav-links">
       <a href="/pipeline/">Pipeline</a>
       <a href="/solicitations/" class="active">Bidding</a>
@@ -192,13 +214,19 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <button data-s="hard">Construction</button>
       <button data-s="rel">Related services</button>
     </div>
+    <span class="ctl-label" style="margin-left:6px">Sort</span>
+    <div class="seg" id="seg-sort">
+      <button data-o="due">Due date</button>
+      <button data-o="agency">Agency</button>
+      <button data-o="worktype">Work type</button>
+    </div>
     <div class="search"><input id="q" type="search" placeholder="Search title, agency, or description…"></div>
   </div>
 
   <section class="grid">
     <div class="card">
-      <div class="sec-head"><h2>Open solicitations</h2><span class="cap">SORTED BY DUE DATE</span></div>
-      <div class="s-intro">These are open opportunities, not results. When each one is decided, the award notice names the winning contractor only, so the <a href="/">Awarded</a> page shows who was awarded work, not who else bid.</div>
+      <div class="sec-head"><h2>Open solicitations</h2><span class="cap"><a href="#" id="csv-link" class="csv-link">↓ Download CSV</a> · <span id="sort-cap">SORTED BY DUE DATE</span></span></div>
+      <div class="s-intro">Open solicitations carry no published contract value in this dataset, so they are listed by agency and due date, tagged by trade and borough where the title allows. These are open opportunities, not results. When each one is decided, the award notice names the winning contractor only, so the <a href="/">Awarded</a> page shows who was awarded work, not who else bid.</div>
       <div id="list"></div>
     </div>
   </section>
@@ -237,10 +265,49 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 'use strict';
 const API = 'https://data.cityofnewyork.us/resource/3khw-qi8f.json';
 const HARD = 'Construction/Construction Services';
-const state = { scope:'all', q:'', rows:[] };
+const state = { scope:'all', q:'', sort:'due', rows:[] };
 
 function stripHtml(s){ const d=document.createElement('div'); d.innerHTML=s||''; return (d.textContent||'').replace(/\s+/g,' ').trim(); }
 function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+// Work-type lexicon and classifier, reused verbatim from the Awarded page so a
+// contractor can scan open solicitations by trade. Applied to the title text.
+const WT_LEXICON={
+  paving_roadway:{label:"Paving & Roadway",include:[/\basphalt\b/,/\bpaving\b/,/\bpavement\b/,/\brepaving\b/,/\bresurfac/,/\broadway\b/,/\bparkway\b/,/\broad repair/,/\bmilling\b/,/\bstreetscape/,/\bcrosstown/,/\bselect bus service\b|\bSBS\b/,/\btouring route/,/pavement marking/,/reconstruction of .*\b(street|avenue|ave|road|boulevard|blvd)\b/,/\bkill road\b/,/\broad repair agreement/,/street name sign/]},
+  sidewalk_curb_ramp:{label:"Sidewalk, Curb & Pedestrian Ramp",include:[/\bsidewalk/,/\bpedestrian ramp/,/\bcurb/,/\bstep street/,/\bprior notice sidewalk/,/\broadway restoration/],exclude:[/sidewalk (?:shed|protection)/]},
+  water_sewer:{label:"Water & Sewer",include:[/\bsewer/,/\bwater main/,/\bwatermain/,/\bdistribution water/,/\btrunk water/,/\blead service line/,/\bLSLR/,/\bsewer lin(?:e|ing)/,/\bcombined sewer/,/\binterceptor/,/\bdrainage/,/\bcatch basin/,/\bwastewater/,/\bWRRF\b/,/\bwater resource recovery/,/\bsludge/,/\bCSO\b/,/\bjet flusher/,/\bvactor/,/\bcloudburst/,/\bgreen infrastructure\b|\bGI Construction\b|\bGKOH/,/\bbioswale/,/\bnitrogen removal/,/\bdeammonification/,/\bactivated sludge/,/\bdewatering/,/\bsettling tank/,/\bflood mitigation/,/\bstorm sewer/,/\bsanitary/,/\breservoir\b/,/landfill gas/,/\bwater main\b/]},
+  schools_education:{label:"Schools & Education",include:[/\bschool\b/,/\bP\.?S\.?\s?\d/,/\bI\.?S\.?\s?\d/,/\bclassroom/,/safe routes to school/]},
+  library:{label:"Library",include:[/\blibrary\b/]},
+  electrical:{label:"Electrical",include:[/\belectric/,/\belect\b/,/\belec\b/,/\btraffic signal/,/\bpedestrian signal/,/\bstreet ?light/,/\bsports lighting/,/\blight fixture/,/\bballast/,/\bgenerator/,/\bstandby power\b|emergency power/,/\bsolar pv\b|solar equipment/,/\bpower distribution/,/\belectrical infrastructure/,/\bcable infrastructure/,/\bfire alarm/]},
+  demolition:{label:"Demolition",include:[/\bdemolition/,/\bdemo\b/,/\bIED\b/,/\bbrace (?:&|and) shore/,/\bshoring\b/]},
+  hvac_mechanical:{label:"HVAC & Mechanical",include:[/\bHVAC\b/,/\bboiler/,/\bheating/,/\bchiller/,/\bair handling/,/\bmechanical/,/\bdehumidif/,/\bsteam tunnel/,/\bventilation/,/\boil-?fired/,/\bcommissioning/,/\bBMS\b/,/\bchimney/]},
+  plumbing:{label:"Plumbing & Fire Suppression",include:[/\bplumbing/,/\bfire suppression/,/\bsprinkler/,/\bstandpipe/]},
+  roofing:{label:"Roofing",include:[/\broof/]},
+  facade_masonry:{label:"Facade, Masonry & Envelope",include:[/\bfacade|façade/,/\bmasonry/,/\bparapet/,/\benvelope/,/exterior (?:renovation|envelope|restoration)/,/local law 11\b/,/\bLL11\b/,/building seal-?up|sealup/,/\brepointing|\bpointing\b/,/\bbrick/,/steel and concrete rehab/,/\bretaining wall/,/\barch reconstruction/,/\bpainting\b/]},
+  parks_landscape:{label:"Parks & Landscape",include:[/\bplayground/,/\btree planting/,/\btree removal/,/\btree replacement/,/\btree-?damaged/,/\bemerald ash borer\b|\bEAB\b/,/\blandscape/,/synthetic turf|turf field/,/\bballfield/,/\bball ?field/,/\besplanade/,/\bgreenway|green ?street/,/\bcomfort station/,/recreation center|rec ctr|rec center/,/\bbasketball|handball|tennis court/,/forest restoration/,/\bwetland/,/sports court|sports field/,/adult fitness/,/play equipment|play area/,/\bbleacher/,/\bflagpole/,/safety netting/,/spray shower/,/\bdog run/,/\bpathway/,/\bstaircase/,/\bstadium\b/,/\bgreen\b reconstruction/],ambiguousInclude:[/\bpark\b/],ambiguousExclude:[/park avenue|\bparking\b/]},
+  bridges_marine:{label:"Bridges & Marine",include:[/\bbridge/,/protective coating/,/\bmarine\b/,/\bmarina\b/,/\bpier\b/,/\bpiling/,/\bbulkhead/,/\bwaterfront/,/\bferry/,/\bdock\b/,/\bskiff|barge|tugboat/,/\bseawall|sea wall/,/\bunderpass|overpass/,/\bdam\b/,/coastal resilien/]},
+  abatement_environmental:{label:"Abatement & Environmental",include:[/\babatement/,/\basbestos\b/,/\bACM\b/,/lead (?:abatement|based paint|paint hazard|service)/,/\bmold\b/,/air monitoring|air sampling/,/\bremediat/,/\bhazardous|hazmat/,/environmental services/,/environmental engineering/]},
+  buildings_general:{label:"Buildings & General Construction",include:[/general construction|general contracting/,/\bGC\b/,/job order contract|\bJOC\b/,/\brenovation/,/\brehabilitation\b/,/\brehab\b/,/building upgrade/,/construction of (?:new )?(?:offices|building)/,/garage (?:rehab|reconstruction)/,/fire station|firehouse|engine co|ladder co/,/family court|supreme court|courthouse/,/\bshelter\b/,/\bresidence\b/,/public restroom|restroom building/,/\bdetention|\bjail/,/\bhandyperson/,/on-?call general/]},
+  doors_windows_security:{label:"Doors, Windows & Security",include:[/\bdoor\b|doors\b/,/window guard/,/\bwindow\b/,/\bgate\b/,/\bfenc(?:e|ing)/,/security barrier/,/razor wire/,/\belevator/,/\bhinge/,/overhead door|roll-?up door/,/revolving|swing door/,/\bbarrier/]},
+  scaffolding_shed:{label:"Scaffolding & Sheds",include:[/\bscaffold/,/sidewalk shed|sidewalk protection shed|sidewalk sheds/,/\bshed\b/,/temporary shoring/]},
+};
+function wtClassify(title){const t=title||'';const tags=[];for(const k in WT_LEXICON){const d=WT_LEXICON[k];let hit=(d.include||[]).some(function(rx){return new RegExp(rx.source,'i').test(t);});if(!hit&&d.ambiguousInclude){const amb=d.ambiguousInclude.some(function(rx){return new RegExp(rx.source,'i').test(t);});const blk=(d.ambiguousExclude||[]).some(function(rx){return new RegExp(rx.source,'i').test(t);});if(amb&&!blk)hit=true;}if(!hit)continue;if((d.exclude||[]).some(function(rx){return new RegExp(rx.source,'i').test(t);}))continue;tags.push(k);}return tags;}
+
+// Borough derivation, reused from the Awarded page: scan title + description text.
+const BORO_PATTERNS = [
+  ['Manhattan', /\bmanhattan\b|\bnew york county\b/i],
+  ['Brooklyn',  /\bbrooklyn\b|\bkings county\b|\bbklyn\b/i],
+  ['Queens',    /\bqueens\b/i],
+  ['Bronx',     /\bbronx\b/i],
+  ['Staten Island', /\bstaten island\b|\brichmond county\b/i]
+];
+function deriveBorough(title, desc){
+  const text = ((title||'') + ' ' + (desc||'')).toLowerCase();
+  const hits = BORO_PATTERNS.filter(([,re]) => re.test(text)).map(([name]) => name);
+  if(hits.length === 1) return hits[0];
+  if(hits.length > 1) return 'Multi-borough';
+  return 'Citywide / Unspecified';
+}
 
 async function fetchSolicitations(){
   const today = new Date().toISOString().slice(0,10);
@@ -259,42 +326,96 @@ async function fetchSolicitations(){
     const k = r.pin || r.request_id;
     if(seen.has(k)) return false;
     seen.add(k); return true;
-  }).map(r => ({
-    title: r.short_title || '(untitled)',
-    agency: r.agency_name || '–',
-    cat: r.category_description === HARD ? 'hard' : 'rel',
-    method: r.selection_method_description || '',
-    pin: r.pin || '',
-    due: new Date(r.due_date),
-    posted: new Date(r.start_date),
-    contact: r.contact_name || '',
-    phone: r.contact_phone || '',
-    email: r.email || '',
-    desc: stripHtml(r.additional_description_1).slice(0, 280)
-  }));
+  }).map(r => {
+    const title = r.short_title || '(untitled)';
+    const fullDesc = stripHtml(r.additional_description_1);
+    return {
+      title: title,
+      agency: r.agency_name || '–',
+      cat: r.category_description === HARD ? 'hard' : 'rel',
+      method: r.selection_method_description || '',
+      pin: r.pin || '',
+      due: new Date(r.due_date),
+      posted: new Date(r.start_date),
+      contact: r.contact_name || '',
+      phone: r.contact_phone || '',
+      email: r.email || '',
+      tags: wtClassify(title),
+      borough: deriveBorough(title, fullDesc),
+      desc: fullDesc.slice(0, 280)
+    };
+  });
 }
 
 function daysUntil(d){ return Math.ceil((d - new Date()) / 86400000); }
 function fmtDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function isoDay(d){ return d instanceof Date && !isNaN(d) ? d.toISOString().slice(0,10) : ''; }
 
+// CSV export of the currently shown open-solicitations list. Client-side Blob
+// only, no library, no network. Cells are quote-wrapped and quote-doubled.
+function csvCell(v){ const s=(v==null?'':String(v)); return '"'+s.replace(/"/g,'""')+'"'; }
+function exportCSV(){
+  const rows = filtered();
+  const lines = [['Due date','Posted','Agency','Title','Borough','Work types','Category','Selection method','PIN','Contact','Phone','Email'].map(csvCell).join(',')];
+  rows.forEach(r => {
+    lines.push([
+      isoDay(r.due), isoDay(r.posted), r.agency, r.title, r.borough,
+      r.tags.map(t=>WT_LEXICON[t].label).join('; '),
+      r.cat==='hard'?'Construction':'Related services',
+      r.method, r.pin, r.contact, r.phone, r.email
+    ].map(csvCell).join(','));
+  });
+  const blob = new Blob([lines.join('\r\n')], { type:'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'concrete-index-open-solicitations.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 0);
+}
+
+function wtLabel(r){ return r.tags.length ? WT_LEXICON[r.tags[0]].label : ''; }
 function filtered(){
   const q = state.q.toLowerCase();
-  return state.rows.filter(r =>
+  const rows = state.rows.filter(r =>
     (state.scope==='all' || r.cat===state.scope) &&
     (!q || (r.title+' '+r.agency+' '+r.desc+' '+r.method).toLowerCase().includes(q))
   );
+  // Sort by due date (rows already arrive due-ordered), agency, or first work-type
+  // label; ties and untagged rows fall back to due date so ordering stays stable.
+  const byDue = (a,b)=> a.due - b.due;
+  if(state.sort==='agency'){
+    rows.sort((a,b)=> a.agency.localeCompare(b.agency) || byDue(a,b));
+  } else if(state.sort==='worktype'){
+    rows.sort((a,b)=>{
+      const la=wtLabel(a), lb=wtLabel(b);
+      if(la && !lb) return -1;
+      if(!la && lb) return 1;
+      return la.localeCompare(lb) || byDue(a,b);
+    });
+  } else {
+    rows.sort(byDue);
+  }
+  return rows;
 }
 
+const SORT_CAP = { due:'SORTED BY DUE DATE', agency:'SORTED BY AGENCY', worktype:'SORTED BY WORK TYPE' };
 function render(){
   const rows = filtered();
+  const cap = document.getElementById('sort-cap');
+  if(cap) cap.textContent = SORT_CAP[state.sort] || SORT_CAP.due;
   const el = document.getElementById('list');
   if(!rows.length){ el.innerHTML = '<div class="empty">No open solicitations match.</div>'; return; }
   el.innerHTML = rows.map(r => {
     const days = daysUntil(r.due);
+    const wtPills = r.tags.map(t=>`<span class="pill wt">${esc(WT_LEXICON[t].label)}</span>`).join('');
+    const boroPill = r.borough==='Citywide / Unspecified'
+      ? '' : `<span class="pill boro">${esc(r.borough)}</span>`;
+    const tagRow = (wtPills || boroPill) ? `<div class="s-tags">${boroPill}${wtPills}</div>` : '';
     return `<div class="sol">
       <div class="s-main">
         <div class="s-title">${esc(r.title)}</div>
         <div class="s-meta">${esc(r.agency)} · ${esc(r.method)} · PIN ${esc(r.pin)} · <span class="pill ${r.cat}">${r.cat==='hard'?'Construction':'Related services'}</span></div>
+        ${tagRow}
         ${r.desc ? `<div class="s-desc">${esc(r.desc)}${r.desc.length>=280?'…':''}</div>` : ''}
         <div class="contact">${esc(r.contact)}${r.phone?' · '+esc(r.phone):''}${r.email?' · <a href="mailto:'+esc(r.email)+'">'+esc(r.email)+'</a>':''}</div>
       </div>
@@ -327,7 +448,9 @@ function wireSeg(id, attr, initial, onChange){
   document.getElementById('app').style.display='block';
   let ready=false;
   wireSeg('seg-scope','s','all', v=>{ state.scope=v; if(ready) render(); });
+  wireSeg('seg-sort','o','due', v=>{ state.sort=v; if(ready) render(); });
   document.getElementById('q').addEventListener('input', e=>{ state.q=e.target.value; render(); });
+  document.getElementById('csv-link').addEventListener('click', e=>{ e.preventDefault(); exportCSV(); });
   ready=true;
   render();
 })();
