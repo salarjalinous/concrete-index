@@ -183,20 +183,50 @@ jobs:
           variant_to_parent = load_aliases(alias_path)
           log("Loaded %d normalized variant keys from %s" % (len(variant_to_parent), alias_path))
 
-          contracts_cols = ["prime_vendor", "contract_id", "agency", "industry",
-                            "fiscal_year", "current_amount", "original_amount", "purpose"]
-          spending_cols = ["vendor", "agency", "industry", "fiscal_year",
-                           "check_amount", "contract_id", "document_id"]
+          # Real API column + criterion names, locked from run #3's failure
+          # messages (the doc-based names in the spec were wrong; the live API
+          # returned its own valid lists):
+          #   Contracts domain = "Registered Contracts(expense)", columns are
+          #   prime_contract_* prefixed; there is NO returnable fiscal_year column
+          #   (fiscal_year works only as a SEARCH criterion), so the output fiscal
+          #   year is derived from prime_contract_registration_date.
+          #   Spending domain rejects 'category' and a 'contract' spending_category
+          #   (max 2 chars); vendor column is payee_name.
+          contracts_cols = ["prime_vendor", "prime_contract_id", "prime_contracting_agency",
+                            "prime_contract_industry", "prime_contract_current_amount",
+                            "prime_contract_original_amount", "prime_contract_purpose",
+                            "prime_contract_registration_date"]
+          spending_cols = ["payee_name", "agency", "industry", "check_amount",
+                           "contract_id", "document_id", "issue_date"]
 
-          # The live API requires category + status on Contracts and category on
-          # Spending (run #1 returned "Required parameter(s) 'status'/'category'
-          # is not provided"). category=expense = money the City pays out;
-          # status=active = currently-active contracts (carry current_amount as
-          # the registered value).
+          # category=expense + status=registered are both accepted on Contracts
+          # (status valid values are 'pending,registered'). Spending takes neither
+          # category nor a contract spending_category, so it is filtered by
+          # fiscal_year (+ optional server-side industry) only.
           CONTRACTS_BASE = [("category", "value", "expense"),
                             ("status", "value", "registered")]
-          SPENDING_BASE = [("category", "value", "expense"),
-                           ("spending_category", "value", "contract")]
+          SPENDING_BASE = []
+
+          # Logical-field accessors map real API column names -> the names the
+          # aggregation uses, so the aggregation logic stays unchanged.
+          def c_name(r):    return r.get("prime_vendor", "")
+          def c_cid(r):     return r.get("prime_contract_id", "") or ""
+          def c_agency(r):  return r.get("prime_contracting_agency", "")
+          def c_industry(r):return r.get("prime_contract_industry", "") or ""
+          def c_amount(r):  return r.get("prime_contract_current_amount", "")
+          def c_fy(r):
+              # fiscal year derived from registration date (YYYY-MM-DD...).
+              d = r.get("prime_contract_registration_date", "") or ""
+              m = re.match(r"(\d{4})", d)
+              return m.group(1) if m else ""
+          def s_name(r):    return r.get("payee_name", "")
+          def s_agency(r):  return r.get("agency", "")
+          def s_industry(r):return r.get("industry", "") or ""
+          def s_amount(r):  return r.get("check_amount", "")
+          def s_fy(r):
+              d = r.get("issue_date", "") or ""
+              m = re.match(r"(\d{4})", d)
+              return m.group(1) if m else ""
 
           # ---- probe server-side industry filter on one FY of Contracts ----
           log("=== PROBE: server-side industry=Construction on Contracts FY%d ===" % FYS[-1])
@@ -221,21 +251,25 @@ jobs:
               all_spending.extend(rows)
 
           industries_seen = {}
-          for r in all_contracts + all_spending:
-              ind = r.get("industry", "")
+          for r in all_contracts:
+              ind = c_industry(r)
+              if ind:
+                  industries_seen[ind] = industries_seen.get(ind, 0) + 1
+          for r in all_spending:
+              ind = s_industry(r)
               if ind:
                   industries_seen[ind] = industries_seen.get(ind, 0) + 1
           log("=== DISTINCT industry values (count -> value) ===")
           for k in sorted(industries_seen, key=lambda x: -industries_seen[x]):
               log("  %8d  %s" % (industries_seen[k], k))
 
-          def keep_construction(r):
-              if server:
-                  return True
-              return bool(CONSTR_RE.search(r.get("industry", "") or ""))
+          def keep_c(r):
+              return True if server else bool(CONSTR_RE.search(c_industry(r)))
+          def keep_s(r):
+              return True if server else bool(CONSTR_RE.search(s_industry(r)))
 
-          contracts = [r for r in all_contracts if keep_construction(r)]
-          spending = [r for r in all_spending if keep_construction(r)]
+          contracts = [r for r in all_contracts if keep_c(r)]
+          spending = [r for r in all_spending if keep_s(r)]
           log("After construction filter: contracts=%d spending=%d (mode=%s)"
               % (len(contracts), len(spending), industry_mode))
 
@@ -265,22 +299,24 @@ jobs:
                   g["fy_last"] = fyi
 
           for r in contracts:
-              name = r.get("prime_vendor", "")
+              name = c_name(r)
               if not name:
                   continue
               label, matched = resolve(name)
               g = group_for(label, matched)
               if matched:
                   g["matched"] = True
-              cid = r.get("contract_id", "") or ""
-              amt = to_int_amount(r.get("current_amount", ""))
+              cid = c_cid(r)
+              amt = to_int_amount(c_amount(r))
+              fy = c_fy(r)
               try:
-                  fyi = int(str(r.get("fiscal_year", ""))[:4])
+                  fyi = int(fy[:4]) if fy else 0
               except (ValueError, TypeError):
                   fyi = 0
-              if r.get("agency"):
-                  g["agencies"].add(r["agency"])
-              upd_fy(g, r.get("fiscal_year", ""))
+              ag = c_agency(r)
+              if ag:
+                  g["agencies"].add(ag)
+              upd_fy(g, fy)
               if cid:
                   prev = g["_cm"].get(cid)
                   if prev is None or (fyi, amt) > prev:
@@ -289,17 +325,18 @@ jobs:
                   g["_cm"]["__nocid_%d_%d" % (len(g["_cm"]), amt)] = (fyi, amt)
 
           for r in spending:
-              name = r.get("vendor", "")
+              name = s_name(r)
               if not name:
                   continue
               label, matched = resolve(name)
               g = group_for(label, matched)
               if matched:
                   g["matched"] = True
-              g["paid"] += to_int_amount(r.get("check_amount", ""))
-              if r.get("agency"):
-                  g["agencies"].add(r["agency"])
-              upd_fy(g, r.get("fiscal_year", ""))
+              g["paid"] += to_int_amount(s_amount(r))
+              ag = s_agency(r)
+              if ag:
+                  g["agencies"].add(ag)
+              upd_fy(g, s_fy(r))
 
           for g in groups.values():
               g["registered"] = sum(v[1] for v in g["_cm"].values())
