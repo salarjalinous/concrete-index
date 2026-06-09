@@ -81,6 +81,7 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .chart-box{position:relative;height:300px}
 .reading{font-size:13.5px;color:var(--muted);background:var(--band);border-left:3px solid var(--accent);border-radius:0;padding:16px 20px;margin-top:20px;max-width:880px}
 .reading strong{color:var(--ink);font-weight:600}
+.unavail{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);background:var(--band);border-left:3px solid var(--faint);border-radius:0;padding:12px 16px;margin-top:14px}
 table{width:100%;border-collapse:collapse;font-size:13.5px}
 th{text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);padding:0 10px 8px;border-bottom:1px solid var(--ink)}
 td{padding:11px 10px;border-bottom:1px solid var(--line)}
@@ -273,7 +274,8 @@ async function getJSON(api, params){
 function fmtMoney(v){
   if(v >= 1e9) return '$' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2) + 'B';
   if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
-  return '$' + Math.round(v/1e3) + 'K';
+  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
+  return '$' + Math.round(v);
 }
 function fmtInt(v){ return v.toLocaleString('en-US'); }
 function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
@@ -281,7 +283,9 @@ function titleCase(s){ return (s||'').toLowerCase().replace(/\b[a-z]/g,c=>c.toUp
 
 const D = {};
 async function fetchAll(){
-  const [boro, type, top, mtaAg, mtaPlans] = await Promise.all([
+  // SCA lives on data.cityofnewyork.us, MTA on data.ny.gov. Settle each
+  // independently so one host being down does not blank the other's sections.
+  const results = await Promise.allSettled([
     getJSON(SCA_API, {'$select':'borough,count(*) as n,sum(award) as s','$group':'borough','$order':'s DESC'}),
     getJSON(SCA_API, {'$select':'consttype,count(*) as n,sum(award) as s','$group':'consttype'}),
     getJSON(SCA_API, {'$select':'name,projdesc,borough,award','$order':'award DESC','$limit':'10'}),
@@ -291,13 +295,23 @@ async function fetchAll(){
     getJSON(MTA_API, {'$select':'capital_plan,sum(total_allocation) as s',
       '$where':"budget_submission_date='Current'",'$group':'capital_plan','$order':'capital_plan'})
   ]);
-  D.boro = boro.filter(r=>r.borough);
-  D.type = type;
-  D.top = top;
-  D.mtaAg = mtaAg.map(r=>({a:r.agency_name, s:(parseFloat(r.s)||0)*1000}));
-  D.mtaPlans = mtaPlans.map(r=>({p:r.capital_plan.replace('Capital Plan ',''), s:(parseFloat(r.s)||0)*1000}));
-  D.scaTotal = D.boro.reduce((a,r)=>a+(parseFloat(r.s)||0),0);
-  D.scaCount = D.boro.reduce((a,r)=>a+(parseInt(r.n)||0),0);
+  const val = i => results[i].status === 'fulfilled' ? results[i].value : null;
+  const boro = val(0), type = val(1), top = val(2), mtaAg = val(3), mtaPlans = val(4);
+
+  D.scaOk = boro !== null && type !== null && top !== null;
+  D.mtaOk = mtaAg !== null && mtaPlans !== null;
+
+  if(D.scaOk){
+    D.boro = boro.filter(r=>r.borough);
+    D.type = type;
+    D.top = top;
+    D.scaTotal = D.boro.reduce((a,r)=>a+(parseFloat(r.s)||0),0);
+    D.scaCount = D.boro.reduce((a,r)=>a+(parseInt(r.n)||0),0);
+  }
+  if(D.mtaOk){
+    D.mtaAg = mtaAg.map(r=>({a:r.agency_name, s:(parseFloat(r.s)||0)*1000}));
+    D.mtaPlans = mtaPlans.map(r=>({p:(r.capital_plan||'').replace('Capital Plan ',''), s:(parseFloat(r.s)||0)*1000}));
+  }
 }
 
 Chart.defaults.font.family = "'IBM Plex Mono',monospace";
@@ -309,8 +323,11 @@ Object.assign(Chart.defaults.plugins.tooltip, {
   titleFont:{family:"'Public Sans',sans-serif",weight:'600',size:12}, bodyFont:{family:"'IBM Plex Mono',monospace",size:12},
   caretSize:5
 });
+const charts = {};
+function destroyChart(k){ if(charts[k]){ charts[k].destroy(); delete charts[k]; } }
 function hBar(canvasId, labels, data, color, countFor){
-  new Chart(document.getElementById(canvasId), {
+  destroyChart(canvasId);
+  charts[canvasId] = new Chart(document.getElementById(canvasId), {
     type:'bar',
     data:{ labels, datasets:[{ data, backgroundColor: color, borderRadius:1, barThickness:18 }]},
     options:{
@@ -325,16 +342,21 @@ function hBar(canvasId, labels, data, color, countFor){
   });
 }
 
-function render(){
+// Inline note shown in place of a section whose source did not load.
+function unavail(host){
+  return `<div class="unavail">This dataset (${host}) is temporarily unavailable. The rest of the page reflects what loaded; refresh to retry.</div>`;
+}
+
+function renderSCA(){
+  if(!D.scaOk){
+    document.getElementById('kpi-sca').textContent = '–';
+    document.getElementById('kpi-sca-n').textContent = '–';
+    document.getElementById('sca').insertAdjacentHTML('beforebegin', unavail('NYC Open Data, SCA'));
+    return;
+  }
   document.getElementById('kpi-sca').textContent = fmtMoney(D.scaTotal);
   document.getElementById('kpi-sca-note').textContent = 'awarded value in active construction';
   document.getElementById('kpi-sca-n').textContent = fmtInt(D.scaCount);
-  const plan29 = D.mtaPlans.find(p=>p.p.includes('2025'));
-  const plan24 = D.mtaPlans.find(p=>p.p.includes('2020'));
-  document.getElementById('kpi-mta').textContent = fmtMoney(plan29.s);
-  document.getElementById('kpi-mta-note').textContent = 'current allocations, all agencies';
-  const g = (plan29.s/plan24.s-1)*100;
-  document.getElementById('kpi-mta-g').textContent = (g>=0?'+':'') + g.toFixed(0) + '%';
 
   hBar('chart-sca-boro', D.boro.map(r=>titleCase(r.borough)), D.boro.map(r=>parseFloat(r.s)||0), COLOR_B,
     D.boro.map(r=>fmtInt(parseInt(r.n)||0)+' projects'));
@@ -346,9 +368,35 @@ function render(){
     <td class="rank">${i+1}</td>
     <td><div class="t-title">${esc(r.name)}</div><div class="t-sub">${esc(titleCase(r.borough||''))} · ${esc((r.projdesc||'').slice(0,60).toLowerCase())}</div></td>
     <td class="num amt">${fmtMoney(parseFloat(r.award)||0)}</td></tr>`).join('');
+}
+
+function renderMTA(){
+  if(!D.mtaOk){
+    document.getElementById('kpi-mta').textContent = '–';
+    document.getElementById('kpi-mta-g').textContent = '–';
+    document.getElementById('mta').insertAdjacentHTML('beforebegin', unavail('data.ny.gov, MTA'));
+    return;
+  }
+  // Guard the plan lookups: a label shift should degrade the KPI to a dash,
+  // not throw the page. plan29 = the 2025-29 plan, plan24 = the 2020-24 plan.
+  const plan29 = D.mtaPlans.find(p=>p.p.includes('2025'));
+  const plan24 = D.mtaPlans.find(p=>p.p.includes('2020'));
+  if(plan29){
+    document.getElementById('kpi-mta').textContent = fmtMoney(plan29.s);
+    document.getElementById('kpi-mta-note').textContent = 'current allocations, all agencies';
+  } else {
+    document.getElementById('kpi-mta').textContent = '–';
+  }
+  if(plan29 && plan24 && plan24.s > 0){
+    const g = (plan29.s/plan24.s-1)*100;
+    document.getElementById('kpi-mta-g').textContent = (g>=0?'+':'') + g.toFixed(0) + '%';
+  } else {
+    document.getElementById('kpi-mta-g').textContent = '–';
+  }
 
   hBar('chart-mta-agency', D.mtaAg.map(r=>r.a), D.mtaAg.map(r=>r.s), COLOR_A);
-  new Chart(document.getElementById('chart-mta-plans'), {
+  destroyChart('chart-mta-plans');
+  charts['chart-mta-plans'] = new Chart(document.getElementById('chart-mta-plans'), {
     type:'bar',
     data:{ labels: D.mtaPlans.map(p=>p.p), datasets:[{ data: D.mtaPlans.map(p=>p.s), backgroundColor: COLOR_B, borderRadius:1 }]},
     options:{ responsive:true, maintainAspectRatio:false,
@@ -356,19 +404,28 @@ function render(){
       scales:{ x:{grid:{display:false}}, y:{grid:{color:GRID}, border:{display:false}, ticks:{callback:v=>fmtMoney(v), maxTicksLimit:5}} }
     }
   });
-  document.getElementById('mta-reading').innerHTML =
-    `<strong>Reading:</strong> the MTA's plan has grown every cycle. The 2025–29 program, at <strong>${fmtMoney(plan29.s)}</strong>, runs ${(plan29.s/plan24.s).toFixed(1)}× the current allocation of the 2020–24 plan. For the region's contractors, the MTA is the single largest pool of public work in New York.`;
+  if(plan29 && plan24 && plan24.s > 0){
+    document.getElementById('mta-reading').innerHTML =
+      `<strong>Reading:</strong> the MTA's plan has grown every cycle. The 2025–29 program, at <strong>${fmtMoney(plan29.s)}</strong>, runs ${(plan29.s/plan24.s).toFixed(1)}× the current allocation of the 2020–24 plan. For the region's contractors, the MTA is the single largest pool of public work in New York.`;
+  } else {
+    document.getElementById('mta-reading').innerHTML =
+      `<strong>Reading:</strong> for the region's contractors, the MTA is the single largest pool of public work in New York.`;
+  }
 }
 
+function render(){ renderSCA(); renderMTA(); }
+
 (async function init(){
-  try{ await fetchAll(); }
-  catch(e){
+  await fetchAll();
+  // Only the hard error state if BOTH sources failed; otherwise render what loaded.
+  if(!D.scaOk && !D.mtaOk){
     document.getElementById('loader').style.display='none';
     document.getElementById('error').style.display='block';
     return;
   }
-  document.getElementById('asof').innerHTML =
-    `SCA active construction and MTA capital dashboard · <strong>${fmtInt(D.scaCount)}</strong> school projects · five MTA plans · refreshed on load`;
+  document.getElementById('asof').innerHTML = D.scaOk
+    ? `SCA active construction and MTA capital dashboard · <strong>${fmtInt(D.scaCount)}</strong> school projects · five MTA plans · refreshed on load`
+    : `MTA capital dashboard · SCA data temporarily unavailable · refreshed on load`;
   document.getElementById('loader').style.display='none';
   document.getElementById('app').style.display='block';
   render();
