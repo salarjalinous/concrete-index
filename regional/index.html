@@ -79,6 +79,7 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 22px;box-shadow:0 1px 0 rgba(34,21,14,.04)}
 .card .h-sub{font-size:12.5px;color:var(--muted);margin-top:9px;margin-bottom:18px;max-width:760px}
 .chart-box{position:relative;height:300px}
+.tnote{font-size:11.5px;line-height:1.55;color:var(--muted);margin-top:13px;padding-top:9px;border-top:1px solid var(--line)}
 .reading{font-size:13.5px;color:var(--muted);background:var(--band);border-left:3px solid var(--accent);border-radius:0;padding:16px 20px;margin-top:20px;max-width:880px}
 .reading strong{color:var(--ink);font-weight:600}
 .unavail{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);background:var(--band);border-left:3px solid var(--faint);border-radius:0;padding:12px 16px;margin-top:14px}
@@ -219,6 +220,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="h-sub">Awarded construction value of projects currently under construction, by borough</div>
       <div class="chart-box"><canvas id="chart-sca-boro"></canvas></div>
       <div class="reading" id="sca-reading"></div>
+      <div class="tnote">Each bar is the awarded construction value of School Construction Authority projects currently under construction, grouped by borough. This is the value of active work under contract, not committed or future budget, and the SCA dataset names no contractor.</div>
     </div>
     <div class="card">
       <div class="sec-head"><h2>SCA: largest active projects</h2><span class="cap">TOP 10 · USD</span></div>
@@ -227,6 +229,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <thead><tr><th></th><th>School</th><th class="num">Award</th></tr></thead>
         <tbody></tbody>
       </table>
+      <div class="tnote">The ten largest active SCA projects by awarded construction value. Award is the value of the construction contract for work under way; the SCA dataset carries no contractor field, so no firm is named.</div>
     </div>
   </section>
 
@@ -235,12 +238,14 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2>MTA: the 2025–29 program by agency</h2><span class="cap">USD</span></div>
       <div class="h-sub">Current allocations in the active capital plan</div>
       <div class="chart-box"><canvas id="chart-mta-agency"></canvas></div>
+      <div class="tnote">Each bar is the MTA's current allocation to one constituent agency in the active 2025–29 capital program. The source reports in thousands of dollars (converted here) and sits on the State's books, so these figures are kept on their own ledger and never summed with the City's.</div>
     </div>
     <div class="card">
       <div class="sec-head"><h2>MTA: five capital plans of growth</h2><span class="cap">BY PLAN · USD</span></div>
       <div class="h-sub">Total current allocations by plan</div>
       <div class="chart-box"><canvas id="chart-mta-plans"></canvas></div>
       <div class="reading" id="mta-reading"></div>
+      <div class="tnote">Each bar is the total current allocation of one MTA capital plan, across five consecutive five-year programs, showing the program's growth over time. Figures are current planned dollars, converted from the source's thousands, not awards or actual outlays.</div>
     </div>
   </section>
 
