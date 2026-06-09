@@ -79,6 +79,7 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 22px;box-shadow:0 1px 0 rgba(34,21,14,.04)}
 .card .h-sub{font-size:12.5px;color:var(--muted);margin-top:9px;margin-bottom:18px}
 .chart-box{position:relative;height:280px}
+.tnote{font-size:11.5px;line-height:1.55;color:var(--muted);margin-top:13px;padding-top:9px;border-top:1px solid var(--line)}
 .chart-box.tall{height:420px}
 
 /* ---------- reading box ---------- */
@@ -221,6 +222,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="h-sub">Years of funded work at each agency's current spending pace. Longer bars are agencies sitting on more committed work relative to how fast they pay it out.</div>
       <div class="chart-box tall"><canvas id="chart-bl"></canvas></div>
       <div class="reading" id="vel-reading"></div>
+      <div class="tnote">Each bar is one agency's backlog coverage = open pipeline ÷ trailing-year spend, expressed in years. A longer bar means more committed-but-unspent work relative to how fast the agency pays it out. Only the ten agencies with the deepest coverage are shown. It is a structural ratio (a stock measured now over a flow measured over the trailing year), not a delivery schedule.</div>
     </div>
   </section>
 
@@ -232,6 +234,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <thead><tr><th>Agency</th><th class="num">Open pipeline</th><th class="num">Spent (TTM)</th><th class="num">Awarded (TTM)</th><th class="num">Backlog, years</th></tr></thead>
         <tbody></tbody>
       </table>
+      <div class="tnote">Every managing agency with an open construction pipeline, ranked by pipeline size. Open pipeline is committed-but-unspent construction capital; Spent and Awarded are trailing-twelve-month totals; Backlog, years = open pipeline ÷ Spent (TTM). The Awarded column is blank where an agency's name does not map cleanly between the capital plan and the City Record.</div>
     </div>
   </section>
 
