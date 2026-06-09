@@ -120,13 +120,36 @@ jobs:
                   if el.tag.lower() == "record_count":
                       log("  [api record_count = %s]" % ((el.text or "").strip()))
                       break
+              # Locate <result_records> and treat its repeated leaf-bearing child
+              # elements as rows. Structure-agnostic: rows may be <record>,
+              # <contract>, <transaction>, etc. (runs 4-6: record_count was in the
+              # thousands but the old endswith('record') heuristic matched 0).
+              container = None
+              for el in root.iter():
+                  if el.tag.lower() == "result_records":
+                      container = el
+                      break
               recs = []
-              for rec in root.iter():
-                  tl = rec.tag.lower()
-                  if tl.endswith("record") and tl != "result_records":
+              if container is not None:
+                  # Each direct child of result_records is usually a wrapper whose
+                  # children are the row elements; but sometimes the rows are the
+                  # direct children. Walk one or two levels and pick elements whose
+                  # OWN children are all leaves (text fields) -> that's a row.
+                  def is_row(e):
+                      kids = list(e)
+                      return len(kids) > 0 and all(len(list(k)) == 0 for k in kids)
+                  candidates = []
+                  for child in container:
+                      if is_row(child):
+                          candidates.append(child)
+                      else:
+                          for gc in child:
+                              if is_row(gc):
+                                  candidates.append(gc)
+                  for rec in candidates:
                       d = {}
-                      for child in rec:
-                          d[child.tag.lower()] = (child.text or "").strip()
+                      for c in rec:
+                          d[c.tag.lower()] = (c.text or "").strip()
                       if d:
                           recs.append(d)
               return recs, xml_text
@@ -196,143 +219,70 @@ jobs:
           #   prime_contract_* prefixed; there is NO returnable fiscal_year column
           #   (fiscal_year works only as a SEARCH criterion), so the output fiscal
           #   year is derived from prime_contract_registration_date.
-          #   Spending domain rejects 'category' and a 'contract' spending_category
-          #   (max 2 chars); vendor column is payee_name.
+          #   Spending domain returns 3.2M+ checks per FY (whole-city) and cannot
+          #   be paged in an Action, AND it has no usable contract/construction
+          #   server filter we can express. So PAID is taken from the Contracts
+          #   pull itself via prime_vendor_spent_to_date (a valid Contracts column),
+          #   which is paid-to-date against the registered contract. This keeps
+          #   registered (prime_contract_current_amount) and paid
+          #   (prime_vendor_spent_to_date) separate and both sourced from the same
+          #   bounded ~18k-row registered-contracts set.
           contracts_cols = ["prime_vendor", "prime_contract_id", "prime_contracting_agency",
                             "prime_contract_industry", "prime_contract_current_amount",
+                            "prime_vendor_spent_to_date",
                             "prime_contract_original_amount", "prime_contract_purpose",
                             "prime_contract_registration_date"]
-          spending_cols = ["payee_name", "agency", "industry", "check_amount",
-                           "contract_id", "document_id", "issue_date"]
 
           # category=expense + status=registered are both accepted on Contracts
-          # (status valid values are 'pending,registered'). Spending takes neither
-          # category nor a contract spending_category, so it is filtered by
-          # fiscal_year (+ optional server-side industry) only.
+          # (status valid values are 'pending,registered').
           CONTRACTS_BASE = [("category", "value", "expense"),
                             ("status", "value", "registered")]
-          SPENDING_BASE = []
 
           # Logical-field accessors map real API column names -> the names the
-          # aggregation uses, so the aggregation logic stays unchanged.
+          # aggregation uses.
           def c_name(r):    return r.get("prime_vendor", "")
           def c_cid(r):     return r.get("prime_contract_id", "") or ""
           def c_agency(r):  return r.get("prime_contracting_agency", "")
           def c_industry(r):return r.get("prime_contract_industry", "") or ""
           def c_amount(r):  return r.get("prime_contract_current_amount", "")
+          def c_paid(r):    return r.get("prime_vendor_spent_to_date", "")
           def c_fy(r):
               # fiscal year derived from registration date (YYYY-MM-DD...).
               d = r.get("prime_contract_registration_date", "") or ""
               m = re.match(r"(\d{4})", d)
               return m.group(1) if m else ""
-          def s_name(r):    return r.get("payee_name", "")
-          def s_agency(r):  return r.get("agency", "")
-          def s_industry(r):return r.get("industry", "") or ""
-          def s_amount(r):  return r.get("check_amount", "")
-          def s_fy(r):
-              d = r.get("issue_date", "") or ""
-              m = re.match(r"(\d{4})", d)
-              return m.group(1) if m else ""
 
-          # ---- probe: server-side industry filter needs a 2-char industry CODE
-          # (run #4: "industry exceeds maximum allowed '2' characters"), which we
-          # do not have, so we always take the CLIENT path and filter on the
-          # returned industry text. The probe here is a plain no-industry Contracts
-          # request whose only job is to surface the real record structure + the
-          # first parsed record, so we can confirm field tags and that fiscal_year
-          # returns rows.
+          # Run 6 cracked it: criteria category=expense + status=registered +
+          # fiscal_year are correct (record_count was 17,872 for Contracts FY2024,
+          # millions for Spending) but the OLD parser matched 0 rows because the
+          # row element is not literally <record>. parse_records now reads the
+          # <result_records> container structure-agnostically. Industry server-side
+          # needs a 2-char CODE we do not have, so we always client-filter on the
+          # returned industry text.
           industry_mode = "client"
           server = False
+          contracts_use_fy = True
 
-          # ---- MATRIX PROBE: single-page request per (criteria) combo, logging
-          # the API's own record_count, to find a combo that actually returns rows.
-          def probe_combo(label, type_of_data, columns, criteria):
-              xml = build_request_xml(type_of_data, columns, criteria, 1)
-              resp = post(xml)
-              recs, _ = parse_records(resp)
-              n = -1 if recs is None else len(recs)
-              log("  PROBE[%s] -> parsed_rows=%s" % (label, n))
-              time.sleep(0.7)
-              return recs
+          # Confirmation probe: one page, dump first parsed record to verify the
+          # parser fix and field names (incl. prime_vendor_spent_to_date).
+          log("=== PROBE: Contracts FY%d (confirm parser) ===" % FYS[-1])
+          cprobe, _ = fetch_all("Contracts", contracts_cols, CONTRACTS_BASE, FYS[-1], industry_server=False)
+          log("  parsed %d contract rows" % len(cprobe))
+          if cprobe:
+              log("  FIRST Contracts record:")
+              for k, v in list(cprobe[0].items()):
+                  log("    %s = %r" % (k, v[:90] if isinstance(v, str) else v))
 
-          log("=== MATRIX PROBE (Contracts status/category variants) ===")
-          probe_combo("exp+registered+fy2024", "Contracts", contracts_cols,
-                      [("category","value","expense"),("status","value","registered"),
-                       ("fiscal_year","value","2024")])
-          probe_combo("exp+registered (no fy)", "Contracts", contracts_cols,
-                      [("category","value","expense"),("status","value","registered")])
-          probe_combo("exp+pending (no fy)", "Contracts", contracts_cols,
-                      [("category","value","expense"),("status","value","pending")])
-          probe_combo("registered only (no category)", "Contracts", contracts_cols,
-                      [("status","value","registered")])
-          probe_combo("registered+records_from0-style fy2023", "Contracts", contracts_cols,
-                      [("category","value","expense"),("status","value","registered"),
-                       ("fiscal_year","value","2023")])
-          log("=== MATRIX PROBE (Spending variants) ===")
-          probe_combo("spending fy2024 only", "Spending", spending_cols,
-                      [("fiscal_year","value","2024")])
-          probe_combo("spending no criteria", "Spending", spending_cols, [])
-
-          # Probe A: Contracts WITH fiscal_year (run #4 returned 0 here).
-          log("=== PROBE A: Contracts WITH fiscal_year=%d ===" % FYS[-1])
-          probeA, rawA = fetch_all("Contracts", contracts_cols, CONTRACTS_BASE, FYS[-1], industry_server=False)
-          log("  probe A returned %d contract rows" % len(probeA))
-          log("  raw A first 1200:", (rawA or "")[:1200])
-          # Probe B: Contracts WITHOUT fiscal_year (all registered expense contracts).
-          log("=== PROBE B: Contracts WITHOUT fiscal_year (fy=None) ===")
-          probeB, rawB = fetch_all("Contracts", contracts_cols, CONTRACTS_BASE, None, industry_server=False)
-          log("  probe B returned %d contract rows" % len(probeB))
-          log("=== SAMPLE raw Contracts (no-fy) first-page XML (first 3500 chars) ===")
-          log((rawB or "")[:3500])
-          # Pick whichever path yields rows; prefer the per-FY filter, else pull-all.
-          contracts_use_fy = bool(probeA)
-          probe_rows = probeA if probeA else probeB
-          log("  -> contracts_use_fy =", contracts_use_fy, "| industry_filter_mode =", industry_mode)
-          if probe_rows:
-              log("=== FIRST parsed Contracts record (keys -> value) ===")
-              for k, v in list(probe_rows[0].items()):
-                  log("    %s = %r" % (k, v[:80] if isinstance(v, str) else v))
-          # also dump a Spending sample so we can confirm its record shape
-          log("=== PROBE: plain Spending FY%d, raw dump ===" % FYS[-1])
-          sp_probe, sp_raw = fetch_all("Spending", spending_cols, SPENDING_BASE, FYS[-1], industry_server=False)
-          log("  spending probe returned %d rows" % len(sp_probe))
-          log("=== SAMPLE raw Spending first-page XML (first 2500 chars) ===")
-          log((sp_raw or "")[:2500])
-          if sp_probe:
-              log("=== FIRST parsed Spending record (keys -> value) ===")
-              for k, v in list(sp_probe[0].items()):
-                  log("    %s = %r" % (k, v[:80] if isinstance(v, str) else v))
-
-          FYSET = set(str(y) for y in FYS)
-          all_contracts, all_spending = [], []
-          if contracts_use_fy:
-              for fy in FYS:
-                  log("--- Contracts FY%d ---" % fy)
-                  rows, _ = fetch_all("Contracts", contracts_cols, CONTRACTS_BASE, fy, industry_server=server)
-                  log("  %d contract rows" % len(rows))
-                  all_contracts.extend(rows)
-          else:
-              # Pull ALL registered expense contracts once, filter to the 5-FY
-              # window client-side by derived registration-date year.
-              log("--- Contracts (all registered, fy filtered client-side) ---")
-              rows, _ = fetch_all("Contracts", contracts_cols, CONTRACTS_BASE, None, industry_server=server)
-              log("  %d total contract rows pulled" % len(rows))
-              rows = [r for r in rows if c_fy(r) in FYSET]
-              log("  %d contract rows within FY%s-%s" % (len(rows), FYS[0], FYS[-1]))
-              all_contracts.extend(rows)
+          all_contracts = []
           for fy in FYS:
-              log("--- Spending FY%d ---" % fy)
-              rows, _ = fetch_all("Spending", spending_cols, SPENDING_BASE, fy, industry_server=server)
-              log("  %d spending rows" % len(rows))
-              all_spending.extend(rows)
+              log("--- Contracts FY%d ---" % fy)
+              rows, _ = fetch_all("Contracts", contracts_cols, CONTRACTS_BASE, fy, industry_server=server)
+              log("  %d contract rows" % len(rows))
+              all_contracts.extend(rows)
 
           industries_seen = {}
           for r in all_contracts:
               ind = c_industry(r)
-              if ind:
-                  industries_seen[ind] = industries_seen.get(ind, 0) + 1
-          for r in all_spending:
-              ind = s_industry(r)
               if ind:
                   industries_seen[ind] = industries_seen.get(ind, 0) + 1
           log("=== DISTINCT industry values (count -> value) ===")
@@ -341,13 +291,10 @@ jobs:
 
           def keep_c(r):
               return True if server else bool(CONSTR_RE.search(c_industry(r)))
-          def keep_s(r):
-              return True if server else bool(CONSTR_RE.search(s_industry(r)))
 
           contracts = [r for r in all_contracts if keep_c(r)]
-          spending = [r for r in all_spending if keep_s(r)]
-          log("After construction filter: contracts=%d spending=%d (mode=%s)"
-              % (len(contracts), len(spending), industry_mode))
+          log("After construction filter: contracts=%d (mode=%s)"
+              % (len(contracts), industry_mode))
 
           def resolve(name):
               k = norm_name(name)
@@ -383,7 +330,8 @@ jobs:
               if matched:
                   g["matched"] = True
               cid = c_cid(r)
-              amt = to_int_amount(c_amount(r))
+              amt = to_int_amount(c_amount(r))     # registered (current amount)
+              paid = to_int_amount(c_paid(r))      # paid-to-date (spent to date)
               fy = c_fy(r)
               try:
                   fyi = int(fy[:4]) if fy else 0
@@ -393,29 +341,19 @@ jobs:
               if ag:
                   g["agencies"].add(ag)
               upd_fy(g, fy)
+              # Dedupe by contract_id keeping max fiscal_year then max amount; the
+              # paid figure travels with the winning contract row so registered and
+              # paid stay reconciled per contract and never double-count.
               if cid:
                   prev = g["_cm"].get(cid)
-                  if prev is None or (fyi, amt) > prev:
-                      g["_cm"][cid] = (fyi, amt)
+                  if prev is None or (fyi, amt) > (prev[0], prev[1]):
+                      g["_cm"][cid] = (fyi, amt, paid)
               else:
-                  g["_cm"]["__nocid_%d_%d" % (len(g["_cm"]), amt)] = (fyi, amt)
-
-          for r in spending:
-              name = s_name(r)
-              if not name:
-                  continue
-              label, matched = resolve(name)
-              g = group_for(label, matched)
-              if matched:
-                  g["matched"] = True
-              g["paid"] += to_int_amount(s_amount(r))
-              ag = s_agency(r)
-              if ag:
-                  g["agencies"].add(ag)
-              upd_fy(g, s_fy(r))
+                  g["_cm"]["__nocid_%d_%d" % (len(g["_cm"]), amt)] = (fyi, amt, paid)
 
           for g in groups.values():
               g["registered"] = sum(v[1] for v in g["_cm"].values())
+              g["paid"] = sum(v[2] for v in g["_cm"].values())
 
           vendors = {}
           total_registered = total_paid = 0
@@ -442,17 +380,23 @@ jobs:
               vendors = dict(items)
               truncated = True
 
+          # spending_rows = number of contract rows carrying a paid (spent-to-date)
+          # figure, since paid is sourced from the Contracts pull, not a separate
+          # Spending fetch (the Spending domain is 3.2M+ checks/FY, unpageable here).
+          spending_rows = sum(1 for r in contracts if to_int_amount(c_paid(r)) > 0)
           meta = {"generated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                  "source": "Checkbook NYC API (checkbooknyc.com)", "fiscal_years": FYS,
+                  "source": "Checkbook NYC API (checkbooknyc.com), Registered Contracts (expense)",
+                  "fiscal_years": FYS,
                   "industry_filter_mode": industry_mode, "contracts_rows": len(contracts),
-                  "spending_rows": len(spending), "groups": group_count}
+                  "spending_rows": spending_rows, "groups": group_count,
+                  "paid_source": "prime_vendor_spent_to_date on registered contracts"}
           if truncated:
               meta["truncated"] = True
           out = {"meta": meta, "vendors": vendors}
 
           log("=== SUMMARY ===")
-          log("contracts_rows=%d spending_rows=%d groups=%d mode=%s"
-              % (len(contracts), len(spending), group_count, industry_mode))
+          log("contracts_rows=%d spending_rows(paid>0)=%d groups=%d mode=%s"
+              % (len(contracts), spending_rows, group_count, industry_mode))
           log("total registered = $%d  total paid = $%d" % (total_registered, total_paid))
           cruz_key = norm_name("E.E. Cruz / JRCruz")
           log("Cruz key = %r -> %s" % (cruz_key, json.dumps(vendors.get(cruz_key, "MISSING"))))
@@ -460,7 +404,7 @@ jobs:
           log("Tutor Perini key = %r -> %s" % (tp_key, json.dumps(vendors.get(tp_key, "MISSING"))))
 
           assert len(contracts) > 0, "contracts_rows == 0 (partial/failed fetch)"
-          assert len(spending) > 0, "spending_rows == 0 (partial/failed fetch)"
+          assert spending_rows > 0, "no paid (spent-to-date) figures (partial/failed fetch)"
           assert group_count >= 50, "groups < 50 (too few; partial fetch?)"
           assert total_registered >= 1_000_000_000, "total registered < $1B (degraded pull)"
 
