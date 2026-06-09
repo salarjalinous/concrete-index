@@ -457,5 +457,130 @@ function wireSeg(id, attr, initial, onChange){
   render();
 })();
 </script>
+<!-- ===== Concrete Index export module: page PDF, chart PNG, tile CSV. No external dependencies. ===== -->
+<style id="exp-css">
+.exp{display:flex;justify-content:flex-end;gap:0;margin-top:12px}
+.exp button{background:none;border:1px solid var(--line);color:var(--muted);font:500 10px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.07em;text-transform:uppercase;padding:6px 9px;cursor:pointer;transition:color .12s,border-color .12s}
+.exp button+button{border-left:none}
+.exp button:hover{color:var(--accent);border-color:var(--accent)}
+.exp button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.pdf-btn{background:none;border:1px solid var(--line);color:var(--muted);font:600 11px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;padding:7px 11px;cursor:pointer;margin-left:14px;align-self:center;white-space:nowrap;transition:color .12s,border-color .12s}
+.pdf-btn:hover{color:var(--accent);border-color:var(--accent)}
+@media (max-width:1024px){.pdf-btn{margin:8px 0 0}}
+@media print{
+  @page{margin:14mm}
+  header .menu-btn,.nav-links,.controls,.series-bar,.photo-band,.exp,.pdf-btn,.badge-live,.valstrip{display:none !important}
+  header{border-bottom:2px solid #22150e}
+  body{background:#fff !important}
+  .wrap{max-width:none !important;width:100% !important}
+  .grid,.grid.two,.grid.three{display:block !important}
+  .card{break-inside:avoid;page-break-inside:avoid;box-shadow:none !important;margin:0 0 16px !important}
+  .chart-box,.chart-box.tall{height:300px !important}
+  a{color:inherit;text-decoration:none}
+  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
+}
+</style>
+<script>
+(function(){
+  "use strict";
+  function slug(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60);}
+  var pageSlug=slug(location.pathname.replace(/\/index\.html?$/i,'').replace(/\/+$/,''))||'awarded';
+  function fname(card,ext){
+    var h=card.querySelector('.sec-head h2,h2,h3');
+    return ('concrete-index-'+pageSlug+'-'+slug(h?h.textContent:'export')).replace(/-+/g,'-')+'.'+ext;
+  }
+  function dl(href,name,revoke){
+    var a=document.createElement('a');a.href=href;a.download=name;a.rel='noopener';
+    document.body.appendChild(a);a.click();a.remove();
+    if(revoke)setTimeout(function(){URL.revokeObjectURL(href);},2000);
+  }
+  function csvCell(v){v=(v==null?'':String(v));return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+  function csv(rows,name){
+    var t='\ufeff'+rows.map(function(r){return r.map(csvCell).join(',');}).join('\r\n');
+    dl(URL.createObjectURL(new Blob([t],{type:'text/csv;charset=utf-8'})),name,true);
+  }
+  function chartFor(card){
+    var c=card.querySelector('canvas');
+    if(!c||!window.Chart||!Chart.getChart)return null;
+    return Chart.getChart(c)||null;
+  }
+  function pngFromChart(ch,name){
+    var src=ch.canvas,out=document.createElement('canvas');
+    out.width=src.width;out.height=src.height;
+    var x=out.getContext('2d');
+    x.fillStyle='#fffaf4';x.fillRect(0,0,out.width,out.height);
+    x.drawImage(src,0,0);
+    dl(out.toDataURL('image/png'),name,false);
+  }
+  function csvFromChart(ch,name){
+    var labels=ch.data.labels||[],ds=ch.data.datasets||[];
+    var rows=[['Label'].concat(ds.map(function(d,i){return d.label||('Series '+(i+1));}))];
+    var n=labels.length||((ds[0]&&ds[0].data)?ds[0].data.length:0);
+    for(var r=0;r<n;r++){
+      var row=[labels[r]!=null?labels[r]:r];
+      ds.forEach(function(d){
+        var v=d.data?d.data[r]:'';
+        if(v&&typeof v==='object')v=(v.y!=null?v.y:(v.v!=null?v.v:JSON.stringify(v)));
+        row.push(v==null?'':v);
+      });
+      rows.push(row);
+    }
+    csv(rows,name);
+  }
+  function csvFromTable(tbl,name){
+    var rows=[];
+    tbl.querySelectorAll('tr').forEach(function(tr){
+      var cells=[];
+      tr.querySelectorAll('th,td').forEach(function(c){cells.push(c.textContent.replace(/\s+/g,' ').trim());});
+      if(cells.some(function(x){return x!=='';}))rows.push(cells);
+    });
+    if(rows.length)csv(rows,name);
+  }
+  function addTools(card){
+    if(card.getAttribute('data-exp'))return;
+    var ch=chartFor(card);
+    var tbl=card.querySelector('table');
+    var hasTable=tbl&&tbl.querySelector('th');
+    if(!ch&&!hasTable)return;
+    card.setAttribute('data-exp','1');
+    var bar=document.createElement('div');bar.className='exp';
+    if(ch){
+      var bp=document.createElement('button');bp.type='button';bp.textContent='PNG';
+      bp.title='Download this chart as a PNG image';
+      bp.addEventListener('click',function(){var c=chartFor(card);if(c)pngFromChart(c,fname(card,'png'));});
+      bar.appendChild(bp);
+    }
+    var bc=document.createElement('button');bc.type='button';bc.textContent='CSV';
+    bc.title='Download the underlying data as a CSV file';
+    bc.addEventListener('click',function(){
+      var c=chartFor(card);
+      if(c){csvFromChart(c,fname(card,'csv'));return;}
+      var t=card.querySelector('table');if(t)csvFromTable(t,fname(card,'csv'));
+    });
+    bar.appendChild(bc);
+    card.appendChild(bar);
+  }
+  function scan(){
+    var cards=document.querySelectorAll('main .card, #app .card');
+    if(!cards.length)cards=document.querySelectorAll('.card');
+    cards.forEach(function(c){
+      if(c.closest('header')||c.closest('footer'))return;
+      addTools(c);
+    });
+  }
+  function addPdfBtn(){
+    var nav=document.querySelector('.nav-links');
+    if(!nav||nav.querySelector('.pdf-btn'))return;
+    var b=document.createElement('button');b.type='button';b.className='pdf-btn';b.textContent='Save PDF';
+    b.title='Save or print this page as a PDF';
+    b.addEventListener('click',function(){window.print();});
+    var badge=nav.querySelector('.badge-live');
+    if(badge)nav.insertBefore(b,badge);else nav.appendChild(b);
+  }
+  function init(){addPdfBtn();scan();}
+  if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init);
+  [600,1500,3000,6000].forEach(function(t){setTimeout(scan,t);});
+})();
+</script>
 </body>
 </html>
