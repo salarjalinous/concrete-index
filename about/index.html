@@ -98,12 +98,11 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   .wrap{padding:0 18px}
 }
 .menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
-@media(max-width:1023px){
+@media(max-width:1180px){
   .menu-btn{display:block}
   .nav{position:relative}
   .nav-links{display:none;position:absolute;top:61px;left:-28px;right:-28px;background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60}
   .nav-links.open{display:flex}
-  .nav-links a.hide-m{display:inline}
 }
 .photo-band{position:relative;height:200px;background-size:cover;background-position:center 38%;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);filter:sepia(.32) saturate(.7) contrast(1.02) brightness(.96);margin-top:22px}
 .ph-credit{position:absolute;right:10px;bottom:8px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.04em;color:rgba(251,242,234,.92);background:rgba(34,21,14,.55);padding:2px 8px;border-radius:3px}
@@ -115,21 +114,22 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 <header>
   <div class="wrap nav">
     <div class="brand">
-      <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#b5482a"/></svg>
+      <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
       <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
     </div>
     <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
     <nav class="nav-links">
-      <a href="/pipeline/" class="hide-m">Pipeline</a>
-      <a href="/solicitations/" class="hide-m">Bidding</a>
+      <a href="/pipeline/">Pipeline</a>
+      <a href="/solicitations/">Bidding</a>
       <a href="/">Awarded</a>
-      <a href="/vendors/" class="hide-m">Vendors</a>
-      <a href="/funnel/" class="hide-m">Funnel</a>
+      <a href="/vendors/">Vendors</a>
+      <a href="/funnel/">Funnel</a>
+      <a href="/velocity/">Velocity</a>
       <a href="/competitive/">Market</a>
-      <a href="/analysis/" class="hide-m">Analysis</a>
-      <a href="/regional/" class="hide-m">Regional</a>
+      <a href="/analysis/">Analysis</a>
+      <a href="/regional/">Regional</a>
       <a href="/briefing/">Briefing</a>
-      <a href="/#methodology" class="hide-m">Methodology</a>
+      <a href="/#methodology">Methodology</a>
       <span class="badge-live"><span class="dot"></span>Live data</span>
     </nav>
   </div>
@@ -153,7 +153,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="card">
         <h2>The mission</h2>
         <p>The data behind public construction is public in name only. Award notices sit in one system, capital budgets in another, payments in a third, and none of them were built to be read together. The agencies that fund work, the contractors who build it, the brokers and underwriters who stand behind it, and the analysts who measure it all make decisions about the same market, usually with different, partial views of it.</p>
-        <p>The Concrete Index exists to close that gap. Every figure on this site comes from the public record, normalized and read the same way for everyone: what's funded, what's bidding, what's awarded, and what's actually being paid. When everyone prices against the same picture of demand, bids get sharper, bonding and credit decisions rest on evidence instead of anecdote, and capital finds the work earlier.</p>
+        <p>The Concrete Index exists to close that gap. Every figure on this site comes from the public record, normalized and read the same way for everyone: what's funded, what's bidding, what's awarded, and what's actually being paid. When everyone prices against the same picture of demand, bids get sharper and bonding and credit decisions rest on evidence instead of anecdote. Capital also finds the work earlier.</p>
         <p>My background is in contract surety, so I built the demand side of that picture in the open. This site is a personal project. It is built entirely from public data on my own time, it is not affiliated with, endorsed by, or speaking for any employer, and nothing on it represents any employer's view of any company named in the public record.</p>
         <div class="btn-row">
           <a class="btn primary" href="https://www.linkedin.com/in/salar-jalinous/" target="_blank" rel="noopener">Connect on LinkedIn</a>
@@ -201,7 +201,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <div class="wrap f-row">
     <div>
       <div class="brand">
-        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="#b5482a"/></svg>
+        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
         <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.01em">The Concrete Index<span class="tick" style="color:var(--accent)">.</span></span>
       </div>
       <div style="margin-top:8px">NYC public construction capital, from commitment to cash.</div>
