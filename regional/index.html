@@ -20,7 +20,7 @@
   --paper:#fbf2ea; --surface:#fffaf4; --band:#f6ece2;
   --ink:#22150e; --navy:#243b53; --muted:#6e5d52; --faint:#9b8979;
   --line:#e4d4c5; --rule:#22150e;
-  --accent:#b5482a; --accent-soft:#f1d9cd; --steel:#2f5d8f; --blue:#2f5d8f;
+  --accent:#b5482a; --accent-soft:#f1d9cd; --steel:#2f5d8f;
   --pos:#2f7d52; --neg:#a3302a; --radius:3px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -137,6 +137,22 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 .photo-band{position:relative;height:200px;background-size:cover;background-position:center 38%;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);filter:sepia(.32) saturate(.7) contrast(1.02) brightness(.96);margin-top:22px}
 .ph-credit{position:absolute;right:10px;bottom:8px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.04em;color:rgba(251,242,234,.92);background:rgba(34,21,14,.55);padding:2px 8px;border-radius:3px}
 @media(max-width:560px){.photo-band{height:130px}}
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce){
+  .badge-live .dot{animation:none}
+  .spinner{animation:none}
+  *{scroll-behavior:auto}
+}
+
+/* ---------- print ---------- */
+@media print{
+  header,.series-bar,.badge-live,.controls,.seg,.menu-btn{display:none !important}
+  body{background:#fff;color:#000}
+  .card{background:#fff !important;box-shadow:none}
+  footer{background:#fff;border-top:1px solid #000;color:#000}
+  footer a,a{color:#000}
+}
 </style>
 </head>
 <body>
@@ -147,7 +163,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
       <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
     </div>
-    <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
+    <button class="menu-btn" aria-label="Menu" aria-expanded="false" onclick="const o=this.nextElementSibling.classList.toggle('open');this.setAttribute('aria-expanded',o)">☰</button>
     <nav class="nav-links">
       <a href="/pipeline/">Pipeline</a>
       <a href="/solicitations/">Bidding</a>
