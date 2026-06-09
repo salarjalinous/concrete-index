@@ -269,8 +269,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 
   <section class="grid">
     <div class="card">
-      <div class="sec-head"><h2>Concentration within each band</h2><span class="cap">TOP-N · HHI</span></div>
-      <div class="h-sub">Share of the band's dollars accounted for by its top 3, top 5, and top 10 awardees by count, and an HHI concentration index. No awardee is named. Counts only, no leaderboard.</div>
+      <div class="sec-head"><h2>Concentration within each band</h2><span class="cap">TOP-N BY COUNT · DOLLAR SHARE · HHI</span></div>
+      <div class="h-sub">For the 3, 5, and 10 awardees that won the most awards by count, their combined share of the band's dollars, plus an HHI concentration index. The awardees are selected by award count; the figure shown is their share of dollars. No awardee is named. Counts only, no leaderboard.</div>
       <div class="conc-grid" id="conc-grid"></div>
     </div>
   </section>
@@ -287,7 +287,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <h3>Size bands</h3>
       <p>Small is under $1M. Mid is $1M to $10M. Large is $10M to $100M. Mega is $100M to $500M. Awards of $500M or more are excluded, the same megaproject exclusion the index uses, so a handful of outsized procurements do not swamp the dollar shares.</p>
       <h3>Concentration statistics</h3>
-      <p>Within each band, awardees are aggregated by dollars on the normalized key. Top-N share is the fraction of band dollars held by the N awardees with the most awards (by count). HHI is the sum of squared dollar shares, scaled to a 0 to 10,000 index: below 1,500 is labeled fragmented, 1,500 to 2,500 moderate, above 2,500 concentrated. These describe the shape of demand in a band. They are not a ranking of contractors.</p>
+      <p>Within each band, awardees are aggregated by dollars on the normalized key. The top-N figure selects the N awardees with the most awards by count, then reports their combined share of the band's dollars. It is labeled "top N by count, dollar share" so the count-based selection and the dollar-based measure are not confused. HHI is the sum of squared dollar shares, scaled to a 0 to 10,000 index: below 1,500 is labeled fragmented, 1,500 to 2,500 moderate, above 2,500 concentrated. These describe the shape of demand in a band. They are not a ranking of contractors.</p>
     </div>
   </section>
 
@@ -337,11 +337,16 @@ async function getJSON(params){
   return res.json();
 }
 
-/* deterministic normalization: trim, collapse whitespace, uppercase, strip trailing punctuation */
+/* deterministic normalization, mirrors the alias-build reference exactly:
+   trim, collapse internal whitespace, uppercase, strip trailing punctuation
+   (incl. backslash and whitespace). */
 function normName(raw){
-  let s = (raw || '').trim().replace(/\s+/g, ' ').toUpperCase();
-  s = s.replace(/[.,;:'"`\-\/\\&]+$/g, '').trim();
-  return s;
+  return (raw || '')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toUpperCase()
+    .replace(/[.,;:&/\\'"`\-\s]+$/, '')
+    .trim();
 }
 
 function parseDate(s){
@@ -366,10 +371,13 @@ async function fetchAll(){
       '$limit': String(PAGE),
       '$offset': String(offset)
     });
-    for(const r of batch){
+    for(let i=0; i<batch.length; i++){
+      const r = batch[i];
       const amt = parseFloat(r.contract_amount);
       if(!(amt > 0) || amt >= MEGA_FLOOR) continue;
-      const pin = r.pin || ('_np_' + offset + '_' + Math.random());
+      // Stable per-row surrogate for missing pin: each such row stands alone
+      // (no merge) and the run is byte-reproducible.
+      const pin = r.pin || ('_np_' + offset + '_' + i);
       const renewal = (r.selection_method_description || '').trim().toLowerCase() === 'renewal';
       const rec = { amt, date: parseDate(r.start_date), renewal, norm: normName(r.vendor_name) };
       const prev = byPin.get(pin);
@@ -552,9 +560,9 @@ function renderConcentration(a){
     return `<div class="conc">
       <div class="c-band">${esc(b.name)}</div>
       <div class="c-range">${esc(b.range)} &middot; ${fmtInt(b.distinct)} distinct awardees</div>
-      <div class="c-row"><span class="lab">Top 3 share</span><span class="val">${fmtPct(b.top3)}</span></div>
-      <div class="c-row"><span class="lab">Top 5 share</span><span class="val">${fmtPct(b.top5)}</span></div>
-      <div class="c-row"><span class="lab">Top 10 share</span><span class="val">${fmtPct(b.top10)}</span></div>
+      <div class="c-row"><span class="lab">Top 3 by count · dollar share</span><span class="val">${fmtPct(b.top3)}</span></div>
+      <div class="c-row"><span class="lab">Top 5 by count · dollar share</span><span class="val">${fmtPct(b.top5)}</span></div>
+      <div class="c-row"><span class="lab">Top 10 by count · dollar share</span><span class="val">${fmtPct(b.top10)}</span></div>
       <div class="c-row"><span class="lab">HHI index</span><span class="val">${b.dollars>0 ? Math.round(b.hhi).toLocaleString('en-US') : '&ndash;'} <span class="pill ${lab.cls}">${lab.txt}</span></span></div>
     </div>`;
   }).join('');
