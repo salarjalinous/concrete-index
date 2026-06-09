@@ -71,10 +71,10 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 /* ---------- KPI tape ---------- */
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:24px 0 8px;border-left:1px solid var(--line)}
 .kpi{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px 18px}
-.kpi:first-child{border-top-color:var(--accent)}
+.kpi.hl{border-top-color:var(--accent)}
 .kpi .k-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
-.kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:28px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--navy);line-height:1}
-.kpi:first-child .k-value{color:var(--ink)}
+.kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--navy);line-height:1}
+.kpi.hl .k-value{color:var(--ink)}
 .kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:8px}
 
 /* ---------- section heads ---------- */
@@ -235,7 +235,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     <div class="chips" id="chips"></div>
     <div class="grouphead" id="grouphead"></div>
     <section class="kpis">
-      <div class="kpi"><div class="k-label">Awarded, all-time</div><div class="k-value" id="kpi-all">–</div><div class="k-note">in the record since 2003</div></div>
+      <div class="kpi hl"><div class="k-label">Awarded, all-time</div><div class="k-value" id="kpi-all">–</div><div class="k-note">in the record since 2003</div></div>
       <div class="kpi"><div class="k-label">Awarded, TTM</div><div class="k-value" id="kpi-ttm">–</div><div class="k-note">trailing twelve months</div></div>
       <div class="kpi"><div class="k-label">Awards</div><div class="k-value" id="kpi-n">–</div><div class="k-note" id="kpi-n-note"></div></div>
       <div class="kpi"><div class="k-label">Top agency</div><div class="k-value" id="kpi-ag" style="font-size:18px;line-height:1.3">–</div><div class="k-note" id="kpi-ag-note"></div></div>
@@ -255,7 +255,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       </div>
       <div class="card">
         <div class="sec-head"><h2>Agency mix</h2><span class="cap">TOP 6 · USD</span></div>
-        <div class="h-sub">Who this vendor works for, by awarded value</div>
+        <div class="h-sub">Who this vendor works for, by awarded value. <a href="/">See the full award flow on the Awarded page</a>.</div>
         <div class="chart-box"><canvas id="chart-agency"></canvas></div>
       </div>
     </section>
@@ -289,6 +289,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <h3>How vendor totals are grouped</h3>
       <p>Figures on this page come from the New York City Record Recent Contract Awards dataset (NYC Open Data <code>qyyg-4tf5</code>), limited to awards in Construction categories. Many firms appear under several spellings of their name, and a single firm group can file under more than one legal entity. Where we can confirm by hand that several names belong to the same firm, we group them under one parent total and list every underlying name and its amount, so nothing is hidden. Grouping is a fixed, verified list of name variants, not automated name-matching or any statistical guess. We group only on a distinctive shared identifier or an unmistakable spelling variation of the same company; when a connection is uncertain, we leave the names separate. Each amount is the value stated in the award notice, which is a floor rather than a running total of work performed or paid, so a group's total is a lower bound. This dataset covers City-agency awards only. Work let by the MTA, the School Construction Authority, the Port Authority, and New York State agencies is out of scope here because those datasets do not name the awarded contractor.</p>
       <p>The Concrete Index is an independent personal project built on public data. It is not affiliated with, endorsed by, or speaking for any employer, and nothing here is any employer's assessment of any named company.</p>
+      <h3>Winners only</h3>
+      <p>Award notices name the winning contractor only, so this shows who was awarded work, not who else bid. The losing bidders on a given solicitation are not in this record.</p>
       <h3>A note for credit work</h3>
       <p>This is the public demand-side view of a contractor: what the City has hired it to do. It says nothing about costs, margins, bonding capacity, or performance. Treat it as one input alongside financials, not a substitute for them.</p>
       </div>
