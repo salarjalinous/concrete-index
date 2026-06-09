@@ -66,7 +66,7 @@ jobs:
                 "(KHTML, like Gecko) Chrome/124.0 Safari/537.36 "
                 "ConcreteIndex/1.0 (+https://concreteindex.co)")
 
-          def post(xml_body, tries=5):
+          def post(xml_body, tries=6):
               last = None
               for attempt in range(tries):
                   try:
@@ -80,8 +80,11 @@ jobs:
                   except urllib.error.HTTPError as e:
                       last = e
                       log("  POST attempt %d failed: HTTP %s" % (attempt + 1, e.code))
-                      # 403/429 = rate-limited: back off longer
-                      time.sleep((6 if e.code in (403, 429) else 3) * (attempt + 1))
+                      # 403/429 = rate-limited: exponential backoff, generous.
+                      if e.code in (403, 429):
+                          time.sleep(min(60, 8 * (2 ** attempt)))
+                      else:
+                          time.sleep(3 * (attempt + 1))
                   except Exception as e:
                       last = e
                       log("  POST attempt %d failed: %s" % (attempt + 1, e))
@@ -139,6 +142,7 @@ jobs:
                   if page == 0:
                       raw_first = raw
                   if recs is None:
+                      time.sleep(0.7)   # pace even on a short-circuit failure
                       return rows, raw_first
                   rows.extend(recs)
                   got = len(recs)
@@ -190,7 +194,7 @@ jobs:
           # status=active = currently-active contracts (carry current_amount as
           # the registered value).
           CONTRACTS_BASE = [("category", "value", "expense"),
-                            ("status", "value", "active")]
+                            ("status", "value", "registered")]
           SPENDING_BASE = [("category", "value", "expense"),
                            ("spending_category", "value", "contract")]
 
