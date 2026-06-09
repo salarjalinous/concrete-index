@@ -280,17 +280,31 @@ jobs:
               log("  %d contract rows" % len(rows))
               all_contracts.extend(rows)
 
-          industries_seen = {}
-          for r in all_contracts:
-              ind = c_industry(r)
-              if ind:
-                  industries_seen[ind] = industries_seen.get(ind, 0) + 1
-          log("=== DISTINCT industry values (count -> value) ===")
-          for k in sorted(industries_seen, key=lambda x: -industries_seen[x]):
-              log("  %8d  %s" % (industries_seen[k], k))
-
           def keep_c(r):
               return True if server else bool(CONSTR_RE.search(c_industry(r)))
+
+          # Distinct industry breakdown of the FULL pull, split by whether the
+          # construction filter keeps it. Written to a committed side file so the
+          # exact industry vocabulary is lockable from validated output (the spec
+          # requires dumping distinct industry values to lock the set).
+          industries_kept, industries_dropped = {}, {}
+          for r in all_contracts:
+              ind = c_industry(r)
+              if not ind:
+                  ind = "(blank)"
+              if CONSTR_RE.search(ind):
+                  industries_kept[ind] = industries_kept.get(ind, 0) + 1
+              else:
+                  industries_dropped[ind] = industries_dropped.get(ind, 0) + 1
+          log("=== DISTINCT industry values KEPT (count -> value) ===")
+          for k in sorted(industries_kept, key=lambda x: -industries_kept[x]):
+              log("  %8d  %s" % (industries_kept[k], k))
+          log("=== DISTINCT industry values DROPPED (top 40 by count) ===")
+          for k in sorted(industries_dropped, key=lambda x: -industries_dropped[x])[:40]:
+              log("  %8d  %s" % (industries_dropped[k], k))
+          with open("data/checkbook-industries.json", "w") as f:
+              json.dump({"kept": industries_kept, "dropped": industries_dropped}, f,
+                        separators=(",", ":"), ensure_ascii=False)
 
           contracts = [r for r in all_contracts if keep_c(r)]
           log("After construction filter: contracts=%d (mode=%s)"
@@ -418,7 +432,7 @@ jobs:
         run: |
           git config user.name "concrete-index-checkbook"
           git config user.email "actions@users.noreply.github.com"
-          git add data/checkbook-vendors.json
+          git add data/checkbook-vendors.json data/checkbook-industries.json
           git diff --cached --quiet && echo "No changes today" || {
             git commit -m "Checkbook vendor data $(date -u +%Y-%m-%d)"
             git push
