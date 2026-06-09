@@ -71,7 +71,7 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 /* ---------- KPI tape ---------- */
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:28px 0 8px;border-left:1px solid var(--line)}
 .kpi{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px 18px}
-.kpi.hero-kpi{border-top-color:var(--accent)}
+.kpi.hl{border-top-color:var(--accent)}
 .kpi .k-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
 .kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--navy);line-height:1}
 .kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:8px}
@@ -217,7 +217,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   </div>
 
   <section class="kpis">
-    <div class="kpi hero-kpi"><div class="k-label">Unspent committed</div><div class="k-value" id="kpi-unspent">–</div><div class="k-note" id="kpi-unspent-note"></div></div>
+    <div class="kpi hl"><div class="k-label">Unspent committed</div><div class="k-value" id="kpi-unspent">–</div><div class="k-note" id="kpi-unspent-note"></div></div>
     <div class="kpi"><div class="k-label">Projects</div><div class="k-value" id="kpi-count">–</div><div class="k-note" id="kpi-count-note"></div></div>
     <div class="kpi"><div class="k-label">Median project budget</div><div class="k-value" id="kpi-median">–</div><div class="k-note">total budget per project</div></div>
     <div class="kpi"><div class="k-label">Plan growth</div><div class="k-value" id="kpi-growth">–</div><div class="k-note" id="kpi-growth-note"></div></div>
@@ -558,7 +558,7 @@ function renderKpis(rows){
   if(state.priorTotal > 0){
     const d = (curAll - state.priorTotal) / state.priorTotal * 100;
     document.getElementById('kpi-growth').innerHTML =
-      `<span class="${d>=0?'up':'down'}">${d>=0?'▲':'▼'} ${Math.abs(d).toFixed(1)}%</span>`;
+      `<span class="${d>=0?'up':'down'}">${d>=0?'+':'−'}${Math.abs(d).toFixed(1)}%</span>`;
     document.getElementById('kpi-growth-note').textContent =
       'unspent pipeline vs ' + fmtPeriod(state.priorPeriod) + ' plan';
   }else{
