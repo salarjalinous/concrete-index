@@ -23,7 +23,7 @@ jobs:
         run: |
           mkdir -p data
           curl -sf --retry 3 -G "https://data.cityofnewyork.us/resource/qyyg-4tf5.json" \
-            --data-urlencode "\$select=request_id,start_date,agency_name,category_description,selection_method_description,short_title,vendor_name,contract_amount" \
+            --data-urlencode "\$select=pin,request_id,start_date,agency_name,category_description,selection_method_description,short_title,vendor_name,contract_amount" \
             --data-urlencode "\$where=starts_with(category_description,'Construction')" \
             --data-urlencode "\$order=start_date DESC,request_id" \
             --data-urlencode "\$limit=50000" \
@@ -54,6 +54,47 @@ jobs:
             --data-urlencode "\$limit=20000" \
             -o data/plan-latest.json
           python3 -c "import json;d=json.load(open('data/plan-latest.json'));assert len(d)>3000;print(len(d),'plan rows')"
+
+      - name: Precompute home headline aggregates (resilience fallback)
+        run: |
+          # Small aggregate the home page reads ONLY when the live City API is
+          # unreachable, so the hero shows last-good figures instead of an error.
+          # Computed with the SAME pin-dedup rule the page uses, so the fallback
+          # number reconciles with the live one. Reads the awards.json just pulled.
+          python3 - <<'PYEOF'
+          import json, time, statistics
+          from datetime import datetime, timezone, timedelta
+          rows = json.load(open('data/awards.json'))
+          byPin = {}
+          for r in rows:
+              pin = r.get('pin') or r.get('request_id')
+              try: amt = float(r.get('contract_amount') or 0)
+              except (TypeError, ValueError): amt = 0.0
+              prev = byPin.get(pin)
+              if prev is None or amt > prev[0]:
+                  byPin[pin] = (amt, r)
+          cutoff = datetime.now(timezone.utc) - timedelta(days=365)
+          amts = []
+          for amt, r in byPin.values():
+              d = (r.get('start_date') or '')[:10]
+              if not d or amt <= 0:
+                  continue
+              try:
+                  dt = datetime.fromisoformat(d).replace(tzinfo=timezone.utc)
+              except ValueError:
+                  continue
+              if dt >= cutoff:
+                  amts.append(amt)
+          total = int(round(sum(amts))); count = len(amts)
+          median = int(round(statistics.median(amts))) if amts else 0
+          mx = int(round(max(amts))) if amts else 0
+          out = {"meta": {"generated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                          "source": "archived awards.json (NYC City Record qyyg-4tf5), pin-deduped",
+                          "window": "trailing 12 months, all construction"},
+                 "awarded_ttm": {"total": total, "count": count, "median": median, "max": mx}}
+          json.dump(out, open('data/precomputed.json', 'w'), separators=(",", ":"))
+          print("precomputed awarded_ttm: total=%d count=%d median=%d max=%d" % (total, count, median, mx))
+          PYEOF
 
       - name: Commit if changed
         run: |
