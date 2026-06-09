@@ -808,6 +808,34 @@ async function loadCheckbookPaid(){
   }catch(e){ /* leave the Paid cell as a dash; strip still works */ }
 }
 
+/* Resilience fallback: when the live City API can't be reached, show the last
+   archived Awarded figure (nightly data/precomputed.json, computed with the same
+   pin-dedup rule) in the hero instead of a bare error. Live path is untouched;
+   this runs only in the init catch. Returns true if it rendered a fallback. */
+async function showArchivedFallback(){
+  try{
+    const res = await fetch('/data/precomputed.json');
+    if(!res.ok) return false;
+    const d = await res.json();
+    const a = (d && d.awarded_ttm) || {};
+    if(typeof a.total !== 'number') return false;
+    const aEl = document.getElementById('ss-awarded');
+    if(aEl){
+      aEl.textContent = fmtMoney(a.total);
+      document.getElementById('ss-awarded-d').textContent =
+        fmtInt(a.count) + ' construction awards, trailing 12 months.';
+    }
+    const when = d.meta && d.meta.generated ? new Date(d.meta.generated) : null;
+    const asof = (when && !isNaN(when)) ? fmtDate(when) : 'recently';
+    const err = document.getElementById('error');
+    err.innerHTML = '<p><strong>Live NYC Open Data is temporarily unavailable.</strong></p>'
+      + '<p>The Awarded figure above is the last archived value, as of ' + asof
+      + '. The full charts and filters return automatically when the live source is back. Refresh to retry.</p>';
+    err.style.display = 'block';
+    return true;
+  }catch(_){ return false; }
+}
+
 /* ================= init ================= */
 (async function init(){
   loadCheckbookPaid();
@@ -815,7 +843,8 @@ async function loadCheckbookPaid(){
     state.rows = await fetchAwards();
   }catch(e){
     document.getElementById('loader').style.display = 'none';
-    document.getElementById('error').style.display = 'block';
+    const shown = await showArchivedFallback();
+    if(!shown) document.getElementById('error').style.display = 'block';
     return;
   }
   renderSpanStrip();
