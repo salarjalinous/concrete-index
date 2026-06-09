@@ -89,6 +89,7 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 22px;box-shadow:0 1px 0 rgba(34,21,14,.04)}
 .card .h-sub{font-size:12.5px;color:var(--muted);margin-top:9px;margin-bottom:18px;max-width:760px}
 .chart-box{position:relative;height:280px}
+.tnote{font-size:11.5px;line-height:1.55;color:var(--muted);margin-top:13px;padding-top:9px;border-top:1px solid var(--line)}
 
 /* ---------- tables ---------- */
 table{width:100%;border-collapse:collapse;font-size:13.5px}
@@ -248,6 +249,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2>Most awarded, trailing twelve months</h2><span class="cap">TOP 12 · USD</span></div>
       <div class="h-sub">A starting point: tap any name for its full profile</div>
       <div class="starter" id="starter-list"></div>
+      <div class="tnote">The twelve vendors with the most City Record construction award value over the trailing twelve months, by the name as published (not yet grouped across spellings). Tap one to open its full profile, where the firm's name variants, Checkbook figures, and MTA/State work are rolled together.</div>
     </div>
   </section>
 
@@ -301,11 +303,13 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <div class="sec-head"><h2>Awarded value by year</h2><span class="cap">BY YEAR · USD</span></div>
         <div class="h-sub">Job-size trend matters as much as the total: a book stepping up in size is taking on different risk</div>
         <div class="chart-box"><canvas id="chart-year"></canvas></div>
+        <div class="tnote">Each bar is the group's awarded value for one year, on the deduplicated City Record set (one record per procurement). The trend in job size matters as much as the total: a book stepping up in scale is taking on work of a different size. These are award-notice values, not paid amounts.</div>
       </div>
       <div class="card">
         <div class="sec-head"><h2>Agency mix</h2><span class="cap">TOP 6 · USD</span></div>
         <div class="h-sub">Who this vendor works for, by awarded value. <a href="/">See the full award flow on the Awarded page</a>.</div>
         <div class="chart-box"><canvas id="chart-agency"></canvas></div>
+        <div class="tnote">The group's awarded value split across the agencies it has won City work from, the top six by value. Bars are awarded value, not contract counts, and agencies outside the top six are not shown.</div>
       </div>
     </section>
     <section class="grid" id="city-recent">
@@ -325,6 +329,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
             </table>
           </div>
         </details>
+        <div class="tnote">The most recent award notices for this group, newest first; Value is the amount stated at the notice, a floor that later change orders can grow. "Names included in this total" expands every underlying name spelling rolled into the group and its summed value, so the grouping is auditable and nothing is hidden or double-counted.</div>
       </div>
     </section>
   </section>
