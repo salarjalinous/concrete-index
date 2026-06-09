@@ -115,6 +115,11 @@ jobs:
                   for m in msgs:
                       log("    -", m)
                   return None, xml_text
+              # log the API's own record_count when present (viewer-safe).
+              for el in root.iter():
+                  if el.tag.lower() == "record_count":
+                      log("  [api record_count = %s]" % ((el.text or "").strip()))
+                      break
               recs = []
               for rec in root.iter():
                   tl = rec.tag.lower()
@@ -238,6 +243,36 @@ jobs:
           # returns rows.
           industry_mode = "client"
           server = False
+
+          # ---- MATRIX PROBE: single-page request per (criteria) combo, logging
+          # the API's own record_count, to find a combo that actually returns rows.
+          def probe_combo(label, type_of_data, columns, criteria):
+              xml = build_request_xml(type_of_data, columns, criteria, 1)
+              resp = post(xml)
+              recs, _ = parse_records(resp)
+              n = -1 if recs is None else len(recs)
+              log("  PROBE[%s] -> parsed_rows=%s" % (label, n))
+              time.sleep(0.7)
+              return recs
+
+          log("=== MATRIX PROBE (Contracts status/category variants) ===")
+          probe_combo("exp+registered+fy2024", "Contracts", contracts_cols,
+                      [("category","value","expense"),("status","value","registered"),
+                       ("fiscal_year","value","2024")])
+          probe_combo("exp+registered (no fy)", "Contracts", contracts_cols,
+                      [("category","value","expense"),("status","value","registered")])
+          probe_combo("exp+pending (no fy)", "Contracts", contracts_cols,
+                      [("category","value","expense"),("status","value","pending")])
+          probe_combo("registered only (no category)", "Contracts", contracts_cols,
+                      [("status","value","registered")])
+          probe_combo("registered+records_from0-style fy2023", "Contracts", contracts_cols,
+                      [("category","value","expense"),("status","value","registered"),
+                       ("fiscal_year","value","2023")])
+          log("=== MATRIX PROBE (Spending variants) ===")
+          probe_combo("spending fy2024 only", "Spending", spending_cols,
+                      [("fiscal_year","value","2024")])
+          probe_combo("spending no criteria", "Spending", spending_cols, [])
+
           # Probe A: Contracts WITH fiscal_year (run #4 returned 0 here).
           log("=== PROBE A: Contracts WITH fiscal_year=%d ===" % FYS[-1])
           probeA, rawA = fetch_all("Contracts", contracts_cols, CONTRACTS_BASE, FYS[-1], industry_server=False)
