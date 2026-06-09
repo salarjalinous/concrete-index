@@ -91,6 +91,7 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .card .sec-head{border-bottom-color:var(--ink)}
 .card .h-sub{font-size:12.5px;color:var(--muted);margin-top:9px;margin-bottom:18px}
 .chart-box{position:relative;height:300px}
+.tnote{font-size:11.5px;line-height:1.55;color:var(--muted);margin-top:13px;padding-top:9px;border-top:1px solid var(--line)}
 .chart-box.tall{height:340px}
 
 /* ---------- tables ---------- */
@@ -244,6 +245,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2>Where the pipeline sits</h2><span class="cap">BY PHASE · USD</span></div>
       <div class="h-sub">Unspent committed dollars by project phase, earlier phases are demand that has not yet reached the market</div>
       <div class="chart-box tall"><canvas id="chart-phase"></canvas></div>
+      <div class="tnote">Each bar is unspent committed dollars for one project phase, where unspent = total budget minus spend-to-date, floored at zero, after collapsing the plan to one record per project and excluding non-construction phases. Earlier phases are funded demand that has not yet reached the market.</div>
     </div>
   </section>
 
@@ -252,11 +254,13 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2>Pipeline by agency</h2><span class="cap">TOP 8 · USD</span></div>
       <div class="h-sub">Unspent committed dollars, top managing agencies</div>
       <div class="chart-box"><canvas id="chart-agency"></canvas></div>
+      <div class="tnote">Unspent committed construction dollars by managing agency, the top eight, on the collapsed and filtered plan set. Bars are dollars of open pipeline, not project counts, and the top eight do not sum to the total pipeline.</div>
     </div>
     <div class="card">
       <div class="sec-head"><h2>Pipeline by borough</h2><span class="cap">BY BOROUGH</span></div>
       <div class="h-sub">As designated in the capital plan</div>
       <div class="chart-box"><canvas id="chart-boro"></canvas></div>
+      <div class="tnote">Unspent committed dollars by the borough the capital plan itself designates for each project (a structured field here, unlike the text-inferred borough on the Awarded page). Citywide projects carry the plan's own citywide label.</div>
     </div>
   </section>
 
@@ -265,6 +269,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2>Pipeline by category</h2><span class="cap">TOP 8 · USD</span></div>
       <div class="h-sub">Unspent committed dollars by ten-year plan category</div>
       <div class="chart-box"><canvas id="chart-cat"></canvas></div>
+      <div class="tnote">Unspent committed dollars by the City's ten-year-plan category, the top eight. Categories are the plan's own classification, not derived from text. Bars are open-pipeline dollars, not counts.</div>
     </div>
   </section>
 
@@ -276,6 +281,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <thead><tr><th></th><th>Project</th><th>Phase</th><th class="num">Budget</th><th class="num">Unspent</th></tr></thead>
         <tbody></tbody>
       </table>
+      <div class="tnote">The largest open capital projects, ranked by unspent committed dollars (Budget minus spend-to-date). One row per project after the plan's sub-project rows are collapsed, so a project's full budget is counted once rather than repeated on every milestone row.</div>
     </div>
   </section>
 
