@@ -1,0 +1,324 @@
+name: Checkbook NYC vendor data
+
+# Pulls registered (Contracts) and paid-to-date (Spending) per construction
+# vendor from the Checkbook NYC API and writes data/checkbook-vendors.json,
+# keyed on the SAME normName() the /vendors/ page uses so the page can join.
+# Stdlib-only Python (urllib + xml), no extra deps. Commits only if changed.
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '40 6 * * *'   # 06:40 UTC daily (~1:40am New York), after the archive job
+
+permissions:
+  contents: write
+
+jobs:
+  checkbook:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build checkbook-vendors.json
+        run: |
+          mkdir -p data
+          python3 - <<'PYEOF'
+          import json, sys, time, re, os
+          import urllib.request, urllib.error
+          import xml.etree.ElementTree as ET
+
+          API = "https://www.checkbooknyc.com/api"
+          FYS = [2021, 2022, 2023, 2024, 2025]
+          MAX_RECORDS = 1000
+          CONSTR_RE = re.compile(r"constr|engineer|architect|paving|excavat|infrastructure", re.I)
+
+          # ---- normalizer: byte-for-byte equivalent of the /vendors/ page normName() ----
+          # JS: (s||'').trim().replace(/\s+/g,' ').toUpperCase().replace(/[.,;:&/\\'"`\-\s]+$/,'').trim()
+          _TRAIL = re.compile(r"[.,;:&/\\'\"`\-\s]+$")
+          def norm_name(s):
+              if s is None:
+                  s = ""
+              s = s.strip()
+              s = re.sub(r"\s+", " ", s)
+              s = s.upper()
+              s = _TRAIL.sub("", s)
+              return s.strip()
+
+          def log(*a):
+              print(*a, flush=True)
+
+          def build_request_xml(type_of_data, columns, criteria, records_from):
+              crit_xml = ""
+              for nm, ty, val in criteria:
+                  crit_xml += ("<criteria><name>%s</name><type>%s</type><value>%s</value></criteria>"
+                               % (nm, ty, val))
+              cols_xml = "".join("<column><name>%s</name></column>" % c for c in columns)
+              return ('<?xml version="1.0"?>'
+                      "<request>"
+                      "<type_of_data>%s</type_of_data>"
+                      "<records_from>%d</records_from>"
+                      "<max_records>%d</max_records>"
+                      "<search_criteria>%s</search_criteria>"
+                      "<response_columns>%s</response_columns>"
+                      "</request>") % (type_of_data, records_from, MAX_RECORDS, crit_xml, cols_xml)
+
+          def post(xml_body, tries=4):
+              last = None
+              for attempt in range(tries):
+                  try:
+                      req = urllib.request.Request(API, data=xml_body.encode("utf-8"),
+                                                   headers={"Content-Type": "text/xml"}, method="POST")
+                      with urllib.request.urlopen(req, timeout=120) as r:
+                          return r.read().decode("utf-8", "replace")
+                  except Exception as e:
+                      last = e
+                      log("  POST attempt %d failed: %s" % (attempt + 1, e))
+                      time.sleep(2 * (attempt + 1))
+              raise RuntimeError("POST failed after %d tries: %s" % (tries, last))
+
+          def parse_records(xml_text):
+              try:
+                  root = ET.fromstring(xml_text)
+              except ET.ParseError as e:
+                  log("  XML parse error:", e)
+                  log("  first 600 chars:", xml_text[:600])
+                  return None, xml_text
+              recs = []
+              for rec in root.iter():
+                  tl = rec.tag.lower()
+                  if tl.endswith("record") and tl != "result_records":
+                      d = {}
+                      for child in rec:
+                          d[child.tag.lower()] = (child.text or "").strip()
+                      if d:
+                          recs.append(d)
+              return recs, xml_text
+
+          def fetch_all(type_of_data, columns, base_criteria, fy, industry_server):
+              rows = []
+              raw_first = None
+              rf = 1
+              page = 0
+              while True:
+                  crit = list(base_criteria)
+                  crit.append(("fiscal_year", "value", str(fy)))
+                  if industry_server:
+                      crit.append(("industry", "value", "Construction"))
+                  xml = build_request_xml(type_of_data, columns, crit, rf)
+                  resp = post(xml)
+                  recs, raw = parse_records(resp)
+                  if page == 0:
+                      raw_first = raw
+                  if recs is None:
+                      return rows, raw_first
+                  rows.extend(recs)
+                  got = len(recs)
+                  page += 1
+                  if got < MAX_RECORDS:
+                      break
+                  rf += MAX_RECORDS
+                  if rf > 300000:
+                      log("  WARNING paging cap hit for", type_of_data, fy)
+                      break
+              return rows, raw_first
+
+          def to_int_amount(s):
+              if not s:
+                  return 0
+              s = s.replace(",", "").replace("$", "").strip()
+              try:
+                  return int(round(float(s)))
+              except ValueError:
+                  return 0
+
+          def load_aliases(path):
+              with open(path) as f:
+                  raw = json.load(f)
+              v2p = {}
+              for g in raw:
+                  for v in g.get("variants", []):
+                      nv = norm_name(v)
+                      if nv:
+                          v2p[nv] = g["parent"]
+              return v2p
+
+          alias_path = "site/data/vendor-aliases.json"
+          if not os.path.exists(alias_path):
+              alias_path = "data/vendor-aliases.json"
+          variant_to_parent = load_aliases(alias_path)
+          log("Loaded %d normalized variant keys from %s" % (len(variant_to_parent), alias_path))
+
+          contracts_cols = ["prime_vendor", "contract_id", "agency", "industry",
+                            "fiscal_year", "current_amount", "original_amount", "purpose"]
+          spending_cols = ["vendor", "agency", "industry", "fiscal_year",
+                           "check_amount", "contract_id", "document_id"]
+
+          # ---- probe server-side industry filter on one FY of Contracts ----
+          log("=== PROBE: server-side industry=Construction on Contracts FY%d ===" % FYS[-1])
+          probe_rows, probe_raw = fetch_all("Contracts", contracts_cols, [], FYS[-1], industry_server=True)
+          log("  server-side probe returned %d contract rows" % len(probe_rows))
+          industry_mode = "server" if probe_rows else "client"
+          log("  -> industry_filter_mode =", industry_mode)
+          log("=== SAMPLE raw Contracts first-page XML (first 1500 chars) ===")
+          log((probe_raw or "")[:1500])
+          server = (industry_mode == "server")
+
+          all_contracts, all_spending = [], []
+          for fy in FYS:
+              log("--- Contracts FY%d ---" % fy)
+              rows, _ = fetch_all("Contracts", contracts_cols, [], fy, industry_server=server)
+              log("  %d contract rows" % len(rows))
+              all_contracts.extend(rows)
+          for fy in FYS:
+              log("--- Spending FY%d ---" % fy)
+              rows, _ = fetch_all("Spending", spending_cols,
+                                  [("spending_category", "value", "contract")], fy, industry_server=server)
+              log("  %d spending rows" % len(rows))
+              all_spending.extend(rows)
+
+          industries_seen = {}
+          for r in all_contracts + all_spending:
+              ind = r.get("industry", "")
+              if ind:
+                  industries_seen[ind] = industries_seen.get(ind, 0) + 1
+          log("=== DISTINCT industry values (count -> value) ===")
+          for k in sorted(industries_seen, key=lambda x: -industries_seen[x]):
+              log("  %8d  %s" % (industries_seen[k], k))
+
+          def keep_construction(r):
+              if server:
+                  return True
+              return bool(CONSTR_RE.search(r.get("industry", "") or ""))
+
+          contracts = [r for r in all_contracts if keep_construction(r)]
+          spending = [r for r in all_spending if keep_construction(r)]
+          log("After construction filter: contracts=%d spending=%d (mode=%s)"
+              % (len(contracts), len(spending), industry_mode))
+
+          def resolve(name):
+              k = norm_name(name)
+              parent = variant_to_parent.get(k)
+              if parent:
+                  return parent, True
+              return (name or "").strip(), False
+
+          groups = {}
+          def group_for(label, matched):
+              g = groups.get(label)
+              if g is None:
+                  g = {"label": label, "matched": matched, "registered": 0, "paid": 0,
+                       "agencies": set(), "fy_first": None, "fy_last": None, "_cm": {}}
+                  groups[label] = g
+              return g
+          def upd_fy(g, fy):
+              try:
+                  fyi = int(str(fy)[:4])
+              except (ValueError, TypeError):
+                  return
+              if g["fy_first"] is None or fyi < g["fy_first"]:
+                  g["fy_first"] = fyi
+              if g["fy_last"] is None or fyi > g["fy_last"]:
+                  g["fy_last"] = fyi
+
+          for r in contracts:
+              name = r.get("prime_vendor", "")
+              if not name:
+                  continue
+              label, matched = resolve(name)
+              g = group_for(label, matched)
+              if matched:
+                  g["matched"] = True
+              cid = r.get("contract_id", "") or ""
+              amt = to_int_amount(r.get("current_amount", ""))
+              try:
+                  fyi = int(str(r.get("fiscal_year", ""))[:4])
+              except (ValueError, TypeError):
+                  fyi = 0
+              if r.get("agency"):
+                  g["agencies"].add(r["agency"])
+              upd_fy(g, r.get("fiscal_year", ""))
+              if cid:
+                  prev = g["_cm"].get(cid)
+                  if prev is None or (fyi, amt) > prev:
+                      g["_cm"][cid] = (fyi, amt)
+              else:
+                  g["_cm"]["__nocid_%d_%d" % (len(g["_cm"]), amt)] = (fyi, amt)
+
+          for r in spending:
+              name = r.get("vendor", "")
+              if not name:
+                  continue
+              label, matched = resolve(name)
+              g = group_for(label, matched)
+              if matched:
+                  g["matched"] = True
+              g["paid"] += to_int_amount(r.get("check_amount", ""))
+              if r.get("agency"):
+                  g["agencies"].add(r["agency"])
+              upd_fy(g, r.get("fiscal_year", ""))
+
+          for g in groups.values():
+              g["registered"] = sum(v[1] for v in g["_cm"].values())
+
+          vendors = {}
+          total_registered = total_paid = 0
+          for label, g in groups.items():
+              key = norm_name(label)
+              if not key:
+                  continue
+              rec = {"label": g["label"], "registered": int(g["registered"]), "paid": int(g["paid"]),
+                     "agencies": len(g["agencies"]), "fy_first": g["fy_first"], "fy_last": g["fy_last"],
+                     "matched": bool(g["matched"])}
+              if key in vendors and vendors[key]["registered"] >= rec["registered"]:
+                  continue
+              vendors[key] = rec
+
+          for rec in vendors.values():
+              total_registered += rec["registered"]
+              total_paid += rec["paid"]
+
+          group_count = len(vendors)
+          truncated = False
+          raw_estimate = len(json.dumps({"vendors": vendors}))
+          if group_count > 1500 or raw_estimate > 150 * 1024:
+              items = sorted(vendors.items(), key=lambda kv: -kv[1]["registered"])[:300]
+              vendors = dict(items)
+              truncated = True
+
+          meta = {"generated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                  "source": "Checkbook NYC API (checkbooknyc.com)", "fiscal_years": FYS,
+                  "industry_filter_mode": industry_mode, "contracts_rows": len(contracts),
+                  "spending_rows": len(spending), "groups": group_count}
+          if truncated:
+              meta["truncated"] = True
+          out = {"meta": meta, "vendors": vendors}
+
+          log("=== SUMMARY ===")
+          log("contracts_rows=%d spending_rows=%d groups=%d mode=%s"
+              % (len(contracts), len(spending), group_count, industry_mode))
+          log("total registered = $%d  total paid = $%d" % (total_registered, total_paid))
+          cruz_key = norm_name("E.E. Cruz / JRCruz")
+          log("Cruz key = %r -> %s" % (cruz_key, json.dumps(vendors.get(cruz_key, "MISSING"))))
+          tp_key = norm_name("Tutor Perini")
+          log("Tutor Perini key = %r -> %s" % (tp_key, json.dumps(vendors.get(tp_key, "MISSING"))))
+
+          assert len(contracts) > 0, "contracts_rows == 0 (partial/failed fetch)"
+          assert len(spending) > 0, "spending_rows == 0 (partial/failed fetch)"
+          assert group_count >= 50, "groups < 50 (too few; partial fetch?)"
+          assert total_registered >= 1_000_000_000, "total registered < $1B (degraded pull)"
+
+          with open("data/checkbook-vendors.json", "w") as f:
+              json.dump(out, f, separators=(",", ":"), ensure_ascii=False)
+          log("Wrote data/checkbook-vendors.json (%d bytes, %d vendors)"
+              % (os.path.getsize("data/checkbook-vendors.json"), len(vendors)))
+          PYEOF
+
+      - name: Commit if changed
+        run: |
+          git config user.name "concrete-index-checkbook"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/checkbook-vendors.json
+          git diff --cached --quiet && echo "No changes today" || {
+            git commit -m "Checkbook vendor data $(date -u +%Y-%m-%d)"
+            git push
+          }
