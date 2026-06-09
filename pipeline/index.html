@@ -363,8 +363,15 @@ const PHASE_MAP = {
   'construction':'Construction', 'design build':'Construction', 'design built':'Construction',
   'close-out':'Close-out', 'closeout':'Close-out'
 };
-const EXCLUDED = new Set(['completed','cancelled','inactive','on-hold','on hold','transferred',
-  'withdrawn','terminated','defaulted','capitally ineligible','expense']);
+const EXCLUDED = new Set([
+  // inactive / finished states
+  'completed','cancelled','inactive','on-hold','on hold','transferred',
+  'withdrawn','terminated','defaulted','capitally ineligible','expense',
+  // dead phases: the project is gone, not waiting to be built
+  'defunded','funding withdrawn','rescinded','fmsid changed','project renamed','n/a',
+  // not construction work: these do not belong in the construction-demand pipeline
+  'land acquisition','property acquisition','real estate transaction','fundraising',
+  'it project','non capital fund','equipment','consultant services']);
 const PHASE_ORDER = ['Pending','Pre-Design','Design','Procurement','Construction','Close-out','Other active'];
 const PRE_CON = new Set(['Pending','Pre-Design','Design','Procurement']);
 
@@ -400,11 +407,14 @@ function titleCase(s){
   return (s||'').toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase());
 }
 
-function normalize(r){
+function normalize(r, i){
   const budget = Math.max(parseFloat(r.total_budget) || 0, 0);
   const spent  = Math.max(parseFloat(r.spend_to_date) || 0, 0);
   return {
-    fmsId: r.fms_id || Math.random().toString(36),
+    // Stable per-row surrogate for missing fms_id: keeps each such row standing
+    // alone (no merge) while making the run byte-reproducible. Math.random() did
+    // the same isolation but injected nondeterminism.
+    fmsId: r.fms_id || ('_np_' + i),
     agency: r.managing_agency || '–',
     name: r.fms_project_name || '(unnamed project)',
     budget,
