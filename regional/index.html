@@ -459,12 +459,14 @@ function render(){ renderSCA(); renderMTA(); }
 .exp button+button{border-left:none}
 .exp button:hover{color:var(--accent);border-color:var(--accent)}
 .exp button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.pdf-btn{background:none;border:1px solid var(--line);color:var(--muted);font:600 11px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;padding:7px 11px;cursor:pointer;margin-left:14px;align-self:center;white-space:nowrap;transition:color .12s,border-color .12s}
+.pdf-btn{background:none;border:1px solid var(--line);color:var(--muted);font:600 11px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;cursor:pointer;white-space:nowrap;transition:color .12s,border-color .12s}
 .pdf-btn:hover{color:var(--accent);border-color:var(--accent)}
-@media (max-width:1024px){.pdf-btn{margin:8px 0 0}}
+.series-bar .inner .pdf-btn{margin-left:auto;font-size:10px;padding:4px 9px;align-self:center}
+.pdf-bar{display:flex;justify-content:flex-end;max-width:1180px;margin:0 auto;padding:6px 28px}
+@media (max-width:720px){.pdf-bar{padding:6px 18px}}
 @media print{
   @page{margin:14mm}
-  header .menu-btn,.nav-links,.controls,.series-bar,.photo-band,.exp,.pdf-btn,.badge-live,.valstrip{display:none !important}
+  header .menu-btn,.nav-links,.controls,.series-bar,.photo-band,.exp,.pdf-btn,.pdf-bar,.badge-live,.valstrip{display:none !important}
   header{border-bottom:2px solid #22150e}
   body{background:#fff !important}
   .wrap{max-width:none !important;width:100% !important}
@@ -563,12 +565,14 @@ function render(){ renderSCA(); renderMTA(); }
     document.querySelectorAll('main table,#app table,.card table').forEach(attachTable);
   }
   function addPdfBtn(){
-    var nav=document.querySelector('.nav-links');
-    if(!nav||nav.querySelector('.pdf-btn'))return;
+    if(document.querySelector('.pdf-btn'))return;
     var b=mkBtn('Save PDF','Save or print this page as a PDF',function(){window.print();});
     b.className='pdf-btn';
-    var badge=nav.querySelector('.badge-live');
-    if(badge)nav.insertBefore(b,badge);else nav.appendChild(b);
+    var inner=document.querySelector('.series-bar .inner');
+    if(inner){inner.appendChild(b);return;}
+    var header=document.querySelector('header');
+    if(header){var bar=document.createElement('div');bar.className='pdf-bar';bar.appendChild(b);header.insertAdjacentElement('afterend',bar);return;}
+    var nav=document.querySelector('.nav-links');if(nav)nav.appendChild(b);
   }
   var pending=null;
   function start(){
