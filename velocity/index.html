@@ -294,8 +294,15 @@ const PHASE_MAP = {
   'design':'Design','construction procurement':'Procurement','construction':'Construction',
   'design build':'Construction','design built':'Construction','close-out':'Close-out','closeout':'Close-out'
 };
-const EXCLUDED = new Set(['completed','cancelled','inactive','on-hold','on hold','transferred',
-  'withdrawn','terminated','defaulted','capitally ineligible','expense']);
+const EXCLUDED = new Set([
+  // inactive / finished states
+  'completed','cancelled','inactive','on-hold','on hold','transferred',
+  'withdrawn','terminated','defaulted','capitally ineligible','expense',
+  // dead phases: the project is gone, not waiting to be built
+  'defunded','funding withdrawn','rescinded','fmsid changed','project renamed','n/a',
+  // not construction work: these do not belong in the construction-demand pipeline
+  'land acquisition','property acquisition','real estate transaction','fundraising',
+  'it project','non capital fund','equipment','consultant services']);
 const PHASE_ORDER = ['Pending','Pre-Design','Design','Procurement','Construction','Close-out','Other active'];
 function normPhase(raw){
   const p = (raw||'').replace(/[()]/g,'').trim().toLowerCase();
@@ -327,7 +334,10 @@ function collapseSnapshot(rows){
   return m;
 }
 
-async function fetchAll(){
+/* The capital plan (OMB) and the award record (City Record) are independent
+   sources. Settle them separately so one being unavailable does not blank the
+   sections that depend on the other. */
+async function fetchPlan(){
   // 1. snapshot periods
   const ps = await getJSON(PLAN_API, {
     '$select':'reporting_period','$group':'reporting_period',
@@ -364,23 +374,60 @@ async function fetchAll(){
     state.pipeline.total += unspent;
     state.pipeline.byAgency.set(rec.agency, (state.pipeline.byAgency.get(rec.agency)||0) + unspent);
   }
+}
 
-  // 5. awards: TTM total + by agency + by quarter (last 4 quarters)
+async function fetchAwards(){
+  // awards: TTM total + by agency + by quarter, deduped to one row per pin
+  // (max contract_amount) so the figure matches the Awarded and Funnel pages.
   const since = isoMonthsAgo(12);
-  const [tot, byAg, byMonth] = await Promise.all([
-    getJSON(AWARD_API, {'$select':'sum(contract_amount) as s,count(*) as n',
-      '$where':`starts_with(category_description,'Construction') AND start_date>'${since}' AND contract_amount>0`}),
-    getJSON(AWARD_API, {'$select':'agency_name,sum(contract_amount) as s',
+  const rows = await fetchAwardRows(since);
+  const deduped = dedupeAwardsByPin(rows);
+  let ttm = 0; const byAgency = new Map(); const byMonth = new Map();
+  for(const r of deduped){
+    ttm += r.amt;
+    if(r.agency) byAgency.set(r.agency, (byAgency.get(r.agency)||0) + r.amt);
+    if(r.month) byMonth.set(r.month, (byMonth.get(r.month)||0) + r.amt);
+  }
+  state.awards.ttm = ttm;
+  state.awards.count = deduped.length;
+  state.awards.byAgency = byAgency;
+  const monthRows = [...byMonth.entries()].sort((a,b)=>a[0]<b[0]?-1:1).map(([m,s])=>({m, s}));
+  state.awards.byQuarter = toQuarters(monthRows);
+}
+
+/* Paged pull of construction award rows in the window, only the fields used. */
+async function fetchAwardRows(since){
+  const PAGE = 50000;
+  let offset = 0; const out = [];
+  for(;;){
+    const batch = await getJSON(AWARD_API, {
+      '$select':'pin,contract_amount,start_date,agency_name',
       '$where':`starts_with(category_description,'Construction') AND start_date>'${since}' AND contract_amount>0`,
-      '$group':'agency_name'}),
-    getJSON(AWARD_API, {'$select':'date_trunc_ym(start_date) as m,sum(contract_amount) as s',
-      '$where':`starts_with(category_description,'Construction') AND start_date>'${since}' AND contract_amount>0`,
-      '$group':'m','$order':'m'})
-  ]);
-  state.awards.ttm = parseFloat(tot[0].s)||0;
-  state.awards.count = parseInt(tot[0].n)||0;
-  byAg.forEach(r => state.awards.byAgency.set(r.agency_name, parseFloat(r.s)||0));
-  state.awards.byQuarter = toQuarters(byMonth);
+      '$order':'pin','$limit':String(PAGE),'$offset':String(offset)
+    });
+    out.push(...batch);
+    if(batch.length < PAGE) break;
+    offset += PAGE;
+    if(offset > 400000) break; // safety stop
+  }
+  return out;
+}
+
+/* Dedupe construction-award rows to one record per pin keeping the max amount.
+   Rows with no pin stand alone under a stable per-row surrogate key. */
+function dedupeAwardsByPin(rows){
+  const byPin = new Map();
+  for(let i=0; i<rows.length; i++){
+    const r = rows[i];
+    const amt = parseFloat(r.contract_amount);
+    if(!(amt > 0)) continue;
+    const pin = r.pin || ('_np_' + i);
+    const rec = { amt, agency: r.agency_name || null,
+      month: r.start_date ? r.start_date.slice(0,7) : null };
+    const prev = byPin.get(pin);
+    if(!prev || rec.amt > prev.amt) byPin.set(pin, rec);
+  }
+  return [...byPin.values()];
 }
 
 function isoMonthsAgo(n){
@@ -460,8 +507,10 @@ function renderKpis(){
   const latest = state.periods[state.periods.length-1];
   document.getElementById('kpi-committed').textContent = fmtMoney(committed);
   document.getElementById('kpi-committed-note').textContent = 'open pipeline, ' + fmtPeriodLong(latest) + ' plan';
-  document.getElementById('kpi-awarded').textContent = fmtMoney(state.awards.ttm);
-  document.getElementById('kpi-awarded-note').textContent = fmtInt(state.awards.count) + ' construction awards, trailing 12 months';
+  document.getElementById('kpi-awarded').textContent = state.awardsOk ? fmtMoney(state.awards.ttm) : '–';
+  document.getElementById('kpi-awarded-note').textContent = state.awardsOk
+    ? fmtInt(state.awards.count) + ' construction awards, trailing 12 months'
+    : 'award record temporarily unavailable';
   document.getElementById('kpi-spent').textContent = fmtMoney(spent);
   document.getElementById('kpi-spent-note').textContent = 'capital outlays, trailing year of plan snapshots';
   document.getElementById('kpi-coverage').textContent = spent > 0 ? (committed/spent).toFixed(1) + ' yrs' : '–';
@@ -553,9 +602,13 @@ function renderVelocity(){
 
 /* ================= init ================= */
 (async function init(){
-  try{
-    await fetchAll();
-  }catch(e){
+  const [planR, awardsR] = await Promise.allSettled([fetchPlan(), fetchAwards()]);
+  state.planOk = planR.status === 'fulfilled';
+  state.awardsOk = awardsR.status === 'fulfilled';
+
+  // The capital plan anchors this page (pipeline, spend, backlog ratio). Without
+  // it there is nothing to render, so show the error; awards degrade in place.
+  if(!state.planOk){
     document.getElementById('loader').style.display = 'none';
     document.getElementById('error').style.display = 'block';
     return;
