@@ -57,13 +57,13 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .hero .asof{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--faint)}
 .hero .asof strong{color:var(--muted);font-weight:600}
 
-/* ---------- stat tape ---------- */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:28px 0 8px;border-left:1px solid var(--line)}
-.stat{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px 18px}
-.stat:first-child{border-top-color:var(--accent)}
-.stat .s-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
-.stat .s-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:28px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--navy);line-height:1}
-.stat:first-child .s-value{color:var(--ink)}
+/* ---------- KPI tape ---------- */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:28px 0 8px;border-left:1px solid var(--line)}
+.kpi{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px 18px}
+.kpi.hl{border-top-color:var(--accent)}
+.kpi .k-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
+.kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--navy);line-height:1}
+.kpi.hl .k-value{color:var(--ink)}
 
 /* ---------- briefing body ---------- */
 .brief{padding:30px 0 0}
@@ -86,12 +86,12 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 #error{display:none;padding:60px 24px;text-align:center;color:var(--muted)}
 #app{display:none}
 @media(max-width:880px){
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .stat:nth-child(2){border-right:0}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .kpi:nth-child(2){border-right:0}
   .brief .card{padding:26px 22px}
 }
 @media(max-width:560px){
-  .stats{grid-template-columns:1fr 1fr}
+  .kpis{grid-template-columns:1fr 1fr}
   .hero{padding-top:34px}
   .wrap{padding:0 18px}
   .series-bar .inner{padding-left:18px;padding-right:18px}
@@ -153,7 +153,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 
 <main id="app" class="wrap">
 
-  <section class="stats" id="stats"></section>
+  <section class="kpis" id="stats"></section>
 
   <section class="brief">
     <div class="card">
@@ -377,7 +377,8 @@ function trendWord(d){
   if(d<=-40) return 'contracted sharply';
   if(d<=-15) return 'contracted';
   if(d<0) return 'edged lower';
-  if(d<15) return 'held roughly steady';
+  if(d<5) return 'held roughly steady';
+  if(d<15) return 'firmed';
   if(d<40) return 'expanded';
   return 'surged';
 }
@@ -401,10 +402,10 @@ function compose(){
 
   document.getElementById('stats').innerHTML = [
     ['Awarded, TTM', D.awardsOk ? fmtMoney(D.awardTTM) : '–'],
-    ['vs prior year', D.awardsOk && D.awardDelta!==null ? (D.awardDelta>=0?'▲ ':'▼ ') + fmtPct(D.awardDelta) : '–'],
+    ['vs prior year', D.awardsOk && D.awardDelta!==null ? (D.awardDelta>=0?'+':'−') + fmtPct(D.awardDelta) : '–'],
     ['Open pipeline', D.planOk ? fmtMoney(D.pipe) : '–'],
     ['Backlog coverage', D.planOk && D.coverage ? D.coverage.toFixed(1)+' yrs' : '–']
-  ].map(([l,v])=>`<div class="stat"><div class="s-label">${l}</div><div class="s-value">${v}</div></div>`).join('');
+  ].map(([l,v],i)=>`<div class="kpi${i===0?' hl':''}"><div class="k-label">${l}</div><div class="k-value">${v}</div></div>`).join('');
 
   const market = D.awardDelta!==null && D.awardDelta<=-15 ?
     `For contractors, the near-term market is thinner: fewer and smaller opportunities are reaching bid. For the City, the same numbers read as a widening gap between what is funded and what is getting built.` :
