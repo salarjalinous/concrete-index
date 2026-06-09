@@ -241,5 +241,15 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   </div>
 </footer>
 
+<script>
+// The page images (headshot, photo band) load after parse, so the browser's
+// initial #methodology jump can land short. Re-apply it once everything is loaded.
+(function(){
+  function go(){ if(location.hash === '#methodology'){ var e=document.getElementById('methodology'); if(e) e.scrollIntoView(); } }
+  window.addEventListener('load', go);
+  window.addEventListener('hashchange', go);
+})();
+</script>
+
 </body>
 </html>
