@@ -71,6 +71,24 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .valstrip .vs-d{font-size:12.5px;color:var(--muted)}
 @media(max-width:680px){.valstrip{grid-template-columns:1fr}.valstrip a{border-left:0;border-top:1px solid var(--line)}.valstrip a:first-child{border-top:0}}
 
+/* ---------- commitment-to-cash span strip ---------- */
+.spanstrip{margin-top:14px;border:1px solid var(--line);border-top:2px solid var(--ink);background:var(--surface)}
+.spanstrip .ss-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:9px 16px 8px;border-bottom:1px solid var(--line)}
+.spanstrip .ss-t{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--ink)}
+.spanstrip .ss-link{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.03em}
+.spanstrip .ss-row{display:grid;grid-template-columns:repeat(4,1fr)}
+.spanstrip .ss-cell{padding:12px 16px;border-left:1px solid var(--line);position:relative}
+.spanstrip .ss-cell:first-child{border-left:0}
+.spanstrip .ss-cell .ss-k{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);display:flex;align-items:center;gap:6px}
+.spanstrip .ss-cell .ss-arrow{color:var(--accent);font-weight:600}
+.spanstrip .ss-cell .ss-v{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:22px;font-weight:600;margin-top:7px;letter-spacing:-.01em;color:var(--navy);line-height:1}
+.spanstrip .ss-cell.live .ss-v{color:var(--ink)}
+.spanstrip .ss-cell .ss-d{font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.4}
+.spanstrip .ss-cell a.ss-v{display:inline-block}
+.spanstrip .ss-cell a.ss-v:hover{color:var(--accent);text-decoration:none}
+.spanstrip .ss-note{padding:9px 16px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted);background:var(--band)}
+@media(max-width:680px){.spanstrip .ss-row{grid-template-columns:1fr 1fr}.spanstrip .ss-cell:nth-child(3){border-left:0}.spanstrip .ss-cell:nth-child(3),.spanstrip .ss-cell:nth-child(4){border-top:1px solid var(--line)}}
+
 /* ---------- controls ---------- */
 .controls{display:flex;flex-wrap:wrap;gap:14px 16px;align-items:center;padding:30px 0 4px}
 .seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:2px}
@@ -208,7 +226,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <div class="hero">
     <div class="kicker">NYC Public Construction Capital</div>
     <h1>NYC public construction capital, from commitment to cash.</h1>
-    <p class="sub">The demand side of NYC public construction, measured from commitment to cash: the half of the market the supply-side tools cannot see. The Concrete Index reads the City Record the way an analyst would if they had the time, pulling every construction award notice the City publishes, classifying it by selection method, and totaling it on the spot. It shows which agencies are letting work and who keeps winning it.</p>
+    <p class="sub">The demand side of NYC public construction, measured from commitment to cash: the half of the market the supply-side tools cannot see. It reads the public record the way an analyst would if they had the time, pulling every construction award the City publishes, totaling it on the spot, and tracing the dollars from commitment to awards to cash.</p>
     <p class="asof" id="asof">Loading latest award data…</p>
   </div>
   <nav class="valstrip" aria-label="Key views">
@@ -216,6 +234,36 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     <a href="/velocity/"><span class="vs-k">Velocity</span><span class="vs-d">which agencies move money fast</span></a>
     <a href="/vendors/"><span class="vs-k">Vendors</span><span class="vs-d">any contractor's public award record</span></a>
   </nav>
+
+  <section class="spanstrip" aria-label="Commitment to cash, in numbers">
+    <div class="ss-head">
+      <span class="ss-t">Commitment to cash</span>
+      <a class="ss-link" href="/funnel/">Full gauges on the Funnel →</a>
+    </div>
+    <div class="ss-row">
+      <div class="ss-cell">
+        <div class="ss-k">Committed</div>
+        <a class="ss-v" href="/funnel/">~$109B</a>
+        <div class="ss-d">Funded capital work not yet spent. OMB capital plan.</div>
+      </div>
+      <div class="ss-cell live">
+        <div class="ss-k"><span class="ss-arrow">→</span>Awarded</div>
+        <div class="ss-v" id="ss-awarded">–</div>
+        <div class="ss-d" id="ss-awarded-d">Construction awards, trailing 12 months.</div>
+      </div>
+      <div class="ss-cell">
+        <div class="ss-k"><span class="ss-arrow">→</span>Spent</div>
+        <a class="ss-v" href="/funnel/" style="font-size:15px">On the Funnel →</a>
+        <div class="ss-d">Capital-plan outlays, trailing year.</div>
+      </div>
+      <div class="ss-cell live">
+        <div class="ss-k"><span class="ss-arrow">→</span>Paid</div>
+        <div class="ss-v" id="ss-paid">–</div>
+        <div class="ss-d" id="ss-paid-d">Disbursed on registered contracts. Checkbook NYC.</div>
+      </div>
+    </div>
+    <div class="ss-note">Four ledgers read side by side, not one flow. Each is a different source and scope, so they are never summed.</div>
+  </section>
 </div>
 
 <div id="loader" class="wrap">
@@ -348,6 +396,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     </div>
     <div style="text-align:right" class="f-meta">
       <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
+      <div style="margin-top:5px"><a href="https://github.com/salarjalinous/concrete-index" target="_blank" rel="noopener">Source on GitHub</a></div>
       <div style="margin-top:5px">© 2026 <a href="/about/">Salar Jalinous</a></div>
     </div>
   </div>
@@ -705,8 +754,47 @@ function wireSeg(id, attr, initial, onChange){
   set(initial);
 }
 
+/* ---- commitment-to-cash span strip (hero) ----
+   Awarded reuses the rows already pulled (trailing 12 months, all construction,
+   independent of the control filters below). Paid sums the nightly Checkbook
+   static file, same-origin, no token. Committed and Spent stay as labeled links
+   to the Funnel, the canonical source, rather than re-running the OMB snapshot
+   pulls here, so first paint stays fast and the two pages cannot drift. The four
+   figures are different ledgers and scopes and are never summed. */
+function renderSpanStrip(){
+  const start = windowStart(12);
+  const ttmRows = state.rows.filter(r => r.date >= start);
+  const awarded = sum(ttmRows);
+  const aEl = document.getElementById('ss-awarded');
+  if(aEl){
+    aEl.textContent = fmtMoney(awarded);
+    document.getElementById('ss-awarded-d').textContent =
+      fmtInt(ttmRows.length) + ' construction awards, trailing 12 months.';
+  }
+}
+async function loadCheckbookPaid(){
+  try{
+    const res = await fetch('/data/checkbook-vendors.json');
+    if(!res.ok) throw new Error('checkbook ' + res.status);
+    const d = await res.json();
+    const vendors = d.vendors || {};
+    let paid = 0;
+    for(const k in vendors){ paid += (parseFloat(vendors[k].paid) || 0); }
+    const pEl = document.getElementById('ss-paid');
+    if(pEl){
+      pEl.textContent = fmtMoney(paid);
+      const fy = (d.meta && Array.isArray(d.meta.fiscal_years) && d.meta.fiscal_years.length)
+        ? ('FY' + d.meta.fiscal_years[0] + '–' + d.meta.fiscal_years[d.meta.fiscal_years.length-1].toString().slice(2))
+        : '';
+      document.getElementById('ss-paid-d').textContent =
+        'Disbursed on registered contracts' + (fy ? ', ' + fy : '') + '. Checkbook NYC.';
+    }
+  }catch(e){ /* leave the Paid cell as a dash; strip still works */ }
+}
+
 /* ================= init ================= */
 (async function init(){
+  loadCheckbookPaid();
   try{
     state.rows = await fetchAwards();
   }catch(e){
@@ -714,6 +802,7 @@ function wireSeg(id, attr, initial, onChange){
     document.getElementById('error').style.display = 'block';
     return;
   }
+  renderSpanStrip();
   const latest = state.rows.length ? state.rows[0].date : null;
   document.getElementById('asof').innerHTML = latest ?
     `Latest award published <strong>${fmtDate(latest)}</strong> · ${fmtInt(state.rows.length)} construction awards in the trailing five years · source refreshed daily` : '';
