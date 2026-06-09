@@ -133,7 +133,8 @@ jobs:
               page = 0
               while True:
                   crit = list(base_criteria)
-                  crit.append(("fiscal_year", "value", str(fy)))
+                  if fy is not None:
+                      crit.append(("fiscal_year", "value", str(fy)))
                   if industry_server:
                       crit.append(("industry", "value", "Construction"))
                   xml = build_request_xml(type_of_data, columns, crit, rf)
@@ -228,21 +229,61 @@ jobs:
               m = re.match(r"(\d{4})", d)
               return m.group(1) if m else ""
 
-          # ---- probe server-side industry filter on one FY of Contracts ----
-          log("=== PROBE: server-side industry=Construction on Contracts FY%d ===" % FYS[-1])
-          probe_rows, probe_raw = fetch_all("Contracts", contracts_cols, CONTRACTS_BASE, FYS[-1], industry_server=True)
-          log("  server-side probe returned %d contract rows" % len(probe_rows))
-          industry_mode = "server" if probe_rows else "client"
-          log("  -> industry_filter_mode =", industry_mode)
-          log("=== SAMPLE raw Contracts first-page XML (first 1800 chars) ===")
-          log((probe_raw or "")[:1800])
-          server = (industry_mode == "server")
+          # ---- probe: server-side industry filter needs a 2-char industry CODE
+          # (run #4: "industry exceeds maximum allowed '2' characters"), which we
+          # do not have, so we always take the CLIENT path and filter on the
+          # returned industry text. The probe here is a plain no-industry Contracts
+          # request whose only job is to surface the real record structure + the
+          # first parsed record, so we can confirm field tags and that fiscal_year
+          # returns rows.
+          industry_mode = "client"
+          server = False
+          # Probe A: Contracts WITH fiscal_year (run #4 returned 0 here).
+          log("=== PROBE A: Contracts WITH fiscal_year=%d ===" % FYS[-1])
+          probeA, rawA = fetch_all("Contracts", contracts_cols, CONTRACTS_BASE, FYS[-1], industry_server=False)
+          log("  probe A returned %d contract rows" % len(probeA))
+          log("  raw A first 1200:", (rawA or "")[:1200])
+          # Probe B: Contracts WITHOUT fiscal_year (all registered expense contracts).
+          log("=== PROBE B: Contracts WITHOUT fiscal_year (fy=None) ===")
+          probeB, rawB = fetch_all("Contracts", contracts_cols, CONTRACTS_BASE, None, industry_server=False)
+          log("  probe B returned %d contract rows" % len(probeB))
+          log("=== SAMPLE raw Contracts (no-fy) first-page XML (first 3500 chars) ===")
+          log((rawB or "")[:3500])
+          # Pick whichever path yields rows; prefer the per-FY filter, else pull-all.
+          contracts_use_fy = bool(probeA)
+          probe_rows = probeA if probeA else probeB
+          log("  -> contracts_use_fy =", contracts_use_fy, "| industry_filter_mode =", industry_mode)
+          if probe_rows:
+              log("=== FIRST parsed Contracts record (keys -> value) ===")
+              for k, v in list(probe_rows[0].items()):
+                  log("    %s = %r" % (k, v[:80] if isinstance(v, str) else v))
+          # also dump a Spending sample so we can confirm its record shape
+          log("=== PROBE: plain Spending FY%d, raw dump ===" % FYS[-1])
+          sp_probe, sp_raw = fetch_all("Spending", spending_cols, SPENDING_BASE, FYS[-1], industry_server=False)
+          log("  spending probe returned %d rows" % len(sp_probe))
+          log("=== SAMPLE raw Spending first-page XML (first 2500 chars) ===")
+          log((sp_raw or "")[:2500])
+          if sp_probe:
+              log("=== FIRST parsed Spending record (keys -> value) ===")
+              for k, v in list(sp_probe[0].items()):
+                  log("    %s = %r" % (k, v[:80] if isinstance(v, str) else v))
 
+          FYSET = set(str(y) for y in FYS)
           all_contracts, all_spending = [], []
-          for fy in FYS:
-              log("--- Contracts FY%d ---" % fy)
-              rows, _ = fetch_all("Contracts", contracts_cols, CONTRACTS_BASE, fy, industry_server=server)
-              log("  %d contract rows" % len(rows))
+          if contracts_use_fy:
+              for fy in FYS:
+                  log("--- Contracts FY%d ---" % fy)
+                  rows, _ = fetch_all("Contracts", contracts_cols, CONTRACTS_BASE, fy, industry_server=server)
+                  log("  %d contract rows" % len(rows))
+                  all_contracts.extend(rows)
+          else:
+              # Pull ALL registered expense contracts once, filter to the 5-FY
+              # window client-side by derived registration-date year.
+              log("--- Contracts (all registered, fy filtered client-side) ---")
+              rows, _ = fetch_all("Contracts", contracts_cols, CONTRACTS_BASE, None, industry_server=server)
+              log("  %d total contract rows pulled" % len(rows))
+              rows = [r for r in rows if c_fy(r) in FYSET]
+              log("  %d contract rows within FY%s-%s" % (len(rows), FYS[0], FYS[-1]))
               all_contracts.extend(rows)
           for fy in FYS:
               log("--- Spending FY%d ---" % fy)
