@@ -85,16 +85,6 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .reading{background:var(--band);border-left:3px solid var(--accent);border-radius:0;padding:16px 20px;margin-top:22px;font-size:14px;color:var(--muted)}
 .reading strong{color:var(--ink);font-weight:600}
 
-/* ---------- stage bars ---------- */
-.stage-row{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--line)}
-.stage-row:last-child{border-bottom:0}
-.stage-name{width:150px;flex-shrink:0}
-.stage-name .s-t{font-weight:700;font-size:14px}
-.stage-name .s-s{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint)}
-.stage-bar-track{flex:1;height:26px;background:var(--band);border-radius:3px;overflow:hidden}
-.stage-bar{height:100%;border-radius:3px;min-width:3px}
-.stage-val{width:90px;text-align:right;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:18px;font-weight:600;flex-shrink:0}
-
 /* ---------- tables ---------- */
 table{width:100%;border-collapse:collapse;font-size:13.5px}
 th{text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);padding:0 10px 8px;border-bottom:1px solid var(--ink)}
@@ -134,7 +124,6 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   .kpis{grid-template-columns:repeat(2,1fr)}
   .kpi:nth-child(2){border-right:0}
   .grid.two{grid-template-columns:1fr}
-  .stage-name{width:110px}
 }
 @media(max-width:560px){
   .kpis{grid-template-columns:1fr 1fr}
@@ -150,6 +139,22 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   .nav-links{display:none;position:absolute;top:61px;left:-28px;right:-28px;background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60}
   .nav-links.open{display:flex}
 }
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce){
+  .badge-live .dot{animation:none}
+  .spinner{animation:none}
+  *{scroll-behavior:auto}
+}
+
+/* ---------- print ---------- */
+@media print{
+  header,.series-bar,.badge-live,.controls,.seg,.menu-btn{display:none !important}
+  body{background:#fff;color:#000}
+  .card{background:#fff !important;box-shadow:none}
+  footer{background:#fff;border-top:1px solid #000;color:#000}
+  footer a,a{color:#000}
+}
 </style>
 </head>
 <body>
@@ -160,7 +165,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
       <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
     </div>
-    <button class="menu-btn" aria-label="Menu" onclick="this.nextElementSibling.classList.toggle('open')">☰</button>
+    <button class="menu-btn" aria-label="Menu" aria-expanded="false" onclick="const o=this.nextElementSibling.classList.toggle('open');this.setAttribute('aria-expanded',o)">☰</button>
     <nav class="nav-links">
       <a href="/pipeline/">Pipeline</a>
       <a href="/solicitations/">Bidding</a>
@@ -491,7 +496,7 @@ function fmtInt(v){ return v.toLocaleString('en-US'); }
 function esc(s){ const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
 /* ================= rendering ================= */
-const COLOR_A = '#b5482a', COLOR_B = '#243b53', COLOR_C = '#2f7d52', GRID = '#ead9c9';
+const GRID = '#ead9c9';
 Chart.defaults.font.family = "'IBM Plex Mono',monospace";
 Chart.defaults.font.size = 10;
 Chart.defaults.color = '#6e5d52';
@@ -501,6 +506,8 @@ Object.assign(Chart.defaults.plugins.tooltip, {
   titleFont:{family:"'Public Sans',sans-serif",weight:'600',size:12}, bodyFont:{family:"'IBM Plex Mono',monospace",size:12},
   caretSize:5
 });
+const charts = {};
+function destroy(k){ if(charts[k]){ charts[k].destroy(); delete charts[k]; } }
 
 function renderKpis(){
   const committed = state.pipeline.total, spent = ttmSpend();
@@ -514,44 +521,6 @@ function renderKpis(){
   document.getElementById('kpi-spent').textContent = fmtMoney(spent);
   document.getElementById('kpi-spent-note').textContent = 'capital outlays, trailing year of plan snapshots';
   document.getElementById('kpi-coverage').textContent = spent > 0 ? (committed/spent).toFixed(1) + ' yrs' : '–';
-}
-
-function renderStages(){
-  const stages = [
-    { t:'Committed', s:'stock · full capital plan, unspent', v: state.pipeline.total, c: COLOR_B },
-    { t:'Awarded', s:'flow · construction awards, TTM', v: state.awards.ttm, c: COLOR_A },
-    { t:'Spent', s:'flow · capital outlays, trailing year', v: ttmSpend(), c: COLOR_C }
-  ];
-  const max = Math.max(...stages.map(s=>s.v));
-  document.getElementById('stage-rows').innerHTML = stages.map(s=>`
-    <div class="stage-row">
-      <div class="stage-name"><div class="s-t">${s.t}</div><div class="s-s">${s.s}</div></div>
-      <div class="stage-bar-track"><div class="stage-bar" style="width:${(s.v/max*100).toFixed(1)}%;background:${s.c}"></div></div>
-      <div class="stage-val">${fmtMoney(s.v)}</div>
-    </div>`).join('');
-  document.getElementById('stages-sub').textContent =
-    'Read these as three separate readings, not a draining funnel. Committed is a stock from the full capital plan; Awarded covers two City Record procurement categories; Spent is full-plan outlays. The scopes differ, so the bars are not meant to net against each other. The bar lengths share a scale only to make the magnitudes comparable.';
-}
-
-function vBar(canvasId, labels, data, color){
-  new Chart(document.getElementById(canvasId), {
-    type:'bar',
-    data:{ labels, datasets:[{ data, backgroundColor: color, borderRadius:3 }] },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false},
-        tooltip:{callbacks:{label:(c)=> fmtMoney(c.parsed.y)}} },
-      scales:{
-        x:{grid:{display:false}, ticks:{maxRotation:0}},
-        y:{grid:{color:GRID}, border:{display:false}, ticks:{callback:(v)=>fmtMoney(v), maxTicksLimit:5}}
-      }
-    }
-  });
-}
-
-function renderTrends(){
-  vBar('chart-spend', state.spendPeriods.map(p=>p.label), state.spendPeriods.map(p=>p.total), COLOR_C);
-  vBar('chart-award', state.awards.byQuarter.map(q=>q[0]), state.awards.byQuarter.map(q=>q[1]), COLOR_A);
 }
 
 function renderVelocity(){
@@ -583,7 +552,8 @@ function renderVelocity(){
 
   // backlog-coverage chart: agencies with a computable ratio, top 10 by pipeline
   const charted = rows.filter(r=>r.yrs!==null).slice(0,10);
-  new Chart(document.getElementById('chart-bl'), {
+  destroy('bl');
+  charts.bl = new Chart(document.getElementById('chart-bl'), {
     type:'bar',
     data:{ labels: charted.map(r=>agencyLabel(r.code)),
       datasets:[{ data: charted.map(r=>r.yrs), borderRadius:1, barThickness:18,
