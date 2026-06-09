@@ -117,6 +117,7 @@ td .t-sub{font-size:12px;color:var(--muted);margin-top:3px;font-family:'Public S
 .rd.flag .rd-value{color:var(--steel)}
 .rd .rd-note{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5}
 @media(max-width:720px){.readstrip{grid-template-columns:1fr}.rd{border-right:0;border-bottom:1px solid var(--line)}.rd:last-child{border-bottom:0}}
+.cbk-asof{margin-top:12px;font-size:11.5px;letter-spacing:.03em;color:var(--faint)}
 
 /* ---------- methodology ---------- */
 .method{padding:44px 0 10px}
@@ -252,6 +253,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <div class="sec-head"><h2>Registered and paid</h2><span class="cap">CHECKBOOK NYC · USD</span></div>
         <div class="h-sub">Three different measures of this firm's City work, shown side by side and never added together. The award-notice value is the amount stated when a contract is awarded. Registered is the contract value the Comptroller has registered. Paid to date is how much the City has actually disbursed against those registered contracts. Each answers a different question, and the gaps between them are normal.</div>
         <div class="readstrip" id="cbk-strip"></div>
+        <div class="cbk-asof mono" id="cbk-asof" style="display:none"></div>
         <div class="h-sub" id="cbk-note" style="margin-top:14px;margin-bottom:0"></div>
       </div>
     </section>
@@ -320,6 +322,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     </div>
     <div style="text-align:right" class="f-meta">
       <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
+      <div style="margin-top:5px"><a href="https://github.com/salarjalinous/concrete-index" target="_blank" rel="noopener">Source on GitHub</a></div>
       <div style="margin-top:5px">© 2026 <a href="/about/">Salar Jalinous</a></div>
     </div>
   </div>
@@ -558,10 +561,41 @@ function selectGroup(key){
 // Registered + Paid from Checkbook NYC, shown alongside the award-notice total
 // as three separate measures. Lookup key is normName(group.key), the verbatim
 // normalizer that the nightly Action keyed the JSON on. Never sums the three.
+// Checkbook's published coverage window, phrased from the live meta so the prose
+// never silently lies if the window shifts. Falls back to a neutral phrase if
+// meta is missing.
+function cbkWindowPhrase(){
+  const fy = checkbook.meta && Array.isArray(checkbook.meta.fiscal_years)
+    ? checkbook.meta.fiscal_years : null;
+  if(fy && fy.length){
+    const a = fy[0], b = fy[fy.length-1];
+    return a === b
+      ? ('Checkbook’s published coverage window (currently fiscal year ' + a + ')')
+      : ('Checkbook’s published coverage window (currently fiscal years ' + a + ' to ' + b + ')');
+  }
+  return 'Checkbook’s published coverage window';
+}
+// "As of" the nightly build, drawn from meta.generated; omitted quietly if absent.
+function cbkAsOf(){
+  const g = checkbook.meta && checkbook.meta.generated ? checkbook.meta.generated : null;
+  if(!g) return '';
+  const d = new Date(g);
+  if(isNaN(d)) return '';
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
 function renderCheckbook(grp, awardNotice){
   const strip = document.getElementById('cbk-strip');
   const note = document.getElementById('cbk-note');
+  const asof = document.getElementById('cbk-asof');
   const cbk = checkbook.loaded ? checkbook.vendors[normName(grp.key)] : null;
+
+  // Freshness caption sourced from the nightly build date.
+  if(asof){
+    const a = cbkAsOf();
+    asof.textContent = a ? ('Checkbook figures as of ' + a) : '';
+    asof.style.display = a ? '' : 'none';
+  }
 
   // Disclosure copy (house voice, no em dashes). Always shown.
   const disclosure = 'Registered, paid to date, and the award-notice value are '
@@ -577,7 +611,7 @@ function renderCheckbook(grp, awardNotice){
       + `<div class="rd-note">Total of the amounts stated in this group's award notices in the City Record. This is the award-side measure already shown above.</div></div>`
       + `<div class="rd"><div class="rd-label">Registered (Checkbook)</div>`
       + `<div class="rd-value">–</div>`
-      + `<div class="rd-note">No Checkbook match for this group. Either there is no exact name match after normalization, or this firm's City-registered construction work falls outside the trailing five fiscal years.</div></div>`
+      + `<div class="rd-note">No Checkbook match for this group. Either there is no exact name match after normalization, or this firm's City-registered construction work falls outside ${esc(cbkWindowPhrase())}.</div></div>`
       + `<div class="rd"><div class="rd-label">Paid to date (Checkbook)</div>`
       + `<div class="rd-value">–</div>`
       + `<div class="rd-note">Shown only when a Checkbook match exists.</div></div>`;
