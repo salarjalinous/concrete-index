@@ -454,7 +454,7 @@ function render(){ renderSCA(); renderMTA(); }
 </script>
 <!-- ===== Concrete Index export module: page PDF, chart PNG, tile CSV. No external dependencies. ===== -->
 <style id="exp-css">
-.exp{display:flex;justify-content:flex-end;gap:0;margin-top:12px}
+.exp{display:flex;justify-content:flex-end;gap:0;margin-top:10px}
 .exp button{background:none;border:1px solid var(--line);color:var(--muted);font:500 10px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.07em;text-transform:uppercase;padding:6px 9px;cursor:pointer;transition:color .12s,border-color .12s}
 .exp button+button{border-left:none}
 .exp button:hover{color:var(--accent);border-color:var(--accent)}
@@ -478,10 +478,14 @@ function render(){ renderSCA(); renderMTA(); }
 <script>
 (function(){
   "use strict";
+  if(window.__ciExport)return; window.__ciExport=1;
   function slug(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60);}
   var pageSlug=slug(location.pathname.replace(/\/index\.html?$/i,'').replace(/\/+$/,''))||'awarded';
-  function fname(card,ext){
-    var h=card.querySelector('.sec-head h2,h2,h3');
+  function getChart(cv){return (cv&&window.Chart&&Chart.getChart)?(Chart.getChart(cv)||null):null;}
+  function fnameFor(el,ext){
+    var card=el.closest('.card')||el.closest('section')||el.parentElement;
+    var h=card&&card.querySelector('.sec-head h2,h2,h3');
+    if(!h){var s=el.previousElementSibling;while(s){if(s.tagName==='H2'||s.tagName==='H3'){h=s;break;}s=s.previousElementSibling;}}
     return ('concrete-index-'+pageSlug+'-'+slug(h?h.textContent:'export')).replace(/-+/g,'-')+'.'+ext;
   }
   function dl(href,name,revoke){
@@ -493,11 +497,6 @@ function render(){ renderSCA(); renderMTA(); }
   function csv(rows,name){
     var t='\ufeff'+rows.map(function(r){return r.map(csvCell).join(',');}).join('\r\n');
     dl(URL.createObjectURL(new Blob([t],{type:'text/csv;charset=utf-8'})),name,true);
-  }
-  function chartFor(card){
-    var c=card.querySelector('canvas');
-    if(!c||!window.Chart||!Chart.getChart)return null;
-    return Chart.getChart(c)||null;
   }
   function pngFromChart(ch,name){
     var src=ch.canvas,out=document.createElement('canvas');
@@ -531,50 +530,56 @@ function render(){ renderSCA(); renderMTA(); }
     });
     if(rows.length)csv(rows,name);
   }
-  function addTools(card){
-    if(card.getAttribute('data-exp'))return;
-    var ch=chartFor(card);
-    var tbl=card.querySelector('table');
-    var hasTable=tbl&&tbl.querySelector('th');
-    if(!ch&&!hasTable)return;
-    card.setAttribute('data-exp','1');
+  function mkBtn(label,title,fn){
+    var b=document.createElement('button');b.type='button';b.textContent=label;b.title=title;
+    b.addEventListener('click',fn);return b;
+  }
+  function placeAfter(el,bar){
+    var t=el,nx=el.nextElementSibling;
+    if(nx&&nx.classList&&nx.classList.contains('tnote'))t=nx;
+    t.insertAdjacentElement('afterend',bar);
+  }
+  function attachChart(box){
+    if(!box||box.getAttribute('data-exp'))return;
+    var cv=box.querySelector('canvas');if(!cv)return;
+    box.setAttribute('data-exp','1');
     var bar=document.createElement('div');bar.className='exp';
-    if(ch){
-      var bp=document.createElement('button');bp.type='button';bp.textContent='PNG';
-      bp.title='Download this chart as a PNG image';
-      bp.addEventListener('click',function(){var c=chartFor(card);if(c)pngFromChart(c,fname(card,'png'));});
-      bar.appendChild(bp);
-    }
-    var bc=document.createElement('button');bc.type='button';bc.textContent='CSV';
-    bc.title='Download the underlying data as a CSV file';
-    bc.addEventListener('click',function(){
-      var c=chartFor(card);
-      if(c){csvFromChart(c,fname(card,'csv'));return;}
-      var t=card.querySelector('table');if(t)csvFromTable(t,fname(card,'csv'));
-    });
-    bar.appendChild(bc);
-    card.appendChild(bar);
+    bar.appendChild(mkBtn('PNG','Download this chart as a PNG image',function(){var ch=getChart(cv);if(ch)pngFromChart(ch,fnameFor(box,'png'));}));
+    bar.appendChild(mkBtn('CSV','Download this chart’s data as a CSV file',function(){var ch=getChart(cv);if(ch)csvFromChart(ch,fnameFor(box,'csv'));}));
+    placeAfter(box,bar);
+  }
+  function attachTable(tbl){
+    if(!tbl||tbl.getAttribute('data-exp'))return;
+    if(!tbl.querySelector('th'))return;
+    if(tbl.closest('header')||tbl.closest('footer')||tbl.closest('nav'))return;
+    tbl.setAttribute('data-exp','1');
+    var bar=document.createElement('div');bar.className='exp';
+    bar.appendChild(mkBtn('CSV','Download this table as a CSV file',function(){csvFromTable(tbl,fnameFor(tbl,'csv'));}));
+    placeAfter(tbl,bar);
   }
   function scan(){
-    var cards=document.querySelectorAll('main .card, #app .card');
-    if(!cards.length)cards=document.querySelectorAll('.card');
-    cards.forEach(function(c){
-      if(c.closest('header')||c.closest('footer'))return;
-      addTools(c);
-    });
+    document.querySelectorAll('.chart-box').forEach(attachChart);
+    document.querySelectorAll('main canvas,#app canvas').forEach(function(cv){if(!cv.closest('.chart-box'))attachChart(cv.parentElement);});
+    document.querySelectorAll('main table,#app table,.card table').forEach(attachTable);
   }
   function addPdfBtn(){
     var nav=document.querySelector('.nav-links');
     if(!nav||nav.querySelector('.pdf-btn'))return;
-    var b=document.createElement('button');b.type='button';b.className='pdf-btn';b.textContent='Save PDF';
-    b.title='Save or print this page as a PDF';
-    b.addEventListener('click',function(){window.print();});
+    var b=mkBtn('Save PDF','Save or print this page as a PDF',function(){window.print();});
+    b.className='pdf-btn';
     var badge=nav.querySelector('.badge-live');
     if(badge)nav.insertBefore(b,badge);else nav.appendChild(b);
   }
-  function init(){addPdfBtn();scan();}
-  if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init);
-  [600,1500,3000,6000].forEach(function(t){setTimeout(scan,t);});
+  var pending=null;
+  function start(){
+    addPdfBtn();scan();
+    try{
+      var mo=new MutationObserver(function(){if(pending)return;pending=setTimeout(function(){pending=null;scan();},300);});
+      mo.observe(document.body,{childList:true,subtree:true});
+    }catch(e){}
+    [400,1200,3000].forEach(function(t){setTimeout(scan,t);});
+  }
+  if(document.readyState!=='loading')start();else document.addEventListener('DOMContentLoaded',start);
 })();
 </script>
 </body>
