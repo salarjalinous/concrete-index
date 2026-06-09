@@ -24,6 +24,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
+#methodology{scroll-margin-top:80px}
 body{font-family:'Public Sans',-apple-system,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
 a{color:var(--steel);text-decoration:none}
 a:hover{text-decoration:underline}
@@ -145,7 +146,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <a href="/analysis/">Analysis</a>
       <a href="/regional/">Regional</a>
       <a href="/briefing/">Briefing</a>
-      <a href="/#methodology">Methodology</a>
+      <a href="/about/#methodology">Methodology</a>
       <span class="badge-live"><span class="dot"></span>Live data</span>
     </nav>
   </div>
@@ -180,7 +181,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     </div>
   </div>
 
-  <section class="what">
+  <section class="what" id="methodology">
     <div class="card">
       <h2>What this site actually does</h2>
       <p class="lede">The Concrete Index is a live reading of New York City's public construction market, built directly on the government's own records. Nothing here is estimated or scraped. Most pages query the official datasets at the moment you load it, run the numbers in your browser, and render the result. The few sources a browser cannot reach are pulled and normalized overnight by an automated job and read back from a compact static file. There is no analyst refresh to wait for.</p>
