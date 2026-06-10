@@ -934,20 +934,26 @@ function unavailNote(host){
   // final position is not settled until the charts above it render). Re-apply the
   // jump once everything is laid out, honoring the section's scroll-margin-top.
   if(location.hash){
-    var hashTarget=document.getElementById(decodeURIComponent(location.hash.slice(1)));
-    if(hashTarget){
-      // The app starts hidden, so the browser's own anchor jump at load fails. Re-apply
-      // it once the charts above the target have rendered. The page sets
-      // scroll-behavior:smooth, which suppresses a programmatic jump from the top here,
-      // so force an instant scroll for this one jump and restore smooth afterward.
-      // scroll-margin-top keeps the target clear of the sticky header.
-      setTimeout(function(){
+    // The app starts hidden until data loads, so the browser's anchor jump at load
+    // fails and a fixed timeout can fire while the target is still display:none.
+    // Poll until the target is actually laid out (offsetParent set = app revealed),
+    // then force one instant jump (scroll-behavior:smooth otherwise suppresses a
+    // programmatic jump from the top), with a rAF correction for any late reflow.
+    var hashId=decodeURIComponent(location.hash.slice(1)), userScrolled=false, jumpTries=0;
+    window.addEventListener('wheel', function(){ userScrolled=true; }, {passive:true, once:true});
+    window.addEventListener('touchmove', function(){ userScrolled=true; }, {passive:true, once:true});
+    (function tryJump(){
+      if(userScrolled) return;
+      var t=document.getElementById(hashId);
+      if(t && t.offsetParent!==null){
         var de=document.documentElement, prev=de.style.scrollBehavior;
         de.style.scrollBehavior='auto';
-        hashTarget.scrollIntoView({block:'start'});
-        de.style.scrollBehavior=prev;
-      }, 120);
-    }
+        t.scrollIntoView({block:'start'});
+        requestAnimationFrame(function(){ if(!userScrolled) t.scrollIntoView({block:'start'}); de.style.scrollBehavior=prev; });
+        return;
+      }
+      if(jumpTries++ < 150) setTimeout(tryJump, 80);   // wait up to ~12s for data + reveal
+    })();
   }
 })();
 
