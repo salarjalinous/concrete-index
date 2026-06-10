@@ -251,6 +251,29 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 .ls-v{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:clamp(20px,2.3vw,26px);color:var(--navy);font-variant-numeric:tabular-nums;line-height:1}
 .ls-k{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:14px;color:var(--ink);margin-top:8px}
 .ls-d{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-top:5px;line-height:1.45}
+.lp-adjust{max-width:980px;margin:50px auto 0;border-top:2px solid var(--ink);padding-top:0}
+.lp-adjust-inner{display:grid;grid-template-columns:1.15fr 1fr;gap:0;align-items:stretch}
+.lp-adjust-l{padding:22px 26px 22px 0;border-right:1px solid var(--line)}
+.lp-adjust-k{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.lp-adjust-h{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:21px;line-height:1.18;color:var(--ink);margin:0 0 10px}
+.lp-adjust-d{font-family:'Public Sans',sans-serif;font-size:13.5px;line-height:1.55;color:var(--muted);margin:0 0 14px}
+.lp-adjust-go{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--steel)}
+.lp-adjust a.lp-adjust-go:hover{color:var(--accent)}
+.lp-adjust-r{padding:22px 0 22px 26px;display:flex;flex-direction:column;justify-content:center;gap:14px}
+.lp-pair{display:flex;align-items:center;gap:14px}
+.lp-pair .bar-wrap{flex:1;height:18px;background:var(--band);border:1px solid var(--line);position:relative;overflow:hidden}
+.lp-pair .bar{position:absolute;left:0;top:0;bottom:0;width:0;transition:width .6s ease}
+.lp-pair.nom .bar{background:var(--navy)}
+.lp-pair.adj .bar{background:var(--accent)}
+.lp-pair .lp-pair-lab{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);width:92px;flex-shrink:0}
+.lp-pair .lp-pair-v{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:18px;color:var(--ink);font-variant-numeric:tabular-nums;width:56px;text-align:right;flex-shrink:0}
+.lp-adjust-gap{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:11px;margin-top:2px}
+.lp-adjust-gap b{color:var(--neg);font-weight:600}
+@media(max-width:680px){
+  .lp-adjust-inner{grid-template-columns:1fr}
+  .lp-adjust-l{border-right:none;border-bottom:1px solid var(--line);padding:20px 0}
+  .lp-adjust-r{padding:20px 0}
+}
 .lp-thesis{max-width:860px;margin:52px auto 0}
 .lp-thesis p{font-family:'Public Sans',sans-serif;font-size:15.5px;line-height:1.66;color:var(--ink);margin:0 0 12px}
 .lp-thesis p:last-child{margin-bottom:0}
@@ -304,6 +327,30 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     <a class="lp-stat" href="/vendors/"><div class="ls-v" id="st-vendors">&ndash;</div><div class="ls-k">Contractors</div><div class="ls-d">In the award record &middot; Vendors</div></a>
   </section>
 
+  <section class="lp-adjust" aria-label="Adjusting for construction cost">
+    <div class="lp-adjust-inner">
+      <div class="lp-adjust-l">
+        <div class="lp-adjust-k">Adjusting for materials and labor costs</div>
+        <div class="lp-adjust-h">Is the City buying more construction, or just paying more?</div>
+        <div class="lp-adjust-d">The headline index counts dollars at face value. Discount each award by the construction-cost level of the month it was let, and the picture changes. The gap between the two is the part of the headline that is price, not work.</div>
+        <a class="lp-adjust-go" href="/analysis/#cost-adjusted">&rarr; See the cost-adjusted trend on Analysis</a>
+      </div>
+      <div class="lp-adjust-r">
+        <div class="lp-pair nom">
+          <span class="lp-pair-lab">Nominal</span>
+          <span class="bar-wrap"><span class="bar" id="adj-bar-nom"></span></span>
+          <span class="lp-pair-v" id="adj-v-nom">&ndash;</span>
+        </div>
+        <div class="lp-pair adj">
+          <span class="lp-pair-lab">Adjusted</span>
+          <span class="bar-wrap"><span class="bar" id="adj-bar-adj"></span></span>
+          <span class="lp-pair-v" id="adj-v-adj">&ndash;</span>
+        </div>
+        <div class="lp-adjust-gap" id="adj-gap-line">Cost-adjusted Concrete Index, 2019 = 100. Loading.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="lp-thesis">
     <p>Public construction has a supply side everyone watches and a demand side almost no one does. The contractors, their bonds, and their backlogs are tracked closely. The pipeline that feeds them, every dollar the City budgets, solicits, and awards, sits in plain sight in the public record and is read by almost no one, because reading it means pulling thousands of notices and totaling them by hand.</p>
     <p>The Concrete Index does that reading continuously. It pulls every construction award, solicitation, and capital commitment the City and State publish, totals them on the spot, and follows the same dollar from budget to award to payment. The result is a live view of where New York's public construction demand is forming, which agencies are moving it, and how fast it turns into cash.</p>
@@ -352,6 +399,23 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     var sb=document.getElementById('series-asof'); if(sb&&asof) sb.textContent=asof.toUpperCase();
   }
   function indexNeutral(){ setText('lp-index-cap','New-award momentum against the 2019 monthly average (=100), renewals and megaprojects excluded. Reading updating.'); }
+  function fillAdjust(pc){
+    var nom = pc.index_level, adj = pc.adjusted_index_level;
+    if(nom==null || adj==null) return;
+    nom = Number(nom); adj = Number(adj);
+    if(!isFinite(nom) || !isFinite(adj)) return;
+    setText('adj-v-nom', nom.toFixed(1));
+    setText('adj-v-adj', adj.toFixed(1));
+    // bar widths scaled to the larger value so the wedge is legible
+    var max = Math.max(nom, adj, 1);
+    var bn = document.getElementById('adj-bar-nom');
+    var ba = document.getElementById('adj-bar-adj');
+    if(bn) bn.style.width = (nom/max*100).toFixed(1) + '%';
+    if(ba) ba.style.width = (adj/max*100).toFixed(1) + '%';
+    var gap = nom - adj;
+    var gl = document.getElementById('adj-gap-line');
+    if(gl) gl.innerHTML = 'Cost-adjusted Concrete Index, 2019 = 100. Cost accounts for <b>' + gap.toFixed(1) + '</b> index points of the headline.';
+  }
   function fillStats(g){
     if(!g) return;
     if(g.committed!=null) setText('st-committed', fmtMoney(g.committed));
@@ -365,9 +429,14 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     var g = pc.glimpse || {};
     if(g.awarded==null && pc.awarded_ttm && pc.awarded_ttm.total!=null) g.awarded=pc.awarded_ttm.total;
     fillStats(g);
+    fillAdjust(pc);
     if(pc.index_level!=null){ showIndex(pc.index_level, asof); return; }
     throw new Error('no index_level');
-  }).catch(function(){ computeLive().then(function(o){ showIndex(o.value, fmtMonth(o.month)); }).catch(indexNeutral); });
+  }).catch(function(){
+    var gl=document.getElementById('adj-gap-line');
+    if(gl) gl.textContent='Cost-adjusted Concrete Index, 2019 = 100. See the full comparison on Analysis.';
+    computeLive().then(function(o){ showIndex(o.value, fmtMonth(o.month)); }).catch(indexNeutral);
+  });
 
   // Fallback: compute the index live from the City Record, identical to the Analysis page.
   function computeLive(){
