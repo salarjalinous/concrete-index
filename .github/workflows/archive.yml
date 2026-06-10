@@ -88,12 +88,91 @@ jobs:
           total = int(round(sum(amts))); count = len(amts)
           median = int(round(statistics.median(amts))) if amts else 0
           mx = int(round(max(amts))) if amts else 0
+          # --- The Concrete Index level (same method as the Analysis page) ---
+          import re, math
+          MEGA = 500e6
+          def _is_cont(x): return bool(re.search(r'renewal|extension', x or '', re.I))
+          ipin = {}
+          for r in rows:
+              try: amt = float(r.get('contract_amount') or 0)
+              except (TypeError, ValueError): amt = 0.0
+              if not (amt > 0) or amt >= MEGA: continue
+              pin = r.get('pin') or r.get('request_id')
+              prev = ipin.get(pin)
+              if prev is None or amt > prev[0]:
+                  ipin[pin] = (amt, (r.get('start_date') or '')[:7], _is_cont(r.get('selection_method_description')))
+          bymonth = {}
+          for amt, mo, cont in ipin.values():
+              if cont or not mo: continue
+              e = bymonth.get(mo) or [0.0, 0]
+              e[0] += amt; e[1] += 1; bymonth[mo] = e
+          nowdt = datetime.now(timezone.utc)
+          y, mo = 2003, 1
+          months = []
+          while (y, mo) < (nowdt.year, nowdt.month):
+              months.append('%04d-%02d' % (y, mo))
+              mo += 1
+              if mo > 12: mo = 1; y += 1
+          vv = [ (bymonth.get(m) or [0.0,0])[0] for m in months ]
+          cc = [ (bymonth.get(m) or [0.0,0])[1] for m in months ]
+          tM=[]; tV=[]; tC=[]; sv=0.0; sc=0
+          for i in range(len(months)):
+              sv += vv[i]; sc += cc[i]
+              if i>=12: sv -= vv[i-12]; sc -= cc[i-12]
+              if i>=11: tM.append(months[i]); tV.append(sv); tC.append(sc)
+          bi = [i for i,m in enumerate(tM) if m.startswith('2019')]
+          baseV = (sum(tV[i] for i in bi)/len(bi)) if bi else (tV[0] if tV else 0)
+          baseC = (sum(tC[i] for i in bi)/len(bi)) if bi else (tC[0] if tC else 0)
+          index_level = None; index_month = None
+          if tM and baseV>0 and baseC>0 and tV[-1]>0 and tC[-1]>0:
+              index_level = round(100*math.sqrt((tV[-1]/baseV)*(tC[-1]/baseC)), 2)
+              index_month = tM[-1]
+          # --- Glimpse numbers for the landing page ---
+          PHASE_MAP = {'pending':'Pending','initiation':'Pending','pre-design':'Pre-Design','predesign':'Pre-Design','design':'Design','construction procurement':'Procurement','construction':'Construction','design build':'Construction','design built':'Construction','close-out':'Close-out','closeout':'Close-out'}
+          EXCLUDED = set(['completed','cancelled','inactive','on-hold','on hold','transferred','withdrawn','terminated','defaulted','capitally ineligible','expense','defunded','funding withdrawn','rescinded','fmsid changed','project renamed','n/a','land acquisition','property acquisition','real estate transaction','fundraising','it project','non capital fund','equipment','consultant services'])
+          ORDER = ['Pending','Pre-Design','Design','Procurement','Construction','Close-out']
+          def _np(raw):
+              q = (raw or '').replace('(','').replace(')','').strip().lower()
+              if q in EXCLUDED: return 'excluded'
+              return PHASE_MAP.get(q, 'Other active')
+          def _rank(b): return ORDER.index(b) if b in ORDER else -1
+          committed = None
+          try:
+              plan = json.load(open('data/plan-latest.json'))
+              coll = {}
+              for r in plan:
+                  key = (r.get('managing_agency') or '') + '|' + (r.get('fms_id') or r.get('fms_project_name') or '')
+                  bucket = _np(r.get('current_phase'))
+                  try: bud = max(float(r.get('total_budget') or 0), 0.0)
+                  except (TypeError, ValueError): bud = 0.0
+                  try: spd = max(float(r.get('spend_to_date') or 0), 0.0)
+                  except (TypeError, ValueError): spd = 0.0
+                  prev = coll.get(key)
+                  if prev is None or _rank(bucket) > _rank(prev[2]):
+                      coll[key] = (bud, spd, bucket)
+              committed = int(round(sum(max(b - sp, 0.0) for b, sp, bk in coll.values() if bk != 'excluded')))
+          except Exception:
+              committed = None
+          open_sol = None
+          try:
+              sols = json.load(open('data/solicitations.json'))
+              today = time.strftime('%Y-%m-%d', time.gmtime())
+              open_sol = sum(1 for sdoc in sols if (sdoc.get('due_date') or '')[:10] >= today and sdoc.get('due_date'))
+          except Exception:
+              open_sol = None
+          try:
+              contractors = len(set((r.get('vendor_name') or '').strip().upper() for r in rows if (r.get('vendor_name') or '').strip()))
+          except Exception:
+              contractors = None
           out = {"meta": {"generated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                           "source": "archived awards.json (NYC City Record qyyg-4tf5), pin-deduped",
                           "window": "trailing 12 months, all construction"},
-                 "awarded_ttm": {"total": total, "count": count, "median": median, "max": mx}}
+                 "awarded_ttm": {"total": total, "count": count, "median": median, "max": mx},
+                 "index_level": index_level, "index_month": index_month,
+                 "glimpse": {"committed": committed, "awarded": total, "open_solicitations": open_sol, "contractors": contractors}}
           json.dump(out, open('data/precomputed.json', 'w'), separators=(",", ":"))
           print("precomputed awarded_ttm: total=%d count=%d median=%d max=%d" % (total, count, median, mx))
+          print("precomputed index_level=%s month=%s committed=%s open_sol=%s contractors=%s" % (index_level, index_month, committed, open_sol, contractors))
           PYEOF
 
       - name: Commit if changed
