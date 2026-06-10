@@ -124,6 +124,13 @@ td.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
 .adj-intro{font-size:14.5px;color:var(--muted);max-width:780px;margin:16px 0 4px}
 .adj-kpis{padding-top:26px}
 
+/* ---------- how-its-calculated explainer ---------- */
+#how-its-calculated{scroll-margin-top:80px;background:var(--band);border-left:3px solid var(--accent);border-radius:0;padding:18px 22px;margin:22px 0 4px}
+#how-its-calculated .hic-kicker{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+#how-its-calculated h3{font-family:'Source Serif 4',Georgia,serif;font-size:18px;font-weight:600;letter-spacing:-.01em;color:var(--ink);margin-bottom:8px}
+#how-its-calculated p{font-size:14px;color:var(--muted);max-width:820px}
+#how-its-calculated code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:var(--surface);padding:1px 5px;border-radius:3px;border:1px solid var(--line)}
+
 /* ---------- footer ---------- */
 footer{margin-top:54px;background:var(--band);border-top:2px solid var(--ink);padding:30px 0 40px;font-size:13px;color:var(--muted)}
 footer a{color:var(--steel)}
@@ -201,7 +208,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 </header>
 
 <div class="series-bar">
-  <div class="inner">SERIES&nbsp;·&nbsp;<b>CI-ANALYSIS</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CITY RECORD (qyyg-4tf5) · CAPITAL PLAN (fb86-vt7u) · BLS (WPUSI012011, CES2000000008)</b><span class="sep">·</span>BASE&nbsp;·&nbsp;<b>2019 = 100</b><span class="sep">·</span>UPDATED&nbsp;·&nbsp;<b>ON LOAD</b></div>
+  <div class="inner">SERIES&nbsp;·&nbsp;<b>CI-ANALYSIS</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CITY RECORD (qyyg-4tf5) · CAPITAL PLAN (fb86-vt7u) · BLS (WPUSI012011, SMU36000002000000008)</b><span class="sep">·</span>BASE&nbsp;·&nbsp;<b>2019 = 100</b><span class="sep">·</span>UPDATED&nbsp;·&nbsp;<b>ON LOAD</b></div>
 </div>
 
 <div class="wrap hero">
@@ -240,6 +247,12 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     </div>
   </section>
 
+  <div id="how-its-calculated">
+    <div class="hic-kicker">How the Concrete Index is calculated</div>
+    <h3>One number, two signals, indexed to 2019</h3>
+    <p>The Concrete Index is a geometric blend of two trailing-twelve-month measures of new public construction work reaching the market: the dollar value of new awards and the count of new awards. Renewals and extensions are dropped by selection method, and single megaprojects of $500M and above are excluded, so the reading tracks genuinely new demand rather than one large commitment. Both components are taken relative to their 2019 monthly average and combined as <code>100 × √[(value ÷ value-2019) × (count ÷ count-2019)]</code>, so the 2019 average reads 100 and the geometric mean keeps either side from running the number on its own. It is computed live from City Record award notices, deduplicated to one record per procurement on the <code>pin</code> so the same award is never counted twice.</p>
+  </div>
+
   <section id="cost-adjusted">
     <div class="adj-head">
       <h2>The real trend, adjusted for cost</h2>
@@ -253,7 +266,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="kpi hl"><div class="k-label">Adjusted Index</div><div class="k-value" id="kpi-adj">–</div><div class="k-note" id="kpi-adj-note">cost-adjusted, 2019 = 100</div></div>
       <div class="kpi"><div class="k-label">Gap vs nominal</div><div class="k-value" id="kpi-gap">–</div><div class="k-note" id="kpi-gap-note">index points lost to cost</div></div>
       <div class="kpi"><div class="k-label">Materials since 2019</div><div class="k-value" id="kpi-mat">–</div><div class="k-note" id="kpi-mat-note">PPI inputs to construction</div></div>
-      <div class="kpi"><div class="k-label">Labor since 2019</div><div class="k-value" id="kpi-lab">–</div><div class="k-note" id="kpi-lab-note">construction hourly earnings</div></div>
+      <div class="kpi"><div class="k-label">Labor since 2019</div><div class="k-value" id="kpi-lab">–</div><div class="k-note" id="kpi-lab-note">NY State construction hourly earnings</div></div>
     </section>
 
     <div class="grid two" style="padding-top:22px">
@@ -262,7 +275,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <div class="h-sub" id="cost-sub">Materials and labor price levels, each rebased to its 2019 average. The wedge between them is the input mix the City pays for.</div>
         <div class="chart-box"><canvas id="chart-cost"></canvas></div>
         <div class="reading" id="cost-reading"></div>
-        <div class="tnote">Two national BLS price series, each rebased to its own 2019 twelve-month average = 100: materials is the PPI for inputs to construction industries, goods (<code>WPUSI012011</code>); labor is average hourly earnings of construction production and nonsupervisory employees (<code>CES2000000008</code>). Monthly, no interpolation; the most recent month or two are forward-filled at the last published value until BLS posts them. The blended deflator that drives the adjusted index weights these 60% materials, 40% labor.</div>
+        <div class="tnote">Two BLS price series, each rebased to its own 2019 twelve-month average = 100. Materials is the national PPI for inputs to construction industries, goods (<code>WPUSI012011</code>), kept national because construction materials trade in national markets. Labor is New York State construction average hourly earnings of production and nonsupervisory employees, not seasonally adjusted (<code>SMU36000002000000008</code>, monthly back to 2004), the State-localized twin of the prior national series. Monthly, no interpolation; the most recent month or two are forward-filled at the last published value until BLS posts them, and New York publishes one month behind the national figure. The blended deflator that drives the adjusted index weights these 60% materials, 40% labor.</div>
       </div>
       <div class="card" id="adj-card">
         <div class="sec-head"><h2>Nominal vs cost-adjusted</h2><span class="cap">2019 = 100</span></div>
@@ -311,9 +324,9 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <p>For each month since 2004, the index combines trailing-twelve-month value and trailing-twelve-month count of <strong>new</strong> construction awards (renewals excluded by selection method; awards of $500M and above excluded so single megaprojects don't move the cycle reading). Award notices are first deduplicated to one record per procurement (the City Record <code>pin</code>, keeping the largest published amount), the same rule the Awarded page uses, so the same award is never counted twice. The two components are expressed relative to their 2019 averages and blended geometrically; 2019 = 100. Dollars are nominal; the index reads demand activity rather than inflation-adjusted volume.</p>
       <p><strong>Why this differs from the Awarded page total.</strong> The trailing-twelve award figure on the <a href="/awarded/">Awarded</a> page sums every construction award in the window after the per-procurement dedupe, including renewals and awards of $500M and above. This index deliberately strips renewals and megaprojects out to isolate the cycle in genuinely new work. Both numbers are computed on the same deduplicated universe and are correct for their purpose, so the two pages will show different trailing-twelve totals by design.</p>
       <h3>Cost adjustment</h3>
-      <p>The nominal index counts dollars at face value, so it cannot tell rising prices from rising volume. The adjusted series deflates it. Two national price series from the Bureau of Labor Statistics carry the cost signal: materials, the producer price index for inputs to construction industries, goods (<code>WPUSI012011</code>); and labor, average hourly earnings of construction production and nonsupervisory employees (<code>CES2000000008</code>). The labor series uses the production-and-nonsupervisory definition because it reaches back to 2004, matching the award record, where the all-employee series begins only in 2006.</p>
+      <p>The nominal index counts dollars at face value, so it cannot tell rising prices from rising volume. The adjusted series deflates it. Two Bureau of Labor Statistics price series carry the cost signal: materials, the national producer price index for inputs to construction industries, goods (<code>WPUSI012011</code>); and labor, New York State construction average hourly earnings of production and nonsupervisory employees, not seasonally adjusted (<code>SMU36000002000000008</code>). Materials stays national because construction inputs trade in national markets, while labor is localized to New York because construction wages are set regionally. The labor series uses the production-and-nonsupervisory definition because it reaches back to 2004, matching the award record, and is the methodological twin of the national series it replaced. New York construction wages have risen less since 2019 than wages nationally, so localizing the labor leg lowers the latest deflator and lifts the cost-adjusted index a touch above where the all-national blend put it.</p>
       <p>Each series is rebased to its own 2019 twelve-month average = 100, then blended into one monthly deflator weighted 60% materials and 40% labor, a split that reflects the materials-heavy mix of the City's general construction work while still carrying the wage signal. Because both series are monthly, the deflator needs no interpolation; the most recent one or two months are forward-filled at the last published value until BLS posts them, and those points are flagged in the data. Every award month's new-award value is divided by that same month's deflator before the trailing-twelve sum, so a 2021 award and a 2025 award are each discounted by the cost level that actually prevailed when the City committed the money, not by a single blanket factor. The cost-adjusted index then applies the same geometric blend with award count, holding the count component unchanged. By construction the 2019 real total equals the 2019 nominal total, which the page uses as an internal check.</p>
-      <p><strong>Caveats.</strong> The BLS series are national, not New York specific, so the deflator approximates local cost movement rather than measuring it. Award value is a floor on real activity, since the published amount is the award notice, not the final registered contract. The 60/40 weighting is a deliberate approximation of input mix, not a measured cost build-up. The nominal index remains the headline reading; the adjusted series is a separate, disclosed view, and its latest months inherit the forward-filled cost values noted above.</p>
+      <p><strong>Caveats.</strong> The labor leg is measured for New York State, but the materials leg is national, so the deflator still approximates local materials cost rather than measuring it. Award value is a floor on real activity, since the published amount is the award notice, not the final registered contract. The 60/40 weighting is a deliberate approximation of input mix, not a measured cost build-up. The nominal index remains the headline reading; the adjusted series is a separate, disclosed view, and its latest months inherit the forward-filled cost values noted above; New York labor publishes one month behind the national materials figure, so the most recent month is forward-filled.</p>
       <h3>Seasonality</h3>
       <p>For each complete calendar year, each month's share of that year's new-award value is computed; the profile shows the median share across years, scaled so 1.0 equals an average month. Medians keep single unusual years from distorting the profile.</p>
       <h3>Pipeline conversion</h3>
@@ -321,7 +334,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <h3>Budget escalation</h3>
       <p>Projects present in both the earliest available plan snapshot (May 2023) and the most recent one, with budgets above $1M in both, are matched by agency and FMS ID. Escalation is each project's total-budget growth across that span; the headline figure is the median. Budget growth blends scope changes with cost escalation. The public record doesn't separate the two, so neither does this page.</p>
       <h3>Sources</h3>
-      <p>Award history: City Record Recent Contract Awards (<code>qyyg-4tf5</code>), 2003→present. Capital plan: Capital Projects Dashboard (<code>fb86-vt7u</code>), snapshots May 2023→present. Both on NYC Open Data, queried live on every page load. Construction cost: BLS series <code>WPUSI012011</code> (materials) and <code>CES2000000008</code> (labor), 2004→present, fetched server-side by the nightly archive and read here from a same-origin snapshot.</p>
+      <p>Award history: City Record Recent Contract Awards (<code>qyyg-4tf5</code>), 2003→present. Capital plan: Capital Projects Dashboard (<code>fb86-vt7u</code>), snapshots May 2023→present. Both on NYC Open Data, queried live on every page load. Construction cost: BLS series <code>WPUSI012011</code> (national materials) and <code>SMU36000002000000008</code> (New York State construction labor, NSA), 2004→present, fetched server-side by the nightly archive and read here from a same-origin snapshot.</p>
     </div>
   </section>
 
@@ -751,8 +764,8 @@ function renderCostChart(){
   charts.cost = new Chart(document.getElementById('chart-cost'), {
     type:'line',
     data:{ labels, datasets:[
-      { label:'Materials', data: ser.map(s=>s.materials), borderColor: COLOR_MAT, borderWidth: 2, pointRadius: 0, tension:.25 },
-      { label:'Labor', data: ser.map(s=>s.labor), borderColor: COLOR_LAB, borderWidth: 2, pointRadius: 0, tension:.25 }
+      { label:'Materials (national)', data: ser.map(s=>s.materials), borderColor: COLOR_MAT, borderWidth: 2, pointRadius: 0, tension:.25 },
+      { label:'Labor (NY State)', data: ser.map(s=>s.labor), borderColor: COLOR_LAB, borderWidth: 2, pointRadius: 0, tension:.25 }
     ]},
     options:{
       responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
@@ -769,7 +782,7 @@ function renderCostChart(){
   const latest = ser[ser.length-1];
   const matCum = latest.materials - 100, labCum = latest.labor - 100;
   document.getElementById('cost-reading').innerHTML =
-    `<strong>Reading:</strong> since 2019, construction materials prices are up <strong>${fmtSignedPct(matCum)}</strong> and construction wages <strong>${fmtSignedPct(labCum)}</strong>. ` +
+    `<strong>Reading:</strong> since 2019, national construction materials prices are up <strong>${fmtSignedPct(matCum)}</strong> and New York State construction wages <strong>${fmtSignedPct(labCum)}</strong>. ` +
     `Materials ran first and hardest through the 2021 to 2022 spike, then plateaued; labor has climbed more steadily and is still rising. The 60/40 blend of the two sets the deflator that discounts every award.`;
 }
 
