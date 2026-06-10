@@ -60,10 +60,13 @@ jobs:
           # The browser cannot reach api.bls.gov (the site CSP locks connect-src to
           # the City and State open-data hosts), so the two national construction-cost
           # series are pulled here, server-side, and written to data/cost-index.json
-          # for the pages to read same-origin. Materials = PPI inputs to construction
-          # industries, goods (WPUSI012011); labor = CES avg hourly earnings,
-          # construction prod. & nonsup. (CES2000000008). Each rebased to its 2019
-          # average = 100, blended 60/40, latest unpublished month(s) forward-filled.
+          # for the pages to read same-origin. Materials = national PPI inputs to
+          # construction industries, goods (WPUSI012011), because materials trade in
+          # national markets; labor = NY State construction avg hourly earnings,
+          # prod. & nonsup., NSA (SMU36000002000000008), the State-localized twin of
+          # the prior national CES series. Each rebased to its 2019 average = 100,
+          # blended 60/40, latest unpublished month(s) forward-filled. NY State
+          # publishes one month behind national, so the latest month is forward-filled.
           # BLS v2 silently drops the middle of a >13-year request, so we chunk by
           # decade and merge. Keyless v2 is sufficient at this volume; a key is used
           # only if BLS_API_KEY is present in the environment.
@@ -71,10 +74,10 @@ jobs:
           import json, time, urllib.request
           from datetime import datetime, timezone
 
-          SERIES = {"materials": "WPUSI012011", "labor": "CES2000000008"}
-          AVG2019 = {"materials": 235.725, "labor": 28.482}  # documented anchors; recomputed below
+          SERIES = {"materials": "WPUSI012011", "labor": "SMU36000002000000008"}
+          # 2019 averages are recomputed from the pulled data below; no anchor is hardcoded.
           NAMES = {"materials": "PPI inputs to construction industries, goods",
-                   "labor": "CES avg hourly earnings, construction, prod. & nonsup."}
+                   "labor": "NY State construction avg hourly earnings, prod. & nonsup. (NSA)"}
           W = {"materials": 0.60, "labor": 0.40}
           import os
           KEY = os.environ.get("BLS_API_KEY") or None
