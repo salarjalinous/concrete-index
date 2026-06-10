@@ -912,6 +912,14 @@ function unavailNote(host){
   document.getElementById('loader').style.display='none';
   document.getElementById('app').style.display='block';
 
+  // The app is hidden until data loads, so a hash present at page load cannot scroll
+  // to its target (the element is inside a display:none container). Re-apply the jump
+  // now that #app is visible, honoring the section's scroll-margin-top.
+  if(location.hash){
+    var hashTarget=document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if(hashTarget){ requestAnimationFrame(function(){ hashTarget.scrollIntoView(); }); }
+  }
+
   if(!D.awardsOk) document.getElementById('index').insertAdjacentHTML('beforebegin', unavailNote('City Record awards'));
   if(!D.planOk) document.getElementById('escalation').insertAdjacentHTML('beforebegin', unavailNote('OMB capital plan'));
 
