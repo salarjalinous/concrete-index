@@ -9,12 +9,13 @@
 <meta name="description" content="The Concrete Index tracks NYC public construction capital, which agencies are awarding work, to whom, and how fast. Built on NYC Open Data, refreshed daily.">
 <meta property="og:title" content="The Concrete Index">
 <meta property="og:description" content="NYC public construction capital, tracked end to end.">
+<meta property="og:url" content="https://concreteindex.co/">
+<link rel="canonical" href="https://concreteindex.co/">
 <!-- BROADSHEET-V1 -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23b5482a%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha384-bs/nf9FbdNouRbMiFcrcZfLXYPKiPaGVGplVbv7dLGECccEXDW+S3zjqSKR5ZEaD" crossorigin="anonymous"></script>
 <style>
 :root{
   --paper:#fbf2ea; --surface:#fffaf4; --band:#f6ece2;
@@ -215,13 +216,13 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <div class="wrap nav">
     <div class="brand">
       <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
-      <span>The Concrete Index<span class="tick">.</span></span>
+      <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
     </div>
     <button class="menu-btn" aria-label="Menu" aria-expanded="false" onclick="const o=this.nextElementSibling.classList.toggle('open');this.setAttribute('aria-expanded',o)">☰</button>
     <nav class="nav-links">
       <a href="/pipeline/">Pipeline</a>
       <a href="/solicitations/">Bidding</a>
-      <a href="/" class="active">Awarded</a>
+      <a href="/awarded/">Awarded</a>
       <a href="/vendors/">Vendors</a>
       <a href="/funnel/">Funnel</a>
       <a href="/velocity/">Velocity</a>
@@ -236,7 +237,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 </header>
 
 <div class="series-bar">
-  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-AWARDED</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>NYC CITY RECORD (qyyg-4tf5)</b><span class="sep">·</span>UPDATED&nbsp;·&nbsp;<b>DAILY</b><span class="sep">·</span>AS OF&nbsp;·&nbsp;<b id="series-asof">–</b></div>
+  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-INDEX</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>NYC OPEN DATA + DATA.NY.GOV</b><span class="sep">·</span>UPDATED&nbsp;·&nbsp;<b>DAILY</b><span class="sep">·</span>AS OF&nbsp;·&nbsp;<b id="series-asof">–</b></div>
 </div>
 
 <div class="wrap">
@@ -293,118 +294,104 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <p style="margin-top:6px">The City's API may be momentarily unavailable. Please refresh the page to try again.</p>
 </div>
 
-<main id="app" class="wrap">
-
-  <div class="controls">
-    <span class="ctl-label">Window</span>
-    <div class="seg" id="seg-window">
-      <button data-w="12">12 months</button>
-      <button data-w="36">3 years</button>
-      <button data-w="60">5 years</button>
-    </div>
-    <span class="ctl-label">Scope</span>
-    <div class="seg" id="seg-scope">
-      <button data-s="all">All construction</button>
-      <button data-s="hard">Construction</button>
-      <button data-s="rel">Related services</button>
-    </div>
-    <span class="ctl-label">Type</span>
-    <div class="seg" id="seg-type">
-      <button data-t="all">All</button>
-      <button data-t="new">New awards</button>
-      <button data-t="cont">Continuations</button>
-    </div>
-    <span class="ctl-label">Size</span>
-    <div class="seg" id="seg-size">
-      <button data-z="all">All</button>
-      <button data-z="exmega">Under $500M</button>
-    </div>
-    <span class="ctl-label">Work type</span>
-    <select id="sel-worktype" class="wt-select"><option value="all">All work types</option></select>
-  </div>
-
-  <section class="kpis">
-    <div class="kpi hl"><div class="k-label">Awarded</div><div class="k-value" id="kpi-total">–</div><div class="k-note" id="kpi-total-note"></div></div>
-    <div class="kpi"><div class="k-label">Awards</div><div class="k-value" id="kpi-count">–</div><div class="k-note" id="kpi-count-note"></div></div>
-    <div class="kpi"><div class="k-label">Median award</div><div class="k-value" id="kpi-median">–</div><div class="k-note">published contract value</div></div>
-    <div class="kpi"><div class="k-label">Largest award</div><div class="k-value" id="kpi-max">–</div><div class="k-note" id="kpi-max-note"></div></div>
-  </section>
-
-  <section class="grid" id="trend">
-    <div class="card">
-      <div class="sec-head"><h2>Monthly awarded value</h2><span class="cap" id="trend-cap">USD · BY MONTH</span></div>
-      <div class="h-sub" id="trend-sub"></div>
-      <div class="chart-box tall"><canvas id="chart-trend"></canvas></div>
-      <div class="tnote">Each bar is the total published award value for one month, on the deduplicated construction set (one record per procurement). Hover a bar for the exact figure; a month with no awards shows no bar. The series reflects the window, scope, type, and size filters set above.</div>
-    </div>
-  </section>
-
-  <section class="grid two" id="agencies">
-    <div class="card">
-      <div class="sec-head"><h2>Demand by agency</h2><span class="cap">TOP 8 · USD</span></div>
-      <div class="h-sub">Awarded value in window, top agencies</div>
-      <div class="chart-box"><canvas id="chart-agency"></canvas></div>
-      <div class="tnote">The eight agencies that awarded the most construction value in the selected window, ranked by total awarded value (not by number of contracts). Agencies outside the top eight are not shown; the bars do not sum to the headline total.</div>
-    </div>
-    <div class="card">
-      <div class="sec-head"><h2>Where the work is</h2><span class="cap">BY BOROUGH</span></div>
-      <div class="h-sub">Borough referenced in the award notice</div>
-      <div class="chart-box"><canvas id="chart-boro"></canvas></div>
-      <div class="tnote">Awarded value grouped by the borough named in each award's title or description, since the source has no borough field. Awards naming several boroughs are counted as multi-borough; those naming none (often citywide contracts) as citywide / unspecified. This is the softest figure on the page.</div>
-    </div>
-  </section>
-
-  <section class="grid" id="vendors">
-    <div class="card">
-      <div class="sec-head"><h2>Top recipients</h2><span class="cap">RANKED BY AWARDED VALUE</span></div>
-      <div class="h-sub">Vendors winning the most awarded value in window</div>
-      <table id="tbl-vendors">
-        <thead><tr><th></th><th>Vendor</th><th class="num">Awards</th><th class="num">Awarded value</th></tr></thead>
-        <tbody></tbody>
-      </table>
-      <div class="tnote">The vendors winning the most awarded value in the window, by the name exactly as published in the City Record. Names are not grouped across spellings here, so a firm filing under several names is split; the Vendors page rolls a contractor's variants into one total. Awards is the count of notices, value their deduplicated sum.</div>
+<div class="wrap">
+<style id="lp-css">
+.lp-hero{max-width:860px;padding:58px 0 4px}
+.lp-hero .kicker{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px}
+.lp-hero h1{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(31px,4.5vw,49px);line-height:1.07;letter-spacing:-.015em;color:var(--ink);margin:0 0 18px}
+.lp-sub{font-family:'Public Sans',sans-serif;font-size:17px;line-height:1.55;color:var(--muted);max-width:690px;margin:0}
+.lp-hero-num{margin:32px 0 4px;border-top:2px solid var(--accent);padding-top:14px;max-width:560px}
+.lp-num-label{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.lp-num{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:clamp(44px,6.6vw,62px);line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
+.lp-num-cap{font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.55;color:var(--muted);margin-top:10px;max-width:520px}
+.photo-band{position:relative;height:230px;background-size:cover;background-position:center 44%;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);filter:sepia(.3) saturate(.72) contrast(1.02) brightness(.97);margin:34px 0 0}
+.ph-credit{position:absolute;right:10px;bottom:8px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.04em;color:rgba(251,242,234,.92);background:rgba(34,21,14,.55);padding:2px 8px;border-radius:3px}
+@media(max-width:560px){.photo-band{height:150px}}
+.lp-funnel{display:flex;align-items:stretch;gap:0;margin:48px auto 0;max-width:980px}
+.ff-stage{flex:1;display:flex;flex-direction:column;gap:4px;padding:18px 20px;background:var(--surface);border:1px solid var(--line);text-decoration:none}
+.ff-stage:hover{border-color:var(--accent);text-decoration:none}
+.ff-stage.ff-mid{border-color:var(--navy)}
+.ff-k{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:18px;color:var(--ink)}
+.ff-stage.ff-mid .ff-k{color:var(--navy)}
+.ff-d{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.ff-arrow{display:flex;align-items:center;padding:0 13px;color:var(--accent);font-size:21px;font-family:'IBM Plex Mono',monospace}
+.lp-funnel-cap{font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.55;color:var(--muted);max-width:980px;margin:12px auto 0;text-align:center}
+.lp-stats{display:grid;grid-template-columns:repeat(4,1fr);max-width:980px;margin:50px auto 0;border-top:2px solid var(--ink)}
+.lp-stat{padding:16px 16px 18px;text-decoration:none;border-right:1px solid var(--line)}
+.lp-stat:last-child{border-right:none}
+.lp-stat:hover{background:var(--band)}
+.ls-v{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:clamp(20px,2.3vw,26px);color:var(--navy);font-variant-numeric:tabular-nums;line-height:1}
+.ls-k{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:14px;color:var(--ink);margin-top:8px}
+.ls-d{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-top:5px;line-height:1.45}
+.lp-thesis{max-width:860px;margin:52px auto 0;background:var(--band);border-left:3px solid var(--accent);padding:22px 26px}
+.lp-thesis p{font-family:'Public Sans',sans-serif;font-size:15.5px;line-height:1.66;color:var(--ink);margin:0 0 12px}
+.lp-thesis p:last-child{margin-bottom:0}
+.lp-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:980px;margin:46px auto 0}
+.lp-card{display:block;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);padding:20px 22px;text-decoration:none}
+.lp-card:hover{border-color:var(--accent);text-decoration:none}
+.lp-card:hover .lc-go{color:var(--accent)}
+.lc-k{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.lc-t{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:19px;line-height:1.18;color:var(--ink);margin:7px 0}
+.lc-d{font-family:'Public Sans',sans-serif;font-size:13.5px;line-height:1.5;color:var(--muted)}
+.lc-go{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--steel);margin-top:12px;display:inline-block}
+.lp-explore{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:980px;margin:16px auto 8px}
+.lp-card-quiet{border-left-color:var(--navy)}
+@media(max-width:680px){
+  .lp-hero{padding-top:40px}
+  .lp-funnel{flex-direction:column}
+  .ff-arrow{justify-content:center;padding:8px 0;transform:rotate(90deg)}
+  .lp-stats{grid-template-columns:repeat(2,1fr);border-top:none}
+  .lp-stat{border:1px solid var(--line)}
+  .lp-cards,.lp-explore{grid-template-columns:1fr}
+}
+</style>
+  <section class="lp-hero">
+    <div class="kicker">The demand side of NYC public construction</div>
+    <h1>The City publishes every construction dollar it commits. The Concrete Index reads all of it.</h1>
+    <p class="lp-sub">The Concrete Index follows New York City public construction from the budget that funds it, to the award that lets it, to the cash that pays for it, drawn live from the public record.</p>
+    <div class="lp-hero-num">
+      <div class="lp-num-label">The Concrete Index &middot; 2019 = 100</div>
+      <div class="lp-num" id="lp-index">&ndash;</div>
+      <div class="lp-num-cap" id="lp-index-cap">New-award momentum against the 2019 monthly average, renewals and megaprojects excluded. Loading the latest reading.</div>
     </div>
   </section>
+</div>
 
-  <section class="grid" id="recent">
-    <div class="card">
-      <div class="sec-head"><h2>Latest awards</h2><span class="cap">MOST RECENT 15</span></div>
-      <div class="h-sub">Most recent construction awards published in the City Record</div>
-      <table id="tbl-recent">
-        <thead><tr><th>Date</th><th>Award</th><th>Agency</th><th class="num">Value</th></tr></thead>
-        <tbody></tbody>
-      </table>
-      <div class="tnote">The fifteen most recently published construction award notices in the window, newest first. Value is the amount stated at the award notice, a floor that later change orders and registrations can grow, not a payment.</div>
-    </div>
+<div class="photo-band" style="background-image:url('https://images.unsplash.com/photo-1496588152823-86ff7695e68f?auto=format&fit=crop&w=1800&q=55')"><span class="ph-credit">Lower Manhattan &middot; Unsplash</span></div>
+
+<main class="wrap lp">
+  <section class="lp-funnel" aria-label="Committed to Awarded to Spent">
+    <a class="ff-stage" href="/pipeline/"><span class="ff-k">Committed</span><span class="ff-d">Funded capital work</span></a>
+    <span class="ff-arrow">&rarr;</span>
+    <a class="ff-stage ff-mid" href="/awarded/"><span class="ff-k">Awarded</span><span class="ff-d">Let to a contractor</span></a>
+    <span class="ff-arrow">&rarr;</span>
+    <a class="ff-stage" href="/funnel/"><span class="ff-k">Spent</span><span class="ff-d">Paid out</span></a>
+  </section>
+  <p class="lp-funnel-cap">Three moments in the same flow, read side by side. Each comes from a different public source and a different scope, so the Index never sums them into one number.</p>
+
+  <section class="lp-stats" aria-label="A look across the site">
+    <a class="lp-stat" href="/pipeline/"><div class="ls-v" id="st-committed">&ndash;</div><div class="ls-k">Committed</div><div class="ls-d">Funded, not yet spent &middot; Pipeline</div></a>
+    <a class="lp-stat" href="/awarded/"><div class="ls-v" id="st-awarded">&ndash;</div><div class="ls-k">Awarded, 12 mo</div><div class="ls-d">Let to contractors &middot; Awarded</div></a>
+    <a class="lp-stat" href="/solicitations/"><div class="ls-v" id="st-sol">&ndash;</div><div class="ls-k">Open bids</div><div class="ls-d">Out to bid now &middot; Bidding</div></a>
+    <a class="lp-stat" href="/vendors/"><div class="ls-v" id="st-vendors">&ndash;</div><div class="ls-k">Contractors</div><div class="ls-d">In the award record &middot; Vendors</div></a>
   </section>
 
-  <section class="method" id="methodology">
-    <div class="card">
-      <div class="sec-head"><h2>Awarded · Methodology &amp; definitions</h2><span class="cap">SERIES NOTES</span></div>
-      <div class="method-body">
-      <h3>Source</h3>
-      <p>All figures are drawn live from <a href="https://data.cityofnewyork.us/City-Government/Recent-Contract-Awards/qyyg-4tf5" target="_blank" rel="noopener">Recent Contract Awards</a> on NYC Open Data (dataset <code>qyyg-4tf5</code>), the City Record's public notice of contract awards, maintained by the NYC Department of Citywide Administrative Services. The dataset is updated daily; this page queries it directly every time it loads, so what you see is the current public record.</p>
-      <h3>What counts as an award</h3>
-      <p>Each record is a contract award notice published in the City Record. Dollar values are the contract amounts as published at award. An award notice comes before contract registration with the Comptroller and well before any payment. It measures demand entering the market rather than cash out the door.</p>
-      <p>A single procurement can be published as more than one notice. To avoid counting the same award twice, notices are deduplicated to one record per procurement (the City Record <code>pin</code>), keeping the largest published contract amount for that procurement. Every dollar total on this page is computed on that deduplicated set, the same rule used across the Funnel, Briefing, and Market pages.</p>
-      <h3>Scope</h3>
-      <p>The index covers the two construction categories in the City's procurement taxonomy: <strong>Construction/Construction Services</strong> (hard construction) and <strong>Construction Related Services</strong> (design, engineering, construction management). The scope control above lets you view either or both. Awards with no positive published value are excluded.</p>
-      <h3>Geography</h3>
-      <p>The source data does not carry a structured borough field. The Concrete Index derives borough from the award's title and description text. Awards referencing multiple boroughs are shown as multi-borough; awards with no borough reference, typically citywide programs or requirements contracts, are shown as citywide / unspecified.</p>
-      <h3>Award types and sizes</h3>
-      <p>The type control separates <strong>new awards</strong> from <strong>continuations</strong>, renewals of existing contracts, identified by the published selection method. New awards measure fresh demand reaching the market; continuations measure work staying in place. The size control excludes awards of $500M and above, so trend readings aren't dominated by a handful of megaprojects.</p>
-      <h3>Work-type tags</h3>
-      <p>The work-type filter tags each award by keyword matching on its public short title. Tags are non-exclusive, so one award can carry several (a garage HVAC job is both mechanical and a building). They are descriptive aids, not official classifications. Roughly one award in ten carries no work-type keyword in its title and is shown as Uncategorized, which is most often a professional-services, IT, or design contract with no physical scope named.</p>
-      <p>The headline awarded total above includes everything by default: new work, continuations, and megaprojects. The composite index on the <a href="/analysis/">Analysis</a> page strips all three out to isolate the cycle in new work, so its trailing-twelve total reads lower than this one. Both are correct for their purpose.</p>
-      <h3>The funnel</h3>
-      <p>Awards are the middle of the capital flow. The <a href="/pipeline/">Pipeline</a> page tracks the stage before this one: dollars the City has committed to capital projects that haven't yet reached the market.</p>
-      <h3>Coverage</h3>
-      <p>The dataset extends back to 2003. The Concrete Index presents the trailing five years, where publication practice is consistent and comparable.</p>
-      <p id="trunc-note" style="display:none;color:var(--accent)">Note: this load reached the row cap on the award pull, so the figures above may be capped and could understate the true totals. Refresh to retry; if it persists the pull will be paged.</p>
-      </div>
-    </div>
+  <section class="lp-thesis">
+    <p>Public construction has a supply side everyone watches and a demand side almost no one does. The contractors, their bonds, and their backlogs are tracked closely. The pipeline that feeds them, every dollar the City budgets, solicits, and awards, sits in plain sight in the public record and is read by almost no one, because reading it means pulling thousands of notices and totaling them by hand.</p>
+    <p>The Concrete Index does that reading continuously. It pulls every construction award, solicitation, and capital commitment the City and State publish, totals them on the spot, and follows the same dollar from budget to award to payment. The result is a live view of where New York's public construction demand is forming, which agencies are moving it, and how fast it turns into cash.</p>
   </section>
 
+  <section class="lp-cards" aria-label="Where to start">
+    <a class="lp-card" href="/vendors/"><div class="lc-k">If you underwrite surety</div><div class="lc-t">Read a contractor's public award record</div><div class="lc-d">Pull any firm's awarded work across City and State construction, see its public obligees, and place a single contract against the agency's award flow.</div><div class="lc-go">&rarr; Vendors</div></a>
+    <a class="lp-card" href="/solicitations/"><div class="lc-k">If you place the work</div><div class="lc-t">See where the next quarter's work is forming</div><div class="lc-d">Watch open solicitations reach the market before they become awards, and track which agencies are letting the most construction value right now.</div><div class="lc-go">&rarr; Bidding</div></a>
+    <a class="lp-card" href="/analysis/"><div class="lc-k">If you analyze the cycle</div><div class="lc-t">Track the demand cycle and the pace of cash</div><div class="lc-d">Follow the composite index of new-award value over time, and see how quickly each agency turns committed dollars into payments.</div><div class="lc-go">&rarr; Analysis</div></a>
+    <a class="lp-card" href="/briefing/"><div class="lc-k">If you are new here</div><div class="lc-t">Start with the full picture</div><div class="lc-d">One automated briefing reads the entire public record and tells you, in plain language, what NYC public construction demand is doing this quarter.</div><div class="lc-go">&rarr; Briefing</div></a>
+  </section>
+
+  <section class="lp-explore" aria-label="Learn more">
+    <a class="lp-card lp-card-quiet" href="/about/#methodology"><div class="lc-k">Methodology</div><div class="lc-t">How every number is built</div><div class="lc-d">Each figure is computed live from public data, deduplicated to one record per procurement, with its method written plainly on the page.</div><div class="lc-go">&rarr; Read the methodology</div></a>
+    <a class="lp-card lp-card-quiet" href="/about/"><div class="lc-k">About</div><div class="lc-t">Why this exists</div><div class="lc-d">An independent project by Salar Jalinous, built on public data, to make the demand side of NYC construction legible.</div><div class="lc-go">&rarr; Read the story</div></a>
+  </section>
 </main>
 
 <footer>
@@ -415,6 +402,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.01em">The Concrete Index<span class="tick" style="color:var(--accent)">.</span></span>
       </div>
       <div style="margin-top:8px">NYC public construction capital, tracked end to end.</div>
+      <div style="margin-top:6px;font-size:12px;color:var(--faint);max-width:430px">An independent project built by Salar Jalinous using Claude Code, on public data. Not affiliated with any employer.</div>
     </div>
     <div style="text-align:right" class="f-meta">
       <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
@@ -423,462 +411,65 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     </div>
   </div>
 </footer>
-
 <script>
-'use strict';
-/* ================= data layer ================= */
-const API = 'https://data.cityofnewyork.us/resource/qyyg-4tf5.json';
-const HARD = 'Construction/Construction Services';
-const REL  = 'Construction Related Services';
-
-const state = { windowMonths: 12, scope: 'all', type: 'all', size: 'all', worktype: 'all', rows: [], truncated: false };
-const WT_LEXICON={
-  paving_roadway:{label:"Paving & Roadway",include:[/\basphalt\b/,/\bpaving\b/,/\bpavement\b/,/\brepaving\b/,/\bresurfac/,/\broadway\b/,/\bparkway\b/,/\broad repair/,/\bmilling\b/,/\bstreetscape/,/\bcrosstown/,/\bselect bus service\b|\bSBS\b/,/\btouring route/,/pavement marking/,/reconstruction of .*\b(street|avenue|ave|road|boulevard|blvd)\b/,/\bkill road\b/,/\broad repair agreement/,/street name sign/]},
-  sidewalk_curb_ramp:{label:"Sidewalk, Curb & Pedestrian Ramp",include:[/\bsidewalk/,/\bpedestrian ramp/,/\bcurb/,/\bstep street/,/\bprior notice sidewalk/,/\broadway restoration/],exclude:[/sidewalk (?:shed|protection)/]},
-  water_sewer:{label:"Water & Sewer",include:[/\bsewer/,/\bwater main/,/\bwatermain/,/\bdistribution water/,/\btrunk water/,/\blead service line/,/\bLSLR/,/\bsewer lin(?:e|ing)/,/\bcombined sewer/,/\binterceptor/,/\bdrainage/,/\bcatch basin/,/\bwastewater/,/\bWRRF\b/,/\bwater resource recovery/,/\bsludge/,/\bCSO\b/,/\bjet flusher/,/\bvactor/,/\bcloudburst/,/\bgreen infrastructure\b|\bGI Construction\b|\bGKOH/,/\bbioswale/,/\bnitrogen removal/,/\bdeammonification/,/\bactivated sludge/,/\bdewatering/,/\bsettling tank/,/\bflood mitigation/,/\bstorm sewer/,/\bsanitary/,/\breservoir\b/,/landfill gas/,/\bwater main\b/]},
-  schools_education:{label:"Schools & Education",include:[/\bschool\b/,/\bP\.?S\.?\s?\d/,/\bI\.?S\.?\s?\d/,/\bclassroom/,/safe routes to school/]},
-  library:{label:"Library",include:[/\blibrary\b/]},
-  electrical:{label:"Electrical",include:[/\belectric/,/\belect\b/,/\belec\b/,/\btraffic signal/,/\bpedestrian signal/,/\bstreet ?light/,/\bsports lighting/,/\blight fixture/,/\bballast/,/\bgenerator/,/\bstandby power\b|emergency power/,/\bsolar pv\b|solar equipment/,/\bpower distribution/,/\belectrical infrastructure/,/\bcable infrastructure/,/\bfire alarm/]},
-  demolition:{label:"Demolition",include:[/\bdemolition/,/\bdemo\b/,/\bIED\b/,/\bbrace (?:&|and) shore/,/\bshoring\b/]},
-  hvac_mechanical:{label:"HVAC & Mechanical",include:[/\bHVAC\b/,/\bboiler/,/\bheating/,/\bchiller/,/\bair handling/,/\bmechanical/,/\bdehumidif/,/\bsteam tunnel/,/\bventilation/,/\boil-?fired/,/\bcommissioning/,/\bBMS\b/,/\bchimney/]},
-  plumbing:{label:"Plumbing & Fire Suppression",include:[/\bplumbing/,/\bfire suppression/,/\bsprinkler/,/\bstandpipe/]},
-  roofing:{label:"Roofing",include:[/\broof/]},
-  facade_masonry:{label:"Facade, Masonry & Envelope",include:[/\bfacade|façade/,/\bmasonry/,/\bparapet/,/\benvelope/,/exterior (?:renovation|envelope|restoration)/,/local law 11\b/,/\bLL11\b/,/building seal-?up|sealup/,/\brepointing|\bpointing\b/,/\bbrick/,/steel and concrete rehab/,/\bretaining wall/,/\barch reconstruction/,/\bpainting\b/]},
-  parks_landscape:{label:"Parks & Landscape",include:[/\bplayground/,/\btree planting/,/\btree removal/,/\btree replacement/,/\btree-?damaged/,/\bemerald ash borer\b|\bEAB\b/,/\blandscape/,/synthetic turf|turf field/,/\bballfield/,/\bball ?field/,/\besplanade/,/\bgreenway|green ?street/,/\bcomfort station/,/recreation center|rec ctr|rec center/,/\bbasketball|handball|tennis court/,/forest restoration/,/\bwetland/,/sports court|sports field/,/adult fitness/,/play equipment|play area/,/\bbleacher/,/\bflagpole/,/safety netting/,/spray shower/,/\bdog run/,/\bpathway/,/\bstaircase/,/\bstadium\b/,/\bgreen\b reconstruction/],ambiguousInclude:[/\bpark\b/],ambiguousExclude:[/park avenue|\bparking\b/]},
-  bridges_marine:{label:"Bridges & Marine",include:[/\bbridge/,/protective coating/,/\bmarine\b/,/\bmarina\b/,/\bpier\b/,/\bpiling/,/\bbulkhead/,/\bwaterfront/,/\bferry/,/\bdock\b/,/\bskiff|barge|tugboat/,/\bseawall|sea wall/,/\bunderpass|overpass/,/\bdam\b/,/coastal resilien/]},
-  abatement_environmental:{label:"Abatement & Environmental",include:[/\babatement/,/\basbestos\b/,/\bACM\b/,/lead (?:abatement|based paint|paint hazard|service)/,/\bmold\b/,/air monitoring|air sampling/,/\bremediat/,/\bhazardous|hazmat/,/environmental services/,/environmental engineering/]},
-  buildings_general:{label:"Buildings & General Construction",include:[/general construction|general contracting/,/\bGC\b/,/job order contract|\bJOC\b/,/\brenovation/,/\brehabilitation\b/,/\brehab\b/,/building upgrade/,/construction of (?:new )?(?:offices|building)/,/garage (?:rehab|reconstruction)/,/fire station|firehouse|engine co|ladder co/,/family court|supreme court|courthouse/,/\bshelter\b/,/\bresidence\b/,/public restroom|restroom building/,/\bdetention|\bjail/,/\bhandyperson/,/on-?call general/]},
-  doors_windows_security:{label:"Doors, Windows & Security",include:[/\bdoor\b|doors\b/,/window guard/,/\bwindow\b/,/\bgate\b/,/\bfenc(?:e|ing)/,/security barrier/,/razor wire/,/\belevator/,/\bhinge/,/overhead door|roll-?up door/,/revolving|swing door/,/\bbarrier/]},
-  scaffolding_shed:{label:"Scaffolding & Sheds",include:[/\bscaffold/,/sidewalk shed|sidewalk protection shed|sidewalk sheds/,/\bshed\b/,/temporary shoring/]},
-};
-function wtClassify(title){const t=title||'';const tags=[];for(const k in WT_LEXICON){const d=WT_LEXICON[k];let hit=(d.include||[]).some(function(rx){return new RegExp(rx.source,'i').test(t);});if(!hit&&d.ambiguousInclude){const amb=d.ambiguousInclude.some(function(rx){return new RegExp(rx.source,'i').test(t);});const blk=(d.ambiguousExclude||[]).some(function(rx){return new RegExp(rx.source,'i').test(t);});if(amb&&!blk)hit=true;}if(!hit)continue;if((d.exclude||[]).some(function(rx){return new RegExp(rx.source,'i').test(t);}))continue;tags.push(k);}return tags;}
-const MEGA = 500e6;
-function isContinuation(method){ return /renewal|extension/i.test(method || ''); }
-
-function isoDaysAgo(years){
-  const d = new Date();
-  d.setFullYear(d.getFullYear() - years);
-  return d.toISOString().slice(0,10);
-}
-
-/* Canonical construction-awards dedupe: one row per procurement (pin), keeping
-   the maximum contract_amount seen for that pin. The same award can be published
-   as several near-duplicate notices; summing raw rows overstates the total by the
-   duplicate share. Rows with no pin stand alone under a stable per-row surrogate. */
-function dedupeByPin(raw){
-  const byPin = new Map();
-  for(let i=0; i<raw.length; i++){
-    const r = raw[i];
-    const amt = parseFloat(r.contract_amount);
-    if(!(amt > 0)) continue;
-    const pin = r.pin || ('_np_' + i);
-    const prev = byPin.get(pin);
-    if(!prev || amt > (parseFloat(prev.contract_amount)||0)) byPin.set(pin, r);
+(function(){
+  var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  function fmtMonth(ym){ if(!ym) return ''; var p=String(ym).split('-'); var mo=MONTHS[(+p[1])-1]; return mo?(mo+' '+p[0]):''; }
+  function fmtMoney(n){ n=+n; if(!isFinite(n)) return '–'; if(n>=1e9) return '$'+(n/1e9).toFixed(1)+'B'; if(n>=1e6) return '$'+Math.round(n/1e6)+'M'; if(n>=1e3) return '$'+Math.round(n/1e3)+'K'; return '$'+Math.round(n); }
+  function fmtInt(n){ n=+n; if(!isFinite(n)) return '–'; return Math.round(n).toLocaleString('en-US'); }
+  function setText(id,t){ var el=document.getElementById(id); if(el) el.textContent=t; }
+  function showIndex(val, asof){
+    setText('lp-index', Number(val).toFixed(1));
+    setText('lp-index-cap','New-award momentum against the 2019 monthly average (=100), renewals and megaprojects excluded.'+(asof?(' As of '+asof+'.'):''));
+    var sb=document.getElementById('series-asof'); if(sb&&asof) sb.textContent=asof.toUpperCase();
   }
-  return [...byPin.values()];
-}
-
-const AWARD_LIMIT = 20000;
-async function fetchAwards(){
-  const params = new URLSearchParams({
-    '$select': 'pin,request_id,start_date,agency_name,category_description,short_title,selection_method_description,vendor_name,contract_amount,additional_description_1',
-    '$where': `starts_with(category_description,'Construction') AND start_date>'${isoDaysAgo(5)}' AND contract_amount>0`,
-    '$order': 'start_date DESC',
-    '$limit': String(AWARD_LIMIT)
-  });
-  params.set('$$app_token', '3TAzQQPiSG2T4WGWfYYUxxqfJ');
-  const res = await fetch(`${API}?${params}`);
-  if(!res.ok) throw new Error('API ' + res.status);
-  const raw = await res.json();
-  // Truncation guard: if the returned row count equals the cap, the single-page
-  // pull may be clipping the universe. The 5-year construction slice is well
-  // under 20k today (all-time is ~8,200 rows), so this never fires now, but it
-  // keeps a future data-growth truncation from silently understating KPIs.
-  state.truncated = raw.length >= AWARD_LIMIT;
-  if(state.truncated){
-    console.warn('Award pull hit the ' + AWARD_LIMIT + '-row cap; the view may be capped and totals may be understated.');
+  function indexNeutral(){ setText('lp-index-cap','New-award momentum against the 2019 monthly average (=100), renewals and megaprojects excluded. Reading updating.'); }
+  function fillStats(g){
+    if(!g) return;
+    if(g.committed!=null) setText('st-committed', fmtMoney(g.committed));
+    if(g.awarded!=null) setText('st-awarded', fmtMoney(g.awarded));
+    if(g.open_solicitations!=null) setText('st-sol', fmtInt(g.open_solicitations));
+    if(g.contractors!=null) setText('st-vendors', fmtInt(g.contractors));
   }
-  return dedupeByPin(raw).map(normalize);
-}
+  // One small same-origin read drives the whole front door.
+  fetch('/data/precomputed.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(pc){
+    var asof = fmtMonth(pc.index_month) || (pc.meta&&pc.meta.generated?pc.meta.generated.slice(0,10):'');
+    var g = pc.glimpse || {};
+    if(g.awarded==null && pc.awarded_ttm && pc.awarded_ttm.total!=null) g.awarded=pc.awarded_ttm.total;
+    fillStats(g);
+    if(pc.index_level!=null){ showIndex(pc.index_level, asof); return; }
+    throw new Error('no index_level');
+  }).catch(function(){ computeLive().then(function(o){ showIndex(o.value, fmtMonth(o.month)); }).catch(indexNeutral); });
 
-const BORO_PATTERNS = [
-  ['Manhattan', /\bmanhattan\b|\bnew york county\b/i],
-  ['Brooklyn',  /\bbrooklyn\b|\bkings county\b|\bbklyn\b/i],
-  ['Queens',    /\bqueens\b/i],
-  ['Bronx',     /\bbronx\b/i],
-  ['Staten Island', /\bstaten island\b|\brichmond county\b/i]
-];
-
-function stripHtml(s){ return (s||'').replace(/<[^>]*>/g,' '); }
-
-function deriveBorough(title, desc){
-  const text = (title + ' ' + stripHtml(desc)).toLowerCase();
-  const hits = BORO_PATTERNS.filter(([,re]) => re.test(text)).map(([name]) => name);
-  if(hits.length === 1) return hits[0];
-  if(hits.length > 1) return 'Multi-borough';
-  return 'Citywide / Unspecified';
-}
-
-function normalize(r){
-  return {
-    id: r.request_id,
-    date: new Date(r.start_date),
-    month: r.start_date.slice(0,7),
-    agency: r.agency_name || 'Unspecified',
-    cat: r.category_description === HARD ? 'hard' : 'rel',
-    title: r.short_title || '(untitled)',
-    method: r.selection_method_description || '',
-    kind: isContinuation(r.selection_method_description) ? 'cont' : 'new',
-    tags: wtClassify(r.short_title || ''),
-    vendor: (r.vendor_name || 'Unspecified').trim(),
-    amount: parseFloat(r.contract_amount) || 0,
-    borough: deriveBorough(r.short_title || '', r.additional_description_1 || '')
-  };
-}
-
-/* ================= aggregation ================= */
-function monthKey(d){ return d.toISOString().slice(0,7); }
-
-function windowStart(months){
-  const d = new Date();
-  d.setMonth(d.getMonth() - months);
-  return d;
-}
-
-function inScope(row){
-  if(state.scope !== 'all' && row.cat !== state.scope) return false;
-  if(state.type === 'new' && row.kind !== 'new') return false;
-  if(state.type === 'cont' && row.kind !== 'cont') return false;
-  if(state.size === 'exmega' && row.amount >= MEGA) return false;
-  if(state.worktype === 'uncat' && row.tags.length) return false;
-  if(state.worktype !== 'all' && state.worktype !== 'uncat' && !row.tags.includes(state.worktype)) return false;
-  return true;
-}
-
-function filtered(){
-  const start = windowStart(state.windowMonths);
-  return state.rows.filter(r => r.date >= start && inScope(r));
-}
-
-function priorPeriod(){
-  const start = windowStart(state.windowMonths * 2);
-  const end = windowStart(state.windowMonths);
-  return state.rows.filter(r => r.date >= start && r.date < end && inScope(r));
-}
-
-function sum(rows){ return rows.reduce((a,r) => a + r.amount, 0); }
-
-function median(rows){
-  if(!rows.length) return 0;
-  const v = rows.map(r => r.amount).sort((a,b) => a-b);
-  const m = Math.floor(v.length/2);
-  return v.length % 2 ? v[m] : (v[m-1]+v[m])/2;
-}
-
-function groupSum(rows, keyFn){
-  const m = new Map();
-  for(const r of rows){
-    const k = keyFn(r);
-    const g = m.get(k) || { total:0, count:0 };
-    g.total += r.amount; g.count++;
-    m.set(k, g);
-  }
-  return m;
-}
-
-function monthSeries(rows){
-  // ordered list of months in window with hard/rel sums
-  const months = [];
-  const start = windowStart(state.windowMonths);
-  const cur = new Date(start.getFullYear(), start.getMonth()+1, 1);
-  const now = new Date();
-  while(cur <= now){
-    months.push(monthKey(cur));
-    cur.setMonth(cur.getMonth()+1);
-  }
-  const hard = Object.fromEntries(months.map(m => [m,0]));
-  const rel  = Object.fromEntries(months.map(m => [m,0]));
-  for(const r of rows){
-    if(r.month in hard){
-      if(r.cat === 'hard') hard[r.month] += r.amount; else rel[r.month] += r.amount;
+  // Fallback: compute the index live from the City Record, identical to the Analysis page.
+  function computeLive(){
+    var API='https://data.cityofnewyork.us/resource/qyyg-4tf5.json', TOKEN='3TAzQQPiSG2T4WGWfYYUxxqfJ', MEGA=500e6;
+    var isCont=function(m){ return /renewal|extension/i.test(m||''); };
+    var byPin=new Map(), off=0, PAGE=50000;
+    var where="starts_with(category_description,'Construction') AND contract_amount>0 AND contract_amount<"+MEGA;
+    function page(){
+      var u=API+'?'+new URLSearchParams({'$select':'pin,contract_amount,start_date,selection_method_description','$where':where,'$order':'pin','$limit':String(PAGE),'$offset':String(off),'$$app_token':TOKEN});
+      return fetch(u).then(function(r){ if(!r.ok) throw new Error('api'); return r.json(); }).then(function(b){
+        for(var i=0;i<b.length;i++){ var r=b[i]; var amt=parseFloat(r.contract_amount); if(!(amt>0)||amt>=MEGA) continue; var pin=r.pin||('_np_'+off+'_'+i); var rec={amt:amt,m:r.start_date?r.start_date.slice(0,7):null,cont:isCont(r.selection_method_description)}; var p=byPin.get(pin); if(!p||rec.amt>p.amt) byPin.set(pin,rec); }
+        if(b.length>=PAGE && off<400000){ off+=PAGE; return page(); }
+      });
     }
+    return page().then(function(){
+      var byMonth=new Map();
+      byPin.forEach(function(rec){ if(rec.cont||!rec.m) return; var c=byMonth.get(rec.m)||{v:0,c:0}; c.v+=rec.amt; c.c+=1; byMonth.set(rec.m,c); });
+      var now=new Date(), lastC=new Date(now.getFullYear(),now.getMonth(),1), months=[], cur=new Date(2003,0,1);
+      while(cur<lastC){ months.push(cur.toISOString().slice(0,7)); cur.setMonth(cur.getMonth()+1); }
+      var v=months.map(function(m){return (byMonth.get(m)||{v:0}).v;}), c=months.map(function(m){return (byMonth.get(m)||{c:0}).c;});
+      var tM=[],tV=[],tC=[],sv=0,sc=0;
+      for(var i=0;i<months.length;i++){ sv+=v[i]; sc+=c[i]; if(i>=12){sv-=v[i-12];sc-=c[i-12];} if(i>=11){tM.push(months[i]);tV.push(sv);tC.push(sc);} }
+      var bi=tM.map(function(m,i){return m.indexOf('2019')===0?i:-1;}).filter(function(i){return i>=0;});
+      var mean=function(a){return a.reduce(function(x,y){return x+y;},0)/a.length;};
+      var baseV=bi.length?mean(bi.map(function(i){return tV[i];})):tV[0], baseC=bi.length?mean(bi.map(function(i){return tC[i];})):tC[0];
+      var last=tM.length-1;
+      return { value:100*Math.sqrt((tV[last]/baseV)*(tC[last]/baseC)), month:tM[last] };
+    });
   }
-  return { months, hard: months.map(m=>hard[m]), rel: months.map(m=>rel[m]) };
-}
-
-/* ================= formatting ================= */
-function fmtMoney(v){
-  if(v >= 1e9) return '$' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2) + 'B';
-  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
-  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
-  return '$' + Math.round(v);
-}
-function fmtInt(v){ return v.toLocaleString('en-US'); }
-function fmtDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
-function fmtMonthLabel(m){
-  const [y,mo] = m.split('-');
-  const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return names[+mo-1] + ' ’' + y.slice(2);
-}
-function esc(s){ const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-const WINDOW_LABEL = { 12:'trailing 12 months', 36:'trailing 3 years', 60:'trailing 5 years' };
-
-/* ================= rendering ================= */
-const COLOR_HARD = '#b5482a', COLOR_REL = '#243b53', GRID = '#ead9c9';
-let charts = {};
-
-Chart.defaults.font.family = "'IBM Plex Mono',monospace";
-Chart.defaults.font.size = 10;
-Chart.defaults.color = '#6e5d52';
-Object.assign(Chart.defaults.plugins.tooltip, {
-  backgroundColor:'#fffaf4', titleColor:'#22150e', bodyColor:'#6e5d52',
-  borderColor:'#b5482a', borderWidth:1, cornerRadius:2, padding:10, displayColors:false,
-  titleFont:{family:"'Public Sans',sans-serif",weight:'600',size:12}, bodyFont:{family:"'IBM Plex Mono',monospace",size:12},
-  caretSize:5
-});
-
-function destroyChart(k){ if(charts[k]){ charts[k].destroy(); delete charts[k]; } }
-
-function moneyTicks(v){ return fmtMoney(v); }
-
-function renderTrend(rows){
-  const s = monthSeries(rows);
-  destroyChart('trend');
-  const datasets = [];
-  if(state.scope !== 'rel') datasets.push({label:'Construction', data:s.hard, backgroundColor:COLOR_HARD, borderRadius:1, stack:'a'});
-  if(state.scope !== 'hard') datasets.push({label:'Related services', data:s.rel, backgroundColor:COLOR_REL, borderRadius:1, stack:'a'});
-  charts.trend = new Chart(document.getElementById('chart-trend'), {
-    type:'bar',
-    data:{ labels:s.months.map(fmtMonthLabel), datasets },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{
-        legend:{position:'top', align:'end', labels:{boxWidth:9, boxHeight:9, usePointStyle:true, pointStyle:'rect', font:{family:"'Public Sans',sans-serif",size:11}}},
-        tooltip:{callbacks:{label:(c)=> c.dataset.label + ': ' + fmtMoney(c.parsed.y)}}
-      },
-      scales:{
-        x:{stacked:true, grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:12}},
-        y:{stacked:true, grid:{color:GRID}, border:{display:false}, ticks:{callback:moneyTicks, maxTicksLimit:6}}
-      }
-    }
-  });
-  document.getElementById('trend-sub').textContent =
-    'Published award value by month, ' + WINDOW_LABEL[state.windowMonths];
-}
-
-const AGENCY_SHORT = {
-  'Design and Construction':'Design & Construction (DDC)',
-  'Environmental Protection':'Environmental Protection (DEP)',
-  'Parks and Recreation':'Parks & Recreation',
-  'Housing Preservation and Development':'Housing Preservation & Dev (HPD)',
-  'Citywide Administrative Services':'Citywide Admin Services (DCAS)',
-  'School Construction Authority':'School Construction Authority (SCA)',
-  'Health and Mental Hygiene':'Health & Mental Hygiene (DOHMH)',
-  'Homeless Services':'Homeless Services (DHS)',
-  'Administration for Children’s Services':'Children’s Services (ACS)'
-};
-function agencyLabel(a){ return AGENCY_SHORT[a] || a; }
-
-function renderBarChart(key, canvasId, entries, color){
-  destroyChart(key);
-  charts[key] = new Chart(document.getElementById(canvasId), {
-    type:'bar',
-    data:{
-      labels: entries.map(e=>e[0]),
-      datasets:[{ data: entries.map(e=>e[1].total), backgroundColor: color, borderRadius:1, barThickness:18 }]
-    },
-    options:{
-      indexAxis:'y', responsive:true, maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        tooltip:{callbacks:{label:(c)=> fmtMoney(c.parsed.x) + ' across ' + fmtInt(entries[c.dataIndex][1].count) + ' awards'}}
-      },
-      scales:{
-        x:{grid:{color:GRID}, border:{display:false}, ticks:{callback:moneyTicks, maxTicksLimit:5}},
-        y:{grid:{display:false}, ticks:{autoSkip:false, font:{family:"'Public Sans',sans-serif",size:11.5}}}
-      }
-    }
-  });
-}
-
-function renderAgencies(rows){
-  const entries = [...groupSum(rows, r=>agencyLabel(r.agency)).entries()]
-    .sort((a,b)=>b[1].total-a[1].total).slice(0,8);
-  renderBarChart('agency','chart-agency', entries, COLOR_HARD);
-}
-
-const BORO_ORDER = ['Brooklyn','Queens','Manhattan','Bronx','Staten Island','Multi-borough','Citywide / Unspecified'];
-function renderBoroughs(rows){
-  const g = groupSum(rows, r=>r.borough);
-  const entries = BORO_ORDER.filter(b=>g.has(b)).map(b=>[b,g.get(b)]);
-  renderBarChart('boro','chart-boro', entries, COLOR_REL);
-}
-
-function renderVendors(rows){
-  const entries = [...groupSum(rows, r=>r.vendor).entries()]
-    .sort((a,b)=>b[1].total-a[1].total).slice(0,10);
-  const tb = document.querySelector('#tbl-vendors tbody');
-  tb.innerHTML = entries.map((e,i)=>`<tr>
-    <td class="rank">${i+1}</td>
-    <td><a class="t-title" href="/vendors/?q=${encodeURIComponent(e[0])}" title="See this contractor's full award history">${esc(e[0])}</a></td>
-    <td class="num">${fmtInt(e[1].count)}</td>
-    <td class="num amt">${fmtMoney(e[1].total)}</td>
-  </tr>`).join('');
-}
-
-function renderRecent(rows){
-  const tb = document.querySelector('#tbl-recent tbody');
-  tb.innerHTML = rows.slice(0,15).map(r=>`<tr>
-    <td style="white-space:nowrap" class="mono">${fmtDate(r.date)}</td>
-    <td>
-      <div class="t-title">${esc(r.title)}</div>
-      <div class="t-sub">${esc(r.vendor)} · ${esc(r.method)} · <span class="pill ${r.cat}">${r.cat==='hard'?'Construction':'Related services'}</span></div>
-    </td>
-    <td>${esc(agencyLabel(r.agency))}</td>
-    <td class="num amt">${fmtMoney(r.amount)}</td>
-  </tr>`).join('');
-}
-
-function renderKpis(rows){
-  const total = sum(rows);
-  const prior = sum(priorPeriod());
-  const delta = prior > 0 ? (total - prior) / prior * 100 : null;
-  document.getElementById('kpi-total').textContent = fmtMoney(total);
-  document.getElementById('kpi-total-note').innerHTML = delta === null ? WINDOW_LABEL[state.windowMonths] :
-    `<span class="${delta>=0?'up':'down'}">${delta>=0?'+':'−'}${Math.abs(delta).toFixed(0)}%</span> vs prior period`;
-  document.getElementById('kpi-count').textContent = fmtInt(rows.length);
-  document.getElementById('kpi-count-note').textContent = 'award notices, ' + WINDOW_LABEL[state.windowMonths];
-  document.getElementById('kpi-median').textContent = fmtMoney(median(rows));
-  const top = rows.reduce((a,r)=> r.amount > (a?a.amount:0) ? r : a, null);
-  document.getElementById('kpi-max').textContent = top ? fmtMoney(top.amount) : '–';
-  document.getElementById('kpi-max-note').textContent = top ? agencyLabel(top.agency) : '';
-}
-
-function renderAll(){
-  const rows = filtered();
-  renderKpis(rows);
-  renderTrend(rows);
-  renderAgencies(rows);
-  renderBoroughs(rows);
-  renderVendors(rows);
-  renderRecent(rows);
-}
-
-/* ================= controls ================= */
-function wireSeg(id, attr, initial, onChange){
-  const seg = document.getElementById(id);
-  const btns = [...seg.querySelectorAll('button')];
-  function set(val){
-    btns.forEach(b => b.classList.toggle('on', b.dataset[attr] === String(val)));
-    onChange(val);
-  }
-  btns.forEach(b => b.addEventListener('click', ()=> set(b.dataset[attr])));
-  set(initial);
-}
-
-/* ---- commitment-to-cash span strip (hero) ----
-   Awarded reuses the rows already pulled (trailing 12 months, all construction,
-   independent of the control filters below). Paid sums the nightly Checkbook
-   static file, same-origin, no token. Committed and Spent stay as labeled links
-   to the Funnel, the canonical source, rather than re-running the OMB snapshot
-   pulls here, so first paint stays fast and the two pages cannot drift. The four
-   figures are different ledgers and scopes and are never summed. */
-function renderSpanStrip(){
-  const start = windowStart(12);
-  const ttmRows = state.rows.filter(r => r.date >= start);
-  const awarded = sum(ttmRows);
-  const aEl = document.getElementById('ss-awarded');
-  if(aEl){
-    aEl.textContent = fmtMoney(awarded);
-    document.getElementById('ss-awarded-d').textContent =
-      fmtInt(ttmRows.length) + ' construction awards, trailing 12 months.';
-  }
-}
-async function loadCheckbookPaid(){
-  try{
-    const res = await fetch('/data/checkbook-vendors.json');
-    if(!res.ok) throw new Error('checkbook ' + res.status);
-    const d = await res.json();
-    const vendors = d.vendors || {};
-    let paid = 0;
-    for(const k in vendors){ paid += (parseFloat(vendors[k].paid) || 0); }
-    const pEl = document.getElementById('ss-paid');
-    if(pEl){
-      pEl.textContent = fmtMoney(paid);
-      const fy = (d.meta && Array.isArray(d.meta.fiscal_years) && d.meta.fiscal_years.length)
-        ? ('FY' + d.meta.fiscal_years[0] + '–' + d.meta.fiscal_years[d.meta.fiscal_years.length-1].toString().slice(2))
-        : '';
-      document.getElementById('ss-paid-d').textContent =
-        'Disbursed on registered contracts' + (fy ? ', ' + fy : '') + '. Checkbook NYC.';
-    }
-  }catch(e){ /* leave the Paid cell as a dash; strip still works */ }
-}
-
-/* Resilience fallback: when the live City API can't be reached, show the last
-   archived Awarded figure (nightly data/precomputed.json, computed with the same
-   pin-dedup rule) in the hero instead of a bare error. Live path is untouched;
-   this runs only in the init catch. Returns true if it rendered a fallback. */
-async function showArchivedFallback(){
-  try{
-    const res = await fetch('/data/precomputed.json');
-    if(!res.ok) return false;
-    const d = await res.json();
-    const a = (d && d.awarded_ttm) || {};
-    if(typeof a.total !== 'number') return false;
-    const aEl = document.getElementById('ss-awarded');
-    if(aEl){
-      aEl.textContent = fmtMoney(a.total);
-      document.getElementById('ss-awarded-d').textContent =
-        fmtInt(a.count) + ' construction awards, trailing 12 months.';
-    }
-    const when = d.meta && d.meta.generated ? new Date(d.meta.generated) : null;
-    const asof = (when && !isNaN(when)) ? fmtDate(when) : 'recently';
-    const err = document.getElementById('error');
-    err.innerHTML = '<p><strong>Live NYC Open Data is temporarily unavailable.</strong></p>'
-      + '<p>The Awarded figure above is the last archived value, as of ' + asof
-      + '. The full charts and filters return automatically when the live source is back. Refresh to retry.</p>';
-    err.style.display = 'block';
-    return true;
-  }catch(_){ return false; }
-}
-
-/* ================= init ================= */
-(async function init(){
-  loadCheckbookPaid();
-  try{
-    state.rows = await fetchAwards();
-  }catch(e){
-    document.getElementById('loader').style.display = 'none';
-    const shown = await showArchivedFallback();
-    if(!shown) document.getElementById('error').style.display = 'block';
-    return;
-  }
-  renderSpanStrip();
-  const latest = state.rows.length ? state.rows[0].date : null;
-  document.getElementById('asof').innerHTML = latest ?
-    `Latest award published <strong>${fmtDate(latest)}</strong> · ${fmtInt(state.rows.length)} construction awards in the trailing five years · source refreshed daily` : '';
-  if(latest){
-    document.getElementById('series-asof').textContent = fmtDate(latest).toUpperCase();
-  }
-  document.getElementById('loader').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  if(state.truncated){
-    const tn = document.getElementById('trunc-note');
-    if(tn) tn.style.display = '';
-  }
-  let ready = false;
-  wireSeg('seg-window','w', '12', v => { state.windowMonths = +v; if(ready) renderAll(); });
-  wireSeg('seg-scope','s', 'all', v => { state.scope = v; if(ready) renderAll(); });
-  wireSeg('seg-type','t', 'all', v => { state.type = v; if(ready) renderAll(); });
-  wireSeg('seg-size','z', 'all', v => { state.size = v; if(ready) renderAll(); });
-  const sel = document.getElementById('sel-worktype');
-  const opts = Object.keys(WT_LEXICON).map(k => `<option value="${k}">${WT_LEXICON[k].label}</option>`).join('');
-  sel.innerHTML = '<option value="all">All work types</option>' + opts + '<option value="uncat">Uncategorized</option>';
-  sel.addEventListener('change', e => { state.worktype = e.target.value; if(ready) renderAll(); });
-  ready = true;
-  renderAll();
 })();
-
 </script>
 <!-- ===== Concrete Index export module: page PDF, chart PNG, tile CSV. No external dependencies. ===== -->
 <style id="exp-css">
@@ -910,7 +501,7 @@ async function showArchivedFallback(){
   "use strict";
   if(window.__ciExport)return; window.__ciExport=1;
   function slug(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60);}
-  var pageSlug=slug(location.pathname.replace(/\/index\.html?$/i,'').replace(/\/+$/,''))||'awarded';
+  var pageSlug=slug(location.pathname.replace(/\/index\.html?$/i,'').replace(/\/+$/,''))||'home';
   function getChart(cv){return (cv&&window.Chart&&Chart.getChart)?(Chart.getChart(cv)||null):null;}
   function fnameFor(el,ext){
     var card=el.closest('.card')||el.closest('section')||el.parentElement;
