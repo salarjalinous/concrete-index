@@ -248,41 +248,6 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     <p class="sub">The award stage of the demand funnel: the construction contracts the City has let, read live from the City Record. Every award notice is deduplicated to one record per procurement and totaled on the spot, so you can see how much work is entering the market, which agencies are letting it, who is winning it, and where, across any window you set.</p>
     <p class="asof" id="asof">Loading latest award data…</p>
   </div>
-  <nav class="valstrip" aria-label="Key views">
-    <a href="/funnel/"><span class="vs-k">Funnel</span><span class="vs-d">budget to payment</span></a>
-    <a href="/velocity/"><span class="vs-k">Velocity</span><span class="vs-d">which agencies move money fast</span></a>
-    <a href="/vendors/"><span class="vs-k">Vendors</span><span class="vs-d">any contractor's public award record</span></a>
-  </nav>
-
-  <section class="spanstrip" aria-label="Commitment to cash, in numbers">
-    <div class="ss-head">
-      <span class="ss-t">Commitment to cash</span>
-      <a class="ss-link" href="/funnel/">Full gauges on the Funnel →</a>
-    </div>
-    <div class="ss-row">
-      <div class="ss-cell">
-        <div class="ss-k">Committed</div>
-        <a class="ss-v" href="/funnel/">~$109B</a>
-        <div class="ss-d">Funded capital work not yet spent. OMB capital plan.</div>
-      </div>
-      <div class="ss-cell live">
-        <div class="ss-k"><span class="ss-arrow">→</span>Awarded</div>
-        <div class="ss-v" id="ss-awarded">–</div>
-        <div class="ss-d" id="ss-awarded-d">Construction awards, trailing 12 months.</div>
-      </div>
-      <div class="ss-cell">
-        <div class="ss-k"><span class="ss-arrow">→</span>Spent</div>
-        <a class="ss-v" href="/funnel/" style="font-size:15px">On the Funnel →</a>
-        <div class="ss-d">Capital-plan outlays, trailing year.</div>
-      </div>
-      <div class="ss-cell live">
-        <div class="ss-k"><span class="ss-arrow">→</span>Paid</div>
-        <div class="ss-v" id="ss-paid">–</div>
-        <div class="ss-d" id="ss-paid-d">Disbursed on registered contracts. Checkbook NYC.</div>
-      </div>
-    </div>
-    <div class="ss-note">Four ledgers read side by side, not one flow. Each is a different source and scope, so they are never summed.</div>
-  </section>
 </div>
 
 <div id="loader" class="wrap">
@@ -837,7 +802,7 @@ async function showArchivedFallback(){
     const asof = (when && !isNaN(when)) ? fmtDate(when) : 'recently';
     const err = document.getElementById('error');
     err.innerHTML = '<p><strong>Live NYC Open Data is temporarily unavailable.</strong></p>'
-      + '<p>The Awarded figure above is the last archived value, as of ' + asof
+      + '<p>The last archived trailing-twelve-month awarded total was ' + fmtMoney(a.total) + ', as of ' + asof
       + '. The full charts and filters return automatically when the live source is back. Refresh to retry.</p>';
     err.style.display = 'block';
     return true;
