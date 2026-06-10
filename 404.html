@@ -6,15 +6,26 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Page not found · The Concrete Index</title>
+<meta name="robots" content="noindex">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23b5482a%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
-:root{--paper:#fbf2ea;--ink:#22150e;--navy:#243b53;--muted:#6e5d52;--accent:#b5482a;--line:#e4d4c5}
+:root{--paper:#fbf2ea;--surface:#fffaf4;--ink:#22150e;--navy:#243b53;--muted:#6e5d52;--accent:#b5482a;--line:#e4d4c5}
 *{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:'Public Sans',system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px}
-.box{max-width:560px;text-align:left}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Public Sans',system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+header{background:var(--paper);border-bottom:2px solid var(--ink)}
+.nav{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:62px;padding:0 28px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:20px;letter-spacing:-.01em;color:var(--ink);text-decoration:none}
+.brand svg{color:var(--navy);flex-shrink:0}
+.brand .tick{color:var(--accent)}
+.nav-links{display:flex;gap:17px;align-items:center;font-size:13.5px;font-weight:500}
+.nav-links a{color:var(--muted);text-decoration:none}
+.nav-links a:hover{color:var(--ink)}
+@media(max-width:620px){.nav-links{display:none}}
+.fill{flex:1;display:flex;align-items:center;justify-content:center;padding:32px}
+.box{max-width:560px}
 .mark{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
 h1{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(30px,5vw,44px);line-height:1.08;letter-spacing:-.015em;margin:0 0 14px}
 p{font-size:16px;line-height:1.55;color:var(--muted);margin:0 0 22px;max-width:460px}
@@ -26,16 +37,32 @@ p{font-size:16px;line-height:1.55;color:var(--muted);margin:0 0 22px;max-width:4
 </style>
 </head>
 <body>
-  <div class="box">
-    <div class="mark">CI &middot; 404</div>
-    <h1>That page is not in the record.</h1>
-    <p>The page you were looking for has moved or never existed. The award flow, from budget to award to payment, is still here.</p>
-    <div class="links">
-      <a class="primary" href="/">Front page</a>
-      <a href="/awarded/">Awarded</a>
-      <a href="/vendors/">Vendors</a>
-      <a href="/briefing/">Briefing</a>
-      <a href="/about/">About</a>
+  <header>
+    <div class="nav">
+      <a class="brand" href="/">
+        <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
+        <span>The Concrete Index<span class="tick">.</span></span>
+      </a>
+      <nav class="nav-links">
+        <a href="/awarded/">Awarded</a>
+        <a href="/vendors/">Vendors</a>
+        <a href="/briefing/">Briefing</a>
+        <a href="/about/">About</a>
+      </nav>
+    </div>
+  </header>
+  <div class="fill">
+    <div class="box">
+      <div class="mark">CI &middot; 404</div>
+      <h1>That page is not in the record.</h1>
+      <p>The page you were looking for has moved or never existed. Everything else is still here.</p>
+      <div class="links">
+        <a class="primary" href="/">Front page</a>
+        <a href="/awarded/">Awarded</a>
+        <a href="/vendors/">Vendors</a>
+        <a href="/briefing/">Briefing</a>
+        <a href="/about/">About</a>
+      </div>
     </div>
   </div>
 </body>
