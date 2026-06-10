@@ -170,7 +170,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     <nav class="nav-links">
       <a href="/pipeline/">Pipeline</a>
       <a href="/solicitations/">Bidding</a>
-      <a href="/">Awarded</a>
+      <a href="/awarded/">Awarded</a>
       <a href="/vendors/">Vendors</a>
       <a href="/funnel/">Funnel</a>
       <a href="/velocity/" class="active">Velocity</a>
@@ -243,7 +243,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2>Velocity · Methodology &amp; definitions</h2><span class="cap">SERIES NOTES</span></div>
       <div class="method-body">
       <h3>The three measures</h3>
-      <p><strong>Committed, unspent</strong> is the forward pipeline from the <a href="/pipeline/">Pipeline</a> page: total project budgets minus spending to date across active capital projects in the City's most recent capital plan snapshot (NYC OMB, dataset <code>fb86-vt7u</code>). <strong>Awarded</strong> is trailing-twelve-month construction award value from the City Record (dataset <code>qyyg-4tf5</code>), as on the <a href="/">Awarded</a> page. <strong>Spent</strong> is trailing-year capital outlays, measured as the growth in each project's cumulative spend-to-date between capital plan snapshots. The underlying ledger is the City's FMS, the same accounting that feeds Checkbook NYC.</p>
+      <p><strong>Committed, unspent</strong> is the forward pipeline from the <a href="/pipeline/">Pipeline</a> page: total project budgets minus spending to date across active capital projects in the City's most recent capital plan snapshot (NYC OMB, dataset <code>fb86-vt7u</code>). <strong>Awarded</strong> is trailing-twelve-month construction award value from the City Record (dataset <code>qyyg-4tf5</code>), as on the <a href="/awarded/">Awarded</a> page. <strong>Spent</strong> is trailing-year capital outlays, measured as the growth in each project's cumulative spend-to-date between capital plan snapshots. The underlying ledger is the City's FMS, the same accounting that feeds Checkbook NYC.</p>
       <h3>How spending pace is computed</h3>
       <p>OMB publishes a plan snapshot roughly every four months. For each project, spending in a period is its cumulative spend-to-date in one snapshot minus the prior snapshot, floored at zero; new projects count from zero. Projects are matched across snapshots by agency and FMS ID, with sub-project rows collapsed first so nothing is double-counted. Projects that leave the dataset between snapshots stop contributing, which biases the spend estimate low rather than high.</p>
       <h3>Backlog coverage</h3>
