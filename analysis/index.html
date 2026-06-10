@@ -116,6 +116,14 @@ td.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
 .method p+p{margin-top:8px}
 .method code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:var(--band);padding:1px 5px;border-radius:3px;border:1px solid var(--line)}
 
+/* ---------- cost-adjusted section ---------- */
+#cost-adjusted{padding:48px 0 0}
+.adj-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:8px}
+.adj-head h2{font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:700;letter-spacing:-.012em;color:var(--ink)}
+.adj-head .cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em;text-align:right;white-space:nowrap}
+.adj-intro{font-size:14.5px;color:var(--muted);max-width:780px;margin:16px 0 4px}
+.adj-kpis{padding-top:26px}
+
 /* ---------- footer ---------- */
 footer{margin-top:54px;background:var(--band);border-top:2px solid var(--ink);padding:30px 0 40px;font-size:13px;color:var(--muted)}
 footer a{color:var(--steel)}
@@ -193,7 +201,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 </header>
 
 <div class="series-bar">
-  <div class="inner">SERIES&nbsp;·&nbsp;<b>CI-ANALYSIS</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CITY RECORD (qyyg-4tf5) · CAPITAL PLAN (fb86-vt7u)</b><span class="sep">·</span>BASE&nbsp;·&nbsp;<b>2019 = 100</b><span class="sep">·</span>UPDATED&nbsp;·&nbsp;<b>ON LOAD</b></div>
+  <div class="inner">SERIES&nbsp;·&nbsp;<b>CI-ANALYSIS</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CITY RECORD (qyyg-4tf5) · CAPITAL PLAN (fb86-vt7u) · BLS (WPUSI012011, CES2000000008)</b><span class="sep">·</span>BASE&nbsp;·&nbsp;<b>2019 = 100</b><span class="sep">·</span>UPDATED&nbsp;·&nbsp;<b>ON LOAD</b></div>
 </div>
 
 <div class="wrap hero">
@@ -229,6 +237,40 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="chart-box tall"><canvas id="chart-idx"></canvas></div>
       <div class="reading" id="idx-reading"></div>
       <div class="tnote">Each point is a geometric blend of two trailing-twelve-month series, new-award dollar value and new-award count: index = 100 × √[(value-TTM ÷ value-2019) × (count-TTM ÷ count-2019)]. Renewals and $500M-plus megaprojects are excluded so it tracks genuinely new demand, and the geometric mean keeps either series from dominating. Read it as a relative level against the 2019 = 100 baseline, not a dollar amount; the series is nominal.</div>
+    </div>
+  </section>
+
+  <section id="cost-adjusted">
+    <div class="adj-head">
+      <h2>The real trend, adjusted for cost</h2>
+      <span class="cap" id="adj-cap">MATERIALS &amp; LABOR · 2019 = 100</span>
+    </div>
+    <p class="adj-intro">The headline index counts dollars as the City spends them. But a 2026 dollar buys less concrete and fewer crew-hours than a 2019 dollar did. Discounting each award by the month's construction-cost level separates real construction bought from price paid, and the two have parted company.</p>
+
+    <div id="adj-unavail"></div>
+
+    <section class="kpis adj-kpis">
+      <div class="kpi hl"><div class="k-label">Adjusted Index</div><div class="k-value" id="kpi-adj">–</div><div class="k-note" id="kpi-adj-note">cost-adjusted, 2019 = 100</div></div>
+      <div class="kpi"><div class="k-label">Gap vs nominal</div><div class="k-value" id="kpi-gap">–</div><div class="k-note" id="kpi-gap-note">index points lost to cost</div></div>
+      <div class="kpi"><div class="k-label">Materials since 2019</div><div class="k-value" id="kpi-mat">–</div><div class="k-note" id="kpi-mat-note">PPI inputs to construction</div></div>
+      <div class="kpi"><div class="k-label">Labor since 2019</div><div class="k-value" id="kpi-lab">–</div><div class="k-note" id="kpi-lab-note">construction hourly earnings</div></div>
+    </section>
+
+    <div class="grid two" style="padding-top:22px">
+      <div class="card" id="cost-card">
+        <div class="sec-head"><h2>Construction cost since 2019</h2><span class="cap">2019 = 100</span></div>
+        <div class="h-sub" id="cost-sub">Materials and labor price levels, each rebased to its 2019 average. The wedge between them is the input mix the City pays for.</div>
+        <div class="chart-box"><canvas id="chart-cost"></canvas></div>
+        <div class="reading" id="cost-reading"></div>
+        <div class="tnote">Two national BLS price series, each rebased to its own 2019 twelve-month average = 100: materials is the PPI for inputs to construction industries, goods (<code>WPUSI012011</code>); labor is average hourly earnings of construction production and nonsupervisory employees (<code>CES2000000008</code>). Monthly, no interpolation; the most recent month or two are forward-filled at the last published value until BLS posts them. The blended deflator that drives the adjusted index weights these 60% materials, 40% labor.</div>
+      </div>
+      <div class="card" id="adj-card">
+        <div class="sec-head"><h2>Nominal vs cost-adjusted</h2><span class="cap">2019 = 100</span></div>
+        <div class="h-sub" id="adj-sub">The same Concrete Index, before and after discounting each award month by that month's construction-cost level. The shaded band is the cost wedge.</div>
+        <div class="chart-box tall"><canvas id="chart-adj"></canvas></div>
+        <div class="reading" id="adj-reading"></div>
+        <div class="tnote">For every award month, the new-award dollar value is divided by that month's deflator (deflator ÷ 100), then summed to a trailing-twelve real total before the geometric blend with award count: adjusted = 100 × √[(real-value-TTM ÷ real-value-2019) × (count-TTM ÷ count-2019)], with the deflated total over a window written as Σ over m of nominal_m ÷ (deflator_m ÷ 100). The count component is unchanged from the nominal index. Nominal stays the headline; this adjusted series is disclosed alongside it, not in place of it.</div>
+      </div>
     </div>
   </section>
 
@@ -268,6 +310,10 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <h3>The Concrete Index</h3>
       <p>For each month since 2004, the index combines trailing-twelve-month value and trailing-twelve-month count of <strong>new</strong> construction awards (renewals excluded by selection method; awards of $500M and above excluded so single megaprojects don't move the cycle reading). Award notices are first deduplicated to one record per procurement (the City Record <code>pin</code>, keeping the largest published amount), the same rule the Awarded page uses, so the same award is never counted twice. The two components are expressed relative to their 2019 averages and blended geometrically; 2019 = 100. Dollars are nominal; the index reads demand activity rather than inflation-adjusted volume.</p>
       <p><strong>Why this differs from the Awarded page total.</strong> The trailing-twelve award figure on the <a href="/awarded/">Awarded</a> page sums every construction award in the window after the per-procurement dedupe, including renewals and awards of $500M and above. This index deliberately strips renewals and megaprojects out to isolate the cycle in genuinely new work. Both numbers are computed on the same deduplicated universe and are correct for their purpose, so the two pages will show different trailing-twelve totals by design.</p>
+      <h3>Cost adjustment</h3>
+      <p>The nominal index counts dollars at face value, so it cannot tell rising prices from rising volume. The adjusted series deflates it. Two national price series from the Bureau of Labor Statistics carry the cost signal: materials, the producer price index for inputs to construction industries, goods (<code>WPUSI012011</code>); and labor, average hourly earnings of construction production and nonsupervisory employees (<code>CES2000000008</code>). The labor series uses the production-and-nonsupervisory definition because it reaches back to 2004, matching the award record, where the all-employee series begins only in 2006.</p>
+      <p>Each series is rebased to its own 2019 twelve-month average = 100, then blended into one monthly deflator weighted 60% materials and 40% labor, a split that reflects the materials-heavy mix of the City's general construction work while still carrying the wage signal. Because both series are monthly, the deflator needs no interpolation; the most recent one or two months are forward-filled at the last published value until BLS posts them, and those points are flagged in the data. Every award month's new-award value is divided by that same month's deflator before the trailing-twelve sum, so a 2021 award and a 2025 award are each discounted by the cost level that actually prevailed when the City committed the money, not by a single blanket factor. The cost-adjusted index then applies the same geometric blend with award count, holding the count component unchanged. By construction the 2019 real total equals the 2019 nominal total, which the page uses as an internal check.</p>
+      <p><strong>Caveats.</strong> The BLS series are national, not New York specific, so the deflator approximates local cost movement rather than measuring it. Award value is a floor on real activity, since the published amount is the award notice, not the final registered contract. The 60/40 weighting is a deliberate approximation of input mix, not a measured cost build-up. The nominal index remains the headline reading; the adjusted series is a separate, disclosed view, and its latest months inherit the forward-filled cost values noted above.</p>
       <h3>Seasonality</h3>
       <p>For each complete calendar year, each month's share of that year's new-award value is computed; the profile shows the median share across years, scaled so 1.0 equals an average month. Medians keep single unusual years from distorting the profile.</p>
       <h3>Pipeline conversion</h3>
@@ -275,7 +321,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <h3>Budget escalation</h3>
       <p>Projects present in both the earliest available plan snapshot (May 2023) and the most recent one, with budgets above $1M in both, are matched by agency and FMS ID. Escalation is each project's total-budget growth across that span; the headline figure is the median. Budget growth blends scope changes with cost escalation. The public record doesn't separate the two, so neither does this page.</p>
       <h3>Sources</h3>
-      <p>Award history: City Record Recent Contract Awards (<code>qyyg-4tf5</code>), 2003→present. Capital plan: Capital Projects Dashboard (<code>fb86-vt7u</code>), snapshots May 2023→present. Both on NYC Open Data, queried live on every page load.</p>
+      <p>Award history: City Record Recent Contract Awards (<code>qyyg-4tf5</code>), 2003→present. Capital plan: Capital Projects Dashboard (<code>fb86-vt7u</code>), snapshots May 2023→present. Both on NYC Open Data, queried live on every page load. Construction cost: BLS series <code>WPUSI012011</code> (materials) and <code>CES2000000008</code> (labor), 2004→present, fetched server-side by the nightly archive and read here from a same-origin snapshot.</p>
     </div>
   </section>
 
@@ -359,6 +405,15 @@ async function fetchAwardsData(){
   // {m, sm, s, n} shape buildIndex consumes. Pulling rows lets the canonical
   // pin-dedupe apply; a raw server-side sum overstates by the duplicate share.
   D.monthly = await fetchMonthlyAwards();
+}
+
+async function fetchCostData(){
+  // Same-origin read of the BLS-derived construction-cost series written by the
+  // nightly archive. The browser cannot reach api.bls.gov (locked connect-src),
+  // so the cost series is pre-fetched server-side into /data/cost-index.json.
+  const res = await fetch('/data/cost-index.json', { cache:'no-store' });
+  if(!res.ok) throw new Error('cost ' + res.status);
+  D.cost = await res.json();
 }
 
 async function fetchPlanData(){
@@ -453,6 +508,55 @@ function buildIndex(){
   const idx = ttmMonths.map((m,i)=> 100*Math.sqrt((ttmV[i]/baseV)*(ttmC[i]/baseC)));
   D.idx = { months: ttmMonths, values: idx };
   D.monthlyNew = { months, v };
+  // monthly new-award value AND count, kept for the cost-adjusted build below
+  D.monthlyVC = { months, v, c };
+}
+
+/* ================= cost-adjusted index ================= */
+/* Deflate each award month's nominal value by THAT month's construction-cost
+   deflator (60% materials, 40% labor, 2019 = 100), sum to trailing-twelve real
+   value, then apply the same geometric blend with the unchanged award count.
+   The nominal index is left untouched; this runs alongside it. */
+function buildAdjusted(){
+  const cost = D.cost;
+  if(!cost || !Array.isArray(cost.series) || !cost.series.length) return false;
+  const deflByMonth = new Map();
+  for(const s of cost.series){ if(s && s.month != null && s.deflator != null) deflByMonth.set(s.month, +s.deflator); }
+  if(!deflByMonth.size) return false;
+  const firstDefl = +cost.series[0].deflator;
+  const { months, v, c } = D.monthlyVC;
+  // real (deflated) monthly value
+  const realV = months.map((m,i)=>{
+    const d = deflByMonth.has(m) ? deflByMonth.get(m) : firstDefl;
+    return (d>0) ? v[i] / (d/100) : v[i];
+  });
+  // trailing-twelve nominal value, real value, count
+  const tM=[], tNom=[], tReal=[], tC=[];
+  let sn=0, sr=0, sc=0;
+  for(let i=0;i<months.length;i++){
+    sn+=v[i]; sr+=realV[i]; sc+=c[i];
+    if(i>=12){ sn-=v[i-12]; sr-=realV[i-12]; sc-=c[i-12]; }
+    if(i>=11){ tM.push(months[i]); tNom.push(sn); tReal.push(sr); tC.push(sc); }
+  }
+  const bi = tM.map((m,i)=>m.startsWith('2019')?i:-1).filter(i=>i>=0);
+  const mean = a => a.reduce((x,y)=>x+y,0)/a.length;
+  const bNom = bi.length ? mean(bi.map(i=>tNom[i])) : tNom[0];
+  const bReal = bi.length ? mean(bi.map(i=>tReal[i])) : tReal[0];
+  const bC = bi.length ? mean(bi.map(i=>tC[i])) : tC[0];
+  const nominal = tM.map((m,i)=> 100*Math.sqrt((tNom[i]/bNom)*(tC[i]/bC)));
+  const adjusted = tM.map((m,i)=> 100*Math.sqrt((tReal[i]/bReal)*(tC[i]/bC)));
+  // cumulative cost inflation since 2019 from the latest deflator-bearing series points
+  const ser = cost.series;
+  const lastCost = ser[ser.length-1];
+  D.adj = {
+    months: tM, nominal, adjusted,
+    matCum: lastCost ? (lastCost.materials - 100) : null,
+    labCum: lastCost ? (lastCost.labor - 100) : null,
+    deflLatest: lastCost ? lastCost.deflator : null,
+    costMonth: lastCost ? lastCost.month : null,
+    ff: lastCost ? !!lastCost.ff : false
+  };
+  return true;
 }
 
 /* ================= seasonality ================= */
@@ -617,6 +721,90 @@ function renderIndexChart(){
     `Because megaprojects and renewals are excluded, this line tracks the breadth-and-volume cycle of new work reaching the market, not one-off awards.`;
 }
 
+/* ================= cost-adjusted rendering ================= */
+const COLOR_MAT = '#b5482a', COLOR_LAB = '#243b53';
+function fmtSignedPct(v){ return (v>=0?'+':'−') + Math.abs(v).toFixed(0) + '%'; }
+
+function renderAdjKpis(){
+  const a = D.adj;
+  const lastAdj = a.adjusted[a.adjusted.length-1];
+  const lastNom = a.nominal[a.nominal.length-1];
+  const gap = lastNom - lastAdj;
+  document.getElementById('kpi-adj').textContent = lastAdj.toFixed(1);
+  document.getElementById('kpi-adj-note').textContent = fmtYM(a.months[a.months.length-1]) + ' · 2019 = 100';
+  document.getElementById('kpi-gap').innerHTML = `<span class="down">−${gap.toFixed(1)}</span>`;
+  document.getElementById('kpi-gap-note').textContent = 'index points below the nominal ' + lastNom.toFixed(1);
+  if(a.matCum != null){
+    document.getElementById('kpi-mat').innerHTML = `<span class="${a.matCum>=0?'up':'down'}">${fmtSignedPct(a.matCum)}</span>`;
+  }
+  if(a.labCum != null){
+    document.getElementById('kpi-lab').innerHTML = `<span class="${a.labCum>=0?'up':'down'}">${fmtSignedPct(a.labCum)}</span>`;
+  }
+  document.getElementById('adj-cap').textContent =
+    'MATERIALS +' + Math.round(a.matCum) + '% · LABOR +' + Math.round(a.labCum) + '% SINCE 2019';
+}
+
+function renderCostChart(){
+  const ser = D.cost.series;
+  const labels = ser.map(s=>fmtYM(s.month));
+  destroy('cost');
+  charts.cost = new Chart(document.getElementById('chart-cost'), {
+    type:'line',
+    data:{ labels, datasets:[
+      { label:'Materials', data: ser.map(s=>s.materials), borderColor: COLOR_MAT, borderWidth: 2, pointRadius: 0, tension:.25 },
+      { label:'Labor', data: ser.map(s=>s.labor), borderColor: COLOR_LAB, borderWidth: 2, pointRadius: 0, tension:.25 }
+    ]},
+    options:{
+      responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:true, position:'top', align:'end', labels:{boxWidth:9,boxHeight:9,font:{family:"'Public Sans',sans-serif",size:11},color:'#22150e'}},
+        tooltip:{callbacks:{label:(c)=> c.dataset.label + ': ' + c.parsed.y.toFixed(0)}}
+      },
+      scales:{
+        x:{grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:10}},
+        y:{grid:{color:GRID}, border:{display:false}, ticks:{maxTicksLimit:6}}
+      }
+    }
+  });
+  const latest = ser[ser.length-1];
+  const matCum = latest.materials - 100, labCum = latest.labor - 100;
+  document.getElementById('cost-reading').innerHTML =
+    `<strong>Reading:</strong> since 2019, construction materials prices are up <strong>${fmtSignedPct(matCum)}</strong> and construction wages <strong>${fmtSignedPct(labCum)}</strong>. ` +
+    `Materials ran first and hardest through the 2021 to 2022 spike, then plateaued; labor has climbed more steadily and is still rising. The 60/40 blend of the two sets the deflator that discounts every award.`;
+}
+
+function renderAdjChart(){
+  const a = D.adj;
+  const labels = a.months.map(fmtYM);
+  destroy('adj');
+  charts.adj = new Chart(document.getElementById('chart-adj'), {
+    type:'line',
+    data:{ labels, datasets:[
+      // adjusted drawn first as the lower bound; nominal fills down to it to shade the wedge
+      { label:'Cost-adjusted', data: a.adjusted, borderColor: COLOR_MAT, borderWidth: 2.2, pointRadius: 0, tension:.25, fill:false, order:1 },
+      { label:'Nominal', data: a.nominal, borderColor: COLOR_LAB, borderWidth: 2, pointRadius: 0, tension:.25,
+        fill:'-1', backgroundColor:'rgba(181,72,42,0.10)', order:2 }
+    ]},
+    options:{
+      responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:true, position:'top', align:'end', labels:{boxWidth:9,boxHeight:9,font:{family:"'Public Sans',sans-serif",size:11},color:'#22150e'}},
+        tooltip:{callbacks:{label:(c)=> c.dataset.label + ': ' + c.parsed.y.toFixed(1)}}
+      },
+      scales:{
+        x:{grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:10}},
+        y:{grid:{color:GRID}, border:{display:false}, ticks:{maxTicksLimit:6}}
+      }
+    }
+  });
+  const lastAdj = a.adjusted[a.adjusted.length-1];
+  const lastNom = a.nominal[a.nominal.length-1];
+  const gap = lastNom - lastAdj;
+  document.getElementById('adj-reading').innerHTML =
+    `<strong>Reading:</strong> the nominal index reads <strong>${lastNom.toFixed(1)}</strong>, but once each award is discounted by the construction-cost level of the month it was let, the adjusted index sits at <strong>${lastAdj.toFixed(1)}</strong>, a gap of <strong>${gap.toFixed(1)}</strong> points. ` +
+    `That gap is the share of the headline that is price, not work. The two lines tracked together through 2019, then split as costs climbed: the City is buying less real construction than the nominal dollars suggest.`;
+}
+
 function renderSeasonality(){
   destroy('season');
   charts.season = new Chart(document.getElementById('chart-season'), {
@@ -685,15 +873,19 @@ function unavailNote(host){
 }
 
 (async function init(){
-  const [awardsR, planR] = await Promise.allSettled([fetchAwardsData(), fetchPlanData()]);
+  const [awardsR, planR, costR] = await Promise.allSettled([fetchAwardsData(), fetchPlanData(), fetchCostData()]);
   D.awardsOk = awardsR.status === 'fulfilled';
   D.planOk = planR.status === 'fulfilled';
+  D.costOk = costR.status === 'fulfilled';
 
   // Build only the computations whose source loaded; a failure in one must not
   // stop the other. Each build is itself wrapped so a data-shape surprise
   // degrades that one section rather than the whole page.
   if(D.awardsOk){ try{ buildIndex(); buildSeasonality(); }catch(e){ D.awardsOk = false; } }
   if(D.planOk){ try{ buildConversion(); buildEscalation(); }catch(e){ D.planOk = false; } }
+  // The cost-adjusted index needs both the monthly award series and the cost series.
+  D.adjOk = false;
+  if(D.awardsOk && D.costOk){ try{ D.adjOk = buildAdjusted(); }catch(e){ D.adjOk = false; } }
 
   if(!D.awardsOk && !D.planOk){
     document.getElementById('loader').style.display='none';
@@ -713,6 +905,16 @@ function unavailNote(host){
   renderKpis();
   if(D.awardsOk){ renderIndexChart(); renderSeasonality(); }
   if(D.planOk){ renderConversion(); renderEscalation(); }
+
+  if(D.adjOk){
+    renderAdjKpis(); renderCostChart(); renderAdjChart();
+  } else {
+    // Leave the section visible but explain the gap rather than half-render it.
+    const host = !D.awardsOk ? 'City Record awards' : 'BLS construction cost';
+    document.getElementById('adj-unavail').innerHTML = unavailNote(host);
+    ['cost-card','adj-card'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
+    document.querySelector('#cost-adjusted .adj-kpis').style.display='none';
+  }
 })();
 
 </script>
