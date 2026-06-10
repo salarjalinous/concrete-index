@@ -935,7 +935,12 @@ function unavailNote(host){
   // jump once everything is laid out, honoring the section's scroll-margin-top.
   if(location.hash){
     var hashTarget=document.getElementById(decodeURIComponent(location.hash.slice(1)));
-    if(hashTarget){ setTimeout(function(){ hashTarget.scrollIntoView(); }, 60); }
+    if(hashTarget){
+      // Jump instantly (the page sets scroll-behavior:smooth, which would otherwise
+      // animate from the top and can be interrupted by late layout) once the charts
+      // above the target have rendered. scroll-margin-top keeps it clear of the header.
+      setTimeout(function(){ hashTarget.scrollIntoView({behavior:'auto',block:'start'}); }, 120);
+    }
   }
 })();
 
