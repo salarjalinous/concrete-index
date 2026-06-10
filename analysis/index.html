@@ -936,10 +936,17 @@ function unavailNote(host){
   if(location.hash){
     var hashTarget=document.getElementById(decodeURIComponent(location.hash.slice(1)));
     if(hashTarget){
-      // Jump instantly (the page sets scroll-behavior:smooth, which would otherwise
-      // animate from the top and can be interrupted by late layout) once the charts
-      // above the target have rendered. scroll-margin-top keeps it clear of the header.
-      setTimeout(function(){ hashTarget.scrollIntoView({behavior:'auto',block:'start'}); }, 120);
+      // The app starts hidden, so the browser's own anchor jump at load fails. Re-apply
+      // it once the charts above the target have rendered. The page sets
+      // scroll-behavior:smooth, which suppresses a programmatic jump from the top here,
+      // so force an instant scroll for this one jump and restore smooth afterward.
+      // scroll-margin-top keeps the target clear of the sticky header.
+      setTimeout(function(){
+        var de=document.documentElement, prev=de.style.scrollBehavior;
+        de.style.scrollBehavior='auto';
+        hashTarget.scrollIntoView({block:'start'});
+        de.style.scrollBehavior=prev;
+      }, 120);
     }
   }
 })();
