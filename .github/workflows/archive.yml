@@ -130,7 +130,7 @@ jobs:
           # --- Glimpse numbers for the landing page ---
           PHASE_MAP = {'pending':'Pending','initiation':'Pending','pre-design':'Pre-Design','predesign':'Pre-Design','design':'Design','construction procurement':'Procurement','construction':'Construction','design build':'Construction','design built':'Construction','close-out':'Close-out','closeout':'Close-out'}
           EXCLUDED = set(['completed','cancelled','inactive','on-hold','on hold','transferred','withdrawn','terminated','defaulted','capitally ineligible','expense','defunded','funding withdrawn','rescinded','fmsid changed','project renamed','n/a','land acquisition','property acquisition','real estate transaction','fundraising','it project','non capital fund','equipment','consultant services'])
-          ORDER = ['Pending','Pre-Design','Design','Procurement','Construction','Close-out']
+          ORDER = ['Pending','Pre-Design','Design','Procurement','Construction','Close-out','Other active']
           def _np(raw):
               q = (raw or '').replace('(','').replace(')','').strip().lower()
               if q in EXCLUDED: return 'excluded'
@@ -140,9 +140,11 @@ jobs:
           try:
               plan = json.load(open('data/plan-latest.json'))
               coll = {}
-              for r in plan:
-                  key = (r.get('managing_agency') or '') + '|' + (r.get('fms_id') or r.get('fms_project_name') or '')
+              for i, r in enumerate(plan):
                   bucket = _np(r.get('current_phase'))
+                  if bucket == 'excluded': continue
+                  fmsId = r.get('fms_id') or ('_np_' + str(i))
+                  key = (r.get('managing_agency') or '-') + '|' + fmsId
                   try: bud = max(float(r.get('total_budget') or 0), 0.0)
                   except (TypeError, ValueError): bud = 0.0
                   try: spd = max(float(r.get('spend_to_date') or 0), 0.0)
@@ -150,14 +152,24 @@ jobs:
                   prev = coll.get(key)
                   if prev is None or _rank(bucket) > _rank(prev[2]):
                       coll[key] = (bud, spd, bucket)
-              committed = int(round(sum(max(b - sp, 0.0) for b, sp, bk in coll.values() if bk != 'excluded')))
+              # headline matches the Pipeline page: collapse to one record per project,
+              # keep the most advanced phase, exclude Close-out from the unspent total.
+              committed = int(round(sum(max(b - sp, 0.0) for b, sp, bk in coll.values() if bk != 'Close-out')))
           except Exception:
               committed = None
           open_sol = None
           try:
               sols = json.load(open('data/solicitations.json'))
               today = time.strftime('%Y-%m-%d', time.gmtime())
-              open_sol = sum(1 for sdoc in sols if (sdoc.get('due_date') or '')[:10] >= today and sdoc.get('due_date'))
+              # matches the Bidding page: due date not passed, deduped by pin (else request_id)
+              seen = set(); cnt = 0
+              for sdoc in sols:
+                  d = (sdoc.get('due_date') or '')[:10]
+                  if not d or d < today: continue
+                  k = sdoc.get('pin') or sdoc.get('request_id')
+                  if k in seen: continue
+                  seen.add(k); cnt += 1
+              open_sol = cnt
           except Exception:
               open_sol = None
           try:
