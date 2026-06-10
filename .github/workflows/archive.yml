@@ -55,6 +55,117 @@ jobs:
             -o data/plan-latest.json
           python3 -c "import json;d=json.load(open('data/plan-latest.json'));assert len(d)>3000;print(len(d),'plan rows')"
 
+      - name: Build construction-cost deflator from BLS (materials + labor)
+        run: |
+          # The browser cannot reach api.bls.gov (the site CSP locks connect-src to
+          # the City and State open-data hosts), so the two national construction-cost
+          # series are pulled here, server-side, and written to data/cost-index.json
+          # for the pages to read same-origin. Materials = PPI inputs to construction
+          # industries, goods (WPUSI012011); labor = CES avg hourly earnings,
+          # construction prod. & nonsup. (CES2000000008). Each rebased to its 2019
+          # average = 100, blended 60/40, latest unpublished month(s) forward-filled.
+          # BLS v2 silently drops the middle of a >13-year request, so we chunk by
+          # decade and merge. Keyless v2 is sufficient at this volume; a key is used
+          # only if BLS_API_KEY is present in the environment.
+          python3 - <<'PYEOF'
+          import json, time, urllib.request
+          from datetime import datetime, timezone
+
+          SERIES = {"materials": "WPUSI012011", "labor": "CES2000000008"}
+          AVG2019 = {"materials": 235.725, "labor": 28.482}  # documented anchors; recomputed below
+          NAMES = {"materials": "PPI inputs to construction industries, goods",
+                   "labor": "CES avg hourly earnings, construction, prod. & nonsup."}
+          W = {"materials": 0.60, "labor": 0.40}
+          import os
+          KEY = os.environ.get("BLS_API_KEY") or None
+
+          this_year = datetime.now(timezone.utc).year
+          # <=10-year chunks; a single >13-year request silently drops middle years.
+          chunks, y = [], 2004
+          while y <= this_year:
+              chunks.append((y, min(y + 9, this_year)))
+              y += 10
+
+          def fetch_chunk(sy, ey):
+              body = {"seriesid": list(SERIES.values()), "startyear": str(sy), "endyear": str(ey)}
+              if KEY:
+                  body["registrationkey"] = KEY
+              req = urllib.request.Request(
+                  "https://api.bls.gov/publicAPI/v2/timeseries/data/",
+                  data=json.dumps(body).encode("utf-8"),
+                  headers={"Content-Type": "application/json"})
+              for attempt in range(4):
+                  try:
+                      with urllib.request.urlopen(req, timeout=60) as r:
+                          j = json.loads(r.read().decode("utf-8"))
+                      if j.get("status") != "REQUEST_SUCCEEDED":
+                          raise RuntimeError("BLS status %s %s" % (j.get("status"), j.get("message")))
+                      return j
+                  except Exception as e:
+                      if attempt == 3:
+                          raise
+                      time.sleep(3 * (attempt + 1))
+
+          raw = {sid: {} for sid in SERIES.values()}
+          for sy, ey in chunks:
+              j = fetch_chunk(sy, ey)
+              for s in j.get("Results", {}).get("series", []):
+                  sid = s["seriesID"]
+                  for d in s.get("data", []):
+                      p = d.get("period", "")
+                      if not p.startswith("M") or p == "M13":
+                          continue
+                      raw[sid]["%s-%s" % (d["year"], p[1:])] = float(d["value"])
+
+          mat_id, lab_id = SERIES["materials"], SERIES["labor"]
+          assert len(raw[mat_id]) > 200 and len(raw[lab_id]) > 200, "BLS returned too few months"
+
+          def avg2019(series):
+              vals = [v for k, v in series.items() if k.startswith("2019")]
+              return sum(vals) / len(vals)
+          mat_avg, lab_avg = avg2019(raw[mat_id]), avg2019(raw[lab_id])
+
+          # continuous month list from the earliest common start to the latest published
+          allk = sorted(set(raw[mat_id]) | set(raw[lab_id]))
+          start, end = allk[0], allk[-1]
+          def month_iter(a, b):
+              y, mo = map(int, a.split("-")); ey, emo = map(int, b.split("-"))
+              while (y, mo) <= (ey, emo):
+                  yield "%04d-%02d" % (y, mo)
+                  mo += 1
+                  if mo > 12: mo = 1; y += 1
+          months = list(month_iter(start, end))
+
+          series, last_mat, last_lab = [], None, None
+          for mo in months:
+              mr = raw[mat_id].get(mo); lr = raw[lab_id].get(mo); ff = False
+              if mr is None: mr = last_mat; ff = True
+              else: last_mat = mr
+              if lr is None: lr = last_lab; ff = True
+              else: last_lab = lr
+              if mr is None or lr is None:
+                  continue
+              mat_i = 100.0 * mr / mat_avg
+              lab_i = 100.0 * lr / lab_avg
+              deflator = W["materials"] * mat_i + W["labor"] * lab_i
+              series.append({"month": mo, "materials": round(mat_i, 2), "labor": round(lab_i, 2),
+                             "deflator": round(deflator, 2), "ff": ff})
+
+          out = {
+              "as_of": time.strftime("%Y-%m-%d", time.gmtime()),
+              "base_year": 2019,
+              "weights": {"materials": W["materials"], "labor": W["labor"]},
+              "sources": {
+                  "materials": {"id": mat_id, "name": NAMES["materials"], "avg2019": round(mat_avg, 3)},
+                  "labor": {"id": lab_id, "name": NAMES["labor"], "avg2019": round(lab_avg, 3)}},
+              "series": series,
+          }
+          json.dump(out, open("data/cost-index.json", "w"), separators=(",", ":"))
+          print("cost-index: %d months %s..%s; matAvg=%.3f labAvg=%.3f; latest deflator=%.2f ff=%s"
+                % (len(series), series[0]["month"], series[-1]["month"], mat_avg, lab_avg,
+                   series[-1]["deflator"], series[-1]["ff"]))
+          PYEOF
+
       - name: Precompute home headline aggregates (resilience fallback)
         run: |
           # Small aggregate the home page reads ONLY when the live City API is
@@ -127,6 +238,34 @@ jobs:
           if tM and baseV>0 and baseC>0 and tV[-1]>0 and tC[-1]>0:
               index_level = round(100*math.sqrt((tV[-1]/baseV)*(tC[-1]/baseC)), 2)
               index_month = tM[-1]
+          # --- Cost-adjusted Concrete Index level (same deflation as the Analysis page) ---
+          # Deflate each award month's value by THAT month's deflator (from the
+          # cost-index.json the prior step just wrote), sum to trailing-twelve real
+          # value, then apply the same geometric blend with the unchanged count.
+          adjusted_index_level = None; adjusted_index_month = None
+          try:
+              cost = json.load(open('data/cost-index.json'))
+              defl = {}
+              for s in cost.get('series', []):
+                  if s.get('month') is not None and s.get('deflator') is not None:
+                      defl[s['month']] = float(s['deflator'])
+              if defl:
+                  first_defl = float(cost['series'][0]['deflator'])
+                  rv = []
+                  for i, m in enumerate(months):
+                      d = defl.get(m, first_defl)
+                      rv.append(vv[i] / (d/100.0) if d > 0 else vv[i])
+                  tRV = []; sr = 0.0
+                  for i in range(len(months)):
+                      sr += rv[i]
+                      if i >= 12: sr -= rv[i-12]
+                      if i >= 11: tRV.append(sr)
+                  baseRV = (sum(tRV[i] for i in bi)/len(bi)) if bi else (tRV[0] if tRV else 0)
+                  if tM and baseRV > 0 and baseC > 0 and tRV[-1] > 0 and tC[-1] > 0:
+                      adjusted_index_level = round(100*math.sqrt((tRV[-1]/baseRV)*(tC[-1]/baseC)), 2)
+                      adjusted_index_month = tM[-1]
+          except Exception:
+              adjusted_index_level = None; adjusted_index_month = None
           # --- Glimpse numbers for the landing page ---
           PHASE_MAP = {'pending':'Pending','initiation':'Pending','pre-design':'Pre-Design','predesign':'Pre-Design','design':'Design','construction procurement':'Procurement','construction':'Construction','design build':'Construction','design built':'Construction','close-out':'Close-out','closeout':'Close-out'}
           EXCLUDED = set(['completed','cancelled','inactive','on-hold','on hold','transferred','withdrawn','terminated','defaulted','capitally ineligible','expense','defunded','funding withdrawn','rescinded','fmsid changed','project renamed','n/a','land acquisition','property acquisition','real estate transaction','fundraising','it project','non capital fund','equipment','consultant services'])
@@ -181,10 +320,11 @@ jobs:
                           "window": "trailing 12 months, all construction"},
                  "awarded_ttm": {"total": total, "count": count, "median": median, "max": mx},
                  "index_level": index_level, "index_month": index_month,
+                 "adjusted_index_level": adjusted_index_level, "adjusted_index_month": adjusted_index_month,
                  "glimpse": {"committed": committed, "awarded": total, "open_solicitations": open_sol, "contractors": contractors}}
           json.dump(out, open('data/precomputed.json', 'w'), separators=(",", ":"))
           print("precomputed awarded_ttm: total=%d count=%d median=%d max=%d" % (total, count, median, mx))
-          print("precomputed index_level=%s month=%s committed=%s open_sol=%s contractors=%s" % (index_level, index_month, committed, open_sol, contractors))
+          print("precomputed index_level=%s month=%s adjusted=%s committed=%s open_sol=%s contractors=%s" % (index_level, index_month, adjusted_index_level, committed, open_sol, contractors))
           PYEOF
 
       - name: Commit if changed
