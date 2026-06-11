@@ -480,8 +480,8 @@ function esc(s){ const d=document.createElement('div'); d.textContent=s; return 
 // Display-only cleanup of mangled separators in source vendor names (a stray '?' or
 // replacement char where the City Record garbled a JV separator). Never applied to the
 // raw value used for search, grouping, or alias keys, only to what is shown.
-function normName(s){ return String(s==null?'':s).replace(/\s*[\?\uFFFD]\s*/g,' / ').replace(/\s{2,}/g,' ').trim(); }
-function escName(s){ return esc(normName(s)); }
+function cleanName(s){ return String(s==null?'':s).replace(/\s*[\?\uFFFD]\s*/g,' / ').replace(/\s{2,}/g,' ').trim(); }
+function escName(s){ return esc(cleanName(s)); }
 // CSV cell escaper: wrap in quotes and double any embedded quote so commas,
 // newlines, and quotes in agency or title text never break a row.
 function csvCell(v){ const s=(v==null?'':String(v)); return '"'+s.replace(/"/g,'""')+'"'; }
