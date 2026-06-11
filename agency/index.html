@@ -78,6 +78,15 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .agency-select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .ctrl .ctrl-note{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint)}
 
+/* ---------- selected-agency banner ---------- */
+.agency-banner{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:14px;padding:11px 0 12px;border-top:2px solid var(--ink);border-bottom:1px solid var(--line)}
+.agency-banner .ab-name{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;min-width:0}
+.agency-banner .ab-full{font-weight:700;font-size:clamp(22px,3vw,28px);letter-spacing:-.01em;line-height:1.05;color:var(--ink)}
+.agency-banner .ab-code{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--paper);background:var(--accent);border-radius:3px;padding:3px 8px;white-space:nowrap}
+.agency-banner .ab-asof{font-size:11.5px;letter-spacing:.04em;color:var(--faint);text-align:right;white-space:nowrap}
+.agency-banner .ab-asof b{color:var(--muted);font-weight:600}
+@media(max-width:560px){.agency-banner .ab-asof{text-align:left}}
+
 /* ---------- KPI tape ---------- */
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:24px 0 8px;border-left:1px solid var(--line)}
 .kpi{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px 18px}
@@ -130,6 +139,8 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .boro-svg{width:100%;height:auto;display:block}
 .boro-svg path{stroke:var(--surface);stroke-width:1.4;cursor:pointer;transition:opacity .12s}
 .boro-svg path:hover,.boro-svg path.on{opacity:.82}
+.boro-svg .boro-lbl{pointer-events:none}
+.boro-svg .boro-lbl text{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.06em;fill:var(--surface);text-anchor:middle;paint-order:stroke;stroke:rgba(34,21,14,.28);stroke-width:.6px}
 .boro-legend{display:flex;align-items:center;gap:10px;margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--faint);letter-spacing:.03em}
 .boro-legend .ramp{flex:1;height:9px;border-radius:2px;background:linear-gradient(90deg,#f1d9cd,#b5482a)}
 .boro-readout{background:var(--band);border-left:3px solid var(--accent);border-radius:0;padding:15px 18px}
@@ -287,6 +298,14 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     </div>
   </section>
 
+  <section class="agency-banner" id="agency-banner" aria-live="polite">
+    <div class="ab-name">
+      <span class="ab-full serif" id="ab-full">–</span>
+      <span class="ab-code mono" id="ab-code">–</span>
+    </div>
+    <div class="ab-asof mono" id="ab-asof">–</div>
+  </section>
+
   <section class="kpis">
     <div class="kpi hl"><div class="k-label">Committed, unspent</div><div class="k-value" id="kpi-committed">–</div><div class="k-note" id="kpi-committed-note"></div></div>
     <div class="kpi"><div class="k-label">Awarded, trailing year</div><div class="k-value" id="kpi-awarded">–</div><div class="k-note" id="kpi-awarded-note"></div></div>
@@ -319,7 +338,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <section class="grid" id="velocity-sec">
     <div class="card">
       <div class="sec-head"><h2>Velocity</h2><span class="cap" id="vel-cap">SELECTED AGENCY</span></div>
-      <div class="h-sub">How fast the selected agency converts funded work to cash. Backlog coverage is its open pipeline divided by its own trailing-year outlays, the demand-side analog of a contractor's backlog-to-revenue ratio. A higher number means more funded work stacked behind the same delivery capacity.</div>
+      <div class="h-sub" id="vel-hsub">How fast the selected agency converts funded work to cash. Backlog coverage is its open pipeline divided by its own trailing-year outlays, the demand-side analog of a contractor's backlog-to-revenue ratio. A higher number means more funded work stacked behind the same delivery capacity.</div>
       <div class="vel-tape" id="vel-tape">
         <div class="vt"><div class="vt-label">Committed, unspent</div><div class="vt-value" id="vel-committed">&ndash;</div><div class="vt-note">open pipeline under this code</div></div>
         <div class="vt"><div class="vt-label">Spent, trailing year</div><div class="vt-value" id="vel-spent">&ndash;</div><div class="vt-note">capital outlays across plan snapshots</div></div>
@@ -333,13 +352,13 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 
   <section class="grid two" id="cuts">
     <div class="card">
-      <div class="sec-head"><h2>Top trades</h2><span class="cap">CAPITAL PLAN · DOLLAR-WEIGHTED</span></div>
+      <div class="sec-head"><h2>Top trades</h2><span class="cap" id="trades-cap">CAPITAL PLAN · DOLLAR-WEIGHTED</span></div>
       <div class="h-sub">The agency's committed budget split by capital-plan program category. This is the structured field on the plan, the firmest read of what the agency is buying.</div>
       <div class="chart-box"><canvas id="chart-trades"></canvas></div>
       <div class="tnote">Each bar is the agency's unspent committed budget in one ten-year-plan program category, dollar-weighted. Categories come from the capital plan's own classification, not from award text.</div>
     </div>
     <div class="card">
-      <div class="sec-head"><h2>Top recipients</h2><span class="cap">CITY RECORD · TRAILING YEAR</span></div>
+      <div class="sec-head"><h2>Top recipients</h2><span class="cap" id="recipients-cap">CITY RECORD · TRAILING YEAR</span></div>
       <div class="h-sub">The firms winning this agency's construction work, ranked by award dollars over the trailing twelve months.</div>
       <table id="tbl-vendors">
         <thead><tr><th></th><th>Recipient</th><th class="num">Awarded</th><th class="num">Share</th></tr></thead>
@@ -351,8 +370,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 
   <section class="grid" id="boro-sec">
     <div class="card">
-      <div class="sec-head"><h2>Borough footprint</h2><span class="cap">DOLLAR-WEIGHTED · 5 BOROUGHS</span></div>
-      <div class="h-sub">Where the selected agency's work lands across the five boroughs, weighted by dollars rather than project count. The citywide and multi-borough share is its own slice, never spread across the map. Click a borough to read its detail.</div>
+      <div class="sec-head"><h2>Borough footprint</h2><span class="cap" id="boro-cap">DOLLAR-WEIGHTED · 5 BOROUGHS</span></div>
+      <div class="h-sub" id="boro-hsub">Where the selected agency's work lands across the five boroughs, weighted by dollars rather than project count. The citywide and multi-borough share is its own slice, never spread across the map. Click a borough to read its detail.</div>
       <div class="controls" style="padding:4px 0 18px">
         <div class="ctrl">
           <label>Scope</label>
@@ -365,12 +384,20 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="boro-wrap">
         <div>
           <svg id="boro-map" class="boro-svg" viewBox="0 0 420 380" role="img" aria-label="Dollar-weighted borough footprint of the selected agency">
-            <!-- Stylized five-borough schematic; positions are diagrammatic, not geographic survey. -->
-            <path id="b-Bronx" data-boro="Bronx" d="M232 28 L300 40 L322 86 L300 120 L250 128 L226 96 L222 56 Z"/>
-            <path id="b-Manhattan" data-boro="Manhattan" d="M210 70 L230 96 L224 150 L206 196 L188 188 L196 130 L198 92 Z"/>
-            <path id="b-Queens" data-boro="Queens" d="M250 132 L360 150 L392 214 L320 250 L264 226 L240 176 Z"/>
-            <path id="b-Brooklyn" data-boro="Brooklyn" d="M210 210 L262 230 L300 262 L280 320 L210 330 L168 286 L182 236 Z"/>
-            <path id="b-StatenIsland" data-boro="Staten Island" d="M60 250 L132 262 L150 308 L116 352 L52 344 L30 296 Z"/>
+            <!-- Simplified low-poly borough silhouettes, traced from NYC borough boundaries
+                 and projected into this viewBox: geographically faithful positions, baked static. -->
+            <path id="b-Bronx" data-boro="Bronx" d="M252.4 16 L302.1 28.8 L335.8 72.3 L329.9 109.8 L290.5 119.2 L256.9 99.6 L245.9 67.2 L248.5 34.8 Z"/>
+            <path id="b-Manhattan" data-boro="Manhattan" d="M241.4 48.4 L253.6 80.8 L239.4 111.5 L213.6 164.4 L184.5 193.4 L189.6 176.4 L209.7 125.2 L229.1 80.8 L235.5 51.8 Z"/>
+            <path id="b-Queens" data-boro="Queens" d="M224.5 109.8 L290.5 112.4 L361.6 125.2 L389.4 159.3 L364.9 222.4 L306.7 229.2 L284.7 203.6 L248.5 190 L224.5 159.3 Z"/>
+            <path id="b-Brooklyn" data-boro="Brooklyn" d="M224.5 195.1 L248.5 195.1 L284.7 208.8 L304.1 236.1 L287.3 304.3 L234.2 307.7 L187.7 258.2 L196.7 215.6 Z"/>
+            <path id="b-StatenIsland" data-boro="Staten Island" d="M161.8 243.7 L141.8 282.1 L108.2 317.1 L72.6 355.5 L37 364 L30.6 327.3 L62.9 280.4 L111.4 246.3 L147 237.8 Z"/>
+            <g class="boro-lbl" aria-hidden="true">
+              <text x="287" y="71">BX</text>
+              <text x="214" y="118">MN</text>
+              <text x="305" y="172">QN</text>
+              <text x="246" y="243">BK</text>
+              <text x="92" y="298">SI</text>
+            </g>
           </svg>
           <div class="boro-legend"><span>LOW</span><span class="ramp"></span><span>HIGH</span><span style="margin-left:8px;color:var(--faint)">· by dollars</span></div>
           <div class="provenance" id="boro-provenance"></div>
@@ -629,6 +656,8 @@ const AGENCY_NAMES = {
    noted as delivered elsewhere rather than read as a true zero. */
 const DELIVERED_VIA_DDC = new Set(['HPD','ACS','DFTA','DOHMH']);
 function agencyLabel(code){ return AGENCY_NAMES[code] ? AGENCY_NAMES[code] + ' (' + code + ')' : code; }
+/* Display name only (no code), for the selected-agency banner. */
+function agencyName(code){ return AGENCY_NAMES[code] || code; }
 
 /* ================= formatting ================= */
 function fmtMoney(v){
@@ -900,7 +929,9 @@ function renderAgencyVelocity(code){
   const sec = document.getElementById('velocity-sec');
   if(!velState.ok){ if(sec) sec.style.display = 'none'; return; }
   if(sec) sec.style.display = '';
-  cap.textContent = agencyLabel(code).toUpperCase();
+  cap.textContent = code + ' · PACE';
+  const hsub = document.getElementById('vel-hsub');
+  if(hsub) hsub.innerHTML = 'How fast ' + esc(agencyName(code)) + ' converts funded work to cash. Backlog coverage is its open pipeline divided by its own trailing-year outlays, the demand-side analog of a contractor’s backlog-to-revenue ratio. A higher number means more funded work stacked behind the same delivery capacity.';
   const row = velState.byCode.get(code) || { pipe:0, sp:0, aw:undefined, yrs:null };
   document.getElementById('vel-committed').textContent = row.pipe>0 ? fmtMoney(row.pipe) : '–';
   document.getElementById('vel-spent').textContent    = row.sp>0   ? fmtMoney(row.sp)   : '–';
@@ -1056,7 +1087,23 @@ function rampColor(t){
 async function selectAgency(code){
   state.selected = code;
   const label = agencyLabel(code);
-  document.getElementById('funnel-cap').textContent = label.toUpperCase();
+  const name = agencyName(code);
+
+  // selected-agency banner: full name in serif, code + plan snapshot in mono
+  document.getElementById('ab-full').textContent = name;
+  document.getElementById('ab-code').textContent = code;
+  document.getElementById('ab-asof').innerHTML =
+    'CODE <b>' + esc(code) + '</b> &nbsp;·&nbsp; AS OF <b>' + esc(fmtPeriodLong(state.latestPeriod).toUpperCase()) + '</b> PLAN';
+
+  // per-tile caps, each stamped with the selected agency's short code
+  document.getElementById('funnel-cap').textContent = code + ' · COMMITTED vs AWARDED';
+  document.getElementById('trades-cap').textContent = code + ' · CAPITAL PLAN · DOLLAR-WEIGHTED';
+  document.getElementById('recipients-cap').textContent = code + ' · CITY RECORD · TRAILING YEAR';
+  document.getElementById('boro-cap').textContent = code + ' · DOLLAR-WEIGHTED · 5 BOROUGHS';
+
+  // generic-phrasing swaps: name the live agency where it reads naturally
+  document.getElementById('boro-hsub').innerHTML =
+    'Where ' + esc(name) + "'s work lands across the five boroughs, weighted by dollars rather than project count. The citywide and multi-borough share is its own slice, never spread across the map. Click a borough to read its detail.";
 
   // committed (already loaded, cache it)
   let committed = state.committedCache.get(code);
