@@ -300,11 +300,11 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <section class="lp-hero">
     <div class="kicker">The demand side of NYC public construction</div>
     <h1>The Concrete Index reads every construction dollar the City awards.</h1>
-    <p class="lp-sub">This aggregation tool tracks New York City public construction from the budget that funds a project through to the payments that settle it, drawn live from the public record.</p>
+    <p class="lp-sub">It tracks New York City public construction from the budget that funds a project to the payments that settle it, drawn live from the public record and recomputed on every load.</p>
     <div class="lp-hero-num">
       <div class="lp-num-label">The Concrete Index &middot; 2019 = 100</div>
       <div class="lp-num" id="lp-index">&ndash;</div>
-      <div class="lp-num-cap" id="lp-index-cap">New-award momentum against the 2019 monthly average, renewals and megaprojects excluded. Loading the latest reading.</div>
+      <div class="lp-num-cap" id="lp-index-cap">A single number for how much new construction work the City is putting out, measured against its 2019 pace. Renewals and $500M megaprojects are stripped out so the reading tracks fresh demand.</div>
       <a class="lp-num-how" href="/analysis/#how-its-calculated">&rarr; How the Concrete Index is calculated</a>
     </div>
   </section>
@@ -355,11 +355,11 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 
   <section class="lp-thesis">
     <p>Public construction has a supply side everyone watches and a demand side almost no one does. The contractors, their bonds, and their backlogs are tracked closely. The pipeline that feeds them, every dollar the City budgets, solicits, and awards, sits in plain sight in the public record and is read by almost no one, because reading it means pulling thousands of notices and totaling them by hand.</p>
-    <p>The Concrete Index does that reading continuously. It pulls every construction award, solicitation, and capital commitment the City and State publish, totals them on the spot, and follows the same dollar from budget to award to payment. The result is a live view of where New York's public construction demand is forming, which agencies are moving it, and how fast it turns into cash.</p>
+    <p>The Concrete Index does that reading continuously. It pulls every construction award, solicitation, and capital commitment the City and State publish, totals them on the spot, and follows the same dollar from budget to award to payment. The result is a live, contractor-attributed view of where New York's public construction demand is forming, which agencies are moving it, and how fast it turns into cash.</p>
   </section>
 
   <section class="lp-cards" aria-label="Where to start">
-    <a class="lp-card" href="/competitive/"><div class="lc-k">If you underwrite surety</div><div class="lc-t">Read a contractor's public award record</div><div class="lc-d">Pull any firm's awarded work across City and State construction, see its public obligees, and place a single contract against the agency's award flow.</div><div class="lc-go">&rarr; Market</div></a>
+    <a class="lp-card" href="/competitive/"><div class="lc-k">If you underwrite surety</div><div class="lc-t">Read a contractor's public award record</div><div class="lc-d">Pull any firm's awarded work across City and State construction, see which agencies it wins from and how its job sizes are trending, and read a single account against the agency's live award flow.</div><div class="lc-go">&rarr; Market</div></a>
     <a class="lp-card" href="/solicitations/"><div class="lc-k">If you place the work</div><div class="lc-t">See where the next quarter's work is forming</div><div class="lc-d">Watch open solicitations reach the market before they become awards, and track which agencies are letting the most construction value right now.</div><div class="lc-go">&rarr; Bidding</div></a>
     <a class="lp-card" href="/analysis/"><div class="lc-k">If you analyze the cycle</div><div class="lc-t">Track the demand cycle and the pace of cash</div><div class="lc-d">Follow the composite index of new-award value over time, and see how quickly each agency turns committed dollars into payments.</div><div class="lc-go">&rarr; Analysis</div></a>
     <a class="lp-card" href="/briefing/"><div class="lc-k">If you are new here</div><div class="lc-t">Start with the full picture</div><div class="lc-d">One automated briefing reads the entire public record and tells you, in plain language, what NYC public construction demand is doing this quarter.</div><div class="lc-go">&rarr; Briefing</div></a>
@@ -397,10 +397,10 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   function setText(id,t){ var el=document.getElementById(id); if(el) el.textContent=t; }
   function showIndex(val, asof){
     setText('lp-index', Number(val).toFixed(1));
-    setText('lp-index-cap','New-award momentum against the 2019 monthly average (=100), renewals and megaprojects excluded.'+(asof?(' As of '+asof+'.'):''));
+    setText('lp-index-cap','A single number for how much new construction work the City is putting out, measured against its 2019 pace. Renewals and $500M megaprojects are stripped out so the reading tracks fresh demand.'+(asof?(' As of '+asof+'.'):''));
     var sb=document.getElementById('series-asof'); if(sb&&asof) sb.textContent=asof.toUpperCase();
   }
-  function indexNeutral(){ setText('lp-index-cap','New-award momentum against the 2019 monthly average (=100), renewals and megaprojects excluded. Reading updating.'); }
+  function indexNeutral(){ setText('lp-index-cap','A single number for how much new construction work the City is putting out, measured against its 2019 pace. Renewals and $500M megaprojects are stripped out so the reading tracks fresh demand.'); }
   function fillAdjust(pc){
     var nom = pc.index_level, adj = pc.adjusted_index_level;
     if(nom==null || adj==null) return;
