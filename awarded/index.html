@@ -208,7 +208,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <a href="/awarded/" class="active">Awarded</a>
       <a href="/funnel/">Funnel</a>
       <a href="/agency/">Agencies</a>
-      <a href="/competitive/">Market</a>
+      <a href="/competitive/">Contractors</a>
       <a href="/analysis/">Analysis</a>
       <a href="/regional/">Regional</a>
       <a href="/briefing/">Briefing</a>
@@ -310,7 +310,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <thead><tr><th></th><th>Vendor</th><th class="num">Awards</th><th class="num">Awarded value</th></tr></thead>
         <tbody></tbody>
       </table>
-      <div class="tnote">The vendors winning the most awarded value in the window, by the name exactly as published in the City Record. Names are not grouped across spellings here, so a firm filing under several names is split; the “Market” page rolls a contractor's variants into one total. Awards is the count of notices, value their deduplicated sum.</div>
+      <div class="tnote">The vendors winning the most awarded value in the window, by the name exactly as published in the City Record. Names are not grouped across spellings here, so a firm filing under several names is split; the “Contractors” page rolls a contractor's variants into one total. Awards is the count of notices, value their deduplicated sum.</div>
     </div>
   </section>
 
@@ -334,7 +334,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <p>All figures are drawn live from <a href="https://data.cityofnewyork.us/City-Government/Recent-Contract-Awards/qyyg-4tf5" target="_blank" rel="noopener">Recent Contract Awards</a> on NYC Open Data (dataset <code>qyyg-4tf5</code>), the City Record's public notice of contract awards, maintained by the NYC Department of Citywide Administrative Services. The dataset is updated daily; this page queries it directly every time it loads, so what you see is the current public record.</p>
       <h3>What counts as an award</h3>
       <p>Each record is a contract award notice published in the City Record. Dollar values are the contract amounts as published at award. An award notice comes before contract registration with the Comptroller and well before any payment. It measures demand entering the market rather than cash out the door.</p>
-      <p>A single procurement can be published as more than one notice. To avoid counting the same award twice, notices are deduplicated to one record per procurement (the City Record <code>pin</code>), keeping the largest published contract amount for that procurement. Every dollar total on this page is computed on that deduplicated set, the same rule used across the “Funnel”, “Briefing”, and “Market” pages.</p>
+      <p>A single procurement can be published as more than one notice. To avoid counting the same award twice, notices are deduplicated to one record per procurement (the City Record <code>pin</code>), keeping the largest published contract amount for that procurement. Every dollar total on this page is computed on that deduplicated set, the same rule used across the “Funnel”, “Briefing”, and “Contractors” pages.</p>
       <h3>Scope</h3>
       <p>The index covers the two construction categories in the City's procurement taxonomy: <strong>Construction/Construction Services</strong> (hard construction) and <strong>Construction Related Services</strong> (design, engineering, construction management). The scope control above lets you view either or both. Awards with no positive published value are excluded.</p>
       <h3>Geography</h3>
