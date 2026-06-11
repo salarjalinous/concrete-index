@@ -180,11 +180,64 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   *{scroll-behavior:auto}
 }
 
+/* ---------- contractor lookup (ported from the retired Vendors page) ---------- */
+.searchbar{display:flex;gap:10px;margin-top:22px;max-width:560px}
+.searchbar input{flex:1;font:inherit;font-size:15px;padding:11px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink)}
+.searchbar input:focus{outline:2px solid var(--accent)}
+.searchbar button{font:inherit;font-size:14px;font-weight:600;padding:11px 20px;border:0;border-radius:var(--radius);background:var(--navy);color:var(--paper);cursor:pointer}
+.searchbar button:hover{background:#1c2e41}
+.hint{margin-top:10px;font-size:12.5px;color:var(--faint)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0}
+.chip{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);padding:5px 11px;cursor:pointer;color:var(--muted)}
+.chip:hover{color:var(--ink);border-color:var(--ink)}
+.chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.csv-link{color:var(--accent);font-weight:500}
+.csv-link:hover{text-decoration:underline}
+.starter{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.starter button{font:inherit;text-align:left;font-size:13.5px;font-weight:600;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink);cursor:pointer}
+.starter button:hover{border-color:var(--accent)}
+.starter .v-amt{display:block;font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:11.5px;color:var(--muted);margin-top:4px}
+.empty{padding:36px;text-align:center;color:var(--muted)}
+#lookup td .t-title{font-weight:500;color:var(--ink)}
+#lookup td .t-sub{font-family:'Public Sans',sans-serif;font-size:12px;color:var(--muted);margin-top:3px}
+.pill.hard{background:var(--accent-soft);color:var(--accent)}
+.pill.rel{background:#dde6ee;color:var(--steel)}
+.readstrip{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.rd{padding:16px 18px;border-right:1px solid var(--line);border-top:3px solid var(--steel)}
+.rd:last-child{border-right:0}
+.rd.flag{border-top-color:var(--steel);background:var(--band)}
+.rd .rd-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--faint)}
+.rd .rd-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:23px;font-weight:600;margin-top:7px;letter-spacing:-.01em;color:var(--navy)}
+.rd.flag .rd-value{color:var(--steel)}
+.rd .rd-note{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+@media(max-width:720px){.readstrip{grid-template-columns:1fr}.rd{border-right:0;border-bottom:1px solid var(--line)}.rd:last-child{border-bottom:0}.starter{grid-template-columns:1fr}}
+.cbk-asof{margin-top:12px;font-size:11.5px;letter-spacing:.03em;color:var(--faint)}
+.grouphead{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;margin:4px 0 2px}
+.grouphead h2{font-family:'Source Serif 4',Georgia,serif;font-size:25px;font-weight:700;letter-spacing:-.012em;color:var(--ink)}
+.grouphead .gp{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;background:var(--accent-soft);color:var(--accent);border-radius:3px;padding:3px 7px}
+.grouphead .gn{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)}
+.members{margin-top:18px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.members summary{list-style:none;cursor:pointer;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;font-weight:600;color:var(--ink);background:var(--band)}
+.members summary::-webkit-details-marker{display:none}
+.members summary .mcap{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.03em}
+.members summary .caret{font-family:'IBM Plex Mono',monospace;color:var(--faint);transition:transform .15s}
+.members[open] summary .caret{transform:rotate(90deg)}
+.members .mbody{padding:4px 18px 8px}
+.members table{font-size:13px}
+.members th{padding:10px 8px 7px}
+.members td{padding:9px 8px}
+.members td.mname{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink)}
+#vloader{display:none;padding:50px 0;text-align:center;color:var(--muted)}
+#profile{display:none}
+@media(max-width:880px){.starter{grid-template-columns:1fr}}
+
 /* ---------- print ---------- */
 @media print{
-  header,.series-bar,.badge-live,.controls,.seg,.menu-btn{display:none !important}
+  header,.series-bar,.badge-live,.controls,.seg,.menu-btn,.searchbar,.chips,.hint,#starter{display:none !important}
   body{background:#fff;color:#000}
   .card{background:#fff !important;box-shadow:none}
+  details.members > .mbody{display:block !important}
+  details.members{page-break-inside:avoid}
   footer{background:#fff;border-top:1px solid #000;color:#000}
   footer a,a{color:#000}
 }
@@ -204,9 +257,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <a href="/solicitations/">Bidding</a>
       <a href="/awarded/">Awarded</a>
       <a href="/funnel/">Funnel</a>
-      <a href="/velocity/">Velocity</a>
       <a href="/agency/">Agencies</a>
-      <a href="/vendors/">Vendors</a>
       <a href="/competitive/" class="active">Market</a>
       <a href="/analysis/">Analysis</a>
       <a href="/regional/">Regional</a>
@@ -218,14 +269,121 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 </header>
 
 <div class="series-bar">
-  <div class="inner">SERIES&nbsp;·&nbsp;<b>CI-MARKET</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CITY RECORD (qyyg-4tf5), DAILY</b><span class="sep">·</span>DEDUPE&nbsp;·&nbsp;<b>ONE PER PIN</b></div>
+  <div class="inner">SERIES&nbsp;·&nbsp;<b>CI-MARKET</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CITY RECORD (qyyg-4tf5), DAILY · CHECKBOOK, NIGHTLY · DATA.NY.GOV, LIVE</b><span class="sep">·</span>DEDUPE&nbsp;·&nbsp;<b>ONE PER PIN</b></div>
 </div>
 
 <div class="wrap hero">
-  <div class="kicker">Competitive set by wins</div>
-  <h1>How award dollars and counts spread across the market.</h1>
-  <p class="sub">Construction award notices grouped by award value into four size bands. For each band: how many awards land there, how many dollars they carry, and how concentrated the band is. Awardee names are a grouping key only. None are published, ranked, or scored.</p>
-  <p class="asof" id="asof">Assembling the competitive set from live City Record data&hellip;</p>
+  <div class="kicker">Contractors &amp; market structure</div>
+  <h1>Read one contractor, then the market it competes in.</h1>
+  <p class="sub">Look up any firm's public award record across City and State construction, then read how award dollars and counts spread across the market by award-size band. The contractor lookup is the underwriting-critical view; the market-structure read follows below it. Awardee names in the market section are a grouping key only and are never published, ranked, or scored.</p>
+  <div class="searchbar">
+    <input id="q" type="search" placeholder="Try a contractor name, e.g. Deboe or Iannelli" autocomplete="off">
+    <button id="go">Search</button>
+  </div>
+  <p class="hint">Matches the vendor name as published in the City Record. Where we can confirm by hand that several names belong to the same firm, they roll up under one parent total; every underlying name is listed below the profile.</p>
+</div>
+
+<!-- ===== Contractor lookup (lead section). Independent of the market data load
+     below, so it is usable immediately on page open. ===== -->
+<main class="wrap" id="lookup">
+
+  <section id="starter" class="grid">
+    <div class="card">
+      <div class="sec-head"><h2>Contractor lookup &middot; most awarded, trailing twelve months</h2><span class="cap">TOP 12 &middot; USD</span></div>
+      <div class="h-sub">A starting point: tap any name for its full award record</div>
+      <div class="starter" id="starter-list"></div>
+      <div class="tnote">The twelve vendors with the most City Record construction award value over the trailing twelve months, by the name as published (not yet grouped across spellings). Tap one to open its full profile, where the firm's name variants, Checkbook figures, and MTA/State work are rolled together.</div>
+    </div>
+  </section>
+
+  <div id="vloader"><div class="spinner"></div>Pulling the award record&hellip;</div>
+
+  <section id="profile">
+    <div class="chips" id="chips"></div>
+    <div class="grouphead" id="grouphead"></div>
+    <div id="city-empty" class="h-sub" style="display:none;margin-bottom:18px"></div>
+    <section class="kpis" id="city-kpis">
+      <div class="kpi hl"><div class="k-label">Awarded, all-time</div><div class="k-value" id="kpi-all">&ndash;</div><div class="k-note">in the record since 2003</div></div>
+      <div class="kpi"><div class="k-label">Awarded, TTM</div><div class="k-value" id="kpi-ttm">&ndash;</div><div class="k-note">trailing twelve months</div></div>
+      <div class="kpi"><div class="k-label">Awards</div><div class="k-value" id="kpi-n">&ndash;</div><div class="k-note" id="kpi-n-note"></div></div>
+      <div class="kpi"><div class="k-label">Top agency</div><div class="k-value" id="kpi-ag" style="font-size:18px;line-height:1.3">&ndash;</div><div class="k-note" id="kpi-ag-note"></div></div>
+    </section>
+    <section class="grid" id="city-readcard">
+      <div class="card">
+        <div class="sec-head"><h2>What the award record shows</h2><span class="cap">PUBLIC RECORD &middot; DEMAND SIGNALS</span></div>
+        <div class="h-sub">Three readings drawn straight from the public award record: how this contractor's largest jobs compare to its recent norm, how concentrated its work is by agency, and how often it has appeared as a winner. They describe what the City has hired the firm to do. They are not a credit opinion, a bonding judgment, or a prequalification, and nothing here scores or ranks the contractor.</div>
+        <div class="readstrip" id="readstrip"></div>
+      </div>
+    </section>
+    <section class="grid" id="cbk-section">
+      <div class="card">
+        <div class="sec-head"><h2>Registered and paid</h2><span class="cap">CHECKBOOK NYC &middot; USD</span></div>
+        <div class="h-sub">Three different measures of this firm's City work, shown side by side and never added together. The award-notice value is the amount stated when a contract is awarded. Registered is the contract value the Comptroller has registered. Paid to date is how much the City has actually disbursed against those registered contracts. Each answers a different question, and the gaps between them are normal.</div>
+        <div class="readstrip" id="cbk-strip"></div>
+        <div class="cbk-asof mono" id="cbk-asof" style="display:none"></div>
+        <div class="h-sub" id="cbk-note" style="margin-top:14px;margin-bottom:0"></div>
+      </div>
+    </section>
+    <section class="grid" id="ny-section" style="display:none">
+      <div class="card">
+        <div class="sec-head"><h2>MTA &amp; State public work</h2><span class="cap">DATA.NY.GOV &middot; USD</span></div>
+        <div class="h-sub">Public construction work this firm has done for the MTA and New York State, named in the State's open-data record. This is a separate ledger from the City figures above and is never added to them. Heavy-civil firms whose New York work runs through the authorities can read low or empty in the City and Checkbook views precisely because their work shows up here instead.</div>
+        <div class="readstrip" id="ny-strip"></div>
+        <div class="h-sub" id="ny-note" style="margin-top:14px;margin-bottom:0"></div>
+        <details class="members" id="ny-members" style="display:none;margin-top:14px">
+          <summary><span>Contracts included, by source</span><span style="display:flex;align-items:center;gap:10px"><span class="mcap" id="ny-members-cap"></span><span class="caret">&#9656;</span></span></summary>
+          <div class="mbody">
+            <table>
+              <thead><tr><th>Source</th><th class="num">Contracts</th><th class="num">Registered</th><th class="num">Paid to date</th></tr></thead>
+              <tbody id="ny-members-body"></tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+    </section>
+    <section class="grid two" id="city-charts">
+      <div class="card">
+        <div class="sec-head"><h2>Awarded value by year</h2><span class="cap">BY YEAR &middot; USD</span></div>
+        <div class="h-sub">Job-size trend matters as much as the total: a book stepping up in size is taking on different risk</div>
+        <div class="chart-box"><canvas id="chart-year"></canvas></div>
+        <div class="tnote">Each bar is the group's awarded value for one year, on the deduplicated City Record set (one record per procurement). The trend in job size matters as much as the total: a book stepping up in scale is taking on work of a different size. These are award-notice values, not paid amounts.</div>
+      </div>
+      <div class="card">
+        <div class="sec-head"><h2>Agency mix</h2><span class="cap">TOP 6 &middot; USD</span></div>
+        <div class="h-sub">Who this vendor works for, by awarded value. <a href="/awarded/">See the full award flow on the &ldquo;Awarded&rdquo; page</a>.</div>
+        <div class="chart-box"><canvas id="chart-agency"></canvas></div>
+        <div class="tnote">The group's awarded value split across the agencies it has won City work from, the top six by value. Bars are awarded value, not contract counts, and agencies outside the top six are not shown.</div>
+      </div>
+    </section>
+    <section class="grid" id="city-recent">
+      <div class="card">
+        <div class="sec-head"><h2>Recent awards</h2><span class="cap"><a href="#" id="csv-link" class="csv-link">&darr; Download CSV</a> &middot; MOST RECENT</span></div>
+        <div class="h-sub" id="recent-sub"></div>
+        <table id="tbl-recent">
+          <thead><tr><th>Date</th><th>Award</th><th>Agency</th><th class="num">Value</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <details class="members" id="members">
+          <summary><span id="members-label">Names included in this total</span><span style="display:flex;align-items:center;gap:10px"><span class="mcap" id="members-cap"></span><span class="caret">&#9656;</span></span></summary>
+          <div class="mbody">
+            <table>
+              <thead><tr><th>Name as published</th><th class="num">Awards</th><th class="num">Awarded value</th></tr></thead>
+              <tbody id="members-body"></tbody>
+            </table>
+          </div>
+        </details>
+        <div class="tnote">The most recent award notices for this group, newest first; Value is the amount stated at the notice, a floor that later change orders can grow. &ldquo;Names included in this total&rdquo; expands every underlying name spelling rolled into the group and its summed value, so the grouping is auditable and nothing is hidden or double-counted.</div>
+      </div>
+    </section>
+  </section>
+
+  <div id="noresults" class="card empty" style="display:none">No construction awards found for that name. Try a shorter fragment of the company name.</div>
+
+</main>
+
+<div class="wrap" style="padding-top:8px">
+  <div class="sec-head" style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px"><h2 style="font-family:'Source Serif 4',Georgia,serif;font-size:21px;font-weight:700;letter-spacing:-.01em;color:var(--ink)">Market structure</h2><span class="cap" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em">COMPETITIVE SET BY WINS</span></div>
+  <p class="asof" id="asof" style="margin-top:14px;padding-top:0;border-top:0">Assembling the market set from live City Record data&hellip;</p>
 </div>
 
 <div id="loader" class="wrap">
@@ -291,7 +449,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         </tr></thead>
         <tbody></tbody>
       </table>
-      <div class="tnote">Award-size bands fixed by published contract value. For each band: the number of awards, its count share and dollar share of the deduplicated set, and the count of distinct awardees by published name (not grouped across spellings). No contractor is named on this page.</div>
+      <div class="tnote">Award-size bands fixed by published contract value. For each band: the number of awards, its count share and dollar share of the deduplicated set, and the count of distinct awardees by published name (not grouped across spellings). No contractor is named in this market-structure section; named firms appear only in the contractor lookup above.</div>
     </div>
   </section>
 
@@ -307,8 +465,15 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <section class="method" id="methodology">
     <div class="card">
       <div class="sec-head"><h2>Market · Methodology &amp; definitions</h2><span class="m-cap">SERIES NOTES</span></div>
-      <h3>What this page measures</h3>
-      <p>Competitive set by wins groups NYC City Record construction award notices (winners only; no co-bidders) by award value into four bands and reports market-structure statistics, count share, dollar share, top-N share and an HHI concentration index, computed over exact normalized awardee names. Awardee names are used only as a deterministic grouping key and are never published, ranked, scored, or presented as a measure of any contractor's standing or creditworthiness. Award notices are deduped to one record per procurement (pin), renewals are flagged, and awards of $500M or more are excluded to match the index.</p>
+      <h3>Contractor lookup &middot; how vendor totals are grouped</h3>
+      <p>The contractor lookup at the top of the page comes from the New York City Record Recent Contract Awards dataset (NYC Open Data <code>qyyg-4tf5</code>), limited to awards in Construction categories. Many firms appear under several spellings of their name, and a single firm group can file under more than one legal entity. Where we can confirm by hand that several names belong to the same firm, they roll up under one parent total and every underlying name and its amount is listed, so nothing is hidden. Grouping is a fixed, verified list of name variants, not automated name-matching or any statistical guess; we group only on a distinctive shared identifier or an unmistakable spelling variation of the same company, and when a connection is uncertain we leave the names separate. Each amount is the value stated in the award notice, a floor rather than a running total of work performed or paid, so a group's total is a lower bound. The School Construction Authority and the Port Authority remain out of scope for naming a contractor, because those datasets carry no vendor field.</p>
+      <h3>Contractor lookup &middot; registered and paid</h3>
+      <p>The award-notice figure is queried live from the City Record on each load. The registered and paid figures come from Checkbook NYC, the Comptroller's system of record, which a browser cannot call directly: it allows no cross-origin request and returns a paged XML feed. An automated job fetches and normalizes it server-side every night and writes a compact static file the lookup reads. That job reconciles each Checkbook vendor name to the same parent groups used here through the same <code>normName()</code> normalization the award record uses, so the three measures line up against one contractor. A group with no exact name match after normalization shows no Checkbook figure rather than a guess.</p>
+      <h3>Contractor lookup &middot; MTA &amp; State public work</h3>
+      <p>The MTA and State figures come from New York State open data on <code>data.ny.gov</code>: MTA Procurements (<code>twsw-2mqa</code>) and the State University Construction Fund contracts (<code>cfjm-ii27</code>), both limited to the Design and Construction/Maintenance procurement type. These datasets name the awarded contractor, so they close the contractor-naming gap that City sources leave on authority work. They are reported through the Public Authorities Reporting Information System, which re-reports every active contract each fiscal year with a growing cumulative spend, so figures here are deduplicated to one record per contract at its latest fiscal-year report; summing the raw rows would multi-count. They are a separate ledger from the City and Checkbook figures and are never added to them, because they sit on different books. A firm with no exact name match after normalization shows nothing here rather than a guess. The three measures, award-notice value, registered, and paid to date, are never summed; this is the public demand-side view of a contractor and says nothing about costs, margins, bonding capacity, or performance.</p>
+      <p>The Concrete Index is an independent personal project built on public data. It is not affiliated with, endorsed by, or speaking for any employer, and nothing here is any employer's assessment of any named company.</p>
+      <h3>Market structure &middot; what this section measures</h3>
+      <p>Competitive set by wins groups NYC City Record construction award notices (winners only; no co-bidders) by award value into four bands and reports market-structure statistics, count share, dollar share, top-N share and an HHI concentration index, computed over exact normalized awardee names. In this section awardee names are used only as a deterministic grouping key and are never published, ranked, scored, or presented as a measure of any contractor's standing or creditworthiness. Award notices are deduped to one record per procurement (pin), renewals are flagged, and awards of $500M or more are excluded to match the index.</p>
       <h3>Universe and window</h3>
       <p>Source is the City Record award feed (dataset <code>qyyg-4tf5</code>), which is award notices by nature, filtered to <code>category_description</code> beginning "Construction" with <code>contract_amount</code> above zero and below $500M. The default window is the trailing twelve months by <code>start_date</code>; the all-time toggle drops the date filter. Renewals are identified by matching <code>selection_method_description</code> against renewal or extension, the same continuation rule the “Awarded” and “Analysis” pages use, and excluded from the set by default, with the include toggle adding them back.</p>
       <h3>Deduplication and grouping key</h3>
@@ -337,6 +502,606 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     </div>
   </div>
 </footer>
+
+<!-- ===== Contractor lookup module (ported verbatim from the retired Vendors page,
+     wrapped in an IIFE so its globals do not collide with the market script below).
+     Exposes runSearch and selectGroup on window for the inline onclick handlers. ===== -->
+<script>
+(function(){
+'use strict';
+const API = 'https://data.cityofnewyork.us/resource/qyyg-4tf5.json';
+const TOKEN = '3TAzQQPiSG2T4WGWfYYUxxqfJ';
+const HARD = 'Construction/Construction Services';
+const COLOR_A = '#b5482a', COLOR_B = '#243b53', GRID = '#ead9c9';
+// NY State open data (data.ny.gov), already in the page CSP connect-src. These
+// carry the awarded CONTRACTOR NAME on MTA and State construction work, which the
+// City datasets cannot. MTA Procurements (twsw-2mqa) and the SUNY Construction
+// Fund contracts (cfjm-ii27) both filter to the same construction procurement type.
+const NY_API = 'https://data.ny.gov/resource';
+const MTA_DS = 'twsw-2mqa', SUCF_DS = 'cfjm-ii27';
+const NY_CONSTR = 'Design and Construction/Maintenance';
+
+Chart.defaults.font.family = "'IBM Plex Mono',monospace";
+Chart.defaults.font.size = 10;
+Chart.defaults.color = '#6e5d52';
+Object.assign(Chart.defaults.plugins.tooltip, {
+  backgroundColor:'#fffaf4', titleColor:'#22150e', bodyColor:'#6e5d52',
+  borderColor:'#b5482a', borderWidth:1, cornerRadius:2, padding:10, displayColors:false,
+  titleFont:{family:"'Public Sans',sans-serif",weight:'600',size:12}, bodyFont:{family:"'IBM Plex Mono',monospace",size:12},
+  caretSize:5
+});
+let charts = {};
+function destroy(k){ if(charts[k]){ charts[k].destroy(); delete charts[k]; } }
+
+async function getJSON(params){
+  params['$$app_token'] = TOKEN;
+  const res = await fetch(API + '?' + new URLSearchParams(params));
+  if(!res.ok) throw new Error('API ' + res.status);
+  return res.json();
+}
+// data.ny.gov fetch (same Socrata app token works on both portals).
+async function getNY(ds, params){
+  params['$$app_token'] = TOKEN;
+  const res = await fetch(NY_API + '/' + ds + '.json?' + new URLSearchParams(params));
+  if(!res.ok) throw new Error('NY ' + res.status);
+  return res.json();
+}
+// PARIS re-reporting dedup: the State data re-reports every active contract each
+// fiscal year (cumulative spend grows) and sometimes duplicates a contract within
+// a year. Collapse to ONE record per contract: keep the latest fiscal year, then
+// tie-break by max paid, then max amount. Summing raw rows would multi-count.
+function dedupContracts(rows, getKey, getFy, getAmt, getPaid){
+  const best = new Map(); let u = 0;
+  for(const r of rows){
+    const ck = (getKey(r) || '').trim() || ('__' + (u++));
+    const fy = getFy(r) || '';
+    const amt = parseFloat(getAmt(r)) || 0;
+    const paid = parseFloat(getPaid(r)) || 0;
+    const cur = best.get(ck);
+    if(!cur || fy > cur.fy ||
+       (fy === cur.fy && (paid > cur.paid || (paid === cur.paid && amt > cur.amt)))){
+      best.set(ck, { fy, amt, paid });
+    }
+  }
+  let registered = 0, paid = 0;
+  for(const e of best.values()){ registered += e.amt; paid += e.paid; }
+  return { contracts: best.size, registered, paid };
+}
+// Fetch MTA + SUNY-CF construction rows matching the same vendor clause as the
+// City search, attribute each row to its parent group exactly via groupKeyFor(),
+// dedupe per contract, and return a Map of groupKey -> {mta, sucf} aggregates.
+async function buildNYWork(vendorClause){
+  const out = new Map();
+  const [mta, sucf] = await Promise.all([
+    getNY(MTA_DS, {
+      '$select':'vendor_name,transaction_number,fiscal_year_end_date,contract_amount,amount_expended_to_date',
+      '$where':`type_of_procurement='${NY_CONSTR}' AND ${vendorClause}`, '$limit':'10000'
+    }).catch(()=>[]),
+    getNY(SUCF_DS, {
+      '$select':'vendor_name,contract_number,contract_amount,expended_amount_ltd',
+      '$where':`procurement_type='${NY_CONSTR}' AND ${vendorClause}`, '$limit':'10000'
+    }).catch(()=>[])
+  ]);
+  const bucket = (rows) => { const m = new Map(); for(const r of rows){ const g = groupKeyFor(r.vendor_name); if(!m.has(g)) m.set(g, []); m.get(g).push(r); } return m; };
+  const mtaByG = bucket(mta), sucfByG = bucket(sucf);
+  const keys = new Set([...mtaByG.keys(), ...sucfByG.keys()]);
+  for(const g of keys){
+    const m = dedupContracts(mtaByG.get(g)||[], r=>r.transaction_number, r=>r.fiscal_year_end_date, r=>r.contract_amount, r=>r.amount_expended_to_date);
+    const s = dedupContracts(sucfByG.get(g)||[], r=>r.contract_number, r=>'', r=>r.contract_amount, r=>r.expended_amount_ltd);
+    out.set(g, { mta:m, sucf:s });
+  }
+  return out;
+}
+function fmtMoney(v){
+  if(v >= 1e9) return '$' + (v/1e9).toFixed(2) + 'B';
+  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
+  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
+  return '$' + Math.round(v);
+}
+function fmtInt(v){ return v.toLocaleString('en-US'); }
+function fmtDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function cleanName(s){ return String(s==null?'':s).replace(/\s*[\?�]\s*/g,' / ').replace(/\s{2,}/g,' ').trim(); }
+function escName(s){ return esc(cleanName(s)); }
+function csvCell(v){ const s=(v==null?'':String(v)); return '"'+s.replace(/"/g,'""')+'"'; }
+function isoDay(d){ return d instanceof Date && !isNaN(d) ? d.toISOString().slice(0,10) : ''; }
+function slugify(s){ return (s||'vendor').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60) || 'vendor'; }
+function downloadCSV(text, filename){
+  const blob = new Blob([text], { type:'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 0);
+}
+function exportVendorCSV(){
+  const grp = state.groups.get(state.active);
+  if(!grp) return;
+  const rows = grp.rows;
+  const all = rows.reduce((a,r)=>a+r.amount,0);
+  const cbk = checkbook.loaded ? checkbook.vendors[normName(grp.key)] : null;
+  const lines = [];
+  lines.push(['Vendor group', grp.key].map(csvCell).join(','));
+  lines.push(['Measure','Value (USD)'].map(csvCell).join(','));
+  lines.push(['Award-notice value (City Record)', Math.round(all)].map(csvCell).join(','));
+  lines.push(['Registered (Checkbook)', cbk ? Math.round(cbk.registered) : 'no match'].map(csvCell).join(','));
+  lines.push(['Paid to date (Checkbook)', cbk ? Math.round(cbk.paid) : 'no match'].map(csvCell).join(','));
+  lines.push('');
+  lines.push(['Date','Award','Agency','Vendor (as published)','Category','Selection method','Amount (USD)'].map(csvCell).join(','));
+  rows.forEach(r => {
+    lines.push([
+      isoDay(r.date), r.title, r.agency, r.vendor,
+      r.cat==='hard'?'Construction':'Related services',
+      r.method, Math.round(r.amount)
+    ].map(csvCell).join(','));
+  });
+  downloadCSV(lines.join('\r\n'), 'concrete-index-' + slugify(grp.key) + '.csv');
+}
+function isoMonthsAgo(n){ const d=new Date(); d.setMonth(d.getMonth()-n); return d.toISOString().slice(0,10); }
+function isContinuation(m){ return /renewal|extension/i.test(m||''); }
+function median(a){ if(!a.length) return 0; const s=[...a].sort((x,y)=>x-y); const m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; }
+function monthsSince(d){ const n=new Date(); return (n.getFullYear()-d.getFullYear())*12 + (n.getMonth()-d.getMonth()); }
+
+function normName(s){
+  return (s||'')
+    .trim()
+    .replace(/\s+/g,' ')
+    .toUpperCase()
+    .replace(/[.,;:&/\\'"`\-\s]+$/,'')
+    .trim();
+}
+
+const alias = {
+  loaded: false,
+  variantToParent: new Map(),
+  parentVariants: new Map(),
+  groups: []
+};
+
+async function loadAliases(){
+  try{
+    const res = await fetch('/data/vendor-aliases.json');
+    if(!res.ok) throw new Error('aliases ' + res.status);
+    const raw = await res.json();
+    raw.forEach(g => {
+      const seen = new Set();
+      const norm = [];
+      g.variants.forEach(v => {
+        const nv = normName(v);
+        if(!nv || seen.has(nv)) return;
+        seen.add(nv);
+        norm.push(nv);
+        alias.variantToParent.set(nv, g.parent);
+      });
+      alias.parentVariants.set(g.parent, norm);
+      alias.groups.push({ parent: g.parent, variants: norm });
+    });
+    alias.loaded = true;
+  }catch(e){ /* page still works ungrouped if aliases fail to load */ }
+}
+
+const checkbook = { loaded: false, meta: null, vendors: {} };
+async function loadCheckbook(){
+  try{
+    const res = await fetch('/data/checkbook-vendors.json');
+    if(!res.ok) throw new Error('checkbook ' + res.status);
+    const d = await res.json();
+    checkbook.meta = d.meta || null;
+    checkbook.vendors = d.vendors || {};
+    checkbook.loaded = true;
+  }catch(e){ /* page still works without the Checkbook block */ }
+}
+
+function groupKeyFor(vendorName){
+  const p = alias.variantToParent.get(normName(vendorName));
+  return p || (vendorName||'').trim();
+}
+
+const state = { rows: [], groups: new Map(), active: '' };
+
+async function loadStarter(){
+  const since = isoMonthsAgo(12);
+  const top = await getJSON({
+    '$select':'vendor_name,sum(contract_amount) as s,count(*) as n',
+    '$where':`starts_with(category_description,'Construction') AND start_date>'${since}' AND contract_amount>0`,
+    '$group':'vendor_name','$order':'s DESC','$limit':'12'
+  });
+  document.getElementById('starter-list').innerHTML = top.map(t =>
+    `<button onclick="runSearch(${JSON.stringify(t.vendor_name).replace(/"/g,'&quot;')})">${escName(t.vendor_name)}<span class="v-amt">${fmtMoney(parseFloat(t.s))} · ${fmtInt(parseInt(t.n))} award${parseInt(t.n)===1?'':'s'}, TTM</span></button>`
+  ).join('');
+}
+
+function soqlLit(s){ return (s||'').replace(/'/g, "''").replace(/[%_]/g, ''); }
+
+async function runSearch(q){
+  q = (q||'').trim();
+  if(q.length < 3) return;
+  document.getElementById('q').value = q;
+  history.replaceState(null,'', '?q=' + encodeURIComponent(q));
+  document.getElementById('starter').style.display = 'none';
+  document.getElementById('profile').style.display = 'none';
+  document.getElementById('noresults').style.display = 'none';
+  document.getElementById('vloader').style.display = 'block';
+
+  const ql = q.toLowerCase();
+  const safe = soqlLit(q);
+
+  const matchedVariants = new Set();
+  alias.groups.forEach(g => {
+    const hit = g.parent.toLowerCase().includes(ql) ||
+                g.variants.some(v => v.toLowerCase().includes(ql));
+    if(hit) g.variants.forEach(v => matchedVariants.add(v));
+  });
+
+  const likeOf = v => v.replace(/'/g,"''").replace(/\s+/g,'%') + '%';
+  const clauses = [`upper(vendor_name) like upper('%${safe}%')`];
+  for(const v of matchedVariants){
+    clauses.push(`upper(vendor_name) like upper('${likeOf(v)}')`);
+  }
+  const vendorClause = `(${clauses.join(' OR ')})`;
+  const where = `starts_with(category_description,'Construction') AND contract_amount>0 AND ${vendorClause}`;
+
+  let rows = [];
+  try{
+    rows = await getJSON({
+      '$select':'start_date,agency_name,category_description,selection_method_description,short_title,vendor_name,contract_amount',
+      '$where':where,
+      '$order':'start_date DESC','$limit':'5000'
+    });
+  }catch(e){ rows = []; }
+
+  state.rows = rows.map(r => ({
+    date: new Date(r.start_date),
+    year: r.start_date.slice(0,4),
+    agency: r.agency_name || '(unspecified)',
+    cat: r.category_description === HARD ? 'hard' : 'rel',
+    method: r.selection_method_description || '',
+    title: r.short_title || '(untitled)',
+    vendor: (r.vendor_name || '').trim(),
+    amount: parseFloat(r.contract_amount) || 0,
+    gkey: groupKeyFor(r.vendor_name)
+  }));
+
+  state.groups = new Map();
+  for(const r of state.rows){
+    let g = state.groups.get(r.gkey);
+    if(!g){
+      g = { key:r.gkey, isParent:alias.parentVariants.has(r.gkey), total:0, n:0, rows:[] };
+      state.groups.set(r.gkey, g);
+    }
+    g.total += r.amount; g.n += 1; g.rows.push(r);
+  }
+
+  let nyMap = new Map();
+  try{ nyMap = await buildNYWork(vendorClause); }catch(e){ nyMap = new Map(); }
+  for(const [g, ny] of nyMap){
+    if(!(ny.mta.contracts || ny.sucf.contracts)) continue;
+    let grp = state.groups.get(g);
+    if(!grp){ grp = { key:g, isParent:alias.parentVariants.has(g), total:0, n:0, rows:[], nyOnly:true }; state.groups.set(g, grp); }
+    grp.ny = ny;
+  }
+
+  document.getElementById('vloader').style.display = 'none';
+  if(!state.groups.size){
+    document.getElementById('noresults').style.display = 'block';
+    return;
+  }
+
+  const sorted = [...state.groups.values()].sort((a,b)=>groupRank(b)-groupRank(a));
+  state.active = sorted[0].key;
+
+  renderGroupPicker();
+  renderProfile();
+  document.getElementById('profile').style.display = 'block';
+}
+function groupRank(g){
+  if(g.total > 0) return g.total;
+  if(g.ny) return (g.ny.mta.registered || 0) + (g.ny.sucf.registered || 0);
+  return 0;
+}
+
+function renderGroupPicker(){
+  const el = document.getElementById('chips');
+  const groups = [...state.groups.values()].sort((a,b)=>groupRank(b)-groupRank(a));
+  if(groups.length <= 1){ el.innerHTML = ''; return; }
+  el.innerHTML = groups.map(g =>
+    `<button class="chip ${g.key===state.active?'on':''}" onclick="selectGroup(${JSON.stringify(g.key).replace(/"/g,'&quot;')})">${escName(g.key)} · ${fmtMoney(groupRank(g))}${g.total<=0&&g.ny?' MTA/State':''}</button>`
+  ).join('');
+}
+function selectGroup(key){
+  if(!state.groups.has(key)) return;
+  state.active = key;
+  renderGroupPicker();
+  renderProfile();
+}
+
+function cbkWindowPhrase(){
+  const fy = checkbook.meta && Array.isArray(checkbook.meta.fiscal_years)
+    ? checkbook.meta.fiscal_years : null;
+  if(fy && fy.length){
+    const a = fy[0], b = fy[fy.length-1];
+    return a === b
+      ? ('Checkbook’s published coverage window (currently fiscal year ' + a + ')')
+      : ('Checkbook’s published coverage window (currently fiscal years ' + a + ' to ' + b + ')');
+  }
+  return 'Checkbook’s published coverage window';
+}
+function cbkAsOf(){
+  const g = checkbook.meta && checkbook.meta.generated ? checkbook.meta.generated : null;
+  if(!g) return '';
+  const d = new Date(g);
+  if(isNaN(d)) return '';
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+function renderCheckbook(grp, awardNotice){
+  const strip = document.getElementById('cbk-strip');
+  const note = document.getElementById('cbk-note');
+  const asof = document.getElementById('cbk-asof');
+  const cbk = checkbook.loaded ? checkbook.vendors[normName(grp.key)] : null;
+
+  if(asof){
+    const a = cbkAsOf();
+    asof.textContent = a ? ('Checkbook figures as of ' + a) : '';
+    asof.style.display = a ? '' : 'none';
+  }
+
+  const disclosure = 'Registered, paid to date, and the award-notice value are '
+    + 'three different measures and are never added together. Checkbook coverage '
+    + 'is New York City entities only, so work let by the MTA, the Port Authority, '
+    + 'or New York State is out of scope here. Names are matched to the award '
+    + 'record exactly after normalization, so a firm with no exact match shows no '
+    + 'Checkbook figure rather than a guess. Checkbook figures refresh nightly.';
+
+  if(!cbk){
+    strip.innerHTML = `<div class="rd"><div class="rd-label">Award-notice value</div>`
+      + `<div class="rd-value">${fmtMoney(awardNotice)}</div>`
+      + `<div class="rd-note">Total of the amounts stated in this group's award notices in the City Record. This is the award-side measure already shown above.</div></div>`
+      + `<div class="rd"><div class="rd-label">Registered (Checkbook)</div>`
+      + `<div class="rd-value">–</div>`
+      + `<div class="rd-note">No Checkbook match for this group. Either there is no exact name match after normalization, or this firm's City-registered construction work falls outside ${esc(cbkWindowPhrase())}.</div></div>`
+      + `<div class="rd"><div class="rd-label">Paid to date (Checkbook)</div>`
+      + `<div class="rd-value">–</div>`
+      + `<div class="rd-note">Shown only when a Checkbook match exists.</div></div>`;
+    note.textContent = disclosure;
+    return;
+  }
+
+  const span = (cbk.fy_first && cbk.fy_last)
+    ? (cbk.fy_first === cbk.fy_last ? ('FY' + cbk.fy_first) : ('FY' + cbk.fy_first + '–FY' + cbk.fy_last))
+    : '';
+  const agencyTxt = (typeof cbk.agencies === 'number' && cbk.agencies > 0)
+    ? (cbk.agencies + ' City ' + (cbk.agencies === 1 ? 'agency' : 'agencies')) : '';
+
+  strip.innerHTML =
+      `<div class="rd"><div class="rd-label">Award-notice value</div>`
+    + `<div class="rd-value">${fmtMoney(awardNotice)}</div>`
+    + `<div class="rd-note">Total of the amounts stated in this group's award notices in the City Record. The award-side measure shown above.</div></div>`
+    + `<div class="rd flag"><div class="rd-label">Registered (Checkbook)</div>`
+    + `<div class="rd-value">${fmtMoney(cbk.registered)}</div>`
+    + `<div class="rd-note">Value of this group's contracts registered with the Comptroller${span?(', '+span):''}${agencyTxt?(', across '+agencyTxt):''}. A separate measure from the award notice, not a sum of it.</div></div>`
+    + `<div class="rd flag"><div class="rd-label">Paid to date (Checkbook)</div>`
+    + `<div class="rd-value">${fmtMoney(cbk.paid)}</div>`
+    + `<div class="rd-note">Amount the City has disbursed against those registered contracts so far. Lower than registered while work is in progress.</div></div>`;
+  note.textContent = disclosure;
+}
+
+function renderReadStrip(rows, agSorted, all){
+  const el = document.getElementById('readstrip');
+  const cells = [];
+
+  const newRows = rows.filter(r => !isContinuation(r.method));
+  const thisYear = String(new Date().getFullYear());
+  const since3 = new Date(); since3.setFullYear(since3.getFullYear()-3);
+  const amtsAll = newRows.map(r=>r.amount);
+  const largestAll = amtsAll.length ? Math.max(...amtsAll) : 0;
+  const largestYr = Math.max(0, ...newRows.filter(r=>r.year===thisYear).map(r=>r.amount));
+  const med3arr = newRows.filter(r=>r.date>=since3).map(r=>r.amount);
+  let creepCell;
+  if(med3arr.length >= 5 && largestYr > 0){
+    const med3 = median(med3arr);
+    const ratio = med3 > 0 ? largestYr/med3 : 0;
+    const flag = ratio >= 2;
+    creepCell = `<div class="rd ${flag?'flag':''}"><div class="rd-label">Job-size step-up</div>
+      <div class="rd-value">${ratio.toFixed(1)}×</div>
+      <div class="rd-note">Largest new award this year (${fmtMoney(largestYr)}) versus the trailing-3-year median new award (${fmtMoney(med3)}). A ratio above 2 means this year's largest job is more than double the recent median. That is a change in job size, not a judgment about the firm.</div></div>`;
+  } else {
+    creepCell = `<div class="rd"><div class="rd-label">Job-size step-up</div>
+      <div class="rd-value">${largestAll? fmtMoney(largestAll):'–'}</div>
+      <div class="rd-note">Largest single new award on record. Trailing-3-year sample is under 5 awards, so a step-up ratio is not shown.</div></div>`;
+  }
+  cells.push(creepCell);
+
+  const top1 = all>0 ? agSorted[0][1]/all : 0;
+  const top3 = all>0 ? agSorted.slice(0,3).reduce((a,x)=>a+x[1],0)/all : 0;
+  const conc = top1 > 0.6 || top3 > 0.85;
+  cells.push(`<div class="rd ${conc?'flag':''}"><div class="rd-label">Agency concentration</div>
+    <div class="rd-value">${(top1*100).toFixed(0)}% · ${(top3*100).toFixed(0)}%</div>
+    <div class="rd-note">Top agency and top-3 share of awarded value. Concentrated demand sits behind one payment cycle and one funding stream, a structural feature of the agency, not a judgment about the vendor.</div></div>`);
+
+  const t12 = rows.filter(r=>r.date>=new Date(Date.now()-365*864e5)).length;
+  const t24 = rows.filter(r=>r.date>=new Date(Date.now()-730*864e5)).length;
+  const last = rows.reduce((a,r)=> r.date>a?r.date:a, rows[0].date);
+  const ms = monthsSince(last);
+  const stale = ms >= 18;
+  cells.push(`<div class="rd ${stale?'flag':''}"><div class="rd-label">Award cadence</div>
+    <div class="rd-value">${t12} · ${t24}</div>
+    <div class="rd-note">New award notices in the trailing 12 and 24 months. Last appeared in the City Record as a winner ${ms===0?'this month':ms+' month'+(ms===1?'':'s')+' ago'}. Tracks award notices, not work in progress or firm status.</div></div>`);
+
+  el.innerHTML = cells.join('');
+}
+
+function renderProfile(){
+  const grp = state.groups.get(state.active);
+  if(!grp) return;
+  const rows = grp.rows;
+  const hasCity = rows.length > 0;
+
+  const show = (id, on) => { const e = document.getElementById(id); if(e) e.style.display = on ? '' : 'none'; };
+  show('city-kpis', hasCity);
+  show('city-readcard', hasCity);
+  show('cbk-section', hasCity);
+  show('city-charts', hasCity);
+  show('city-recent', hasCity);
+  const cityEmpty = document.getElementById('city-empty');
+  if(cityEmpty){
+    cityEmpty.style.display = hasCity ? 'none' : '';
+    if(!hasCity) cityEmpty.textContent = 'No NYC City Record construction awards under this name. The public construction work below was let by the MTA or New York State, which is reported on a separate ledger.';
+  }
+
+  const gh = document.getElementById('grouphead');
+  if(grp.isParent && hasCity){
+    const distinct = new Set(rows.map(r=>normName(r.vendor))).size;
+    gh.innerHTML = `<h2>${escName(grp.key)}</h2><span class="gp">Grouped</span>`
+      + `<span class="gn">${distinct} name${distinct===1?'':'s'} rolled up</span>`;
+  } else if(!hasCity){
+    gh.innerHTML = `<h2>${escName(grp.key)}</h2><span class="gp">MTA / State</span>`;
+  } else {
+    gh.innerHTML = `<h2>${escName(grp.key)}</h2>`;
+  }
+
+  if(hasCity){
+    const ttmStart = new Date(); ttmStart.setMonth(ttmStart.getMonth()-12);
+    const all = rows.reduce((a,r)=>a+r.amount,0);
+    const ttm = rows.filter(r=>r.date>=ttmStart).reduce((a,r)=>a+r.amount,0);
+    document.getElementById('kpi-all').textContent = fmtMoney(all);
+    document.getElementById('kpi-ttm').textContent = fmtMoney(ttm);
+    document.getElementById('kpi-n').textContent = fmtInt(rows.length);
+    document.getElementById('kpi-n-note').textContent = 'award notices in the record';
+    const byAg = new Map();
+    for(const r of rows) byAg.set(r.agency, (byAg.get(r.agency)||0)+r.amount);
+    const agSorted = [...byAg.entries()].sort((a,b)=>b[1]-a[1]);
+    document.getElementById('kpi-ag').textContent = agSorted[0][0];
+    document.getElementById('kpi-ag-note').textContent = all>0 ? (agSorted[0][1]/all*100).toFixed(0)+'% of awarded value' : '';
+
+    renderReadStrip(rows, agSorted, all);
+    renderCheckbook(grp, all);
+
+    const byYear = new Map();
+    for(const r of rows) byYear.set(r.year, (byYear.get(r.year)||0)+r.amount);
+    const years = [...byYear.keys()].sort();
+    destroy('year');
+    charts.year = new Chart(document.getElementById('chart-year'), {
+      type:'bar',
+      data:{ labels: years, datasets:[{ data: years.map(y=>byYear.get(y)), backgroundColor: COLOR_A, borderRadius:1 }]},
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>fmtMoney(c.parsed.y)}} },
+        scales:{ x:{grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:10}},
+                 y:{grid:{color:GRID}, border:{display:false}, ticks:{callback:v=>fmtMoney(v), maxTicksLimit:5}} } }
+    });
+    destroy('agency');
+    const agTop = agSorted.slice(0,6);
+    charts.agency = new Chart(document.getElementById('chart-agency'), {
+      type:'bar',
+      data:{ labels: agTop.map(a=>a[0]), datasets:[{ data: agTop.map(a=>a[1]), backgroundColor: COLOR_B, borderRadius:1, barThickness:18 }]},
+      options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>fmtMoney(c.parsed.x)}} },
+        scales:{ x:{grid:{color:GRID}, border:{display:false}, ticks:{callback:v=>fmtMoney(v), maxTicksLimit:5}},
+                 y:{grid:{display:false}, ticks:{autoSkip:false, font:{family:"'Public Sans',sans-serif",size:11.5}}} } }
+    });
+    document.getElementById('recent-sub').textContent = 'Latest ' + Math.min(15, rows.length) + ' of ' + fmtInt(rows.length) + ' award notices';
+    document.querySelector('#tbl-recent tbody').innerHTML = rows.slice(0,15).map(r=>`<tr>
+      <td style="white-space:nowrap" class="mono">${fmtDate(r.date)}</td>
+      <td><div class="t-title">${esc(r.title)}</div>
+          <div class="t-sub">${escName(r.vendor)} · ${esc(r.method)} · <span class="pill ${r.cat}">${r.cat==='hard'?'Construction':'Related services'}</span></div></td>
+      <td>${esc(r.agency)}</td>
+      <td class="num amt">${fmtMoney(r.amount)}</td>
+    </tr>`).join('');
+
+    renderMembers(grp, rows);
+  } else {
+    destroy('year'); destroy('agency');
+  }
+
+  renderNYWork(grp);
+}
+
+function renderNYWork(grp){
+  const sec = document.getElementById('ny-section');
+  const ny = grp.ny;
+  if(!ny || !(ny.mta.contracts || ny.sucf.contracts)){ if(sec) sec.style.display='none'; return; }
+  sec.style.display = '';
+  const m = ny.mta, s = ny.sucf;
+  const cardHTML = (label, val, sub) =>
+    `<div class="rd flag"><div class="rd-label">${label}</div><div class="rd-value">${val}</div><div class="rd-note">${sub}</div></div>`;
+  const cards = [];
+  cards.push(cardHTML('MTA registered',
+    m.contracts ? fmtMoney(m.registered) : '–',
+    m.contracts ? `Across ${fmtInt(m.contracts)} MTA construction contract${m.contracts===1?'':'s'} (data.ny.gov twsw-2mqa), deduped to one record per contract at its latest fiscal-year report.` : 'No MTA construction contracts under this name.'));
+  cards.push(cardHTML('MTA paid to date',
+    m.contracts ? fmtMoney(m.paid) : '–',
+    'Cumulative amount the MTA has expended against those contracts. A separate measure, not summed with the City figures.'));
+  if(s.contracts){
+    cards.push(cardHTML('State (SUNY CF) paid', fmtMoney(s.paid),
+      `Across ${fmtInt(s.contracts)} SUNY Construction Fund contract${s.contracts===1?'':'s'} (cfjm-ii27); registered ${fmtMoney(s.registered)}.`));
+  } else {
+    cards.push(cardHTML('State (SUNY CF)', '–', 'No SUNY Construction Fund construction contracts under this name.'));
+  }
+  document.getElementById('ny-strip').innerHTML = cards.join('');
+  document.getElementById('ny-note').textContent =
+    'MTA and State figures come from New York State open data (data.ny.gov) and are a separate ledger from the City and Checkbook figures above; they are never added to them. Each active contract is re-reported every fiscal year in the State data, so figures are deduped to one record per contract at its latest report. Names are matched to the award record after the same normalization used elsewhere, so a firm with no exact match shows nothing here rather than a guess.';
+  const body = document.getElementById('ny-members-body');
+  body.innerHTML = [
+    m.contracts ? `<tr><td class="mname">MTA Procurements (twsw-2mqa)</td><td class="num">${fmtInt(m.contracts)}</td><td class="num amt">${fmtMoney(m.registered)}</td><td class="num amt">${fmtMoney(m.paid)}</td></tr>` : '',
+    s.contracts ? `<tr><td class="mname">SUNY Construction Fund (cfjm-ii27)</td><td class="num">${fmtInt(s.contracts)}</td><td class="num amt">${fmtMoney(s.registered)}</td><td class="num amt">${fmtMoney(s.paid)}</td></tr>` : ''
+  ].join('');
+  document.getElementById('ny-members-cap').textContent = fmtInt(m.contracts + s.contracts) + ' contract' + ((m.contracts+s.contracts)===1?'':'s');
+  document.getElementById('ny-members').style.display = '';
+}
+
+function renderMembers(grp, rows){
+  const panel = document.getElementById('members');
+  const byNorm = new Map();
+  for(const r of rows){
+    const nk = normName(r.vendor);
+    let e = byNorm.get(nk);
+    if(!e){ e = { n:0, total:0, spellings:new Map() }; byNorm.set(nk, e); }
+    e.n += 1; e.total += r.amount;
+    e.spellings.set(r.vendor, (e.spellings.get(r.vendor)||0)+1);
+  }
+  for(const e of byNorm.values()){
+    e.label = [...e.spellings.entries()].sort((a,b)=>b[1]-a[1])[0][0];
+  }
+  const lines = [...byNorm.values()].sort((a,b)=>b.total-a.total);
+
+  if(!grp.isParent && lines.length <= 1){ panel.style.display='none'; return; }
+  panel.style.display = '';
+  document.getElementById('members-label').textContent =
+    grp.isParent ? 'Names rolled up into this total' : 'Name spellings in this total';
+  document.getElementById('members-cap').textContent =
+    lines.length + ' name' + (lines.length===1?'':'s') + ' · ' + fmtMoney(grp.total) + ' total';
+  document.getElementById('members-body').innerHTML = lines.map(e=>`<tr>
+    <td class="mname">${escName(e.label)}</td>
+    <td class="num">${fmtInt(e.n)}</td>
+    <td class="num amt">${fmtMoney(e.total)}</td>
+  </tr>`).join('');
+}
+
+document.getElementById('go').addEventListener('click', ()=>runSearch(document.getElementById('q').value));
+document.getElementById('q').addEventListener('keydown', e=>{ if(e.key==='Enter') runSearch(e.target.value); });
+document.getElementById('csv-link').addEventListener('click', e=>{ e.preventDefault(); exportVendorCSV(); });
+(function(){
+  let prevOpen = null;
+  function before(){ const m=document.getElementById('members'); if(m){ prevOpen=m.open; m.open=true; } }
+  function after(){ const m=document.getElementById('members'); if(m && prevOpen!==null){ m.open=prevOpen; } }
+  window.addEventListener('beforeprint', before);
+  window.addEventListener('afterprint', after);
+  if(window.matchMedia){ const mq=window.matchMedia('print'); if(mq.addEventListener) mq.addEventListener('change', e=>{ e.matches?before():after(); }); }
+})();
+
+// Expose the two functions the inline onclick handlers call.
+window.runSearch = runSearch;
+window.selectGroup = selectGroup;
+
+(async function init(){
+  loadStarter().catch(()=>{});
+  await Promise.all([ loadAliases(), loadCheckbook() ]);
+  const q = new URLSearchParams(location.search).get('q');
+  if(q) runSearch(q);
+})();
+})();
+</script>
 
 <script>
 'use strict';
