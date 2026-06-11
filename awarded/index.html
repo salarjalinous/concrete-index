@@ -311,7 +311,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <thead><tr><th></th><th>Vendor</th><th class="num">Awards</th><th class="num">Awarded value</th></tr></thead>
         <tbody></tbody>
       </table>
-      <div class="tnote">The vendors winning the most awarded value in the window, by the name exactly as published in the City Record. Names are not grouped across spellings here, so a firm filing under several names is split; the Vendors page rolls a contractor's variants into one total. Awards is the count of notices, value their deduplicated sum.</div>
+      <div class="tnote">The vendors winning the most awarded value in the window, by the name exactly as published in the City Record. Names are not grouped across spellings here, so a firm filing under several names is split; the “Vendors” page rolls a contractor's variants into one total. Awards is the count of notices, value their deduplicated sum.</div>
     </div>
   </section>
 
@@ -335,7 +335,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <p>All figures are drawn live from <a href="https://data.cityofnewyork.us/City-Government/Recent-Contract-Awards/qyyg-4tf5" target="_blank" rel="noopener">Recent Contract Awards</a> on NYC Open Data (dataset <code>qyyg-4tf5</code>), the City Record's public notice of contract awards, maintained by the NYC Department of Citywide Administrative Services. The dataset is updated daily; this page queries it directly every time it loads, so what you see is the current public record.</p>
       <h3>What counts as an award</h3>
       <p>Each record is a contract award notice published in the City Record. Dollar values are the contract amounts as published at award. An award notice comes before contract registration with the Comptroller and well before any payment. It measures demand entering the market rather than cash out the door.</p>
-      <p>A single procurement can be published as more than one notice. To avoid counting the same award twice, notices are deduplicated to one record per procurement (the City Record <code>pin</code>), keeping the largest published contract amount for that procurement. Every dollar total on this page is computed on that deduplicated set, the same rule used across the Funnel, Briefing, and Market pages.</p>
+      <p>A single procurement can be published as more than one notice. To avoid counting the same award twice, notices are deduplicated to one record per procurement (the City Record <code>pin</code>), keeping the largest published contract amount for that procurement. Every dollar total on this page is computed on that deduplicated set, the same rule used across the “Funnel”, “Briefing”, and “Market” pages.</p>
       <h3>Scope</h3>
       <p>The index covers the two construction categories in the City's procurement taxonomy: <strong>Construction/Construction Services</strong> (hard construction) and <strong>Construction Related Services</strong> (design, engineering, construction management). The scope control above lets you view either or both. Awards with no positive published value are excluded.</p>
       <h3>Geography</h3>
@@ -344,9 +344,9 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <p>The type control separates <strong>new awards</strong> from <strong>continuations</strong>, renewals of existing contracts, identified by the published selection method. New awards measure fresh demand reaching the market; continuations measure work staying in place. The size control excludes awards of $500M and above, so trend readings aren't dominated by a handful of megaprojects.</p>
       <h3>Work-type tags</h3>
       <p>The work-type filter tags each award by keyword matching on its public short title. Tags are non-exclusive, so one award can carry several (a garage HVAC job is both mechanical and a building). They are descriptive aids, not official classifications. Roughly one award in ten carries no work-type keyword in its title and is shown as Uncategorized, which is most often a professional-services, IT, or design contract with no physical scope named.</p>
-      <p>The headline awarded total above includes everything by default: new work, continuations, and megaprojects. The composite index on the <a href="/analysis/">Analysis</a> page strips all three out to isolate the cycle in new work, so its trailing-twelve total reads lower than this one. Both are correct for their purpose.</p>
+      <p>The headline awarded total above includes everything by default: new work, continuations, and megaprojects. The composite index on the “<a href=”/analysis/“>Analysis</a>” page strips all three out to isolate the cycle in new work, so its trailing-twelve total reads lower than this one. Both are correct for their purpose.</p>
       <h3>The funnel</h3>
-      <p>Awards are the middle of the capital flow. The <a href="/pipeline/">Pipeline</a> page tracks the stage before this one: dollars the City has committed to capital projects that haven't yet reached the market.</p>
+      <p>Awards are the middle of the capital flow. The “<a href=”/pipeline/“>Pipeline</a>” page tracks the stage before this one: dollars the City has committed to capital projects that haven't yet reached the market.</p>
       <h3>Coverage</h3>
       <p>The dataset extends back to 2003. The Concrete Index presents the trailing five years, where publication practice is consistent and comparable.</p>
       <p id="trunc-note" style="display:none;color:var(--accent)">Note: this load reached the row cap on the award pull, so the figures above may be capped and could understate the true totals. Refresh to retry; if it persists the pull will be paged.</p>
