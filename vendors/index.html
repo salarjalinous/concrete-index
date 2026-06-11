@@ -477,6 +477,11 @@ function fmtMoney(v){
 function fmtInt(v){ return v.toLocaleString('en-US'); }
 function fmtDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
 function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+// Display-only cleanup of mangled separators in source vendor names (a stray '?' or
+// replacement char where the City Record garbled a JV separator). Never applied to the
+// raw value used for search, grouping, or alias keys, only to what is shown.
+function normName(s){ return String(s==null?'':s).replace(/\s*[\?\uFFFD]\s*/g,' / ').replace(/\s{2,}/g,' ').trim(); }
+function escName(s){ return esc(normName(s)); }
 // CSV cell escaper: wrap in quotes and double any embedded quote so commas,
 // newlines, and quotes in agency or title text never break a row.
 function csvCell(v){ const s=(v==null?'':String(v)); return '"'+s.replace(/"/g,'""')+'"'; }
@@ -598,7 +603,7 @@ async function loadStarter(){
     '$group':'vendor_name','$order':'s DESC','$limit':'12'
   });
   document.getElementById('starter-list').innerHTML = top.map(t =>
-    `<button onclick="runSearch(${JSON.stringify(t.vendor_name).replace(/"/g,'&quot;')})">${esc(t.vendor_name)}<span class="v-amt">${fmtMoney(parseFloat(t.s))} · ${fmtInt(parseInt(t.n))} award${parseInt(t.n)===1?'':'s'}, TTM</span></button>`
+    `<button onclick="runSearch(${JSON.stringify(t.vendor_name).replace(/"/g,'&quot;')})">${escName(t.vendor_name)}<span class="v-amt">${fmtMoney(parseFloat(t.s))} · ${fmtInt(parseInt(t.n))} award${parseInt(t.n)===1?'':'s'}, TTM</span></button>`
   ).join('');
 }
 
@@ -727,7 +732,7 @@ function renderGroupPicker(){
   const groups = [...state.groups.values()].sort((a,b)=>groupRank(b)-groupRank(a));
   if(groups.length <= 1){ el.innerHTML = ''; return; }
   el.innerHTML = groups.map(g =>
-    `<button class="chip ${g.key===state.active?'on':''}" onclick="selectGroup(${JSON.stringify(g.key).replace(/"/g,'&quot;')})">${esc(g.key)} · ${fmtMoney(groupRank(g))}${g.total<=0&&g.ny?' MTA/State':''}</button>`
+    `<button class="chip ${g.key===state.active?'on':''}" onclick="selectGroup(${JSON.stringify(g.key).replace(/"/g,'&quot;')})">${escName(g.key)} · ${fmtMoney(groupRank(g))}${g.total<=0&&g.ny?' MTA/State':''}</button>`
   ).join('');
 }
 function selectGroup(key){
@@ -890,12 +895,12 @@ function renderProfile(){
   const gh = document.getElementById('grouphead');
   if(grp.isParent && hasCity){
     const distinct = new Set(rows.map(r=>normName(r.vendor))).size;
-    gh.innerHTML = `<h2>${esc(grp.key)}</h2><span class="gp">Grouped</span>`
+    gh.innerHTML = `<h2>${escName(grp.key)}</h2><span class="gp">Grouped</span>`
       + `<span class="gn">${distinct} name${distinct===1?'':'s'} rolled up</span>`;
   } else if(!hasCity){
-    gh.innerHTML = `<h2>${esc(grp.key)}</h2><span class="gp">MTA / State</span>`;
+    gh.innerHTML = `<h2>${escName(grp.key)}</h2><span class="gp">MTA / State</span>`;
   } else {
-    gh.innerHTML = `<h2>${esc(grp.key)}</h2>`;
+    gh.innerHTML = `<h2>${escName(grp.key)}</h2>`;
   }
 
   if(hasCity){
@@ -941,7 +946,7 @@ function renderProfile(){
     document.querySelector('#tbl-recent tbody').innerHTML = rows.slice(0,15).map(r=>`<tr>
       <td style="white-space:nowrap" class="mono">${fmtDate(r.date)}</td>
       <td><div class="t-title">${esc(r.title)}</div>
-          <div class="t-sub">${esc(r.vendor)} · ${esc(r.method)} · <span class="pill ${r.cat}">${r.cat==='hard'?'Construction':'Related services'}</span></div></td>
+          <div class="t-sub">${escName(r.vendor)} · ${esc(r.method)} · <span class="pill ${r.cat}">${r.cat==='hard'?'Construction':'Related services'}</span></div></td>
       <td>${esc(r.agency)}</td>
       <td class="num amt">${fmtMoney(r.amount)}</td>
     </tr>`).join('');
@@ -1015,7 +1020,7 @@ function renderMembers(grp, rows){
   document.getElementById('members-cap').textContent =
     lines.length + ' name' + (lines.length===1?'':'s') + ' · ' + fmtMoney(grp.total) + ' total';
   document.getElementById('members-body').innerHTML = lines.map(e=>`<tr>
-    <td class="mname">${esc(e.label)}</td>
+    <td class="mname">${escName(e.label)}</td>
     <td class="num">${fmtInt(e.n)}</td>
     <td class="num amt">${fmtMoney(e.total)}</td>
   </tr>`).join('');
