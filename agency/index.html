@@ -87,6 +87,17 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .kpi.hl .k-value{color:var(--ink)}
 .kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:8px}
 
+/* ---------- velocity tape (per-agency) ---------- */
+.vel-tape{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-left:1px solid var(--line);margin-top:2px}
+.vt{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:15px 16px 16px}
+.vt.hl{border-top-color:var(--accent)}
+.vt-label{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.09em;color:var(--faint)}
+.vt-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:24px;font-weight:600;margin-top:9px;letter-spacing:-.01em;color:var(--navy);line-height:1}
+.vt.hl .vt-value{color:var(--ink)}
+.vt-note{font-size:12px;color:var(--muted);margin-top:7px}
+@media(max-width:880px){.vel-tape{grid-template-columns:repeat(2,1fr)}.vt:nth-child(2){border-right:0}}
+@media(max-width:560px){.vel-tape{grid-template-columns:1fr 1fr}.vt-value{font-size:21px}}
+
 /* ---------- section heads ---------- */
 .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:0}
 .sec-head h2{font-family:'Source Serif 4',Georgia,serif;font-size:21px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
@@ -152,6 +163,9 @@ td .t-title{font-weight:500;color:var(--ink)}
 td .t-sub{font-size:12px;color:var(--muted);margin-top:3px}
 .amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
 .rank{color:var(--faint);font-weight:600;width:28px;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+.yrs{font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.yrs.slow{color:var(--neg)}
+.yrs.fast{color:var(--pos)}
 
 /* ---------- methodology ---------- */
 .method{padding:44px 0 10px}
@@ -227,9 +241,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <a href="/solicitations/">Bidding</a>
       <a href="/awarded/">Awarded</a>
       <a href="/funnel/">Funnel</a>
-      <a href="/velocity/">Velocity</a>
       <a href="/agency/" class="active">Agencies</a>
-      <a href="/vendors/">Vendors</a>
       <a href="/competitive/">Market</a>
       <a href="/analysis/">Analysis</a>
       <a href="/regional/">Regional</a>
@@ -298,9 +310,24 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
           <div class="src">Construction award notices in the trailing twelve months, deduped to one row per <code>pin</code>. Source <code>qyyg-4tf5</code>.</div>
         </div>
       </div>
-      <div class="scope-rule">Spent · Checkbook NYC&nbsp;<span style="color:var(--faint)">—</span>&nbsp;archive only, the City's payment ledger blocks browser access; tracked nightly, not shown live here.</div>
+      <div class="scope-rule">Spent · Checkbook NYC&nbsp;<span style="color:var(--faint)">·</span>&nbsp;archive only, the City's payment ledger blocks browser access; tracked nightly, not shown live here.</div>
       <div class="reading" id="funnel-reading"></div>
       <div class="tnote">Committed and Awarded answer different questions on different books. Committed is budget the agency is sitting on; Awarded is contracts it has signed in the last year. A wide gap between them is normal, it is the runway of funded work an agency has yet to put out to bid.</div>
+    </div>
+  </section>
+
+  <section class="grid" id="velocity-sec">
+    <div class="card">
+      <div class="sec-head"><h2>Velocity</h2><span class="cap" id="vel-cap">SELECTED AGENCY</span></div>
+      <div class="h-sub">How fast the selected agency converts funded work to cash. Backlog coverage is its open pipeline divided by its own trailing-year outlays, the demand-side analog of a contractor's backlog-to-revenue ratio. A higher number means more funded work stacked behind the same delivery capacity.</div>
+      <div class="vel-tape" id="vel-tape">
+        <div class="vt"><div class="vt-label">Committed, unspent</div><div class="vt-value" id="vel-committed">&ndash;</div><div class="vt-note">open pipeline under this code</div></div>
+        <div class="vt"><div class="vt-label">Spent, trailing year</div><div class="vt-value" id="vel-spent">&ndash;</div><div class="vt-note">capital outlays across plan snapshots</div></div>
+        <div class="vt"><div class="vt-label">Awarded, trailing year</div><div class="vt-value" id="vel-awarded">&ndash;</div><div class="vt-note">City Record construction awards</div></div>
+        <div class="vt hl"><div class="vt-label">Backlog coverage</div><div class="vt-value" id="vel-coverage">&ndash;</div><div class="vt-note">years of funded work at the current pace</div></div>
+      </div>
+      <div class="reading" id="vel-reading-agency"></div>
+      <div class="tnote">Committed, unspent is the agency's open pipeline in the latest capital plan snapshot. Spent is its trailing-year capital outlay, measured as the growth in cumulative spend-to-date across plan snapshots. Backlog coverage = open pipeline &divide; trailing-year spend, in years. It is a structural ratio, a stock measured now over a flow measured over the trailing year, not a delivery schedule, and it is shown only where the agency's own trailing self-delivered outlay clears the floor below which its work is mostly built by another managing agency.</div>
     </div>
   </section>
 
@@ -362,6 +389,28 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     </div>
   </section>
 
+  <section class="grid" id="vel-rank-sec">
+    <div class="card">
+      <div class="sec-head"><h2>Backlog coverage across agencies</h2><span class="cap">YEARS · TOP 10</span></div>
+      <div class="h-sub">Years of funded work at each agency's current spending pace, so the selected agency reads against its peers. Longer bars are agencies sitting on more committed work relative to how fast they pay it out.</div>
+      <div class="chart-box tall"><canvas id="chart-vel-rank"></canvas></div>
+      <div class="reading" id="vel-rank-reading"></div>
+      <div class="tnote">Each bar is one agency's backlog coverage = open pipeline &divide; trailing-year spend, in years. A longer bar means more committed-but-unspent work relative to how fast the agency pays it out. Only the ten agencies with the deepest coverage among those with a computable ratio are shown.</div>
+    </div>
+  </section>
+
+  <section class="grid" id="vel-table-sec">
+    <div class="card">
+      <div class="sec-head"><h2>The full velocity table</h2><span class="cap">RANKED BY PIPELINE</span></div>
+      <div class="h-sub">Every managing agency with an open construction pipeline, ranked by pipeline size. Awarded is trailing-twelve City Record awards where the agency name maps across sources.</div>
+      <table id="tbl-velocity">
+        <thead><tr><th>Agency</th><th class="num">Open pipeline</th><th class="num">Spent (TTM)</th><th class="num">Awarded (TTM)</th><th class="num">Backlog, years</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="tnote">Every managing agency with an open construction pipeline, ranked by pipeline size. Open pipeline is committed-but-unspent construction capital; Spent and Awarded are trailing-twelve-month totals; Backlog, years = open pipeline &divide; Spent (TTM). The Awarded column is blank where an agency's name does not map cleanly between the capital plan and the City Record.</div>
+    </div>
+  </section>
+
   <section class="method" id="methodology">
     <div class="card">
       <div class="sec-head"><h2>Agency profile · Methodology &amp; definitions</h2><span class="cap">SERIES NOTES</span></div>
@@ -376,8 +425,11 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <p>The two scopes carry borough on different footings, and the page keeps them apart. In the capital plan, borough is a structured field on each project, the harder source; Citywide and blank values route to an explicit citywide bucket rather than a borough. In the City Record there is no address or coordinate, so borough is read from the notice text: a community board cue in the project description first, then an explicit borough name in the title, and a notice that names more than one borough or reads as citywide goes to the citywide bucket whole. Award borough is therefore the softest figure on the page and is labeled as such wherever it appears.</p>
       <h3>Dollar-weighting and the citywide bucket</h3>
       <p>Every borough figure is weighted by dollars, not by the count of projects, so a single large job registers at its true weight. The citywide, multi-borough, and unspecified share is reported as its own slice and never spread across the five boroughs, which would manufacture a geography the data does not contain. Each borough also carries its largest single project as a share of that borough's total, so concentration in one job is visible.</p>
+      <h3>Velocity and backlog coverage</h3>
+      <p><strong>Spent</strong> is trailing-year capital outlay, measured as the growth in each project's cumulative spend-to-date between capital plan snapshots. OMB publishes a plan snapshot roughly every four months; for each project, spending in a period is its cumulative spend-to-date in one snapshot minus the prior snapshot, floored at zero, with new projects counting from zero. Projects are matched across snapshots by agency and <code>fms_id</code>, with sub-project rows collapsed first so nothing is double-counted. Projects that leave the dataset between snapshots stop contributing, which biases the spend estimate low rather than high. The trailing year of spend is the last three plan-to-plan periods. <strong>Backlog coverage</strong> is unspent committed dollars divided by trailing-year spending: how many years the funded pipeline would take to deliver at today's pace. It is the demand-side counterpart to a contractor's backlog ratio.</p>
+      <p>The per-agency backlog ratio is shown only where an agency's trailing self-delivered outlay clears $10M. Below that, the agency's capital work is mostly delivered under another managing agency, chiefly the Department of Design and Construction, so its own spend line understates delivery and the ratio would be a noise figure rather than a velocity signal. Those agencies still appear in the velocity table with their pipeline and a blank backlog column. The cross-agency ranking charts the ten agencies with the deepest coverage among those with a computable ratio.</p>
       <h3>Scope and what this is not</h3>
-      <p>Committed covers the City's capital plan; awarded covers the City Record's construction categories. Both are public records, read live on each page load and never hardcoded. The page reads one agency at a time and does not trace a single project from plan to award to payment; it places two public ledgers next to each other on their own terms.</p>
+      <p>Committed covers the City's capital plan; awarded covers the City Record's construction categories; spent covers the capital plan's full scope because capital budgets are not divided by procurement category. All are public records, read live on each page load and never hardcoded. The page reads one agency at a time and does not trace a single project from plan to award to payment; it places public ledgers next to each other on their own terms. Backlog coverage is a structural ratio, a stock measured now over a flow measured over the trailing year, not a delivery schedule.</p>
       </div>
     </div>
   </section>
@@ -649,6 +701,150 @@ async function fetchAwardsFor(code){
   return r;
 }
 
+/* ================= velocity data layer =================
+   Ported verbatim from the retired Velocity page so the per-agency velocity
+   tape and the cross-agency backlog ranking reproduce the same numbers. The
+   capital plan (OMB) and the award record (City Record) are settled separately
+   so one being unavailable does not blank the other. */
+const VEL_SNAPSHOTS = 5; // latest 5 plan snapshots -> 4 spend periods; last 3 = TTM
+const VEL_MIN_SPEND = 10e6; // floor on trailing self-delivered spend for a ratio
+/* capital-plan code -> City Record agency_name, the Velocity page's own map,
+   kept verbatim so its award-by-agency join matches the old page exactly. */
+const VEL_CODE_TO_AWARD = {
+  DDC:'Design and Construction', DOT:'Transportation', DEP:'Environmental Protection',
+  DPR:'Parks and Recreation', DCAS:'Citywide Administrative Services', DSNY:'Sanitation',
+  NYPD:'Police Department', HPD:'Housing Preservation and Development', FDNY:'Fire Department',
+  DOC:'Correction', DOHMH:'Health and Mental Hygiene', DHS:'Homeless Services',
+  ACS:'Children’s Services', DFTA:'Aging'
+};
+const velState = {
+  periods: [],           // ascending plan reporting periods
+  snap: {},              // period -> Map(key -> {spend,budget,bucket,agency})
+  spendPeriods: [],      // [{total, byAgency:Map}]
+  pipeline: { total:0, byAgency:new Map() },
+  awards: { byAgency:new Map() },
+  ok: false, awardsOk: false,
+  rows: [],              // computed velocity rows, ranked by pipeline
+  byCode: new Map(),     // code -> {pipe, sp, aw, yrs}
+  medianYrs: 0
+};
+
+/* one record per project per snapshot; keep most advanced phase. Identical to the
+   Velocity page's collapseSnapshot (and to collapsePlan minus borough/category). */
+function collapseSnapVel(rows){
+  const m = new Map();
+  for(const r of rows){
+    const key = (r.managing_agency||'') + '|' + (r.fms_id||r.fms_project_name||'');
+    const bucket = normPhase(r.current_phase);
+    const rec = {
+      agency: r.managing_agency || '–',
+      spend: Math.max(parseFloat(r.spend_to_date)||0, 0),
+      budget: Math.max(parseFloat(r.total_budget)||0, 0),
+      bucket
+    };
+    const prev = m.get(key);
+    if(!prev || phaseRank(bucket) > phaseRank(prev.bucket)) m.set(key, rec);
+  }
+  return m;
+}
+
+async function fetchVelocityPlan(){
+  // 1. snapshot periods (latest N)
+  const ps = await getJSON(PLAN_API, {
+    '$select':'reporting_period','$group':'reporting_period',
+    '$order':'reporting_period DESC','$limit': String(VEL_SNAPSHOTS)
+  });
+  velState.periods = ps.map(p=>p.reporting_period).sort();
+  // 2. rows per snapshot in parallel
+  const snaps = await Promise.all(velState.periods.map(p => getJSON(PLAN_API, {
+    '$select':'fms_id,fms_project_name,managing_agency,spend_to_date,total_budget,current_phase',
+    '$where': `reporting_period='${p}'`, '$limit':'20000'
+  })));
+  velState.periods.forEach((p,i) => { velState.snap[p] = collapseSnapVel(snaps[i]); });
+  // 3. spend deltas between consecutive snapshots
+  velState.spendPeriods = [];
+  for(let i=1; i<velState.periods.length; i++){
+    const prev = velState.snap[velState.periods[i-1]], cur = velState.snap[velState.periods[i]];
+    let total = 0; const byAgency = new Map();
+    for(const [key, rec] of cur){
+      if(rec.bucket === 'excluded' && !prev.has(key)) continue;
+      const before = prev.has(key) ? prev.get(key).spend : 0;
+      const d = Math.max(rec.spend - before, 0);
+      total += d;
+      byAgency.set(rec.agency, (byAgency.get(rec.agency)||0) + d);
+    }
+    velState.spendPeriods.push({ total, byAgency });
+  }
+  // 4. pipeline from latest snapshot (active, excluding Close-out)
+  velState.pipeline = { total:0, byAgency:new Map() };
+  const latest = velState.snap[velState.periods[velState.periods.length-1]];
+  for(const rec of latest.values()){
+    if(rec.bucket === 'excluded' || rec.bucket === 'Close-out') continue;
+    const unspent = Math.max(rec.budget - rec.spend, 0);
+    velState.pipeline.total += unspent;
+    velState.pipeline.byAgency.set(rec.agency, (velState.pipeline.byAgency.get(rec.agency)||0) + unspent);
+  }
+}
+
+/* Velocity awards: TTM total by agency, deduped to one row per pin (max amount),
+   exactly as the Velocity page computed its Awarded column. */
+async function fetchVelocityAwards(){
+  const since = isoMonthsAgo(12);
+  const PAGE = 50000; let offset = 0; const out = [];
+  for(;;){
+    const batch = await getJSON(AWARD_API, {
+      '$select':'pin,contract_amount,start_date,agency_name',
+      '$where':`starts_with(category_description,'Construction') AND start_date>'${since}' AND contract_amount>0`,
+      '$order':'pin','$limit':String(PAGE),'$offset':String(offset)
+    });
+    out.push(...batch);
+    if(batch.length < PAGE) break;
+    offset += PAGE;
+    if(offset > 400000) break;
+  }
+  const byPin = new Map();
+  for(let i=0;i<out.length;i++){
+    const r = out[i];
+    const amt = parseFloat(r.contract_amount);
+    if(!(amt>0)) continue;
+    const pin = r.pin || ('_np_'+i);
+    const rec = { amt, agency: r.agency_name || null };
+    const prev = byPin.get(pin);
+    if(!prev || rec.amt > prev.amt) byPin.set(pin, rec);
+  }
+  const byAgency = new Map();
+  for(const r of byPin.values()){ if(r.agency) byAgency.set(r.agency, (byAgency.get(r.agency)||0) + r.amt); }
+  velState.awards.byAgency = byAgency;
+}
+
+/* TTM spend by agency = last 3 inter-snapshot periods (~12 months). */
+function velTtmSpendByAgency(){
+  const m = new Map();
+  for(const p of velState.spendPeriods.slice(-3))
+    for(const [a,v] of p.byAgency) m.set(a, (m.get(a)||0)+v);
+  return m;
+}
+
+/* Build the ranked velocity rows + per-code lookup, the Velocity page's renderVelocity
+   logic without the DOM. Median is over codes with a computable ratio. */
+function computeVelocity(){
+  const spend = velTtmSpendByAgency();
+  const rows = [...velState.pipeline.byAgency.entries()]
+    .sort((a,b)=>b[1]-a[1])
+    .map(([code, pipe]) => {
+      const sp = spend.get(code) || 0;
+      const awardName = VEL_CODE_TO_AWARD[code];
+      const aw = (velState.awardsOk && awardName) ? velState.awards.byAgency.get(awardName) : undefined;
+      const yrs = sp >= VEL_MIN_SPEND ? pipe/sp : null;
+      return { code, pipe, sp, aw, yrs };
+    })
+    .filter(r => r.pipe > 0);
+  const v = rows.filter(r=>r.yrs!==null).map(r=>r.yrs).sort((a,b)=>a-b);
+  velState.medianYrs = v.length ? v[Math.floor(v.length/2)] : 0;
+  velState.rows = rows;
+  velState.byCode = new Map(rows.map(r=>[r.code, r]));
+}
+
 /* ================= Chart.js defaults ================= */
 Chart.defaults.font.family = "'IBM Plex Mono',monospace";
 Chart.defaults.font.size = 10;
@@ -696,6 +892,68 @@ function renderVendors(award){
     <td><span class="t-title">${esc(v[0])}</span></td>
     <td class="num amt">${fmtMoney(v[1])}</td>
     <td class="num">${tot>0 ? fmtPct(v[1]/tot) : '–'}</td></tr>`).join('');
+}
+
+/* per-agency velocity tape for the selected code, off the ported velState. */
+function renderAgencyVelocity(code){
+  const cap = document.getElementById('vel-cap');
+  const sec = document.getElementById('velocity-sec');
+  if(!velState.ok){ if(sec) sec.style.display = 'none'; return; }
+  if(sec) sec.style.display = '';
+  cap.textContent = agencyLabel(code).toUpperCase();
+  const row = velState.byCode.get(code) || { pipe:0, sp:0, aw:undefined, yrs:null };
+  document.getElementById('vel-committed').textContent = row.pipe>0 ? fmtMoney(row.pipe) : '–';
+  document.getElementById('vel-spent').textContent    = row.sp>0   ? fmtMoney(row.sp)   : '–';
+  document.getElementById('vel-awarded').textContent  = (velState.awardsOk && row.aw!==undefined) ? fmtMoney(row.aw) : '–';
+  document.getElementById('vel-coverage').textContent = row.yrs!==null ? row.yrs.toFixed(1) + ' yrs' : '–';
+
+  const label = agencyLabel(code);
+  const rd = document.getElementById('vel-reading-agency');
+  if(row.yrs!==null){
+    const med = velState.medianYrs;
+    const rel = med>0 ? (row.yrs > med*1.5 ? 'a deeper backlog than the typical agency' : (row.yrs < med*0.67 ? 'a shallower backlog than the typical agency' : 'a backlog close to the typical agency')) : 'a measurable backlog';
+    rd.innerHTML = `<strong>Reading:</strong> ${esc(label)} carries <strong>${row.yrs.toFixed(1)} years</strong> of funded work at its current pace of spending, ${rel} (median <strong>${med.toFixed(1)} years</strong> across agencies with a computable ratio). A deep backlog is funded work waiting on delivery capacity, not a problem in itself; it is where future awards and bonding demand are most concentrated.`;
+  } else if(row.pipe>0){
+    rd.innerHTML = `<strong>Reading:</strong> ${esc(label)} holds <strong>${fmtMoney(row.pipe)}</strong> of open pipeline, but its own trailing self-delivered outlay is below the floor for a stable ratio. Its capital work is largely built under another managing agency, chiefly the Department of Design and Construction, so a backlog-coverage figure under this code would be noise rather than a velocity signal.`;
+  } else {
+    rd.innerHTML = `<strong>Reading:</strong> ${esc(label)} shows little open construction pipeline under its own code in the latest plan snapshot.`;
+  }
+}
+
+/* cross-agency backlog ranking chart + the full velocity table (rendered once). */
+function renderVelocityRanking(){
+  const sec = document.getElementById('vel-rank-sec');
+  const tsec = document.getElementById('vel-table-sec');
+  if(!velState.ok){ if(sec) sec.style.display='none'; if(tsec) tsec.style.display='none'; return; }
+  const rows = velState.rows, med = velState.medianYrs;
+
+  // full table
+  document.querySelector('#tbl-velocity tbody').innerHTML = rows.map(r=>`<tr>
+    <td><span class="t-title">${esc(agencyLabel(r.code))}</span></td>
+    <td class="num amt">${fmtMoney(r.pipe)}</td>
+    <td class="num amt">${r.sp>0 ? fmtMoney(r.sp) : '–'}</td>
+    <td class="num amt">${(velState.awardsOk && r.aw!==undefined) ? fmtMoney(r.aw) : '–'}</td>
+    <td class="num"><span class="yrs ${r.yrs===null?'':(r.yrs>med*1.5?'slow':(r.yrs<med*.67?'fast':''))}">${r.yrs===null?'–':r.yrs.toFixed(1)}</span></td>
+  </tr>`).join('');
+
+  // backlog-coverage chart: agencies with a computable ratio, top 10 by pipeline
+  const charted = rows.filter(r=>r.yrs!==null).slice(0,10);
+  destroy('velrank');
+  charts.velrank = new Chart(document.getElementById('chart-vel-rank'), {
+    type:'bar',
+    data:{ labels: charted.map(r=>agencyLabel(r.code)),
+      datasets:[{ data: charted.map(r=>r.yrs), borderRadius:1, barThickness:18,
+        backgroundColor: charted.map(r=> r.yrs>med*1.5 ? '#a3302a' : (r.yrs<med*0.67 ? '#2f7d52' : '#b5482a')) }]},
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>c.parsed.x.toFixed(1)+' years of funded work'}} },
+      scales:{ x:{grid:{color:GRID}, border:{display:false}, ticks:{callback:v=>v+' yr', maxTicksLimit:6}},
+               y:{grid:{display:false}, ticks:{autoSkip:false, font:{family:"'Public Sans',sans-serif",size:11.5}}} } }
+  });
+
+  const fast = rows.filter(r=>r.yrs!==null).reduce((a,r)=> r.yrs<a.yrs?r:a, {yrs:Infinity});
+  const slow = charted.reduce((a,r)=> r.yrs>a.yrs?r:a, {yrs:0});
+  document.getElementById('vel-rank-reading').innerHTML =
+    `<strong>Reading:</strong> across agencies with a computable ratio, the median is <strong>${med.toFixed(1)} years</strong> of funded work at the current pace. ${slow.code ? esc(agencyLabel(slow.code))+' carries the deepest backlog at '+slow.yrs.toFixed(1)+' years, ' : ''}${fast.code ? esc(agencyLabel(fast.code))+' the shallowest at '+fast.yrs.toFixed(1)+'.' : ''} A deep backlog is funded work waiting on delivery capacity, not a problem in itself; it is where future awards and bonding demand are most concentrated.`;
 }
 
 /* paint the borough map + table for the active scope */
@@ -861,6 +1119,9 @@ async function selectAgency(code){
 
   // borough
   renderBorough(null);
+
+  // velocity (per-agency tape, off the ported velState)
+  renderAgencyVelocity(code);
 }
 
 /* ================= controls ================= */
@@ -880,12 +1141,24 @@ function wireControls(){
 
 /* ================= init ================= */
 (async function init(){
-  try { await fetchPlan(); }
+  // The agency profile anchors on its own latest-snapshot plan; the velocity
+  // layer is a heavier multi-snapshot pull settled in parallel so a slow or
+  // failed velocity fetch never blanks the profile.
+  let planR;
+  const velPlanP = fetchVelocityPlan();
+  const velAwardP = fetchVelocityAwards();
+  try { await fetchPlan(); planR = true; }
   catch(e){
     document.getElementById('loader').style.display = 'none';
     document.getElementById('error').style.display = 'block';
     return;
   }
+  // settle velocity before the first paint so the page renders once
+  const [vp, va] = await Promise.allSettled([velPlanP, velAwardP]);
+  velState.ok = vp.status === 'fulfilled';
+  velState.awardsOk = va.status === 'fulfilled';
+  if(velState.ok) computeVelocity();
+
   // default to a high-volume agency: prefer DEP if present, else the largest committed
   const def = state.agencyCodes.includes('DEP') ? 'DEP' : state.agencyCodes[0];
   document.getElementById('asof').innerHTML =
@@ -897,6 +1170,7 @@ function wireControls(){
   // seed the segmented control active state
   document.querySelector('#boro-seg .seg-btn[data-scope="committed"]').classList.add('on');
   document.getElementById('agency').value = def;
+  renderVelocityRanking();
   await selectAgency(def);
 })();
 </script>
