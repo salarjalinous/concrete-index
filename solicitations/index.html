@@ -279,6 +279,27 @@ const state = { scope:'all', q:'', sort:'due', rows:[] };
 
 function stripHtml(s){ const d=document.createElement('div'); d.innerHTML=s||''; return (d.textContent||'').replace(/\s+/g,' ').trim(); }
 function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+const DASH = '–';
+// Trim a raw field; treat blanks and literal null/undefined strings as empty.
+function cleanField(v){
+  const s = (v==null ? '' : String(v)).trim();
+  if(!s || /^(null|undefined|n\/?a)$/i.test(s)) return '';
+  return s;
+}
+// Phone cleaner: drops placeholder numbers like (000) 000-0000 (no real digits).
+function cleanPhone(v){
+  const s = cleanField(v);
+  if(!s) return '';
+  if(!/[1-9]/.test(s.replace(/\D/g,''))) return '';
+  return s;
+}
+// Sentinel due dates (year 2099, 2999, 9999) mark always-open pre-qualified
+// lists, not real near-term deadlines; bucketed out of the chronological sort.
+function isSentinelDate(d){
+  if(!(d instanceof Date) || isNaN(d)) return false;
+  const y = d.getUTCFullYear();
+  return y >= 2099 && (y === 2099 || y === 2999 || y === 9999);
+}
 
 // Work-type lexicon and classifier, reused verbatim from the Awarded page so a
 // contractor can scan open solicitations by trade. Applied to the title text.
@@ -339,17 +360,19 @@ async function fetchSolicitations(){
   }).map(r => {
     const title = r.short_title || '(untitled)';
     const fullDesc = stripHtml(r.additional_description_1);
+    const due = new Date(r.due_date);
     return {
       title: title,
       agency: r.agency_name || '–',
       cat: r.category_description === HARD ? 'hard' : 'rel',
       method: r.selection_method_description || '',
-      pin: r.pin || '',
-      due: new Date(r.due_date),
+      pin: cleanField(r.pin),
+      due: due,
+      standing: isSentinelDate(due),
       posted: new Date(r.start_date),
-      contact: r.contact_name || '',
-      phone: r.contact_phone || '',
-      email: r.email || '',
+      contact: cleanField(r.contact_name),
+      phone: cleanPhone(r.contact_phone),
+      email: cleanField(r.email),
       tags: wtClassify(title),
       borough: deriveBorough(title, fullDesc),
       desc: fullDesc.slice(0, 280)
@@ -369,7 +392,7 @@ function exportCSV(){
   const lines = [['Due date','Posted','Agency','Title','Borough','Work types','Category','Selection method','PIN','Contact','Phone','Email'].map(csvCell).join(',')];
   rows.forEach(r => {
     lines.push([
-      isoDay(r.due), isoDay(r.posted), r.agency, r.title, r.borough,
+      r.standing ? 'Standing PQL - always open' : isoDay(r.due), isoDay(r.posted), r.agency, r.title, r.borough,
       r.tags.map(t=>WT_LEXICON[t].label).join('; '),
       r.cat==='hard'?'Construction':'Related services',
       r.method, r.pin, r.contact, r.phone, r.email
@@ -392,15 +415,19 @@ function filtered(){
   );
   // Sort by due date (rows already arrive due-ordered), agency, or first work-type
   // label; ties and untagged rows fall back to due date so ordering stays stable.
-  const byDue = (a,b)=> a.due - b.due;
+  // Standing pre-qualified-list rows (sentinel due dates) always sink to the
+  // bottom, so they never pose as the next real deadline.
+  const byStanding = (a,b)=> (a.standing?1:0) - (b.standing?1:0);
+  const byDue = (a,b)=> byStanding(a,b) || (a.due - b.due);
   if(state.sort==='agency'){
-    rows.sort((a,b)=> a.agency.localeCompare(b.agency) || byDue(a,b));
+    rows.sort((a,b)=> byStanding(a,b) || a.agency.localeCompare(b.agency) || (a.due - b.due));
   } else if(state.sort==='worktype'){
     rows.sort((a,b)=>{
+      const s = byStanding(a,b); if(s) return s;
       const la=wtLabel(a), lb=wtLabel(b);
       if(la && !lb) return -1;
       if(!la && lb) return 1;
-      return la.localeCompare(lb) || byDue(a,b);
+      return la.localeCompare(lb) || (a.due - b.due);
     });
   } else {
     rows.sort(byDue);
@@ -421,17 +448,23 @@ function render(){
     const boroPill = r.borough==='Citywide / Unspecified'
       ? '' : `<span class="pill boro">${esc(r.borough)}</span>`;
     const tagRow = (wtPills || boroPill) ? `<div class="s-tags">${boroPill}${wtPills}</div>` : '';
+    const pinTxt = r.pin ? esc(r.pin) : DASH;
+    const contactTxt = r.contact ? esc(r.contact) : DASH;
+    const sideHtml = r.standing
+      ? `<div class="due ok">Standing PQL - always open</div>
+        <div class="due-sub">posted ${fmtDate(r.posted)}</div>`
+      : `<div class="due ${days<=7?'soon':'ok'}">Due ${fmtDate(r.due)}</div>
+        <div class="due-sub">${days<=0?'due today':days+' day'+(days===1?'':'s')+' left'} · posted ${fmtDate(r.posted)}</div>`;
     return `<div class="sol">
       <div class="s-main">
         <div class="s-title">${esc(r.title)}</div>
-        <div class="s-meta">${esc(r.agency)} · ${esc(r.method)} · PIN ${esc(r.pin)} · <span class="pill ${r.cat}">${r.cat==='hard'?'Construction':'Related services'}</span></div>
+        <div class="s-meta">${esc(r.agency)} · ${esc(r.method)} · PIN ${pinTxt} · <span class="pill ${r.cat}">${r.cat==='hard'?'Construction':'Related services'}</span></div>
         ${tagRow}
         ${r.desc ? `<div class="s-desc">${esc(r.desc)}${r.desc.length>=280?'…':''}</div>` : ''}
-        <div class="contact">${esc(r.contact)}${r.phone?' · '+esc(r.phone):''}${r.email?' · <a href="mailto:'+esc(r.email)+'">'+esc(r.email)+'</a>':''}</div>
+        <div class="contact">${contactTxt}${r.phone?' · '+esc(r.phone):''}${r.email?' · <a href="mailto:'+esc(r.email)+'">'+esc(r.email)+'</a>':''}</div>
       </div>
       <div class="s-side">
-        <div class="due ${days<=7?'soon':'ok'}">Due ${fmtDate(r.due)}</div>
-        <div class="due-sub">${days<=0?'due today':days+' day'+(days===1?'':'s')+' left'} · posted ${fmtDate(r.posted)}</div>
+        ${sideHtml}
       </div>
     </div>`;
   }).join('');
