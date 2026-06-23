@@ -14,9 +14,9 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://concreteindex.co/og-image.png">
 <title>The Pipeline · The Concrete Index</title>
-<meta name="description" content="The forward pipeline of NYC public construction: capital dollars committed but not yet spent, by phase, agency, and borough. Built on NYC Open Data.">
+<meta name="description" content="The forward pipeline of NYC public construction: capital dollars funded but not yet spent, by phase, agency, and borough. Built on NYC Open Data.">
 <meta property="og:title" content="The Concrete Index · Pipeline">
-<meta property="og:description" content="NYC capital dollars committed but not yet spent.">
+<meta property="og:description" content="NYC capital dollars funded but not yet spent.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23b5482a%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -214,7 +214,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <div class="hero">
     <div class="kicker">NYC Forward Capital Pipeline</div>
     <h1>Funded capital work the City has not yet spent.</h1>
-    <p class="sub">Every capital project in the City's plan carries a budget and a spend-to-date. The gap between them is tomorrow's construction demand: dollars committed to projects that still have to move through design, procurement, and construction. Sub-project rows are collapsed to one record per project, keyed on agency and FMS ID, so no budget is counted twice.</p>
+    <p class="sub">Every capital project in the City's plan carries a budget and a spend-to-date. The gap between them is tomorrow's construction demand: dollars the City has funded but not yet spent, on projects that still have to move through design, procurement, and construction. Sub-project rows are collapsed to one record per project, keyed on agency and FMS ID, so no budget is counted twice.</p>
     <p class="asof" id="asof">Loading the capital plan…</p>
   </div>
 </div>
@@ -241,7 +241,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   </div>
 
   <section class="kpis">
-    <div class="kpi hl"><div class="k-label">Unspent committed</div><div class="k-value" id="kpi-unspent">–</div><div class="k-note" id="kpi-unspent-note"></div></div>
+    <div class="kpi hl"><div class="k-label">Funded, unspent</div><div class="k-value" id="kpi-unspent">–</div><div class="k-note" id="kpi-unspent-note"></div></div>
     <div class="kpi"><div class="k-label">Projects</div><div class="k-value" id="kpi-count">–</div><div class="k-note" id="kpi-count-note"></div></div>
     <div class="kpi"><div class="k-label">Median project budget</div><div class="k-value" id="kpi-median">–</div><div class="k-note">total budget per project</div></div>
     <div class="kpi"><div class="k-label">Plan growth</div><div class="k-value" id="kpi-growth">–</div><div class="k-note" id="kpi-growth-note"></div></div>
@@ -250,45 +250,45 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <section class="grid" id="phases">
     <div class="card">
       <div class="sec-head"><h2>Where the pipeline sits</h2><span class="cap">BY PHASE · USD</span></div>
-      <div class="h-sub">Unspent committed dollars by project phase, earlier phases are demand that has not yet reached the market</div>
+      <div class="h-sub">Funded, unspent dollars by project phase, earlier phases are demand that has not yet reached the market</div>
       <div class="chart-box tall"><canvas id="chart-phase"></canvas></div>
-      <div class="tnote">Each bar is unspent committed dollars for one project phase, where unspent = total budget minus spend-to-date, floored at zero, after collapsing the plan to one record per project and excluding non-construction phases. Earlier phases are funded demand that has not yet reached the market.</div>
+      <div class="tnote">Each bar is funded, unspent dollars for one project phase, where unspent = total budget minus spend-to-date, floored at zero, after collapsing the plan to one record per project and excluding non-construction phases. Earlier phases are funded demand that has not yet reached the market.</div>
     </div>
   </section>
 
   <section class="grid two" id="agencies">
     <div class="card">
       <div class="sec-head"><h2>Pipeline by agency</h2><span class="cap">TOP 8 · USD</span></div>
-      <div class="h-sub">Unspent committed dollars, top managing agencies</div>
+      <div class="h-sub">Funded, unspent dollars, top managing agencies</div>
       <div class="chart-box"><canvas id="chart-agency"></canvas></div>
-      <div class="tnote">Unspent committed construction dollars by managing agency, the top eight, on the collapsed and filtered plan set. Bars are dollars of open pipeline, not project counts, and the top eight do not sum to the total pipeline.</div>
+      <div class="tnote">Funded, unspent construction dollars by managing agency, the top eight, on the collapsed and filtered plan set. Bars are dollars of open pipeline, not project counts, and the top eight do not sum to the total pipeline.</div>
     </div>
     <div class="card">
       <div class="sec-head"><h2>Pipeline by borough</h2><span class="cap">BY BOROUGH</span></div>
       <div class="h-sub">As designated in the capital plan</div>
       <div class="chart-box"><canvas id="chart-boro"></canvas></div>
-      <div class="tnote">Unspent committed dollars by the borough the capital plan itself designates for each project (a structured field here, unlike the text-inferred borough on the “Awarded” page). Citywide projects carry the plan's own citywide label.</div>
+      <div class="tnote">Funded, unspent dollars by the borough the capital plan itself designates for each project (a structured field here, unlike the text-inferred borough on the “Awarded” page). Citywide projects carry the plan's own citywide label.</div>
     </div>
   </section>
 
   <section class="grid" id="categories">
     <div class="card">
       <div class="sec-head"><h2>Pipeline by category</h2><span class="cap">TOP 8 · USD</span></div>
-      <div class="h-sub">Unspent committed dollars by ten-year plan category</div>
+      <div class="h-sub">Funded, unspent dollars by ten-year plan category</div>
       <div class="chart-box"><canvas id="chart-cat"></canvas></div>
-      <div class="tnote">Unspent committed dollars by the City's ten-year-plan category, the top eight. Categories are the plan's own classification, not derived from text. Bars are open-pipeline dollars, not counts.</div>
+      <div class="tnote">Funded, unspent dollars by the City's ten-year-plan category, the top eight. Categories are the plan's own classification, not derived from text. Bars are open-pipeline dollars, not counts.</div>
     </div>
   </section>
 
   <section class="grid" id="projects">
     <div class="card">
       <div class="sec-head"><h2>Largest open projects</h2><span class="cap">RANKED BY UNSPENT</span></div>
-      <div class="h-sub">Ranked by unspent committed dollars</div>
+      <div class="h-sub">Ranked by funded, unspent dollars</div>
       <table id="tbl-projects">
         <thead><tr><th></th><th>Project</th><th>Phase</th><th class="num">Budget</th><th class="num">Unspent</th></tr></thead>
         <tbody></tbody>
       </table>
-      <div class="tnote">The largest open capital projects, ranked by unspent committed dollars (Budget minus spend-to-date). One row per project after the plan's sub-project rows are collapsed, so a project's full budget is counted once rather than repeated on every milestone row.</div>
+      <div class="tnote">The largest open capital projects, ranked by funded, unspent dollars (Budget minus spend-to-date). One row per project after the plan's sub-project rows are collapsed, so a project's full budget is counted once rather than repeated on every milestone row.</div>
     </div>
   </section>
 
@@ -298,8 +298,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="method-body">
       <h3>Source</h3>
       <p>All figures are drawn live from the <a href="https://data.cityofnewyork.us/City-Government/Capital-Projects-Dashboard-Citywide-Budget-and-Sch/fb86-vt7u" target="_blank" rel="noopener">Capital Projects Dashboard: Citywide Budget and Schedule</a> dataset on NYC Open Data (dataset <code>fb86-vt7u</code>), published by the NYC Office of Management and Budget. OMB issues a new snapshot with each capital commitment plan, three times a year (January, May, September). This page automatically uses the most recent snapshot. The source publishes one row per sub-project milestone and repeats the project-level budget on each; The Concrete Index collapses these to one record per project so no dollar is counted twice.</p>
-      <h3>Unspent committed</h3>
-      <p>For each project, unspent committed dollars are its total budget (city plus non-city funds) minus spending to date. This is the page's headline measure of forward demand: money the City has planned for projects that still have work ahead of them. It is a planning measure: budgets shift between plan releases, and commitment is no guarantee of timing.</p>
+      <h3>Funded, unspent</h3>
+      <p>For each project, funded, unspent dollars are its total budget (city plus non-city funds) minus spending to date: money the City has funded in the capital plan but not yet spent. This is the page's headline measure of forward demand, the work still ahead on funded projects. It is a planning measure, not encumbered or bondable backlog: budgets shift between plan releases, and a place in the plan is no guarantee of timing.</p>
       <h3>Phases and what counts as active</h3>
       <p>Projects are grouped into the City's delivery sequence: pending, pre-design, design, construction procurement, construction, and close-out, plus an "other active" group for vehicles like requirements contracts and pass-through funds that don't follow the standard sequence. Projects marked completed, cancelled, on hold, inactive, transferred, or otherwise terminated are excluded from all figures. Close-out projects appear in the phase chart but are excluded from the headline unspent number, since their construction work is substantially done.</p>
       <h3>Relationship to the Awarded page</h3>
