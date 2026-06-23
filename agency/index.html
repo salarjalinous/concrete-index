@@ -174,6 +174,8 @@ td .t-title{font-weight:500;color:var(--ink)}
 td .t-sub{font-size:12px;color:var(--muted);margin-top:3px}
 .amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
 .rank{color:var(--faint);font-weight:600;width:28px;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+tr.grp-row td{padding:13px 10px 6px;border-bottom:1px solid var(--ink);font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--faint)}
+tr.grp-row.second td{padding-top:20px}
 .yrs{font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
 .yrs.slow{color:var(--neg)}
 .yrs.fast{color:var(--pos)}
@@ -359,12 +361,12 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     </div>
     <div class="card">
       <div class="sec-head"><h2>Top recipients</h2><span class="cap" id="recipients-cap">CITY RECORD · TRAILING YEAR</span></div>
-      <div class="h-sub">The firms winning this agency's construction work, ranked by award dollars over the trailing twelve months.</div>
+      <div class="h-sub">The firms winning this agency's work over the trailing twelve months, split into hard construction and design/CM professional services, each ranked on its own award dollars.</div>
       <table id="tbl-vendors">
         <thead><tr><th></th><th>Recipient</th><th class="num">Awarded</th><th class="num">Share</th></tr></thead>
         <tbody></tbody>
       </table>
-      <div class="tnote">The ten firms with the most City Record construction award dollars from this agency over the trailing twelve months, deduped to one row per award. Joint ventures appear under the name on the notice; a parent firm bidding through several entities is not consolidated.</div>
+      <div class="tnote">The firms with the most City Record award dollars from this agency over the trailing twelve months, deduped to one row per award and split by the City's own award category: hard construction (bondable work) and design or construction-management professional services. Share is each firm's portion of its own group. Joint ventures appear under the name on the notice; a parent firm bidding through several entities is not consolidated.</div>
     </div>
   </section>
 
@@ -488,6 +490,10 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 const TOKEN = '3TAzQQPiSG2T4WGWfYYUxxqfJ';
 const PLAN_API  = 'https://data.cityofnewyork.us/resource/fb86-vt7u.json';
 const AWARD_API = 'https://data.cityofnewyork.us/resource/qyyg-4tf5.json';
+// City Record award category that means hard construction (bondable work); the
+// other Construction-prefixed category is design/CM professional services. Same
+// split the Briefing uses, so recipients read the same across the site.
+const HARD_CAT = 'Construction/Construction Services';
 const COLOR_A = '#b5482a', COLOR_B = '#243b53', GRID = '#ead9c9';
 
 async function getJSON(api, params){
@@ -608,6 +614,7 @@ function dedupeAwards(rows){
     if(!(amt > 0)) continue;
     const pin = r.pin || ('_np_'+i);
     const rec = { amt, vendor: (r.vendor_name||'').trim() || '–',
+      hard: (r.category_description||'') === HARD_CAT,
       borough: deriveAwardBorough(r.short_title, r.additional_description_1) };
     const prev = byPin.get(pin);
     if(!prev || rec.amt > prev.amt) byPin.set(pin, rec);
@@ -615,14 +622,19 @@ function dedupeAwards(rows){
   return [...byPin.values()];
 }
 function awardedAgg(awards){
-  let total = 0; const byBorough = new Map(), byVendor = new Map(), largestBoro = new Map();
+  let total = 0, hardTotal = 0, softTotal = 0;
+  const byBorough = new Map(), byVendor = new Map(), largestBoro = new Map();
+  const byVendorHard = new Map(), byVendorSoft = new Map();
   for(const a of awards){
     total += a.amt;
     byBorough.set(a.borough, (byBorough.get(a.borough)||0) + a.amt);
     byVendor.set(a.vendor, (byVendor.get(a.vendor)||0) + a.amt);
+    if(a.hard){ hardTotal += a.amt; byVendorHard.set(a.vendor, (byVendorHard.get(a.vendor)||0) + a.amt); }
+    else { softTotal += a.amt; byVendorSoft.set(a.vendor, (byVendorSoft.get(a.vendor)||0) + a.amt); }
     if(a.amt > (largestBoro.get(a.borough)||0)) largestBoro.set(a.borough, a.amt);
   }
-  return { total, count: awards.length, byBorough, byVendor, largestBoro };
+  return { total, count: awards.length, byBorough, byVendor, largestBoro,
+    byVendorHard, byVendorSoft, hardTotal, softTotal };
 }
 
 /* order a byBorough map into five boroughs + explicit bucket last */
@@ -718,7 +730,7 @@ async function fetchAwardsFor(code){
   const PAGE = 50000; let offset = 0; const out = [];
   for(;;){
     const batch = await getJSON(AWARD_API, {
-      '$select':'pin,contract_amount,vendor_name,short_title,additional_description_1',
+      '$select':'pin,contract_amount,vendor_name,short_title,additional_description_1,category_description',
       '$where':`agency_name='${name.replace(/'/g,"''")}' AND starts_with(category_description,'Construction') AND start_date>'${since}' AND contract_amount>0`,
       '$order':'pin','$limit':String(PAGE),'$offset':String(offset)
     });
@@ -916,14 +928,29 @@ function renderVendors(award){
     tb.innerHTML = '<tr><td colspan="4" style="color:var(--muted);padding:16px 10px">No City Record award name maps to this agency, so its recipients cannot be read from the award ledger. See the methodology note on agency matching.</td></tr>';
     return;
   }
-  const tot = award.agg.total;
-  const vs = [...award.agg.byVendor.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10);
-  if(!vs.length){ tb.innerHTML = '<tr><td colspan="4" style="color:var(--muted);padding:16px 10px">No construction awards from this agency in the trailing twelve months.</td></tr>'; return; }
-  tb.innerHTML = vs.map((v,i)=>`<tr>
-    <td class="rank">${i+1}</td>
-    <td><span class="t-title">${esc(v[0])}</span></td>
-    <td class="num amt">${fmtMoney(v[1])}</td>
-    <td class="num">${tot>0 ? fmtPct(v[1]/tot) : '–'}</td></tr>`).join('');
+  const agg = award.agg;
+  if(!agg.byVendor.size){ tb.innerHTML = '<tr><td colspan="4" style="color:var(--muted);padding:16px 10px">No construction awards from this agency in the trailing twelve months.</td></tr>'; return; }
+  // Split recipients the way the Briefing does: hard construction (bondable work)
+  // versus design and construction-management (soft professional services), each
+  // ranked on its own dollars so a CM firm is not read as a construction winner.
+  function groupRows(map, groupTotal){
+    const vs = [...map.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10);
+    return vs.map((v,i)=>`<tr>
+      <td class="rank">${i+1}</td>
+      <td><span class="t-title">${esc(v[0])}</span></td>
+      <td class="num amt">${fmtMoney(v[1])}</td>
+      <td class="num">${groupTotal>0 ? fmtPct(v[1]/groupTotal) : '–'}</td></tr>`).join('');
+  }
+  const sections = [];
+  if(agg.byVendorHard.size){
+    sections.push(`<tr class="grp-row"><td colspan="4">Hard construction · ${fmtMoney(agg.hardTotal)}</td></tr>`
+      + groupRows(agg.byVendorHard, agg.hardTotal));
+  }
+  if(agg.byVendorSoft.size){
+    sections.push(`<tr class="grp-row${agg.byVendorHard.size?' second':''}"><td colspan="4">Design &amp; CM (professional services) · ${fmtMoney(agg.softTotal)}</td></tr>`
+      + groupRows(agg.byVendorSoft, agg.softTotal));
+  }
+  tb.innerHTML = sections.join('');
 }
 
 /* per-agency velocity tape for the selected code, off the ported velState. */
