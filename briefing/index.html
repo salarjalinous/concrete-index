@@ -211,6 +211,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 /* ================= data ================= */
 const PLAN_API = 'https://data.cityofnewyork.us/resource/fb86-vt7u.json';
 const AWARD_API = 'https://data.cityofnewyork.us/resource/qyyg-4tf5.json';
+const MEGA = 500e6; // $500M+ megaprojects are excluded from the trend, same as the Analysis index
 
 async function getJSON(api, params){
   params['$$app_token'] = '3TAzQQPiSG2T4WGWfYYUxxqfJ';
@@ -219,6 +220,13 @@ async function getJSON(api, params){
   return res.json();
 }
 function isoMonthsAgo(n){ const d=new Date(); d.setMonth(d.getMonth()-n); return d.toISOString().slice(0,10); }
+/* First-of-month boundary n months before the current (incomplete) month, so the
+   trend windows align to fully-elapsed months. Mirrors the Analysis index, which
+   ends on the last complete month and never reads the partial current month. */
+function isoCompleteMonthBoundary(n){ const d=new Date(); const b=new Date(d.getFullYear(), d.getMonth(), 1); b.setMonth(b.getMonth()-n); return b.toISOString().slice(0,10); }
+/* A renewal or extension is a continuation of existing work, not new demand. The
+   selection method carries 'Renewal'/'Extension'; same test the Analysis index uses. */
+function isContinuation(m){ return /renewal|extension/i.test(m||''); }
 
 /* Paged pull of construction award rows since a date, only the fields used. */
 async function fetchAwardRows(since){
@@ -226,7 +234,7 @@ async function fetchAwardRows(since){
   let offset = 0; const out = [];
   for(;;){
     const batch = await getJSON(AWARD_API, {
-      '$select':'pin,contract_amount,start_date,agency_name,category_description',
+      '$select':'pin,contract_amount,start_date,agency_name,category_description,selection_method_description',
       '$where':`starts_with(category_description,'Construction') AND start_date>'${since}' AND contract_amount>0`,
       '$order':'pin','$limit':String(PAGE),'$offset':String(offset)
     });
@@ -249,6 +257,7 @@ function dedupeAwardsByPin(rows){
     const pin = r.pin || ('_np_' + i);
     const rec = { amt, agency: r.agency_name || null,
       cat: r.category_description || '',
+      method: r.selection_method_description || '',
       day: r.start_date ? r.start_date.slice(0,10) : null };
     const prev = byPin.get(pin);
     if(!prev || rec.amt > prev.amt) byPin.set(pin, rec);
@@ -315,17 +324,26 @@ const D = {}; // computed facts
    sources, settled separately so one being down does not blank the other's
    section of the briefing. */
 async function fetchAwardsData(){
-  const since12 = isoMonthsAgo(12), since24 = isoMonthsAgo(24);
-  // Award rows for the trailing 24 months, deduped to one row per pin (max
-  // contract_amount) so the trailing-year total matches the Awarded and Funnel
-  // pages. A raw sum double-counts awards republished as several notices.
-  const awardRows = await fetchAwardRows(since24);
+  // Windows align to complete months, mirroring the Analysis index: the partial
+  // current month is excluded from BOTH the trailing-12 and prior-12 windows, so
+  // City Record back-fill lag (recent months are under-reported) cannot drag the
+  // year-over-year comparison down. Trailing 12 = [c12, c0); prior 12 = [c24, c12).
+  const c0 = isoCompleteMonthBoundary(0);   // first of the current incomplete month
+  const c12 = isoCompleteMonthBoundary(12);
+  const c24 = isoCompleteMonthBoundary(24);
+  // Pull a margin past the prior window so dedupe sees every notice for those pins.
+  const awardRows = await fetchAwardRows(isoMonthsAgo(27));
   const deduped = dedupeAwardsByPin(awardRows);
   let ttmS=0, ttmN=0, priorS=0, hardS=0;
   const awByAg = new Map();
   for(const r of deduped){
-    const inTTM = r.day && r.day > since12;
-    const inPrior = r.day && r.day > since24 && r.day <= since12;
+    if(!r.day) continue;
+    // Exclude $500M+ megaprojects and renewals/extensions from the trend, same as
+    // the Analysis index, so neither window is distorted by one-off giants or by
+    // continuations that are not new market demand.
+    if(r.amt >= MEGA || isContinuation(r.method)) continue;
+    const inTTM = r.day >= c12 && r.day < c0;
+    const inPrior = r.day >= c24 && r.day < c12;
     if(inTTM){
       ttmS += r.amt; ttmN += 1;
       if(r.agency) awByAg.set(r.agency, (awByAg.get(r.agency)||0) + r.amt);
@@ -399,13 +417,11 @@ function fmtPeriodLong(p){
 }
 function trendWord(d){
   if(d===null) return 'shifted';
-  if(d<=-40) return 'contracted sharply';
   if(d<=-15) return 'contracted';
   if(d<0) return 'edged lower';
   if(d<5) return 'held roughly steady';
   if(d<15) return 'firmed';
-  if(d<40) return 'expanded';
-  return 'surged';
+  return 'expanded';
 }
 function num(s){ return `<span class="num">${s}</span>`; }
 function capFirst(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
