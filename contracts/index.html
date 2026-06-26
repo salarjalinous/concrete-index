@@ -249,7 +249,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <div class="hero">
     <div class="kicker">Contract Search</div>
     <h1>One contract at a time.</h1>
-    <p class="sub">This page searches NYC public construction at the level of a single registered contract. Search by contract number, vendor, agency, or trade, then open a row to read its registered dates and amounts, its payment velocity, and the cumulative spend curve drawn from the City's payment ledger. There is no location field: the published registration and payment records do not carry one.</p>
+    <p class="sub">This page searches NYC public construction at the level of a single registered contract. Search by contract number, vendor, agency, or trade, then open a row to read its registered dates and amounts, its payment velocity, and the cumulative spend curve drawn from the City's payment ledger.</p>
     <p class="asof" id="asof">Loading the contract search index&hellip;</p>
   </div>
 </div>
@@ -271,6 +271,12 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     <div class="kpi"><div class="k-label">Registered value</div><div class="k-value" id="kpi-registered">&ndash;</div><div class="k-note">current (registered) amounts, summed</div></div>
     <div class="kpi"><div class="k-label">Paid to date</div><div class="k-value" id="kpi-paid">&ndash;</div><div class="k-note" id="kpi-paid-note"></div></div>
     <div class="kpi"><div class="k-label">Median first-payment lag</div><div class="k-value" id="kpi-lag">&ndash;</div><div class="k-note">days from registration to first check</div></div>
+  </section>
+
+  <section>
+    <div class="reading">
+      <strong>How to read this page.</strong> This page does one thing: it looks up a single contract and shows how much of it the public record confirms has been paid so far. The paid figures are a floor, not a full accounting. They show what the City's published data confirms was disbursed, not what is still owed or unpaid, and a contract may have been paid more than the record yet reflects. It does not total the market. The summed figures in the tape above describe only the contracts currently in view; they are not a market aggregate and should not be read as the value of NYC construction. Use it to check one contract's payment progress, not to build a headline total.
+    </div>
   </section>
 
   <section class="search-row">
@@ -329,7 +335,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2>Contract search &middot; Methodology &amp; definitions</h2><span class="cap">SERIES NOTES</span></div>
       <div class="method-body">
         <div class="reading">
-          <strong>What this is.</strong> A searchable index of registered New York City construction contracts, each joined to its payment history. Every figure comes from public records and is rebuilt nightly. The page reads one contract at a time and does not rate a vendor or predict whether a contract will finish.
+          <strong>What this is.</strong> A searchable index of registered New York City construction contracts, each joined to its payment history. Every figure comes from public records and is rebuilt nightly. The page reads one contract at a time and does not rate a vendor or predict whether a contract will finish. The paid figures are a floor: they confirm what has been disbursed, not what is still owed or unpaid, and the totals shown describe the contracts in view rather than a market aggregate.
         </div>
         <h3>The universe</h3>
         <p>The index covers construction contracts registered with the City, drawn from the City Record registration notices (dataset <code>qyyg-4tf5</code>) for fiscal years 2021 through 2025. A contract enters the index when it is registered; the date row leads with registration because that is the point at which the obligation becomes a public record.</p>
