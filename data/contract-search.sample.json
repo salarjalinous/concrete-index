@@ -9,24 +9,28 @@
       2024,
       2025
     ],
-    "sweep_strategy": "agency-scoped Spending (agency_code + fiscal_year, paged, client-filtered to construction contract_ids; payee_name fallback per agency on empty agency_code)",
-    "contracts": 13,
-    "contracts_with_payments": 12,
+    "sweep_strategy": "per-contract Spending (search_criteria contract_id, exact match, deduped on document_id) for the top N construction contracts by current amount",
+    "contracts": 16,
     "spending_rows_kept": 36,
-    "agencies_swept": 5,
-    "agencies_via_payee_fallback": 0,
     "recon_pct_total_paid_vs_spent_to_date": 1.0,
     "fixture": true,
     "coverage_notes": [
       "SYNTHETIC fixture for page development and the velocity unit test; not from the live API.",
       "Universe is construction registered contracts (category=expense, status=registered, industry matches construction) registered in FY2021-2025.",
-      "Payments are individual Checkbook Spending disbursements deduped on document_id; total_paid can understate lifetime spend when checks fall outside the swept fiscal years.",
+      "Paid to date and percent paid are the City's registered-contract figures (prime_vendor_spent_to_date over current amount) and cover every contract.",
+      "Dated payment timing is computed for the 1500 largest contracts by value; their checks are individual Checkbook Spending disbursements deduped on document_id.",
+      "Where a contract is not in the dated set, the spend curve and velocity read as a dash; its paid-to-date and percent paid still come from the contract record.",
       "end_date is the contract's SCHEDULED end, not actual completion.",
       "bid_due_date is a best-effort City Record pin join with partial coverage; null where no match.",
-      "Velocity denominators use current (registered) amount, falling back to original; days_to_50pct/90pct are null when never reached in-window.",
-      "paid_to_date is the contract-domain prime_vendor_spent_to_date; total_paid is the sum of swept checks. They can differ; recon_pct reports agreement.",
+      "Velocity denominators use current (registered) amount, falling back to original; days_to_50pct/90pct are null when never reached in the dated stream.",
+      "For swept contracts, total_paid is the dated check sum and can differ from paid_to_date; recon_pct reports agreement.",
       "No location/borough field is published for these records by design."
-    ]
+    ],
+    "dated_payment_cap": 1500,
+    "contracts_with_dated_payments": 12,
+    "contracts_swept": 13,
+    "contracts_skipped": 0,
+    "coverage_note": "Paid-to-date and percent paid come from the City's registered contract record and cover every contract in the index. Dated payment timing (the spend curve and velocity) is computed from Checkbook NYC disbursements for the 1500 largest construction contracts by value; smaller contracts are fully searchable with their contract-level amounts but carry no dated timing."
   },
   "contracts": [
     {
@@ -101,7 +105,8 @@
           "issue_date": "2023-09-12",
           "check_amount": 18000000
         }
-      ]
+      ],
+      "payments_swept": true
     },
     {
       "contract_id": "DEP20200098765",
@@ -159,7 +164,8 @@
           "issue_date": "2022-06-05",
           "check_amount": 11200000
         }
-      ]
+      ],
+      "payments_swept": true
     },
     {
       "contract_id": "DOT20240011111",
@@ -183,7 +189,8 @@
       "first_payment_date": null,
       "last_payment_date": null,
       "monthly_cumulative": [],
-      "_raw_payments": []
+      "_raw_payments": [],
+      "payments_swept": true
     },
     {
       "contract_id": "SCA20220033333",
@@ -201,7 +208,7 @@
       "first_payment_lag_days": 109,
       "days_to_50pct_paid": 246,
       "days_to_90pct_paid": 246,
-      "pct_paid_to_date": 1.0,
+      "pct_paid_to_date": 0.9667,
       "payment_count": 2,
       "total_paid": 9000000,
       "first_payment_date": "2022-05-01",
@@ -225,7 +232,8 @@
           "issue_date": "2022-09-15",
           "check_amount": 8000000
         }
-      ]
+      ],
+      "payments_swept": true
     },
     {
       "contract_id": "DDC20220044444",
@@ -279,7 +287,8 @@
           "issue_date": "2023-12-01",
           "check_amount": 12000000
         }
-      ]
+      ],
+      "payments_swept": true
     },
     {
       "contract_id": "DEP20230055555",
@@ -313,7 +322,8 @@
           "issue_date": "2023-07-19",
           "check_amount": 14000000
         }
-      ]
+      ],
+      "payments_swept": true
     },
     {
       "contract_id": "DOT20210066666",
@@ -371,7 +381,8 @@
           "issue_date": "2023-02-10",
           "check_amount": 5000000
         }
-      ]
+      ],
+      "payments_swept": true
     },
     {
       "contract_id": "DPR20200077777",
@@ -413,7 +424,8 @@
           "issue_date": "2021-09-20",
           "check_amount": 3100000
         }
-      ]
+      ],
+      "payments_swept": true
     },
     {
       "contract_id": "DDC20230088888",
@@ -463,7 +475,8 @@
           "issue_date": "2024-09-08",
           "check_amount": 6800000
         }
-      ]
+      ],
+      "payments_swept": true
     },
     {
       "contract_id": "DEP20240099999",
@@ -505,7 +518,8 @@
           "issue_date": "2024-11-18",
           "check_amount": 28000000
         }
-      ]
+      ],
+      "payments_swept": true
     },
     {
       "contract_id": "SCA20210101010",
@@ -523,7 +537,7 @@
       "first_payment_lag_days": 84,
       "days_to_50pct_paid": 84,
       "days_to_90pct_paid": 249,
-      "pct_paid_to_date": 1.0,
+      "pct_paid_to_date": 0.9881,
       "payment_count": 2,
       "total_paid": 4200000,
       "first_payment_date": "2021-12-01",
@@ -547,7 +561,8 @@
           "issue_date": "2022-05-15",
           "check_amount": 2000000
         }
-      ]
+      ],
+      "payments_swept": true
     },
     {
       "contract_id": "DOT20220111111",
@@ -597,7 +612,8 @@
           "issue_date": "2023-10-08",
           "check_amount": 18000000
         }
-      ]
+      ],
+      "payments_swept": true
     },
     {
       "contract_id": "DDC20210121212",
@@ -647,7 +663,83 @@
           "issue_date": "2023-08-14",
           "check_amount": 4500000
         }
-      ]
+      ],
+      "payments_swept": true
+    },
+    {
+      "contract_id": "HPD20230131313",
+      "vendor": "Mega Contracting",
+      "agency": "Department of Housing Preservation and Development",
+      "category": "Construction/Construction Services",
+      "award_method": "Competitive Sealed Bid",
+      "registration_date": "2023-05-01",
+      "start_date": "2023-06-01",
+      "end_date": "2027-05-31",
+      "bid_due_date": "2022-12-15",
+      "original_amount": 7000000,
+      "current_amount": 7000000,
+      "paid_to_date": 3500000,
+      "pct_paid_to_date": 0.5,
+      "payments_swept": false,
+      "first_payment_lag_days": null,
+      "days_to_50pct_paid": null,
+      "days_to_90pct_paid": null,
+      "payment_count": null,
+      "total_paid": null,
+      "first_payment_date": null,
+      "last_payment_date": null,
+      "monthly_cumulative": null,
+      "_raw_payments": []
+    },
+    {
+      "contract_id": "DSNY20220141414",
+      "vendor": "Northeast Remsco",
+      "agency": "Department of Sanitation",
+      "category": "Construction/Heavy Construction",
+      "award_method": "Competitive Sealed Bid",
+      "registration_date": "2022-08-15",
+      "start_date": "2022-09-01",
+      "end_date": "2025-08-31",
+      "bid_due_date": null,
+      "original_amount": 12000000,
+      "current_amount": 12000000,
+      "paid_to_date": 0,
+      "pct_paid_to_date": 0.0,
+      "payments_swept": false,
+      "first_payment_lag_days": null,
+      "days_to_50pct_paid": null,
+      "days_to_90pct_paid": null,
+      "payment_count": null,
+      "total_paid": null,
+      "first_payment_date": null,
+      "last_payment_date": null,
+      "monthly_cumulative": null,
+      "_raw_payments": []
+    },
+    {
+      "contract_id": "DOT20240151515",
+      "vendor": "Triumph Construction",
+      "agency": "Department of Transportation",
+      "category": "Construction/Paving",
+      "award_method": "Competitive Sealed Bid",
+      "registration_date": "2024-02-20",
+      "start_date": "2024-03-15",
+      "end_date": "2026-02-28",
+      "bid_due_date": "2023-10-01",
+      "original_amount": 4500000,
+      "current_amount": 4800000,
+      "paid_to_date": 4900000,
+      "pct_paid_to_date": 1.0208,
+      "payments_swept": false,
+      "first_payment_lag_days": null,
+      "days_to_50pct_paid": null,
+      "days_to_90pct_paid": null,
+      "payment_count": null,
+      "total_paid": null,
+      "first_payment_date": null,
+      "last_payment_date": null,
+      "monthly_cumulative": null,
+      "_raw_payments": []
     }
   ]
 }
