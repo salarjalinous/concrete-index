@@ -25,27 +25,50 @@ name: Checkbook NYC dated payments
 #   hard a ~1000-contract run took 3 hours and was cancelled. The bulk pull runs
 #   in a few minutes.
 #
-#   CATEGORY CODE (authoritative, from the Checkbook open-source repo):
+#   CATEGORY CODE (from the Checkbook open-source repo + live API probes):
 #   The Spending API filter field is `spending_category`. In the API config
 #   (source/web/.../checkbook_api/src/config/spending.json) it maps to
-#   `spending_category_code@checkbook:spending_category_subven`. The value is
-#   resolved by CheckbookSolrQueryBase::get_spending_category_mapping(), which
-#   runs (citywide):
+#   `spending_category_code@checkbook:spending_category_subven` AND it carries a
+#   hard validation: {"valueType":"value","dataType":"text","maxLength":"2"}.
+#   So the citywide value is capped at TWO characters -- a 2-char CODE, never the
+#   word "Contract" (the live run failed with "Provided value 'Contract' for
+#   request parameter 'spending_category' exceeds maximum allowed '2'
+#   characters."). The value is resolved by
+#   CheckbookSolrQueryBase::get_spending_category_mapping(), which runs (citywide):
 #     SELECT spending_category_id FROM ref_spending_category
 #     WHERE spending_category_code ~* '(^<value>$)'
 #        OR spending_category_name ~* '(^<value>$)'
 #   The match is a FULLY-ANCHORED, case-insensitive regex against the code OR the
 #   name. The citywide category map (checkbook_project SpendingUtil::$spendingCategories)
-#   is 1=>Contract, 2=>Payroll, 3=>Capital, 4=>Other, 5=>Trust & Agency. Our
-#   universe is registered EXPENSE contracts whose disbursements are "Contract"
-#   spending (id 1), so the value is the literal "Contract" (matches ^Contract$
-#   against spending_category_name). The earlier bulk attempt used "c", which
-#   matches NEITHER the code nor the name under the anchored ^c$ regex -> NULL ->
-#   the category filter silently dropped, so it under-matched. We pass the full
-#   word "Contract". We bucket by contract_id afterward, so slight over-pull is
-#   harmless. CATEGORY_CODES is a list so a second code can be added if a future
-#   live check shows "Contract" alone misses disbursements (e.g. add "Expense"),
-#   without touching the rest of the pull.
+#   is 0=>Total, 1=>Contract, 2=>Payroll, 3=>Capital, 4=>Other, 5=>Trust & Agency.
+#   Citywide codes are short two-initial tokens: live POSTs confirmed
+#   spending_category=ts -> Total Spending (~3.2M FY2024 rows) and
+#   spending_category=cc -> "Capital Contracts" (~144K rows). Our universe is
+#   registered EXPENSE contracts whose disbursements are id 1 "Contract" spending
+#   -- which is NOT Capital Contracts (cc). The earlier single-char attempt "c"
+#   passed the length check but matched NEITHER code nor name under the anchored
+#   ^c$ regex -> NULL -> the category filter silently dropped (under-match), so
+#   "c" is wrong; and "cc" is Capital, the wrong category.
+#
+#   Because the seed rows of ref_spending_category are DB/ETL data (not in the
+#   repo) and the WAF blocked a clean live read of the exact Contract code, we do
+#   not hard-code one guess. Instead CONTRACT_CATEGORY_CANDIDATES is an ORDERED
+#   list of <=2-char candidates for the id-1 Contract code; Stage 2 tries them in
+#   order and KEEPS the first that returns parseable rows whose contract_id is in
+#   our Stage-1 universe (kept>0), then stops. Best-evidence first:
+#     "ec" - "Expense Contracts", matching the proven two-initial pattern
+#            (ts=Total Spending, cc=Capital Contracts) for the expense/Contract
+#            facet; strongest inference.
+#     "ct" - "ConTract" abbreviation.
+#     "co" - "COntract".
+#     "cn" - "CoNtract".
+#     "1"  - the numeric category id as text (resolves only if a code or name
+#            literally equals "1"; cheap last-ditch try).
+#   "c" (disproven: matched nothing) and "cc" (proven = Capital, wrong category)
+#   are deliberately excluded. We bucket by contract_id afterward, so slight
+#   over-pull from whichever code wins is harmless. meta records which candidate
+#   won (category_code_used) and the per-candidate record_count / kept counts so
+#   the run log is self-explanatory.
 #
 #   JOIN KEY: on Spending, the contract_id response column maps to
 #   `reference_document_number`; on Contracts, prime_contract_id maps to
@@ -89,15 +112,18 @@ jobs:
 
           # ---- BULK SPENDING CATEGORY PULL ------------------------------------
           # Source-side category filter for Stage 2. CATEGORY_FIELD is the API
-          # search-criteria name; CATEGORY_CODES are the value(s). "Contract" is
-          # the citywide spending category (id 1) for disbursements against
-          # registered expense/contract registrations; the API resolves it with a
-          # fully-anchored case-insensitive regex against spending_category_name.
-          # It is a LIST so a second value (e.g. "Expense") can be added if a live
-          # check ever shows "Contract" alone misses our disbursements; we bucket
-          # by contract_id afterward so over-pull is harmless. See header comment.
+          # search-criteria name; the value is a <=2-char CODE (the citywide
+          # spending_category param is validated maxLength=2, so the word
+          # "Contract" is rejected). CONTRACT_CATEGORY_CANDIDATES is an ORDERED
+          # list of best-evidence-first candidates for the id-1 "Contract"
+          # spending code (disbursements against registered expense contracts).
+          # Stage 2 tries them in order and uses the FIRST that returns parseable
+          # rows attributable to our Stage-1 universe (kept>0), then stops. "c"
+          # (matched nothing) and "cc" (proven = Capital Contracts, wrong
+          # category) are deliberately excluded. See header comment for the
+          # derivation and the live-probe evidence (ts=Total, cc=Capital).
           CATEGORY_FIELD = "spending_category"
-          CATEGORY_CODES = ["Contract"]
+          CONTRACT_CATEGORY_CANDIDATES = ["ec", "ct", "co", "cn", "1"]
           SPENDING_PAGE = 20000     # bulk Spending paging chunk (rows per POST)
           SPENDING_PAGE_CAP = 60    # generous per-(category,FY) page cap -> up to 1.2M rows/FY
 
@@ -387,14 +413,19 @@ jobs:
           # =================================================================
           # STAGE 2 - BULK Spending pull, source-filtered by spending category.
           #
-          # For each fiscal year, POST Spending with search_criteria
-          # {spending_category=<code>, fiscal_year=FY}, page in SPENDING_PAGE-row
-          # chunks, dedupe on document_id, bucket every check by contract_id, and
-          # keep only contract_ids in the Stage-1 universe (universe_ids). One
-          # bulk page-through per (category, FY); the source-side category filter
-          # keeps volume tractable. The API record_count and the kept-row count
-          # are logged per (category, FY) so the run reveals whether the filter
-          # matched. See the header comment for the category-code derivation.
+          # The id-1 "Contract" spending code is not hard-coded (the citywide
+          # spending_category param caps at 2 chars and the exact code could not be
+          # read cleanly from the live API). Instead we try CONTRACT_CATEGORY_CANDIDATES
+          # in order. For each candidate, for each fiscal year, POST Spending with
+          # search_criteria {spending_category=<candidate>, fiscal_year=FY}, page
+          # in SPENDING_PAGE-row chunks, dedupe on document_id, bucket every check
+          # by contract_id, and keep only contract_ids in the Stage-1 universe
+          # (universe_ids). The API record_count and the kept-row count are logged
+          # per (candidate, FY). We adopt the FIRST candidate that returns
+          # parseable rows with kept>0 (rows whose contract_id is in our universe)
+          # and STOP trying further candidates. A candidate that trips the
+          # "exceeds maximum allowed 2 characters" validation is skipped and the
+          # next is tried. See the header comment for the candidate derivation.
           #
           # SCOPE (separate concern): which contracts are MARKED as carrying dated
           # coverage / drawn with a curve is the owner's rule -- value >=
@@ -459,15 +490,30 @@ jobs:
               m = re.search(r"<record_count>\s*(\d+)\s*</record_count>", xml_text)
               return int(m.group(1)) if m else None
 
-          # contract_id -> {document_id -> (date, amount)} ; dedupe on document_id.
-          payments = {}
-          spending_rows_seen = 0     # checks returned across all bulk pages
-          spending_rows_kept = 0     # deduped checks attributed to a universe contract
-          per_fy_stats = []          # [(category, fy, record_count, seen, kept), ...]
+          # Marker the API uses when the value is longer than the 2-char cap; a
+          # candidate that trips it is skipped (the next candidate is tried).
+          LEN_CAP_RE = re.compile(r"exceeds maximum allowed", re.I)
 
-          for cat in CATEGORY_CODES:
+          def response_is_len_cap_failure(xml_text):
+              # True when the API rejected the request because the spending_category
+              # value exceeded its 2-char maxLength (so we should skip this
+              # candidate, not stop the whole pull).
+              return bool(LEN_CAP_RE.search(xml_text or ""))
+
+          def run_candidate(cat):
+              # Run the per-FY paged Spending pull for one candidate code. Returns
+              # (payments, seen, kept, per_fy_stats, len_cap_hit). payments is the
+              # contract_id -> {document_id -> (date, amount)} map deduped on
+              # document_id and limited to the Stage-1 universe. len_cap_hit is True
+              # if any page returned the "exceeds maximum allowed 2 characters"
+              # rejection (signal to skip this candidate).
+              cand_payments = {}
+              cand_seen = 0
+              cand_kept = 0
+              cand_stats = []
+              len_cap_hit = False
               for fy in FYS:
-                  log("--- Spending (category=%s) FY%d ---" % (cat, fy))
+                  log("--- Spending (candidate=%s) FY%d ---" % (cat, fy))
                   rf = 1
                   page = 0
                   fy_seen = 0
@@ -482,21 +528,27 @@ jobs:
                       try:
                           resp = post(xml)
                       except Exception as e:
-                          log("  category=%s FY%d page rf=%d POST raised, stopping FY: %s"
+                          log("  candidate=%s FY%d page rf=%d POST raised, stopping FY: %s"
                               % (cat, fy, rf, e))
                           break
+                      if response_is_len_cap_failure(resp):
+                          log("  candidate=%s rejected: value exceeds the 2-char "
+                              "spending_category cap; skipping this candidate." % cat)
+                          len_cap_hit = True
+                          cand_stats.append([cat, fy, None, fy_seen, fy_kept])
+                          return cand_payments, cand_seen, cand_kept, cand_stats, len_cap_hit
                       if fy_record_count is None:
                           fy_record_count = read_record_count(resp)
                       recs, _ = parse_records(resp)
                       if recs is None:
-                          # API failure / parse error: log and stop this FY (the
-                          # write still proceeds with whatever was gathered).
-                          log("  category=%s FY%d page rf=%d returned no parseable "
+                          # API failure / parse error for THIS candidate+FY: log and
+                          # stop this FY (other FYs for the candidate still run).
+                          log("  candidate=%s FY%d page rf=%d returned no parseable "
                               "records, stopping FY" % (cat, fy, rf))
                           break
                       got = len(recs)
                       for r in recs:
-                          spending_rows_seen += 1
+                          cand_seen += 1
                           fy_seen += 1
                           rcid = c(r, "contract_id")
                           if not rcid or rcid not in universe_ids:
@@ -504,13 +556,13 @@ jobs:
                           doc = c(r, "document_id")
                           if not doc:
                               doc = "%s|%s|%s" % (rcid, c(r, "issue_date"), c(r, "check_amount"))
-                          bucket = payments.setdefault(rcid, {})
+                          bucket = cand_payments.setdefault(rcid, {})
                           if doc in bucket:
                               continue   # re-reported check: count once
                           d = parse_date(c(r, "issue_date"))
                           amt = to_int_amount(c(r, "check_amount"))
                           bucket[doc] = (d, amt)
-                          spending_rows_kept += 1
+                          cand_kept += 1
                           fy_kept += 1
                       page += 1
                       if got < SPENDING_PAGE:
@@ -518,19 +570,61 @@ jobs:
                       rf += SPENDING_PAGE
                       time.sleep(SPENDING_PACE)
                       if page >= SPENDING_PAGE_CAP:
-                          log("  WARNING page cap (%d) hit for category=%s FY%d; "
+                          log("  WARNING page cap (%d) hit for candidate=%s FY%d; "
                               "record_count=%s" % (SPENDING_PAGE_CAP, cat, fy, fy_record_count))
                           break
-                  log("  category=%s FY%d: record_count=%s seen=%d kept=%d "
-                      "(running kept=%d)"
-                      % (cat, fy, fy_record_count, fy_seen, fy_kept, spending_rows_kept))
-                  per_fy_stats.append([cat, fy, fy_record_count, fy_seen, fy_kept])
+                  log("  candidate=%s FY%d: record_count=%s seen=%d kept=%d "
+                      "(candidate running kept=%d)"
+                      % (cat, fy, fy_record_count, fy_seen, fy_kept, cand_kept))
+                  cand_stats.append([cat, fy, fy_record_count, fy_seen, fy_kept])
                   time.sleep(SPENDING_PACE)
+              return cand_payments, cand_seen, cand_kept, cand_stats, len_cap_hit
+
+          # Try candidates in order; adopt the FIRST whose pull attributes rows to
+          # our universe (kept>0). Stop at the first winner. A length-cap rejection
+          # skips the candidate. Per-candidate seen/kept totals and the per-(cand,
+          # FY) stats are recorded so the run log explains itself.
+          payments = {}
+          spending_rows_seen = 0     # checks returned across the WINNING candidate's pages
+          spending_rows_kept = 0     # deduped checks attributed to a universe contract (winner)
+          per_fy_stats = []          # [(candidate, fy, record_count, seen, kept), ...] (winner)
+          category_code_used = None  # the candidate that won
+          candidate_attempts = []    # [{candidate, seen, kept, len_cap_hit, won}, ...] for meta
+
+          for cat in CONTRACT_CATEGORY_CANDIDATES:
+              log("=== Trying spending_category candidate '%s' ===" % cat)
+              cand_payments, cand_seen, cand_kept, cand_stats, len_cap_hit = run_candidate(cat)
+              won = (cand_kept > 0)
+              candidate_attempts.append({
+                  "candidate": cat,
+                  "rows_seen": cand_seen,
+                  "rows_kept": cand_kept,
+                  "len_cap_hit": len_cap_hit,
+                  "won": won,
+              })
+              if won:
+                  payments = cand_payments
+                  spending_rows_seen = cand_seen
+                  spending_rows_kept = cand_kept
+                  per_fy_stats = cand_stats
+                  category_code_used = cat
+                  log("  candidate '%s' WON: kept=%d rows across the universe; "
+                      "stopping candidate search." % (cat, cand_kept))
+                  break
+              else:
+                  log("  candidate '%s' produced no universe rows (seen=%d kept=%d, "
+                      "len_cap_hit=%s); trying next." % (cat, cand_seen, cand_kept, len_cap_hit))
+
+          if category_code_used is None:
+              log("WARNING: no spending_category candidate (%s) returned rows "
+                  "attributable to the Stage-1 universe. Dated streams will be "
+                  "empty; every contract still becomes a searchable record below."
+                  % CONTRACT_CATEGORY_CANDIDATES)
 
           contracts_swept = len(payments)
-          log("Bulk Spending complete: categories=%s seen=%d kept=%d "
+          log("Bulk Spending complete: category_code_used=%s seen=%d kept=%d "
               "contracts_with_checks=%d (universe=%d)"
-              % (CATEGORY_CODES, spending_rows_seen, spending_rows_kept,
+              % (category_code_used, spending_rows_seen, spending_rows_kept,
                  contracts_swept, len(universe_ids)))
 
           # =================================================================
@@ -729,19 +823,23 @@ jobs:
               "generated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
               "source": ("Checkbook NYC API (checkbooknyc.com): Registered Contracts (expense) "
                          "for the contract universe and a bulk Spending pull filtered at the "
-                         "source by spending category (Contract) for dated disbursements, "
+                         "source by spending category (id 1, Contract) for dated disbursements, "
                          "bucketed by contract_id"),
               "fiscal_years": FYS,
               "sweep_strategy": ("bulk Spending filtered at the source by spending_category, "
                                  "paged per fiscal year, deduped on document_id, bucketed by "
                                  "contract_id, kept where the contract is in the construction "
-                                 "universe; dated coverage marked only for contracts of at least "
-                                 "the amount floor registered since the scope year that are open "
-                                 "or closed within the past year"),
+                                 "universe; the 2-char Contract category code is resolved at "
+                                 "runtime by trying an ordered candidate list and adopting the "
+                                 "first that returns universe rows; dated coverage marked only "
+                                 "for contracts of at least the amount floor registered since the "
+                                 "scope year that are open or closed within the past year"),
               "category_field": CATEGORY_FIELD,
-              "category_codes": CATEGORY_CODES,
+              "category_candidates": CONTRACT_CATEGORY_CANDIDATES,
+              "category_code_used": category_code_used,
+              "category_candidate_attempts": candidate_attempts,
               "spending_rows_per_fy": [
-                  {"category": s[0], "fiscal_year": s[1], "record_count": s[2],
+                  {"candidate": s[0], "fiscal_year": s[1], "record_count": s[2],
                    "rows_seen": s[3], "rows_kept": s[4]}
                   for s in per_fy_stats
               ],
