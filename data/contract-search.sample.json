@@ -1,0 +1,653 @@
+{
+  "meta": {
+    "generated": "2026-06-26T06:50:00Z",
+    "source": "FIXTURE - synthetic data matching the Checkbook NYC contract-search.json schema (not live)",
+    "fiscal_years": [
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "sweep_strategy": "agency-scoped Spending (agency_code + fiscal_year, paged, client-filtered to construction contract_ids; payee_name fallback per agency on empty agency_code)",
+    "contracts": 13,
+    "contracts_with_payments": 12,
+    "spending_rows_kept": 36,
+    "agencies_swept": 5,
+    "agencies_via_payee_fallback": 0,
+    "recon_pct_total_paid_vs_spent_to_date": 1.0,
+    "fixture": true,
+    "coverage_notes": [
+      "SYNTHETIC fixture for page development and the velocity unit test; not from the live API.",
+      "Universe is construction registered contracts (category=expense, status=registered, industry matches construction) registered in FY2021-2025.",
+      "Payments are individual Checkbook Spending disbursements deduped on document_id; total_paid can understate lifetime spend when checks fall outside the swept fiscal years.",
+      "end_date is the contract's SCHEDULED end, not actual completion.",
+      "bid_due_date is a best-effort City Record pin join with partial coverage; null where no match.",
+      "Velocity denominators use current (registered) amount, falling back to original; days_to_50pct/90pct are null when never reached in-window.",
+      "paid_to_date is the contract-domain prime_vendor_spent_to_date; total_paid is the sum of swept checks. They can differ; recon_pct reports agreement.",
+      "No location/borough field is published for these records by design."
+    ]
+  },
+  "contracts": [
+    {
+      "contract_id": "DDC20210012345",
+      "vendor": "Tutor Perini",
+      "agency": "Department of Design and Construction",
+      "category": "Construction/Construction Services",
+      "award_method": "Competitive Sealed Bid",
+      "registration_date": "2021-03-15",
+      "start_date": "2021-04-01",
+      "end_date": "2025-03-31",
+      "bid_due_date": "2020-11-10",
+      "original_amount": 180000000,
+      "current_amount": 205000000,
+      "paid_to_date": 118500000,
+      "first_payment_lag_days": 97,
+      "days_to_50pct_paid": 911,
+      "days_to_90pct_paid": null,
+      "pct_paid_to_date": 0.578,
+      "payment_count": 6,
+      "total_paid": 118500000,
+      "first_payment_date": "2021-06-20",
+      "last_payment_date": "2023-09-12",
+      "monthly_cumulative": [
+        [
+          "2021-06",
+          15000000
+        ],
+        [
+          "2021-10",
+          37000000
+        ],
+        [
+          "2022-02",
+          55500000
+        ],
+        [
+          "2022-08",
+          80500000
+        ],
+        [
+          "2023-01",
+          100500000
+        ],
+        [
+          "2023-09",
+          118500000
+        ]
+      ],
+      "_raw_payments": [
+        {
+          "issue_date": "2021-06-20",
+          "check_amount": 15000000
+        },
+        {
+          "issue_date": "2021-10-05",
+          "check_amount": 22000000
+        },
+        {
+          "issue_date": "2022-02-14",
+          "check_amount": 18500000
+        },
+        {
+          "issue_date": "2022-08-09",
+          "check_amount": 25000000
+        },
+        {
+          "issue_date": "2023-01-30",
+          "check_amount": 20000000
+        },
+        {
+          "issue_date": "2023-09-12",
+          "check_amount": 18000000
+        }
+      ]
+    },
+    {
+      "contract_id": "DEP20200098765",
+      "vendor": "E.E. Cruz / JRCruz",
+      "agency": "Department of Environmental Protection",
+      "category": "Construction/Heavy Construction",
+      "award_method": "Competitive Sealed Bid",
+      "registration_date": "2020-07-01",
+      "start_date": "2020-08-01",
+      "end_date": "2023-07-31",
+      "bid_due_date": null,
+      "original_amount": 48000000,
+      "current_amount": 48000000,
+      "paid_to_date": 47200000,
+      "first_payment_lag_days": 76,
+      "days_to_50pct_paid": 252,
+      "days_to_90pct_paid": 704,
+      "pct_paid_to_date": 0.9833,
+      "payment_count": 4,
+      "total_paid": 47200000,
+      "first_payment_date": "2020-09-15",
+      "last_payment_date": "2022-06-05",
+      "monthly_cumulative": [
+        [
+          "2020-09",
+          12000000
+        ],
+        [
+          "2021-03",
+          24000000
+        ],
+        [
+          "2021-11",
+          36000000
+        ],
+        [
+          "2022-06",
+          47200000
+        ]
+      ],
+      "_raw_payments": [
+        {
+          "issue_date": "2020-09-15",
+          "check_amount": 12000000
+        },
+        {
+          "issue_date": "2021-03-10",
+          "check_amount": 12000000
+        },
+        {
+          "issue_date": "2021-11-20",
+          "check_amount": 12000000
+        },
+        {
+          "issue_date": "2022-06-05",
+          "check_amount": 11200000
+        }
+      ]
+    },
+    {
+      "contract_id": "DOT20240011111",
+      "vendor": "C.A.C. Industries",
+      "agency": "Department of Transportation",
+      "category": "Construction/Construction Services",
+      "award_method": "Competitive Sealed Bid",
+      "registration_date": "2024-09-10",
+      "start_date": "2024-10-01",
+      "end_date": "2027-09-30",
+      "bid_due_date": "2024-05-20",
+      "original_amount": 33000000,
+      "current_amount": 33000000,
+      "paid_to_date": 0,
+      "first_payment_lag_days": null,
+      "days_to_50pct_paid": null,
+      "days_to_90pct_paid": null,
+      "pct_paid_to_date": 0.0,
+      "payment_count": 0,
+      "total_paid": 0,
+      "first_payment_date": null,
+      "last_payment_date": null,
+      "monthly_cumulative": [],
+      "_raw_payments": []
+    },
+    {
+      "contract_id": "SCA20220033333",
+      "vendor": "Skanska USA Civil",
+      "agency": "School Construction Authority",
+      "category": "Construction/Construction Services",
+      "award_method": "Competitive Sealed Bid",
+      "registration_date": "2022-01-12",
+      "start_date": "2022-02-01",
+      "end_date": "2023-12-31",
+      "bid_due_date": "2021-09-30",
+      "original_amount": 9000000,
+      "current_amount": 9000000,
+      "paid_to_date": 8700000,
+      "first_payment_lag_days": 109,
+      "days_to_50pct_paid": 246,
+      "days_to_90pct_paid": 246,
+      "pct_paid_to_date": 1.0,
+      "payment_count": 2,
+      "total_paid": 9000000,
+      "first_payment_date": "2022-05-01",
+      "last_payment_date": "2022-09-15",
+      "monthly_cumulative": [
+        [
+          "2022-05",
+          1000000
+        ],
+        [
+          "2022-09",
+          9000000
+        ]
+      ],
+      "_raw_payments": [
+        {
+          "issue_date": "2022-05-01",
+          "check_amount": 1000000
+        },
+        {
+          "issue_date": "2022-09-15",
+          "check_amount": 8000000
+        }
+      ]
+    },
+    {
+      "contract_id": "DDC20220044444",
+      "vendor": "Judlau Contracting",
+      "agency": "Department of Design and Construction",
+      "category": "Construction/Heavy Construction",
+      "award_method": "Competitive Sealed Bid",
+      "registration_date": "2022-04-20",
+      "start_date": "2022-05-15",
+      "end_date": "2026-04-30",
+      "bid_due_date": null,
+      "original_amount": 75000000,
+      "current_amount": 82000000,
+      "paid_to_date": 41000000,
+      "first_payment_lag_days": 112,
+      "days_to_50pct_paid": null,
+      "days_to_90pct_paid": null,
+      "pct_paid_to_date": 0.5,
+      "payment_count": 4,
+      "total_paid": 41000000,
+      "first_payment_date": "2022-08-10",
+      "last_payment_date": "2023-12-01",
+      "monthly_cumulative": [
+        [
+          "2022-08",
+          10000000
+        ],
+        [
+          "2023-02",
+          24000000
+        ],
+        [
+          "2023-12",
+          36000000
+        ]
+      ],
+      "_raw_payments": [
+        {
+          "issue_date": "2022-08-10",
+          "check_amount": 10000000
+        },
+        {
+          "issue_date": "",
+          "check_amount": 5000000
+        },
+        {
+          "issue_date": "2023-02-22",
+          "check_amount": 14000000
+        },
+        {
+          "issue_date": "2023-12-01",
+          "check_amount": 12000000
+        }
+      ]
+    },
+    {
+      "contract_id": "DEP20230055555",
+      "vendor": "John P. Picone",
+      "agency": "Department of Environmental Protection",
+      "category": "Construction/Heavy Construction",
+      "award_method": "Competitive Sealed Bid",
+      "registration_date": "2023-02-28",
+      "start_date": "2023-03-15",
+      "end_date": "2027-02-28",
+      "bid_due_date": "2022-10-15",
+      "original_amount": 120000000,
+      "current_amount": 120000000,
+      "paid_to_date": 14000000,
+      "first_payment_lag_days": 141,
+      "days_to_50pct_paid": null,
+      "days_to_90pct_paid": null,
+      "pct_paid_to_date": 0.1167,
+      "payment_count": 1,
+      "total_paid": 14000000,
+      "first_payment_date": "2023-07-19",
+      "last_payment_date": "2023-07-19",
+      "monthly_cumulative": [
+        [
+          "2023-07",
+          14000000
+        ]
+      ],
+      "_raw_payments": [
+        {
+          "issue_date": "2023-07-19",
+          "check_amount": 14000000
+        }
+      ]
+    },
+    {
+      "contract_id": "DOT20210066666",
+      "vendor": "Grace Industries",
+      "agency": "Department of Transportation",
+      "category": "Construction/Paving",
+      "award_method": "Competitive Sealed Bid",
+      "registration_date": "2021-05-03",
+      "start_date": "2021-06-01",
+      "end_date": "2024-05-31",
+      "bid_due_date": "2021-01-22",
+      "original_amount": 27500000,
+      "current_amount": 27500000,
+      "paid_to_date": 21000000,
+      "first_payment_lag_days": 104,
+      "days_to_50pct_paid": 453,
+      "days_to_90pct_paid": null,
+      "pct_paid_to_date": 0.7636,
+      "payment_count": 4,
+      "total_paid": 21000000,
+      "first_payment_date": "2021-08-15",
+      "last_payment_date": "2023-02-10",
+      "monthly_cumulative": [
+        [
+          "2021-08",
+          5000000
+        ],
+        [
+          "2022-01",
+          11000000
+        ],
+        [
+          "2022-07",
+          16000000
+        ],
+        [
+          "2023-02",
+          21000000
+        ]
+      ],
+      "_raw_payments": [
+        {
+          "issue_date": "2021-08-15",
+          "check_amount": 5000000
+        },
+        {
+          "issue_date": "2022-01-20",
+          "check_amount": 6000000
+        },
+        {
+          "issue_date": "2022-07-30",
+          "check_amount": 5000000
+        },
+        {
+          "issue_date": "2023-02-10",
+          "check_amount": 5000000
+        }
+      ]
+    },
+    {
+      "contract_id": "DPR20200077777",
+      "vendor": "WDF Inc.",
+      "agency": "Department of Parks and Recreation",
+      "category": "Construction/Construction Services",
+      "award_method": "Competitive Sealed Bid",
+      "registration_date": "2020-10-15",
+      "start_date": "2020-11-01",
+      "end_date": "2022-10-31",
+      "bid_due_date": null,
+      "original_amount": 6500000,
+      "current_amount": 6500000,
+      "paid_to_date": 6400000,
+      "first_payment_lag_days": 87,
+      "days_to_50pct_paid": 87,
+      "days_to_90pct_paid": 340,
+      "pct_paid_to_date": 0.9846,
+      "payment_count": 2,
+      "total_paid": 6400000,
+      "first_payment_date": "2021-01-10",
+      "last_payment_date": "2021-09-20",
+      "monthly_cumulative": [
+        [
+          "2021-01",
+          3300000
+        ],
+        [
+          "2021-09",
+          6400000
+        ]
+      ],
+      "_raw_payments": [
+        {
+          "issue_date": "2021-01-10",
+          "check_amount": 3300000
+        },
+        {
+          "issue_date": "2021-09-20",
+          "check_amount": 3100000
+        }
+      ]
+    },
+    {
+      "contract_id": "DDC20230088888",
+      "vendor": "AECOM USA",
+      "agency": "Department of Design and Construction",
+      "category": "Architectural/Engineering Services",
+      "award_method": "Negotiated Acquisition",
+      "registration_date": "2023-06-01",
+      "start_date": "2023-07-01",
+      "end_date": "2028-06-30",
+      "bid_due_date": null,
+      "original_amount": 44000000,
+      "current_amount": 44000000,
+      "paid_to_date": 19800000,
+      "first_payment_lag_days": 126,
+      "days_to_50pct_paid": null,
+      "days_to_90pct_paid": null,
+      "pct_paid_to_date": 0.45,
+      "payment_count": 3,
+      "total_paid": 19800000,
+      "first_payment_date": "2023-10-05",
+      "last_payment_date": "2024-09-08",
+      "monthly_cumulative": [
+        [
+          "2023-10",
+          6000000
+        ],
+        [
+          "2024-03",
+          13000000
+        ],
+        [
+          "2024-09",
+          19800000
+        ]
+      ],
+      "_raw_payments": [
+        {
+          "issue_date": "2023-10-05",
+          "check_amount": 6000000
+        },
+        {
+          "issue_date": "2024-03-12",
+          "check_amount": 7000000
+        },
+        {
+          "issue_date": "2024-09-08",
+          "check_amount": 6800000
+        }
+      ]
+    },
+    {
+      "contract_id": "DEP20240099999",
+      "vendor": "Tully Construction",
+      "agency": "Department of Environmental Protection",
+      "category": "Construction/Infrastructure",
+      "award_method": "Competitive Sealed Bid",
+      "registration_date": "2024-01-22",
+      "start_date": "2024-02-15",
+      "end_date": "2028-01-31",
+      "bid_due_date": "2023-09-11",
+      "original_amount": 160000000,
+      "current_amount": 160000000,
+      "paid_to_date": 48000000,
+      "first_payment_lag_days": 109,
+      "days_to_50pct_paid": null,
+      "days_to_90pct_paid": null,
+      "pct_paid_to_date": 0.3,
+      "payment_count": 2,
+      "total_paid": 48000000,
+      "first_payment_date": "2024-05-10",
+      "last_payment_date": "2024-11-18",
+      "monthly_cumulative": [
+        [
+          "2024-05",
+          20000000
+        ],
+        [
+          "2024-11",
+          48000000
+        ]
+      ],
+      "_raw_payments": [
+        {
+          "issue_date": "2024-05-10",
+          "check_amount": 20000000
+        },
+        {
+          "issue_date": "2024-11-18",
+          "check_amount": 28000000
+        }
+      ]
+    },
+    {
+      "contract_id": "SCA20210101010",
+      "vendor": "Petrocelli Electric",
+      "agency": "School Construction Authority",
+      "category": "Construction/Excavation",
+      "award_method": "Competitive Sealed Bid",
+      "registration_date": "2021-09-08",
+      "start_date": "2021-10-01",
+      "end_date": "2023-03-31",
+      "bid_due_date": null,
+      "original_amount": 4200000,
+      "current_amount": 4200000,
+      "paid_to_date": 4150000,
+      "first_payment_lag_days": 84,
+      "days_to_50pct_paid": 84,
+      "days_to_90pct_paid": 249,
+      "pct_paid_to_date": 1.0,
+      "payment_count": 2,
+      "total_paid": 4200000,
+      "first_payment_date": "2021-12-01",
+      "last_payment_date": "2022-05-15",
+      "monthly_cumulative": [
+        [
+          "2021-12",
+          2200000
+        ],
+        [
+          "2022-05",
+          4200000
+        ]
+      ],
+      "_raw_payments": [
+        {
+          "issue_date": "2021-12-01",
+          "check_amount": 2200000
+        },
+        {
+          "issue_date": "2022-05-15",
+          "check_amount": 2000000
+        }
+      ]
+    },
+    {
+      "contract_id": "DOT20220111111",
+      "vendor": "Posillico Civil",
+      "agency": "Department of Transportation",
+      "category": "Construction/Heavy Construction",
+      "award_method": "Competitive Sealed Bid",
+      "registration_date": "2022-03-30",
+      "start_date": "2022-04-15",
+      "end_date": "2025-03-31",
+      "bid_due_date": "2021-12-01",
+      "original_amount": 55000000,
+      "current_amount": 52000000,
+      "paid_to_date": 54000000,
+      "first_payment_lag_days": 104,
+      "days_to_50pct_paid": 301,
+      "days_to_90pct_paid": 557,
+      "pct_paid_to_date": 1.0385,
+      "payment_count": 3,
+      "total_paid": 54000000,
+      "first_payment_date": "2022-07-12",
+      "last_payment_date": "2023-10-08",
+      "monthly_cumulative": [
+        [
+          "2022-07",
+          18000000
+        ],
+        [
+          "2023-01",
+          36000000
+        ],
+        [
+          "2023-10",
+          54000000
+        ]
+      ],
+      "_raw_payments": [
+        {
+          "issue_date": "2022-07-12",
+          "check_amount": 18000000
+        },
+        {
+          "issue_date": "2023-01-25",
+          "check_amount": 18000000
+        },
+        {
+          "issue_date": "2023-10-08",
+          "check_amount": 18000000
+        }
+      ]
+    },
+    {
+      "contract_id": "DDC20210121212",
+      "vendor": "LiRo Engineers",
+      "agency": "Department of Design and Construction",
+      "category": "Architectural/Engineering Services",
+      "award_method": "Negotiated Acquisition",
+      "registration_date": "2021-02-10",
+      "start_date": "2021-03-01",
+      "end_date": "2026-02-28",
+      "bid_due_date": null,
+      "original_amount": 30000000,
+      "current_amount": 30000000,
+      "paid_to_date": 22500000,
+      "first_payment_lag_days": 419,
+      "days_to_50pct_paid": 678,
+      "days_to_90pct_paid": null,
+      "pct_paid_to_date": 0.75,
+      "payment_count": 3,
+      "total_paid": 22500000,
+      "first_payment_date": "2022-04-05",
+      "last_payment_date": "2023-08-14",
+      "monthly_cumulative": [
+        [
+          "2022-04",
+          9000000
+        ],
+        [
+          "2022-12",
+          18000000
+        ],
+        [
+          "2023-08",
+          22500000
+        ]
+      ],
+      "_raw_payments": [
+        {
+          "issue_date": "2022-04-05",
+          "check_amount": 9000000
+        },
+        {
+          "issue_date": "2022-12-20",
+          "check_amount": 9000000
+        },
+        {
+          "issue_date": "2023-08-14",
+          "check_amount": 4500000
+        }
+      ]
+    }
+  ]
+}
