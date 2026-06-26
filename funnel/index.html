@@ -191,6 +191,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <a href="/agency/">Agencies</a>
       <a href="/regional/">SCA &amp; MTA</a>
       <a href="/competitive/">Contractors</a>
+      <a href="/contracts/">Contracts</a>
       <a href="/analysis/">Analysis</a>
       <a href="/briefing/">Briefing</a>
       <a href="/about/">About</a>
@@ -600,9 +601,9 @@ function renderStages(){
       <div class="stage-bar-track"><div class="stage-bar" style="width:${(s.v/max*100).toFixed(1)}%;background:${s.c}"></div></div>
       <div class="stage-val">${fmtMoney(s.v)}</div>
     </div>`).join('');
-  const base = 'Read these as separate readings, not a draining funnel. '
+  const base = 'Each stage is a separate reading drawn from a different ledger. '
     + 'Committed is a stock from the full capital plan; Awarded covers two City Record procurement categories; '
-    + 'Spent is full-plan outlays measured between plan snapshots. The scopes differ, so the bars are not meant to net against each other. '
+    + 'Spent is full-plan outlays measured between plan snapshots. The scopes differ, so the bars do not net against each other. '
     + 'The bar lengths share a scale only to make the magnitudes comparable.';
   const cbkNote = state.checkbookOk
     ? ' Paid (Checkbook) is a different ledger again: disbursements on registered construction contracts to named vendors, '
