@@ -13,46 +13,49 @@ name: Checkbook NYC dated payments
 # the commit step rebases before pushing and never fails on a missing pathspec.
 # Never call the live API outside the Action (Checkbook is POST-XML, no CORS).
 #
-# SWEEP STRATEGY (self-discovered category code, then bulk pull):
+# SWEEP STRATEGY (discover category NAMEs, map to 2-char CODEs, then bulk pull):
 #   Stage 1 pulls the construction registered-contract universe (FY2021-2025).
-#   Stage 2a DISCOVERS the spending_category code at runtime (no guessing).
-#   Stage 2b pulls Spending in BULK, filtered AT THE SOURCE by that discovered
-#   category code so the volume is tractable (tens of thousands of rows per fiscal
-#   year, not the ~3.2M citywide). For each fiscal year it POSTs Spending with
-#   search_criteria {spending_category=<DISCOVERED_CODE>, fiscal_year=FY}, pages
-#   in 20000-row chunks, dedupes on document_id, and buckets every check by
+#   Stage 2a DISCOVERS the spending_category NAME distribution at runtime (the
+#   response rows carry the human-readable NAME, e.g. "Capital Contracts").
+#   Stage 2b maps each discovered NAME to its confirmed 2-char CODE and pulls
+#   Spending in BULK, filtered AT THE SOURCE by that CODE, so the volume is
+#   tractable. For each (code, fiscal_year) it POSTs Spending with
+#   search_criteria {spending_category=<CODE>, fiscal_year=FY}, pages in
+#   20000-row chunks, dedupes on document_id, and buckets every check by
 #   contract_id, keeping only the contract_ids that exist in the Stage-1 universe.
-#   The bulk pull runs in a few minutes.
+#   Results across all mapped codes are UNIONed (a check seen under two codes is
+#   counted once via the per-contract bucket). The bulk pull can run several
+#   minutes (Capital Contracts alone is ~150K rows/FY, ~8 pages/FY at 20000).
 #
-#   CATEGORY CODE -- SELF-DISCOVERED, NOT GUESSED (Stage 2a):
+#   THE FILTER TRAP (THE FIX):
 #   The Spending API filter field is `spending_category`. In the API config
 #   (source/web/.../checkbook_api/src/config/spending.json) it maps to
 #   `spending_category_code@checkbook:spending_category_subven` AND it carries a
 #   hard validation: {"valueType":"value","dataType":"text","maxLength":"2"}.
-#   So the value is a TWO-character CODE, never the word "Contract" (the live run
-#   failed with "Provided value 'Contract' ... exceeds maximum allowed '2'
-#   characters."). Live POSTs confirmed only spending_category=ts -> Total and
-#   cc -> Capital. Every guessed candidate for the id-1 "Contract" (expense) code
-#   -- c, ec, ct, co, cn, "1" -- returned record_count=0, so the real code is
-#   some other 2-char value that is NOT in the open-source repo and could not be
-#   read cleanly from the live API.
+#   So the FILTER value must be a TWO-character CODE. BUT the discovery rows
+#   return the human-readable category NAME (e.g. "Capital Contracts"), not the
+#   code. Passing the NAME as the filter is rejected (record_count=null,
+#   "exceeds maximum allowed '2' characters"). That is exactly why the last bulk
+#   pull failed: discovery captured NAMEs and fed them straight to the filter.
+#   The fix is the CATEGORY_NAME_TO_CODE map below: discovered NAME -> 2-char
+#   CODE. Confirmed by live POST: "cc" = Capital Contracts, "ts" = Total. The
+#   id-1 "Contracts" (expense) NAME has NO confirmed 2-char code yet, so when it
+#   is discovered it is logged as unmapped and that slice is skipped.
 #
-#   Rather than guess, Stage 2a LEARNS the code from real check rows. The Spending
-#   response can return a `spending_category` column carrying the code that the
-#   row was filed under. So we sample a handful of KNOWN-GOOD universe contracts
-#   (the 15-25 largest in-scope contracts, which are the most likely to have
-#   disbursements), POST Spending per-contract by contract_id (the proven join:
+#   Stage 2a LEARNS the NAMEs from real check rows: sample the largest in-scope
+#   universe contracts, POST Spending per contract_id (the proven join:
 #   Spending.contract_id == Contracts.prime_contract_id) requesting the
-#   spending_category column, and tally the spending_category codes that appear on
-#   the returned check rows. The most common non-empty code IS the Contract/
-#   expense code. DISCOVERED_CODE is set to that winner and handed to Stage 2b.
+#   spending_category column, and tally the NAMEs the returned check rows carry.
+#   For the current data this yields {"Capital Contracts": 422, "Contracts": 62},
+#   which maps to codes ["cc"] ("Contracts" skipped, no confirmed code).
 #   If per-contract sampling yields no rows, a defensive secondary pass does ONE
 #   no-category Spending sample (fiscal_year=2024) and reads the spending_category
-#   of whichever returned rows fall inside our universe. If nothing is learned at
-#   all, the bulk pull is skipped and the file is still written (every contract
-#   stays searchable with paid_to_date). meta records discovered_category_code,
-#   discovery_sample_size, discovery_codes_seen (the full tally), and
-#   contracts_with_dated_payments so the run log explains itself.
+#   of whichever returned rows fall inside our universe. If nothing maps at all,
+#   the bulk pull is skipped and the file is still written (every contract stays
+#   searchable with paid_to_date). meta records discovered_category_names,
+#   category_codes_used, unmapped_category_names_skipped, discovery_sample_size,
+#   per-(code,FY) record_count/kept, and contracts_with_dated_payments so the run
+#   log explains itself.
 #
 #   JOIN KEY: on Spending, the contract_id response column maps to
 #   `reference_document_number`; on Contracts, prime_contract_id maps to
@@ -101,6 +104,25 @@ jobs:
           # guessed: Stage 2a learns it from real check rows (see header). The
           # bulk pull in Stage 2b uses whatever code discovery returns.
           CATEGORY_FIELD = "spending_category"
+
+          # ---- NAME -> 2-CHAR CODE MAP (THE FIX) ------------------------------
+          # Stage 2a discovery reads the human-readable category NAME off the
+          # returned check rows (the response carries the NAME, e.g.
+          # "Capital Contracts", not the 2-char code). But the bulk Stage 2b
+          # spending_category FILTER value is validated maxLength=2, so a NAME is
+          # rejected (record_count=null, "exceeds maximum allowed '2' characters").
+          # So we MAP each discovered NAME to its confirmed 2-char CODE and bulk-
+          # pull with the CODE. Confirmed by live POST: "cc" = Capital Contracts,
+          # "ts" = Total. "Contracts" (the id-1 expense category) has NO confirmed
+          # code yet -- when a discovered NAME is absent from this map it is logged
+          # as unmapped and that slice is skipped (only that slice). Add codes here
+          # as they are confirmed (e.g. "Contracts": "<2-char code>").
+          CATEGORY_NAME_TO_CODE = {
+              "Capital Contracts": "cc",
+              "Total": "ts",
+              # "Contracts": "<unknown>",   # id-1 expense; code not yet confirmed
+          }
+
           DISCOVERY_SAMPLE_TARGET = 20   # how many largest in-scope contracts to sample for discovery
           DISCOVERY_SAMPLE_MIN    = 15   # floor; sample is min(available, target), >= this when possible
           DISCOVERY_PER_CONTRACT_MAX = 25  # check rows to read per sampled contract (enough to see the code)
@@ -394,17 +416,19 @@ jobs:
                           key=lambda kv: -to_int_amount(c(kv[1], "prime_contract_current_amount")))
 
           # =================================================================
-          # STAGE 2 - discover the spending_category code (2a), then BULK pull (2b).
+          # STAGE 2 - discover the spending_category NAMEs (2a), then BULK pull (2b).
           #
           # Stage 2a samples KNOWN-GOOD universe contracts, POSTs Spending per
           # contract_id requesting the spending_category column, and tallies the
-          # codes the real check rows carry; the most common non-empty code is the
-          # Contract/expense code (DISCOVERED_CODE). Stage 2b uses DISCOVERED_CODE
-          # as the source-side spending_category filter for the per-FY paged bulk
-          # pull, dedupes on document_id, buckets every check by contract_id, and
-          # keeps only contract_ids in the Stage-1 universe (universe_ids). The API
-          # record_count and the kept-row count are logged per FY. If discovery
-          # learns nothing, the bulk pull is skipped (file still written).
+          # NAMEs the real check rows carry (e.g. "Capital Contracts"). Stage 2b
+          # maps each discovered NAME to its confirmed 2-char CODE via
+          # CATEGORY_NAME_TO_CODE, then uses each CODE as the source-side
+          # spending_category filter for the per-(code,FY) paged bulk pull, dedupes
+          # on document_id, buckets every check by contract_id, and keeps only
+          # contract_ids in the Stage-1 universe (universe_ids); results across
+          # codes are unioned. The API record_count and kept-row count are logged
+          # per (code, FY). NAMEs with no confirmed code are logged as unmapped and
+          # skipped. If nothing maps, the bulk pull is skipped (file still written).
           #
           # SCOPE (separate concern): which contracts are MARKED as carrying dated
           # coverage / drawn with a curve is the owner's rule -- value >=
@@ -501,7 +525,7 @@ jobs:
           # capped at DISCOVERY_SAMPLE_TARGET. `ranked` is already amount-desc.
           discovery_sample = [(cid, r) for cid, r in ranked if in_scope(r)][:DISCOVERY_SAMPLE_TARGET]
           discovery_sample_size = len(discovery_sample)
-          discovery_codes = {}        # spending_category code -> count of rows seen carrying it
+          discovery_codes = {}        # spending_category NAME -> count of rows seen carrying it
           discovery_rows_seen = 0     # total check rows read across the sample
           discovery_contracts_with_rows = 0
 
@@ -572,107 +596,134 @@ jobs:
               log("  defensive sample: distinct spending_category values seen=%s; "
                   "universe-matching codes=%s" % (all_codes_seen, discovery_codes))
 
-          # The winner: most common non-empty code across the sample.
-          DISCOVERED_CODE = None
-          if discovery_codes:
-              DISCOVERED_CODE = max(discovery_codes.items(), key=lambda kv: kv[1])[0]
-          log("discovered spending_category codes: %s" % (discovery_codes or "{}"))
-          log("DISCOVERED_CODE = %s (from %d sampled contracts, %d rows seen, "
-              "%d contracts with rows)"
-              % (DISCOVERED_CODE, discovery_sample_size, discovery_rows_seen,
+          # `discovery_codes` is the tally of spending_category NAMES seen on our
+          # universe's check rows (e.g. {"Capital Contracts": 422, "Contracts": 62}).
+          # Rank the distinct NAMES by frequency (desc), then map each NAME to its
+          # 2-char CODE via CATEGORY_NAME_TO_CODE. Names with a mapped code form the
+          # dedup'd CODE set to bulk-pull; names with no confirmed code are logged as
+          # unmapped and skipped (only that slice). For the current data this yields
+          # ["cc"]: "Capital Contracts" is dominant and maps to "cc"; "Contracts" has
+          # no confirmed code yet, so it is skipped.
+          ranked_names = sorted(discovery_codes.items(), key=lambda kv: -kv[1])
+          category_codes_to_pull = []     # dedup'd, frequency-ordered list of CODES
+          unmapped_names = []             # [(name, count), ...] names with no code
+          for nm, cnt in ranked_names:
+              code = CATEGORY_NAME_TO_CODE.get(nm)
+              if code is None:
+                  unmapped_names.append([nm, cnt])
+                  continue
+              if code not in category_codes_to_pull:
+                  category_codes_to_pull.append(code)
+
+          log("discovered spending_category NAME distribution (by frequency): %s"
+              % ([[n, c] for n, c in ranked_names] or "{}"))
+          log("mapped CODES to bulk-pull (dedup'd, in frequency order): %s"
+              % (category_codes_to_pull or "[]"))
+          if unmapped_names:
+              log("UNMAPPED category names skipped (no confirmed 2-char code): %s"
+                  % unmapped_names)
+          log("discovery summary: %d sampled contracts, %d rows seen, "
+              "%d contracts with rows"
+              % (discovery_sample_size, discovery_rows_seen,
                  discovery_contracts_with_rows))
 
           # -----------------------------------------------------------------
-          # STAGE 2b - BULK Spending pull using DISCOVERED_CODE.
+          # STAGE 2b - BULK Spending pull using the MAPPED 2-char CODES.
           #
-          # Per-FY paged Spending filtered at the source by the discovered
-          # spending_category code, deduped on document_id, bucketed by
-          # contract_id, kept only for universe contract_ids. If discovery learned
-          # nothing, the bulk pull is skipped (the file is still written below with
-          # every contract searchable and paid_to_date populated).
+          # For each code in category_codes_to_pull (discovered NAMEs mapped via
+          # CATEGORY_NAME_TO_CODE), per-FY paged Spending filtered at the source by
+          # that code, deduped on document_id, bucketed by contract_id, kept only
+          # for universe contract_ids; results across codes are unioned. If no name
+          # mapped to a code, the bulk pull is skipped (the file is still written
+          # below with every contract searchable and paid_to_date populated).
           # -----------------------------------------------------------------
           payments = {}              # contract_id -> {document_id -> (date, amount)}
-          spending_rows_seen = 0     # checks returned across all bulk pages
+          spending_rows_seen = 0     # checks returned across all bulk pages (all codes)
           spending_rows_kept = 0     # deduped checks attributed to a universe contract
           per_fy_stats = []          # [(code, fy, record_count, seen, kept), ...]
-          category_code_used = DISCOVERED_CODE
+          category_codes_used = list(category_codes_to_pull)   # codes actually pulled
 
-          if DISCOVERED_CODE is None:
-              log("WARNING: no spending_category code could be discovered. Skipping "
-                  "the bulk pull; dated streams will be empty, but every contract "
-                  "still becomes a searchable record with paid_to_date below.")
+          if not category_codes_to_pull:
+              log("WARNING: no spending_category code could be mapped from the "
+                  "discovered names. Skipping the bulk pull; dated streams will be "
+                  "empty, but every contract still becomes a searchable record with "
+                  "paid_to_date below.")
           else:
-              log("=== STAGE 2b: bulk Spending pull with spending_category=%s ==="
-                  % DISCOVERED_CODE)
-              for fy in FYS:
-                  log("--- Spending (code=%s) FY%d ---" % (DISCOVERED_CODE, fy))
-                  rf = 1
-                  page = 0
-                  fy_seen = 0
-                  fy_kept = 0
-                  fy_record_count = None
-                  while True:
-                      xml = build_request_xml(
-                          "Spending", spending_cols,
-                          [(CATEGORY_FIELD, "value", DISCOVERED_CODE),
-                           ("fiscal_year", "value", str(fy))],
-                          rf, max_records=SPENDING_PAGE)
-                      try:
-                          resp = post(xml)
-                      except Exception as e:
-                          log("  code=%s FY%d page rf=%d POST raised, stopping FY: %s"
-                              % (DISCOVERED_CODE, fy, rf, e))
-                          break
-                      if response_is_len_cap_failure(resp):
-                          # Should never happen (code is <=2 chars); guard anyway.
-                          log("  code=%s rejected by the 2-char cap; stopping FY."
-                              % DISCOVERED_CODE)
-                          break
-                      if fy_record_count is None:
-                          fy_record_count = read_record_count(resp)
-                      recs, _ = parse_records(resp)
-                      if recs is None:
-                          log("  code=%s FY%d page rf=%d returned no parseable "
-                              "records, stopping FY" % (DISCOVERED_CODE, fy, rf))
-                          break
-                      got = len(recs)
-                      for r in recs:
-                          spending_rows_seen += 1
-                          fy_seen += 1
-                          rcid = c(r, "contract_id")
-                          if not rcid or rcid not in universe_ids:
-                              continue   # not one of our construction contracts
-                          doc = c(r, "document_id")
-                          if not doc:
-                              doc = "%s|%s|%s" % (rcid, c(r, "issue_date"), c(r, "check_amount"))
-                          bucket = payments.setdefault(rcid, {})
-                          if doc in bucket:
-                              continue   # re-reported check: count once
-                          d = parse_date(c(r, "issue_date"))
-                          amt = to_int_amount(c(r, "check_amount"))
-                          bucket[doc] = (d, amt)
-                          spending_rows_kept += 1
-                          fy_kept += 1
-                      page += 1
-                      if got < SPENDING_PAGE:
-                          break
-                      rf += SPENDING_PAGE
+              # Bulk-pull EACH mapped code across all fiscal years and UNION the
+              # results (dedupe on document_id is global via the per-contract
+              # bucket, so a check seen under two codes is counted once).
+              for code in category_codes_to_pull:
+                  log("=== STAGE 2b: bulk Spending pull with spending_category=%s ==="
+                      % code)
+                  for fy in FYS:
+                      log("--- Spending (code=%s) FY%d ---" % (code, fy))
+                      rf = 1
+                      page = 0
+                      fy_seen = 0
+                      fy_kept = 0
+                      fy_record_count = None
+                      while True:
+                          xml = build_request_xml(
+                              "Spending", spending_cols,
+                              [(CATEGORY_FIELD, "value", code),
+                               ("fiscal_year", "value", str(fy))],
+                              rf, max_records=SPENDING_PAGE)
+                          try:
+                              resp = post(xml)
+                          except Exception as e:
+                              log("  code=%s FY%d page rf=%d POST raised, stopping FY: %s"
+                                  % (code, fy, rf, e))
+                              break
+                          if response_is_len_cap_failure(resp):
+                              # Should never happen (code is <=2 chars); guard anyway.
+                              log("  code=%s rejected by the 2-char cap; stopping FY."
+                                  % code)
+                              break
+                          if fy_record_count is None:
+                              fy_record_count = read_record_count(resp)
+                          recs, _ = parse_records(resp)
+                          if recs is None:
+                              log("  code=%s FY%d page rf=%d returned no parseable "
+                                  "records, stopping FY" % (code, fy, rf))
+                              break
+                          got = len(recs)
+                          for r in recs:
+                              spending_rows_seen += 1
+                              fy_seen += 1
+                              rcid = c(r, "contract_id")
+                              if not rcid or rcid not in universe_ids:
+                                  continue   # not one of our construction contracts
+                              doc = c(r, "document_id")
+                              if not doc:
+                                  doc = "%s|%s|%s" % (rcid, c(r, "issue_date"), c(r, "check_amount"))
+                              bucket = payments.setdefault(rcid, {})
+                              if doc in bucket:
+                                  continue   # re-reported / cross-code check: count once
+                              d = parse_date(c(r, "issue_date"))
+                              amt = to_int_amount(c(r, "check_amount"))
+                              bucket[doc] = (d, amt)
+                              spending_rows_kept += 1
+                              fy_kept += 1
+                          page += 1
+                          if got < SPENDING_PAGE:
+                              break
+                          rf += SPENDING_PAGE
+                          time.sleep(SPENDING_PACE)
+                          if page >= SPENDING_PAGE_CAP:
+                              log("  WARNING page cap (%d) hit for code=%s FY%d; "
+                                  "record_count=%s" % (SPENDING_PAGE_CAP, code, fy, fy_record_count))
+                              break
+                      log("  code=%s FY%d: record_count=%s seen=%d kept=%d "
+                          "(running kept=%d)"
+                          % (code, fy, fy_record_count, fy_seen, fy_kept,
+                             spending_rows_kept))
+                      per_fy_stats.append([code, fy, fy_record_count, fy_seen, fy_kept])
                       time.sleep(SPENDING_PACE)
-                      if page >= SPENDING_PAGE_CAP:
-                          log("  WARNING page cap (%d) hit for code=%s FY%d; "
-                              "record_count=%s" % (SPENDING_PAGE_CAP, DISCOVERED_CODE, fy, fy_record_count))
-                          break
-                  log("  code=%s FY%d: record_count=%s seen=%d kept=%d "
-                      "(running kept=%d)"
-                      % (DISCOVERED_CODE, fy, fy_record_count, fy_seen, fy_kept,
-                         spending_rows_kept))
-                  per_fy_stats.append([DISCOVERED_CODE, fy, fy_record_count, fy_seen, fy_kept])
-                  time.sleep(SPENDING_PACE)
 
           contracts_swept = len(payments)
-          log("Bulk Spending complete: category_code_used=%s seen=%d kept=%d "
+          log("Bulk Spending complete: category_codes_used=%s seen=%d kept=%d "
               "contracts_with_checks=%d (universe=%d)"
-              % (category_code_used, spending_rows_seen, spending_rows_kept,
+              % (category_codes_used, spending_rows_seen, spending_rows_kept,
                  contracts_swept, len(universe_ids)))
 
           # =================================================================
@@ -885,11 +936,18 @@ jobs:
                                  "the amount floor registered since the scope year that are open or "
                                  "closed within the past year"),
               "category_field": CATEGORY_FIELD,
-              "discovered_category_code": DISCOVERED_CODE,
+              # discovered_category_names: the spending_category NAME distribution
+              # read off our universe's check rows during Stage 2a (NAME -> count).
+              "discovered_category_names": discovery_codes,
               "discovery_sample_size": discovery_sample_size,
-              "discovery_codes_seen": discovery_codes,
               "discovery_rows_seen": discovery_rows_seen,
-              "category_code_used": category_code_used,
+              # category_codes_used: the dedup'd 2-char CODES actually bulk-pulled
+              # (each discovered NAME mapped via CATEGORY_NAME_TO_CODE).
+              "category_codes_used": category_codes_used,
+              # unmapped_category_names_skipped: discovered NAMEs with no confirmed
+              # 2-char code; their slice of the bulk pull was skipped.
+              "unmapped_category_names_skipped": unmapped_names,
+              "category_name_to_code_map": CATEGORY_NAME_TO_CODE,
               "spending_rows_per_fy": [
                   {"code": s[0], "fiscal_year": s[1], "record_count": s[2],
                    "rows_seen": s[3], "rows_kept": s[4]}
@@ -951,8 +1009,10 @@ jobs:
               payload = json.dumps(out, separators=(",", ":"), ensure_ascii=False)
 
           log("=== SUMMARY ===")
-          log("discovered_category_code=%s discovery_sample_size=%d discovery_codes_seen=%s"
-              % (DISCOVERED_CODE, discovery_sample_size, discovery_codes or "{}"))
+          log("discovered_category_names=%s -> codes_pulled=%s unmapped_skipped=%s "
+              "(discovery_sample_size=%d)"
+              % (discovery_codes or "{}", category_codes_used or "[]",
+                 unmapped_names or "[]", discovery_sample_size))
           log("contracts=%d in_scope=%d dated=%d swept=%d seen=%d kept=%d recon=%s bytes=%d"
               % (len(records), contracts_in_scope, contracts_with_dated_payments,
                  contracts_swept, spending_rows_seen,
