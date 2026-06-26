@@ -23,7 +23,7 @@ jobs:
         run: |
           mkdir -p data
           curl -sf --retry 3 -G "https://data.cityofnewyork.us/resource/qyyg-4tf5.json" \
-            --data-urlencode "\$select=pin,request_id,start_date,agency_name,category_description,selection_method_description,short_title,vendor_name,contract_amount" \
+            --data-urlencode "\$select=pin,request_id,start_date,due_date,agency_name,category_description,selection_method_description,short_title,vendor_name,contract_amount" \
             --data-urlencode "\$where=starts_with(category_description,'Construction')" \
             --data-urlencode "\$order=start_date DESC,request_id" \
             --data-urlencode "\$limit=50000" \
