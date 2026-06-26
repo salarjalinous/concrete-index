@@ -342,11 +342,11 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <h3>Dates and what they mean</h3>
         <p>The <strong>scheduled end</strong> is the contract's planned end date as registered. It is the schedule on the paper, not a record of actual completion; a contract can run past it, finish early, or sit open without the published record changing. Read it as the original plan. The <strong>bid due date</strong> is a best-effort join to the City Record solicitation that preceded the award, matched where a clean link exists; it is blank where no match was found, so its coverage is partial by construction.</p>
         <h3>Amounts and percent paid</h3>
-        <p><strong>Original</strong> is the contract value at registration; <strong>current</strong> reflects registered modifications. <strong>Paid to date</strong> is the contract's spent-to-date figure from the City's contract record, and <strong>percent paid</strong> divides paid-to-date by the current amount, falling back to original. A contract can read above one hundred percent where modifications, retainage release, or rounding push cumulative payment past the registered amount; the page shows the figure as published rather than capping it.</p>
+        <p><strong>Original</strong> is the contract value at registration; <strong>current</strong> reflects registered modifications. <strong>Paid to date</strong> is the sum of the dated disbursements Checkbook NYC confirms for the contract, a floor on what has been paid rather than a full accounting, and <strong>percent paid</strong> divides that confirmed total by the current amount, falling back to original. The detail panel also carries the <strong>City contract record</strong> spent-to-date figure as a secondary line; it is the City's own running tally and can sit above the dated sum, for the reasons in the note below. A contract can read above one hundred percent where modifications, retainage release, or rounding push cumulative payment past the registered amount; the page shows the figure as published rather than capping it.</p>
         <h3>Payment velocity</h3>
         <p><strong>First-payment lag</strong> is the number of days from registration to the first disbursement. <strong>Days to fifty and ninety percent paid</strong> count from registration to the first day cumulative payment crosses that share of the contract amount; either reads as a dash when the contract has not reached that mark within the window the nightly job sweeps, which is the normal state for a young or slow-paying contract rather than a data gap. <strong>Payment count</strong> is the number of distinct disbursements found.</p>
         <h3>Two payment figures that can differ</h3>
-        <p>The page carries two views of money paid. <strong>Paid to date</strong> is the contract-domain spent-to-date. The <strong>spend curve</strong> and payment count are built from individual Checkbook NYC disbursements, summed. These can legitimately differ: checks that fall outside the swept fiscal years are not in the sum, so the dated total can understate lifetime spend, while the contract-domain figure carries the full running tally. The nightly job reports how closely the two agree.</p>
+        <p>The page carries two views of money paid. <strong>Paid to date</strong>, the figure the table and percent paid both use, is the sum of individual Checkbook NYC disbursements with dates, the same series the <strong>spend curve</strong> and payment count are drawn from. The detail panel also shows the <strong>City contract record</strong> spent-to-date, the City's running tally. These can legitimately differ: checks that fall outside the swept fiscal years are not in the dated sum, so it can understate lifetime spend, while the City's running tally carries the full figure and can sit higher. The page leads with the dated sum because it is a confirmed floor; the nightly job reports how closely the two agree.</p>
         <h3>Where the payment timing comes from</h3>
         <p>Progress-payment timing is read from Checkbook NYC's Spending domain, scoped to each contract and deduped on the payment document so a re-reported check is not counted twice. Checkbook serves no cross-origin access, so this page reads a static file the nightly job writes rather than calling the payment ledger from the browser.</p>
         <h3>What is not here</h3>
@@ -484,7 +484,7 @@ function aggregate(contracts){
   for(var i=0;i<contracts.length;i++){
     var c = contracts[i];
     registered += denom(c);
-    paid += (+c.paid_to_date || 0);
+    paid += (+c.total_paid || 0);
     if(c.first_payment_lag_days !== null && c.first_payment_lag_days !== undefined) lags.push(+c.first_payment_lag_days);
   }
   return {
@@ -528,7 +528,7 @@ function rowHtml(c){
     '<td class="col-cat">' + esc(c.category || EN) + '</td>' +
     '<td class="num">' + (d > 0 ? fmtMoney(d) : '<span class="en">' + EN + '</span>') + '</td>' +
     '<td class="num amt">' + (c.current_amount > 0 ? fmtMoney(+c.current_amount) : '<span class="en">' + EN + '</span>') + '</td>' +
-    '<td class="num">' + (c.paid_to_date > 0 ? fmtMoney(+c.paid_to_date) : '<span class="en">' + EN + '</span>') + '</td>' +
+    '<td class="num">' + (c.total_paid > 0 ? fmtMoney(+c.total_paid) : '<span class="en">' + EN + '</span>') + '</td>' +
     '<td class="num"><span class="pill ' + pcls + '">' + fmtPct(pp) + '</span></td>' +
   '</tr>';
 }
@@ -560,13 +560,14 @@ function detailHtml(c){
       '<div class="dblock hl"><div class="db-head">Amounts</div><dl class="dl">' +
         '<dt>Original</dt><dd>' + fmtMoneyFull(+c.original_amount) + '</dd>' +
         '<dt>Current</dt><dd>' + fmtMoneyFull(d) + '</dd>' +
-        '<dt>Paid to date</dt><dd>' + fmtMoneyFull(+c.paid_to_date) + '</dd>' +
+        '<dt>Paid to date</dt><dd>' + fmtMoneyFull(+c.total_paid) + '</dd>' +
         '<dt>Percent paid</dt><dd>' + fmtPct(c.pct_paid_to_date) + '</dd>' +
+        '<dt>City contract record (spent to date)</dt><dd' + (!(c.paid_to_date > 0) ? ' class="en"' : '') + '>' + fmtMoneyFull(+c.paid_to_date) + '</dd>' +
       '</dl></div>' +
       '<div class="dblock"><div class="db-head">Payment velocity</div><dl class="dl">' + velRows + '</dl></div>' +
     '</div>' +
     chartBlock +
-    '<div class="detail-foot">Scheduled end is the planned end date as registered, not a record of actual completion. Days to 50% and 90% paid read as ' + EN + ' until cumulative payment crosses that share within the swept window. Percent paid divides paid-to-date by the current amount, falling back to original.</div>' +
+    '<div class="detail-foot">Paid to date is the confirmed dated disbursements found in Checkbook NYC, a floor on what has been paid. Percent paid divides that confirmed total by the current amount, falling back to original. The City contract record (spent to date) is the City\'s own running tally and can exceed the dated sum, as the methodology note explains. Scheduled end is the planned end date as registered, not a record of actual completion. Days to 50% and 90% paid read as ' + EN + ' until cumulative payment crosses that share within the swept window.</div>' +
   '</div></td></tr>';
 }
 
