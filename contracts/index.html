@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<link rel="canonical" href="https://concreteindex.co/contracts/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://concreteindex.co/contracts/">
+<meta property="og:image" content="https://concreteindex.co/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://concreteindex.co/og-image.png">
+<title>Contracts · The Concrete Index</title>
+<meta name="description" content="Search New York City construction contracts by ID, vendor, agency, or category, then open one contract to read its dates, amounts, payment velocity, and spend curve from the City's registered-contract and Checkbook spending records.">
+<meta property="og:title" content="The Concrete Index · Contracts">
+<meta property="og:description" content="Search registered NYC construction contracts and open one to read its dates, amounts, payment velocity, and spend curve.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23b5482a%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha384-bs/nf9FbdNouRbMiFcrcZfLXYPKiPaGVGplVbv7dLGECccEXDW+S3zjqSKR5ZEaD" crossorigin="anonymous"></script>
+<style>
+:root{
+  --paper:#fbf2ea; --surface:#fffaf4; --band:#f6ece2;
+  --ink:#22150e; --navy:#243b53; --muted:#6e5d52; --faint:#9b8979;
+  --line:#e4d4c5; --rule:#22150e;
+  --accent:#b5482a; --accent-soft:#f1d9cd; --steel:#2f5d8f;
+  --pos:#2f7d52; --neg:#a3302a; --radius:3px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Public Sans',-apple-system,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--steel);text-decoration:none}
+a:hover{text-decoration:underline}
+.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+.serif{font-family:'Source Serif 4',Georgia,serif}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+
+/* ---------- header ---------- */
+header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2px solid var(--ink)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:62px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:20px;letter-spacing:-.01em;color:var(--ink)}
+.brand svg{color:var(--navy);flex-shrink:0}
+.brand .tick{color:var(--accent)}
+.nav-links{display:flex;gap:17px;align-items:center;font-size:13.5px;font-weight:500}
+.nav-links a{color:var(--muted)}
+.nav-links a:hover{color:var(--ink);text-decoration:none}
+.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px}
+.badge-live{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--pos);background:rgba(47,125,82,.1);border:1px solid rgba(47,125,82,.34);border-radius:3px;padding:3px 9px}
+.badge-live .dot{width:6px;height:6px;border-radius:50%;background:var(--pos);animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ---------- release-series bar ---------- */
+.series-bar{background:var(--band);border-bottom:1px solid var(--line)}
+.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px 28px;max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.series-bar b{color:var(--ink);font-weight:600}
+.series-bar .sep{color:var(--faint);padding:0 12px}
+@media(max-width:720px){.series-bar .inner{white-space:normal}}
+
+/* ---------- hero ---------- */
+.hero{padding:46px 0 14px}
+.kicker{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:14px}
+.hero h1{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(32px,4.6vw,46px);line-height:1.06;letter-spacing:-.012em;max-width:840px;color:var(--ink)}
+.hero p.sub{margin-top:17px;font-size:16px;color:var(--muted);max-width:720px}
+.hero .asof{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--faint)}
+.hero .asof strong{color:var(--muted);font-weight:600}
+
+/* ---------- KPI tape ---------- */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:24px 0 8px;border-left:1px solid var(--line)}
+.kpi{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px 18px}
+.kpi.hl{border-top-color:var(--accent)}
+.kpi .k-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
+.kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--navy);line-height:1}
+.kpi.hl .k-value{color:var(--ink)}
+.kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:8px}
+
+/* ---------- section heads ---------- */
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:0}
+.sec-head h2{font-family:'Source Serif 4',Georgia,serif;font-size:21px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+.sec-head .cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em;text-align:right;white-space:nowrap}
+
+.grid{display:grid;gap:22px;padding:30px 0 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 22px;box-shadow:0 1px 0 rgba(34,21,14,.04)}
+.card .h-sub{font-size:12.5px;color:var(--muted);margin-top:9px;margin-bottom:18px;max-width:760px}
+.chart-box{position:relative;height:280px}
+.tnote{font-size:11.5px;line-height:1.55;color:var(--muted);margin-top:13px;padding-top:9px;border-top:1px solid var(--line)}
+
+/* ---------- search + controls ---------- */
+.search-row{padding:26px 0 4px}
+.search-box{position:relative;max-width:680px}
+.search-box input{width:100%;font-family:'IBM Plex Mono',monospace;font-size:16px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-bottom:2px solid var(--ink);border-radius:var(--radius);padding:13px 42px 13px 14px}
+.search-box input::placeholder{color:var(--faint)}
+.search-box input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.search-box .sx{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--faint);background:none;border:0;cursor:pointer;padding:4px}
+.search-box .sx:hover{color:var(--accent)}
+.filters{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;padding:18px 0 6px}
+.ctrl{display:flex;flex-direction:column;gap:7px}
+.ctrl label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
+select.sel{font-family:'Public Sans',sans-serif;font-weight:500;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-bottom:2px solid var(--ink);border-radius:var(--radius);padding:9px 36px 9px 12px;cursor:pointer;min-width:210px;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23b5482a' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+select.sel:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.match-note{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);padding:6px 0 0}
+.match-note b{color:var(--ink);font-weight:600}
+
+/* ---------- tables ---------- */
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);padding:0 10px 8px;border-bottom:1px solid var(--ink)}
+td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+td.num,th.num{text-align:right}
+td.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+td .t-title{font-weight:500;color:var(--ink)}
+td .t-sub{font-size:12px;color:var(--muted);margin-top:3px}
+.cid{font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap}
+.amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.crow{cursor:pointer}
+tr.crow:hover td{background:var(--band)}
+tr.crow.open td{background:var(--band)}
+tr.crow td .open-cue{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent);margin-left:8px}
+.en{color:var(--faint)}
+.empty-row td{padding:30px 10px;text-align:center;color:var(--muted)}
+
+/* % paid pill */
+.pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:11.5px;font-weight:600;border-radius:3px;padding:2px 7px;letter-spacing:.02em}
+.pill.lo{color:var(--steel);background:#e4eef6}
+.pill.mid{color:var(--ink);background:var(--accent-soft)}
+.pill.hi{color:var(--pos);background:rgba(47,125,82,.12)}
+
+/* ---------- detail panel ---------- */
+tr.detail td{padding:0;border-bottom:1px solid var(--ink);background:var(--band)}
+.detail-inner{padding:22px 18px 26px}
+.detail-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:12px}
+.detail-head .dh-name{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:21px;letter-spacing:-.01em;color:var(--ink)}
+.detail-head .dh-id{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.06em;color:var(--paper);background:var(--navy);border-radius:3px;padding:3px 8px;white-space:nowrap}
+.detail-meta{font-size:13px;color:var(--muted);margin-top:6px}
+.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:18px;border-left:1px solid var(--line)}
+@media(max-width:860px){.detail-grid{grid-template-columns:1fr}.detail-grid .dblock{border-right:0}}
+.dblock{border-right:1px solid var(--line);border-top:2px solid var(--ink);background:var(--surface);padding:15px 16px 16px}
+.dblock.hl{border-top-color:var(--accent)}
+.dblock .db-head{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);margin-bottom:11px}
+.dl{display:grid;grid-template-columns:auto 1fr;gap:7px 14px;font-size:13px}
+.dl dt{color:var(--muted)}
+.dl dd{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink);text-align:right}
+.dl dd.en{font-weight:500}
+.detail-chart{margin-top:20px}
+.detail-chart .dc-head{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);margin-bottom:10px}
+.detail-chart .chart-box{height:240px}
+.detail-none{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);background:var(--surface);border-left:3px solid var(--faint);padding:12px 16px}
+.detail-foot{font-size:11.5px;line-height:1.55;color:var(--muted);margin-top:16px;padding-top:10px;border-top:1px solid var(--line)}
+
+/* ---------- reading box ---------- */
+.reading{background:var(--band);border-left:3px solid var(--accent);border-radius:0;padding:16px 20px;margin-top:22px;font-size:14px;color:var(--muted);max-width:900px}
+.reading strong{color:var(--ink);font-weight:600}
+
+/* ---------- methodology ---------- */
+.method{padding:44px 0 10px}
+.method h2{font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:700;letter-spacing:-.012em;color:var(--ink)}
+.method-body{margin-top:24px}
+.method h3{font-family:'Public Sans',sans-serif;font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin:24px 0 6px;color:var(--ink)}
+.method p{font-size:14px;color:var(--muted);max-width:820px}
+.method p+p{margin-top:8px}
+.method code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:var(--band);padding:1px 5px;border-radius:3px;border:1px solid var(--line)}
+.cov-list{list-style:none;margin:14px 0 0;padding:0}
+.cov-list li{font-size:13px;color:var(--muted);padding:9px 0 9px 16px;border-top:1px solid var(--line);position:relative}
+.cov-list li:before{content:"";position:absolute;left:0;top:15px;width:5px;height:5px;background:var(--accent);border-radius:1px}
+.cov-list li:last-child{border-bottom:1px solid var(--line)}
+
+/* ---------- footer ---------- */
+footer{margin-top:54px;background:var(--band);border-top:2px solid var(--ink);padding:30px 0 40px;font-size:13px;color:var(--muted)}
+footer a{color:var(--steel)}
+footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer .brand{font-size:17px;color:var(--ink)}
+footer .brand svg{color:var(--navy)}
+footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em}
+
+#loader{padding:80px 0;text-align:center;color:var(--muted)}
+.spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#error{display:none;padding:60px 24px;text-align:center;color:var(--muted)}
+#app{display:none}
+@media(max-width:880px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .kpi:nth-child(2){border-right:0}
+}
+@media(max-width:620px){
+  .kpis{grid-template-columns:1fr 1fr}
+  .kpi .k-value{font-size:24px}
+  .hero{padding-top:34px}
+  .wrap{padding:0 18px}
+  .series-bar .inner{padding-left:18px;padding-right:18px}
+  select.sel{min-width:0;width:100%}
+  .col-cat,.th-cat{display:none}
+}
+.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
+@media(max-width:1180px){
+  .menu-btn{display:block}
+  .nav{position:relative}
+  .nav-links{display:none;position:absolute;top:61px;left:-28px;right:-28px;background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60}
+  .nav-links.open{display:flex}
+}
+@media (prefers-reduced-motion: reduce){
+  .badge-live .dot{animation:none}
+  .spinner{animation:none}
+  *{scroll-behavior:auto}
+}
+@media print{
+  header,.series-bar,.badge-live,.search-row,.filters,.menu-btn{display:none !important}
+  body{background:#fff;color:#000}
+  .card{background:#fff !important;box-shadow:none}
+  footer{background:#fff;border-top:1px solid #000;color:#000}
+  footer a,a{color:#000}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="brand">
+      <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
+      <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
+    </div>
+    <button class="menu-btn" aria-label="Menu" aria-expanded="false" onclick="const o=this.nextElementSibling.classList.toggle('open');this.setAttribute('aria-expanded',o)">&#9776;</button>
+    <nav class="nav-links">
+      <a href="/pipeline/">Pipeline</a>
+      <a href="/solicitations/">Bidding</a>
+      <a href="/awarded/">Awarded</a>
+      <a href="/funnel/">Funnel</a>
+      <a href="/agency/">Agencies</a>
+      <a href="/regional/">SCA &amp; MTA</a>
+      <a href="/competitive/">Contractors</a>
+      <a href="/contracts/" class="active">Contracts</a>
+      <a href="/analysis/">Analysis</a>
+      <a href="/briefing/">Briefing</a>
+      <a href="/about/">About</a>
+      <span class="badge-live"><span class="dot"></span>Live data</span>
+    </nav>
+  </div>
+</header>
+
+<div class="series-bar">
+  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-CONTRACTS</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CITY RECORD REGISTRATIONS (qyyg-4tf5) · CHECKBOOK NYC SPENDING, NIGHTLY</b><span class="sep">·</span>UPDATED&nbsp;·&nbsp;<b id="series-updated">&ndash;</b><span class="sep">·</span>AS OF&nbsp;·&nbsp;<b id="series-asof">&ndash;</b></div>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="kicker">Contract Search</div>
+    <h1>One contract at a time.</h1>
+    <p class="sub">This page searches NYC public construction at the level of a single registered contract. Search by contract number, vendor, agency, or trade, then open a row to read its registered dates and amounts, its payment velocity, and the cumulative spend curve drawn from the City's payment ledger. There is no location field: the published registration and payment records do not carry one.</p>
+    <p class="asof" id="asof">Loading the contract search index&hellip;</p>
+  </div>
+</div>
+
+<div id="loader" class="wrap">
+  <div class="spinner"></div>
+  Loading the contract search index&hellip;
+</div>
+
+<div id="error" class="wrap">
+  <p><strong>Couldn't load the contract index.</strong></p>
+  <p style="margin-top:6px">The nightly search file may be momentarily unavailable. Please refresh the page to try again.</p>
+</div>
+
+<main id="app" class="wrap">
+
+  <section class="kpis" id="kpis">
+    <div class="kpi hl"><div class="k-label">Contracts indexed</div><div class="k-value" id="kpi-count">&ndash;</div><div class="k-note" id="kpi-count-note"></div></div>
+    <div class="kpi"><div class="k-label">Registered value</div><div class="k-value" id="kpi-registered">&ndash;</div><div class="k-note">current (registered) amounts, summed</div></div>
+    <div class="kpi"><div class="k-label">Paid to date</div><div class="k-value" id="kpi-paid">&ndash;</div><div class="k-note" id="kpi-paid-note"></div></div>
+    <div class="kpi"><div class="k-label">Median first-payment lag</div><div class="k-value" id="kpi-lag">&ndash;</div><div class="k-note">days from registration to first check</div></div>
+  </section>
+
+  <section class="search-row">
+    <div class="sec-head"><h2>Search the contract record</h2><span class="cap" id="search-cap">FY2021&ndash;2025</span></div>
+    <div style="padding-top:18px">
+      <div class="search-box">
+        <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Search contract ID, vendor, agency, or category&hellip;" aria-label="Search contracts">
+        <button class="sx" id="clear-q" type="button" aria-label="Clear search" hidden>&times;</button>
+      </div>
+      <div class="filters">
+        <div class="ctrl">
+          <label for="f-agency">Agency</label>
+          <select id="f-agency" class="sel" aria-label="Filter by agency"></select>
+        </div>
+        <div class="ctrl">
+          <label for="f-cat">Category</label>
+          <select id="f-cat" class="sel" aria-label="Filter by category"></select>
+        </div>
+        <div class="ctrl">
+          <label for="f-sort">Sort by</label>
+          <select id="f-sort" class="sel" aria-label="Sort results">
+            <option value="current_amount">Current amount, high to low</option>
+            <option value="pct_paid_to_date">Percent paid, high to low</option>
+            <option value="first_payment_lag_days">First-payment lag, slow to fast</option>
+            <option value="registration_date">Registration date, newest first</option>
+          </select>
+        </div>
+      </div>
+      <div class="match-note" id="match-note"></div>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="card" style="padding-top:16px">
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th>Contract</th>
+            <th>Vendor</th>
+            <th>Agency</th>
+            <th class="th-cat col-cat">Category</th>
+            <th class="num">Registered</th>
+            <th class="num">Current amt.</th>
+            <th class="num">Paid to date</th>
+            <th class="num">% paid</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="tnote" id="tbl-note"></div>
+    </div>
+  </section>
+
+  <section class="method" id="methodology">
+    <div class="card">
+      <div class="sec-head"><h2>Contract search &middot; Methodology &amp; definitions</h2><span class="cap">SERIES NOTES</span></div>
+      <div class="method-body">
+        <div class="reading">
+          <strong>What this is.</strong> A searchable index of registered New York City construction contracts, each joined to its payment history. Every figure comes from public records and is rebuilt nightly. The page reads one contract at a time and does not rate a vendor or predict whether a contract will finish.
+        </div>
+        <h3>The universe</h3>
+        <p>The index covers construction contracts registered with the City, drawn from the City Record registration notices (dataset <code>qyyg-4tf5</code>) for fiscal years 2021 through 2025. A contract enters the index when it is registered; the date row leads with registration because that is the point at which the obligation becomes a public record.</p>
+        <h3>Dates and what they mean</h3>
+        <p>The <strong>scheduled end</strong> is the contract's planned end date as registered. It is the schedule on the paper, not a record of actual completion; a contract can run past it, finish early, or sit open without the published record changing. Read it as the original plan. The <strong>bid due date</strong> is a best-effort join to the City Record solicitation that preceded the award, matched where a clean link exists; it is blank where no match was found, so its coverage is partial by construction.</p>
+        <h3>Amounts and percent paid</h3>
+        <p><strong>Original</strong> is the contract value at registration; <strong>current</strong> reflects registered modifications. <strong>Paid to date</strong> is the contract's spent-to-date figure from the City's contract record, and <strong>percent paid</strong> divides paid-to-date by the current amount, falling back to original. A contract can read above one hundred percent where modifications, retainage release, or rounding push cumulative payment past the registered amount; the page shows the figure as published rather than capping it.</p>
+        <h3>Payment velocity</h3>
+        <p><strong>First-payment lag</strong> is the number of days from registration to the first disbursement. <strong>Days to fifty and ninety percent paid</strong> count from registration to the first day cumulative payment crosses that share of the contract amount; either reads as a dash when the contract has not reached that mark within the window the nightly job sweeps, which is the normal state for a young or slow-paying contract rather than a data gap. <strong>Payment count</strong> is the number of distinct disbursements found.</p>
+        <h3>Two payment figures that can differ</h3>
+        <p>The page carries two views of money paid. <strong>Paid to date</strong> is the contract-domain spent-to-date. The <strong>spend curve</strong> and payment count are built from individual Checkbook NYC disbursements, summed. These can legitimately differ: checks that fall outside the swept fiscal years are not in the sum, so the dated total can understate lifetime spend, while the contract-domain figure carries the full running tally. The nightly job reports how closely the two agree.</p>
+        <h3>Where the payment timing comes from</h3>
+        <p>Progress-payment timing is read from Checkbook NYC's Spending domain, scoped to each contract and deduped on the payment document so a re-reported check is not counted twice. Checkbook serves no cross-origin access, so this page reads a static file the nightly job writes rather than calling the payment ledger from the browser.</p>
+        <h3>What is not here</h3>
+        <p>No borough, address, or coordinate appears on this page. The published registration and payment records do not carry a location field for these contracts, so the page omits geography rather than inferring it.</p>
+        <h3>Coverage notes from the nightly build</h3>
+        <ul class="cov-list" id="cov-list"></ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap f-row">
+    <div>
+      <div class="brand">
+        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
+        <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.01em">The Concrete Index<span class="tick" style="color:var(--accent)">.</span></span>
+      </div>
+      <div style="margin-top:8px">NYC public construction capital, tracked end to end.</div>
+      <div style="margin-top:6px;font-size:12px;color:var(--faint);max-width:430px">An independent project built by Salar Jalinous using only public data. Not affiliated with any employer.</div>
+    </div>
+    <div style="text-align:right" class="f-meta">
+      <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> &amp; Checkbook NYC · rebuilt nightly</div>
+      <div style="margin-top:5px">© 2026 <a href="/about/">Salar Jalinous</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+'use strict';
+/* ================= config ================= */
+var LIVE_URL   = '/data/contract-search.json';
+var SAMPLE_URL = '/data/contract-search.sample.json';
+var ROW_CAP    = 100;            // max rows painted per result set
+var COLOR_A = '#b5482a', COLOR_B = '#243b53', GRID = '#ead9c9';
+
+/* ================= helpers ================= */
+function esc(s){ var d = document.createElement('div'); d.textContent = (s === null || s === undefined) ? '' : s; return d.innerHTML; }
+var EN = '–'; // en dash for empty cells
+
+function fmtMoney(v){
+  if(v === null || v === undefined || isNaN(v)) return EN;
+  if(v >= 1e9) return '$' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2) + 'B';
+  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
+  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
+  return '$' + Math.round(v);
+}
+function fmtMoneyFull(v){
+  if(v === null || v === undefined || isNaN(v)) return EN;
+  return '$' + Math.round(v).toLocaleString('en-US');
+}
+function fmtInt(v){ return (v === null || v === undefined || isNaN(v)) ? EN : Math.round(v).toLocaleString('en-US'); }
+function fmtPct(v){
+  if(v === null || v === undefined || isNaN(v)) return EN;
+  var p = v * 100;
+  return p.toFixed(p >= 10 ? 0 : 1) + '%';
+}
+function fmtDays(v){ return (v === null || v === undefined || isNaN(v)) ? EN : Math.round(v).toLocaleString('en-US') + ' days'; }
+function fmtDate(s){
+  if(!s) return EN;
+  var d = new Date(s + (s.length === 10 ? 'T00:00:00Z' : ''));
+  if(isNaN(d.getTime())) return esc(s);
+  var MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return MN[d.getUTCMonth()] + ' ' + d.getUTCDate() + ', ' + d.getUTCFullYear();
+}
+/* "2021-06" -> "Jun '21" for compact chart ticks */
+function fmtMonthTick(p){
+  if(!p || p.length < 7) return p || '';
+  var MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return MN[(+p.slice(5,7)) - 1] + " '" + p.slice(2,4);
+}
+function median(nums){
+  var a = nums.filter(function(n){ return n !== null && n !== undefined && !isNaN(n); }).sort(function(x,y){ return x - y; });
+  if(!a.length) return null;
+  var m = Math.floor(a.length / 2);
+  return a.length % 2 ? a[m] : (a[m-1] + a[m]) / 2;
+}
+/* current amount with original fallback, used as velocity/percent denominator */
+function denom(c){
+  var cur = +c.current_amount;
+  if(cur > 0) return cur;
+  var orig = +c.original_amount;
+  return orig > 0 ? orig : 0;
+}
+function pctClass(v){
+  if(v === null || v === undefined || isNaN(v)) return 'lo';
+  if(v >= 0.9) return 'hi';
+  if(v >= 0.5) return 'mid';
+  return 'lo';
+}
+
+/* ================= pure data ops (exercised by the test harness) ================= */
+/* substring match across the four searchable fields, case-insensitive */
+function matchesQuery(c, q){
+  if(!q) return true;
+  var s = (
+    (c.contract_id || '') + ' ' +
+    (c.vendor || '') + ' ' +
+    (c.agency || '') + ' ' +
+    (c.category || '')
+  ).toLowerCase();
+  return s.indexOf(q.toLowerCase()) !== -1;
+}
+function filterContracts(contracts, opts){
+  var q = (opts.q || '').trim();
+  var ag = opts.agency || '';
+  var cat = opts.category || '';
+  return contracts.filter(function(c){
+    if(ag && c.agency !== ag) return false;
+    if(cat && c.category !== cat) return false;
+    return matchesQuery(c, q);
+  });
+}
+function sortContracts(list, key){
+  var arr = list.slice();
+  if(key === 'registration_date'){
+    arr.sort(function(a,b){ return String(b.registration_date||'').localeCompare(String(a.registration_date||'')); });
+  } else if(key === 'first_payment_lag_days'){
+    // slow to fast; nulls (no payment yet) sort to the bottom
+    arr.sort(function(a,b){
+      var av = a.first_payment_lag_days, bv = b.first_payment_lag_days;
+      if(av === null || av === undefined) return 1;
+      if(bv === null || bv === undefined) return -1;
+      return bv - av;
+    });
+  } else {
+    // numeric, high to low (current_amount, pct_paid_to_date)
+    arr.sort(function(a,b){ return (+b[key] || 0) - (+a[key] || 0); });
+  }
+  return arr;
+}
+function aggregate(contracts){
+  var registered = 0, paid = 0, lags = [];
+  for(var i=0;i<contracts.length;i++){
+    var c = contracts[i];
+    registered += denom(c);
+    paid += (+c.paid_to_date || 0);
+    if(c.first_payment_lag_days !== null && c.first_payment_lag_days !== undefined) lags.push(+c.first_payment_lag_days);
+  }
+  return {
+    count: contracts.length,
+    registered: registered,
+    paid: paid,
+    medianLag: median(lags),
+    withPayments: contracts.filter(function(c){ return (+c.payment_count || 0) > 0; }).length
+  };
+}
+function distinctSorted(contracts, field){
+  var set = {};
+  for(var i=0;i<contracts.length;i++){ var v = contracts[i][field]; if(v) set[v] = true; }
+  return Object.keys(set).sort(function(a,b){ return a.localeCompare(b); });
+}
+
+/* ================= state ================= */
+var state = { all: [], meta: null, view: [], openId: null, chart: null };
+
+/* ================= rendering ================= */
+function setText(id, txt){ var el = document.getElementById(id); if(el) el.textContent = txt; }
+
+function paintKpis(agg){
+  setText('kpi-count', fmtInt(agg.count));
+  setText('kpi-count-note', agg.withPayments + ' of ' + agg.count + ' have at least one payment');
+  setText('kpi-registered', fmtMoney(agg.registered));
+  setText('kpi-paid', fmtMoney(agg.paid));
+  var ratio = agg.registered > 0 ? (agg.paid / agg.registered) : null;
+  setText('kpi-paid-note', ratio !== null ? (fmtPct(ratio) + ' of registered value') : 'across the indexed set');
+  setText('kpi-lag', agg.medianLag === null ? EN : Math.round(agg.medianLag).toLocaleString('en-US'));
+}
+
+function rowHtml(c){
+  var d = denom(c);
+  var pp = c.pct_paid_to_date;
+  var pcls = pctClass(pp);
+  return '<tr class="crow" data-id="' + esc(c.contract_id) + '" tabindex="0" role="button" aria-expanded="false">' +
+    '<td><span class="cid">' + esc(c.contract_id) + '</span><span class="open-cue">open &rarr;</span></td>' +
+    '<td><span class="t-title">' + esc(c.vendor || EN) + '</span></td>' +
+    '<td>' + esc(c.agency || EN) + '</td>' +
+    '<td class="col-cat">' + esc(c.category || EN) + '</td>' +
+    '<td class="num">' + (d > 0 ? fmtMoney(d) : '<span class="en">' + EN + '</span>') + '</td>' +
+    '<td class="num amt">' + (c.current_amount > 0 ? fmtMoney(+c.current_amount) : '<span class="en">' + EN + '</span>') + '</td>' +
+    '<td class="num">' + (c.paid_to_date > 0 ? fmtMoney(+c.paid_to_date) : '<span class="en">' + EN + '</span>') + '</td>' +
+    '<td class="num"><span class="pill ' + pcls + '">' + fmtPct(pp) + '</span></td>' +
+  '</tr>';
+}
+
+function detailHtml(c){
+  var d = denom(c);
+  var hasCurve = Array.isArray(c.monthly_cumulative) && c.monthly_cumulative.length > 0;
+  var velRows =
+    '<dt>First-payment lag</dt><dd' + (c.first_payment_lag_days === null ? ' class="en"' : '') + '>' + fmtDays(c.first_payment_lag_days) + '</dd>' +
+    '<dt>Days to 50% paid</dt><dd' + (c.days_to_50pct_paid === null ? ' class="en"' : '') + '>' + fmtDays(c.days_to_50pct_paid) + '</dd>' +
+    '<dt>Days to 90% paid</dt><dd' + (c.days_to_90pct_paid === null ? ' class="en"' : '') + '>' + fmtDays(c.days_to_90pct_paid) + '</dd>' +
+    '<dt>Payments found</dt><dd>' + fmtInt(c.payment_count) + '</dd>';
+  var chartBlock = hasCurve
+    ? '<div class="detail-chart"><div class="dc-head">Cumulative spend &middot; Checkbook disbursements</div><div class="chart-box"><canvas id="dchart"></canvas></div></div>'
+    : '<div class="detail-chart"><div class="dc-head">Cumulative spend</div><div class="detail-none">No dated disbursements in the swept window for this contract, so there is no spend curve to draw.</div></div>';
+  return '<tr class="detail"><td colspan="8"><div class="detail-inner">' +
+    '<div class="detail-head">' +
+      '<div><div class="dh-name">' + esc(c.vendor || EN) + '</div>' +
+      '<div class="detail-meta">' + esc(c.agency || EN) + ' &middot; ' + esc(c.category || EN) + ' &middot; awarded by ' + esc(c.award_method || EN) + '</div></div>' +
+      '<div class="dh-id">' + esc(c.contract_id) + '</div>' +
+    '</div>' +
+    '<div class="detail-grid">' +
+      '<div class="dblock"><div class="db-head">Dates</div><dl class="dl">' +
+        '<dt>Bid due</dt><dd' + (!c.bid_due_date ? ' class="en"' : '') + '>' + fmtDate(c.bid_due_date) + '</dd>' +
+        '<dt>Registered</dt><dd>' + fmtDate(c.registration_date) + '</dd>' +
+        '<dt>Start</dt><dd>' + fmtDate(c.start_date) + '</dd>' +
+        '<dt>Scheduled end</dt><dd>' + fmtDate(c.end_date) + '</dd>' +
+      '</dl></div>' +
+      '<div class="dblock hl"><div class="db-head">Amounts</div><dl class="dl">' +
+        '<dt>Original</dt><dd>' + fmtMoneyFull(+c.original_amount) + '</dd>' +
+        '<dt>Current</dt><dd>' + fmtMoneyFull(d) + '</dd>' +
+        '<dt>Paid to date</dt><dd>' + fmtMoneyFull(+c.paid_to_date) + '</dd>' +
+        '<dt>Percent paid</dt><dd>' + fmtPct(c.pct_paid_to_date) + '</dd>' +
+      '</dl></div>' +
+      '<div class="dblock"><div class="db-head">Payment velocity</div><dl class="dl">' + velRows + '</dl></div>' +
+    '</div>' +
+    chartBlock +
+    '<div class="detail-foot">Scheduled end is the planned end date as registered, not a record of actual completion. Days to 50% and 90% paid read as ' + EN + ' until cumulative payment crosses that share within the swept window. Percent paid divides paid-to-date by the current amount, falling back to original.</div>' +
+  '</div></td></tr>';
+}
+
+function drawDetailChart(c){
+  var canvas = document.getElementById('dchart');
+  if(!canvas || typeof Chart === 'undefined') return;
+  if(state.chart){ state.chart.destroy(); state.chart = null; }
+  var labels = c.monthly_cumulative.map(function(p){ return fmtMonthTick(p[0]); });
+  var data = c.monthly_cumulative.map(function(p){ return +p[1]; });
+  state.chart = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: { labels: labels, datasets: [{
+      label: 'Cumulative paid',
+      data: data,
+      borderColor: COLOR_A,
+      backgroundColor: 'rgba(181,72,42,.08)',
+      borderWidth: 2,
+      pointRadius: 3,
+      pointBackgroundColor: COLOR_A,
+      tension: 0.15,
+      fill: true
+    }]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#fffaf4', titleColor: '#22150e', bodyColor: '#6e5d52',
+          borderColor: COLOR_A, borderWidth: 1, padding: 10, displayColors: false,
+          titleFont: { family: 'IBM Plex Mono', size: 11 },
+          bodyFont: { family: 'IBM Plex Mono', size: 12 },
+          callbacks: { label: function(ctx){ return fmtMoneyFull(ctx.parsed.y); } }
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { family: 'IBM Plex Mono', size: 10 }, color: '#9b8979' } },
+        y: { grid: { color: GRID }, ticks: { font: { family: 'IBM Plex Mono', size: 10 }, color: '#9b8979', callback: function(v){ return fmtMoney(v); } } }
+      }
+    }
+  });
+}
+
+function render(){
+  var opts = {
+    q: document.getElementById('q').value,
+    agency: document.getElementById('f-agency').value,
+    category: document.getElementById('f-cat').value
+  };
+  var sortKey = document.getElementById('f-sort').value;
+  var matched = filterContracts(state.all, opts);
+  var sorted = sortContracts(matched, sortKey);
+  state.view = sorted;
+
+  // KPIs reflect the matched set (live aggregates)
+  paintKpis(aggregate(matched));
+
+  var capped = sorted.slice(0, ROW_CAP);
+  var tbody = document.getElementById('rows');
+  if(capped.length === 0){
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="8">No contracts match this search. Clear the box or widen the filters.</td></tr>';
+    state.openId = null;
+  } else {
+    var html = '';
+    for(var i=0;i<capped.length;i++){
+      html += rowHtml(capped[i]);
+      if(capped[i].contract_id === state.openId){ html += detailHtml(capped[i]); }
+    }
+    tbody.innerHTML = html;
+  }
+
+  // match note + table note
+  var mn = document.getElementById('match-note');
+  if(matched.length > capped.length){
+    mn.innerHTML = 'Showing <b>' + capped.length + '</b> of <b>' + fmtInt(matched.length) + '</b> matching contracts. Narrow the search to see the rest.';
+  } else {
+    mn.innerHTML = '<b>' + fmtInt(matched.length) + '</b> ' + (matched.length === 1 ? 'matching contract' : 'matching contracts') + '.';
+  }
+  document.getElementById('clear-q').hidden = !document.getElementById('q').value;
+
+  // (re)draw an open detail chart after the DOM is in place
+  if(state.openId){
+    var openC = capped.filter(function(c){ return c.contract_id === state.openId; })[0];
+    if(openC && Array.isArray(openC.monthly_cumulative) && openC.monthly_cumulative.length) drawDetailChart(openC);
+    var openTr = tbody.querySelector('tr.crow[data-id="' + cssEscape(state.openId) + '"]');
+    if(openTr){ openTr.classList.add('open'); openTr.setAttribute('aria-expanded', 'true'); }
+  }
+}
+
+/* minimal attribute-selector escape for contract ids (alnum only in practice) */
+function cssEscape(s){ return String(s).replace(/["\\]/g, '\\$&'); }
+
+function toggleDetail(id){
+  if(state.chart){ state.chart.destroy(); state.chart = null; }
+  state.openId = (state.openId === id) ? null : id;
+  render();
+}
+
+/* ================= wiring ================= */
+function fillSelect(sel, values, label){
+  var html = '<option value="">All ' + label + '</option>';
+  for(var i=0;i<values.length;i++){ html += '<option value="' + esc(values[i]) + '">' + esc(values[i]) + '</option>'; }
+  sel.innerHTML = html;
+}
+
+function init(payload){
+  state.all = Array.isArray(payload.contracts) ? payload.contracts : [];
+  state.meta = payload.meta || {};
+
+  // hero + series bar
+  var gen = state.meta.generated ? fmtDate(state.meta.generated.slice(0,10)) : EN;
+  var fys = Array.isArray(state.meta.fiscal_years) && state.meta.fiscal_years.length
+    ? ('FY' + state.meta.fiscal_years[0] + '–' + state.meta.fiscal_years[state.meta.fiscal_years.length-1]) : 'FY2021–2025';
+  setText('series-updated', gen);
+  setText('series-asof', fys);
+  setText('search-cap', fys);
+  document.getElementById('asof').innerHTML = 'Indexed <strong>' + fmtInt(state.all.length) + '</strong> registered construction contracts &middot; ' + esc(fys) + ' &middot; rebuilt ' + esc(gen) + (state.meta.fixture ? ' &middot; <strong>development fixture</strong>' : '');
+
+  // filter selects
+  fillSelect(document.getElementById('f-agency'), distinctSorted(state.all, 'agency'), 'agencies');
+  fillSelect(document.getElementById('f-cat'), distinctSorted(state.all, 'category'), 'categories');
+
+  // coverage notes
+  var cov = document.getElementById('cov-list');
+  var notes = Array.isArray(state.meta.coverage_notes) ? state.meta.coverage_notes : [];
+  cov.innerHTML = notes.length ? notes.map(function(n){ return '<li>' + esc(n) + '</li>'; }).join('') : '<li>No coverage notes were published with this build.</li>';
+
+  // table footnote
+  document.getElementById('tbl-note').innerHTML = 'Each row is one registered contract. Registered is the current amount with original as a fallback; ' + EN + ' marks a field with no published value. Click a row to open its dates and amounts, its payment velocity, and its spend curve. Up to ' + ROW_CAP + ' rows are painted at once; narrow the search to reach the rest.';
+
+  // events
+  var q = document.getElementById('q');
+  q.addEventListener('input', function(){ state.openId = null; render(); });
+  document.getElementById('clear-q').addEventListener('click', function(){ q.value = ''; state.openId = null; render(); q.focus(); });
+  document.getElementById('f-agency').addEventListener('change', function(){ state.openId = null; render(); });
+  document.getElementById('f-cat').addEventListener('change', function(){ state.openId = null; render(); });
+  document.getElementById('f-sort').addEventListener('change', function(){ render(); });
+
+  var tbody = document.getElementById('rows');
+  tbody.addEventListener('click', function(e){
+    var tr = e.target.closest ? e.target.closest('tr.crow') : null;
+    if(tr && tr.dataset.id) toggleDetail(tr.dataset.id);
+  });
+  tbody.addEventListener('keydown', function(e){
+    if(e.key !== 'Enter' && e.key !== ' ') return;
+    var tr = e.target.closest ? e.target.closest('tr.crow') : null;
+    if(tr && tr.dataset.id){ e.preventDefault(); toggleDetail(tr.dataset.id); }
+  });
+
+  render();
+
+  document.getElementById('loader').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+}
+
+/* ================= load (live, fall back to sample) ================= */
+function loadJSON(url){
+  return fetch(url, { cache: 'no-store' }).then(function(res){
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  });
+}
+function boot(){
+  loadJSON(LIVE_URL)
+    .catch(function(){ return loadJSON(SAMPLE_URL); })
+    .then(function(payload){ init(payload); })
+    .catch(function(err){
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('error').style.display = 'block';
+      if(window.console) console.error('contract-search load failed', err);
+    });
+}
+
+/* expose pure ops for the Node test harness (no effect in the browser) */
+if(typeof module !== 'undefined' && module.exports){
+  module.exports = { matchesQuery: matchesQuery, filterContracts: filterContracts, sortContracts: sortContracts, aggregate: aggregate, distinctSorted: distinctSorted, denom: denom, median: median, fmtMoney: fmtMoney, fmtPct: fmtPct, pctClass: pctClass };
+}
+if(typeof document !== 'undefined'){
+  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', boot); } else { boot(); }
+}
+</script>
+
+</body>
+</html>
