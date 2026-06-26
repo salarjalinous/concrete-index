@@ -2,49 +2,37 @@ name: Checkbook NYC dated payments
 
 # Builds data/contract-search.json: EVERY construction registered contract as a
 # searchable record carrying its contract-level fields, paid_to_date
-# (prime_vendor_spent_to_date) and pct_paid_to_date. EVERY contract that has any
-# Checkbook NYC Spending disbursement in FY2021-2025 ALSO carries a dated
-# disbursement stream plus velocity metrics (first-payment lag, days-to-50pct/90pct
-# paid, monthly cumulative curve). Source of truth for the contract-search page.
-# Mirrors site/checkbook.yml: stdlib-only Python (urllib + xml), no extra deps,
-# generous backoff, a quality gate that KEEPS last-good data on a thin pull, and
-# commit-if-changed. Never call the live API outside the Action (Checkbook is
-# POST-XML with no CORS).
+# (prime_vendor_spent_to_date) and pct_paid_to_date. A DEFINED subset, every
+# construction registered contract of $500,000 or more registered since 2019 that
+# is still open or closed within the past year (closure judged by the registered
+# end date), ALSO carries a dated disbursement stream plus velocity metrics
+# (first-payment lag, days-to-50pct/90pct paid, monthly cumulative curve), pulled
+# one contract at a time from Checkbook NYC Spending. Source of truth for the contract-search
+# page. Mirrors site/checkbook.yml: stdlib-only Python (urllib + xml), no extra
+# deps, generous backoff. The build ALWAYS writes the file (even on a thin pull);
+# the commit step rebases before pushing and never fails on a missing pathspec.
+# Never call the live API outside the Action (Checkbook is POST-XML, no CORS).
 #
-# SWEEP STRATEGY (why Stage 2 is a construction-filtered bulk pull):
-#   Stage 2 used to query Spending one contract at a time (search_criteria
-#   contract_id) for only the top N contracts by value, because the alternative,
-#   sweeping each agency's ENTIRE spending and client-filtering, pulled millions of
-#   rows and ran 60+ minutes. The per-contract approach was bounded but capped
-#   coverage at N, leaving thousands of contracts with no dated timing.
-#
-#   Stage 2 now pulls Spending filtered AT THE SOURCE by spending_category, the
-#   coarse Checkbook classification (Total / Payroll / Capital / Contract / Trust
-#   & Agency / Other). Construction expense contracts are paid as Contract
-#   spending, so spending_category=c isolates them citywide to tens of thousands of
-#   checks per fiscal year, not the ~3.2M citywide total. We page that in large
-#   chunks, dedupe on document_id, bucket by contract_id, and attribute each bucket
-#   to the Stage-1 construction contract universe. Every universe contract with a
-#   construction disbursement in-window gets its full dated stream; contracts with
-#   none get null dated fields. A strict safety cap (rows + paging) stops the job
-#   if volume ever blows past a sane ceiling, and the keep-last-good quality gate
-#   protects the page either way.
-#
-#   The spending_category filter, the issue that the old code comment said blocked
-#   a source-side construction filter, is confirmed valid by the Checkbook
-#   open-source config (checkbook_api/src/config/spending.json): spending_category
-#   maps to spending_category_code (max 2 chars, example value "c"), and the only
-#   spending validator (optionalSingleFilter over fiscal_year/issue_date) permits
-#   combining it with fiscal_year. The per-(code, FY) record_count is logged on
-#   every run so the true volume and the working code are visible in the build log.
+# SWEEP STRATEGY (per-contract, reliable):
+#   Stage 1 pulls the construction registered-contract universe (FY2021-2025).
+#   Stage 2 selects the SCOPED subset, contracts of >= AMOUNT_FLOOR registered in
+#   SINCE_YEAR or later that are open or closed within CLOSED_WITHIN_DAYS of today
+#   (closure judged by the registered end date), and POSTs Spending one contract at a time with
+#   search_criteria contract_id=<id>. This is the bounded, reliable shape: each
+#   POST returns only that contract's checks, so there is no citywide bulk pull
+#   to page through and no unconfirmed source-side category filter. Light pacing
+#   plus a small per-contract retry keep rate-limiting from stalling the job. The
+#   job may run 20-40 minutes; that is acceptable for a nightly build. Every
+#   Stage-1 contract stays searchable; only the scoped subset carries dated
+#   timing.
 
 on:
   workflow_dispatch: {}
   schedule:
     - cron: '20 7 * * *'   # 07:20 UTC daily (~2:20am New York). Moved off 06:50 to clear
-                           # the doing-business job that also ran at 06:50 (both push to main
-                           # with no rebase, so they raced). Runs after the 06:15 archive and
-                           # 06:40 checkbook jobs, so awards.json and contract data are fresh.
+                           # the doing-business job that also ran at 06:50 (both push to main,
+                           # so they raced). Runs after the 06:15 archive and 06:40 checkbook
+                           # jobs, so awards.json and contract data are fresh.
 
 permissions:
   contents: write
@@ -64,30 +52,37 @@ jobs:
           import xml.etree.ElementTree as ET
 
           API = "https://www.checkbooknyc.com/api"
-          FYS = [2021, 2022, 2023, 2024, 2025]
-          MAX_RECORDS = 1000        # Stage-1 Contracts paging chunk (server max)
-          SPENDING_PAGE = 20000     # Stage-2 Spending paging chunk (large, bulk)
+          FYS = [2021, 2022, 2023, 2024, 2025]   # Stage-1 universe window
+          MAX_RECORDS = 1000        # Contracts paging chunk (server max)
           CONSTR_RE = re.compile(r"constr|engineer|architect|paving|excavat|infrastructure", re.I)
 
-          # ---- CONSTRUCTION SPENDING FILTER (tunable) --------------------------
-          # spending_category is the coarse Checkbook spending classification. Our
-          # universe is registered EXPENSE contracts, which are paid as Contract
-          # spending, so spending_category=c isolates the construction disbursement
-          # universe at the source. The list is tunable: every code is pulled per
-          # fiscal year and its API record_count is logged, so the first live run
-          # reveals the true volume and confirms the working code(s). Add "cc"
-          # (Capital) here only if a run shows construction contract_ids appearing
-          # under capital spending; expense-contract checks live under Contract.
-          CONSTR_SPENDING_CATEGORIES = ["c"]
+          # ---- DATED-PAYMENT SCOPE (tunable) ----------------------------------
+          # The dated-payment universe is DEFINED, not capped to a count: every
+          # construction registered contract whose value is at least AMOUNT_FLOOR,
+          # which was registered in SINCE_YEAR or later, AND which is either still
+          # open or closed within the last CLOSED_WITHIN_DAYS days draws a dated
+          # check pull. Value = prime_contract_current_amount, falling back to
+          # prime_contract_original_amount. Registration year =
+          # prime_contract_registration_date year, falling back to
+          # prime_contract_start_date year. Closure is judged by
+          # prime_contract_end_date (the registered/scheduled end date; the public
+          # record has no actual-completion field): a contract is INCLUDED when its
+          # end date is missing/unparseable (treat as open) OR is no more than
+          # CLOSED_WITHIN_DAYS in the past; it is EXCLUDED only when its end date is
+          # more than CLOSED_WITHIN_DAYS before today. "today" is computed at
+          # runtime as the current UTC date.
+          AMOUNT_FLOOR      = 500_000   # contract value floor for the dated pull
+          SINCE_YEAR        = 2019      # earliest registration year for the dated pull
+          CLOSED_WITHIN_DAYS = 365      # include closed contracts only if end date is within this many days of today
 
-          # ---- SAFETY CAP -----------------------------------------------------
-          # A construction-filtered Spending pull should be tens of thousands of
-          # checks per FY. If a (category, FY) ever returns far more, or paging runs
-          # away, STOP fetching, fall through to the quality gate (which keeps the
-          # last-good file), and exit 0 rather than running for an hour.
-          MAX_SPENDING_ROWS = 600000   # hard ceiling on total Stage-2 rows fetched
-          SPENDING_PAGE_CAP = 60       # max pages per (category, FY): 60 * 20000 = 1.2M
-          SPENDING_PACE = 0.6          # seconds between Spending page requests
+          # ---- PER-CONTRACT SPENDING PACING -----------------------------------
+          # Each scoped contract gets its own Spending POST (search_criteria
+          # contract_id). Light pacing between contracts and a small bounded retry
+          # so a transient rate-limit on one contract is retried, then skipped, and
+          # never stalls the whole run. No global row/time cap aborts the job: this
+          # is a nightly build and may run 20-40 minutes.
+          SPENDING_PACE = 0.3        # seconds between per-contract Spending POSTs
+          SPENDING_TRIES = 3         # per-contract attempts before skipping
 
           MAX_BYTES = 1_400_000
 
@@ -176,10 +171,6 @@ jobs:
                   for m in msgs:
                       log("    -", m)
                   return None, xml_text
-              for el in root.iter():
-                  if el.tag.lower() == "record_count":
-                      log("  [api record_count = %s]" % ((el.text or "").strip()))
-                      break
               container = None
               for el in root.iter():
                   if el.tag.lower() == "result_records":
@@ -207,7 +198,8 @@ jobs:
               return recs, xml_text
 
           def fetch_all(type_of_data, columns, criteria):
-              # Generic pager. criteria is a fully-formed list of (name,type,value).
+              # Generic pager for the Stage-1 Contracts pull. criteria is a
+              # fully-formed list of (name,type,value).
               rows = []
               raw_first = None
               rf = 1
@@ -346,142 +338,155 @@ jobs:
           log("Distinct construction contract_ids: %d" % len(by_cid))
 
           # Rank by current amount so the largest contracts keep their spend curve
-          # first if the payload ever has to be trimmed for size (Stage 5). The
-          # dated pull below is NOT limited to this ranking; every contract that has
-          # a disbursement in the bulk pull gets its full stream.
+          # first if the payload ever has to be trimmed for size (Stage 5).
           ranked = sorted(by_cid.items(),
                           key=lambda kv: -to_int_amount(c(kv[1], "prime_contract_current_amount")))
 
           # =================================================================
-          # STAGE 2 - construction-filtered BULK Spending pull.
+          # STAGE 2 - per-contract Spending pull over the SCOPED subset.
           #
-          # For each fiscal year, POST Spending with search_criteria
-          # spending_category=<code> + fiscal_year, page in SPENDING_PAGE-row
-          # chunks until exhausted, dedupe on document_id, and bucket every check by
-          # contract_id. Then attribute the buckets to the Stage-1 construction
-          # contract universe: a check counts only if its contract_id is one of our
-          # registered construction contracts, so non-construction checks that share
-          # the category are dropped. This gives EVERY universe contract with a
-          # disbursement in-window its full dated stream, with no top-N cap.
-          #
-          # The API record_count is logged per (category, FY). A strict safety cap
-          # (MAX_SPENDING_ROWS total, SPENDING_PAGE_CAP pages per pull) stops the
-          # job before it can run away; on a stop we fall through to the quality
-          # gate, which keeps the last-good file.
+          # The scoped subset is every construction registered contract of
+          # >= AMOUNT_FLOOR registered in SINCE_YEAR or later that is open or
+          # closed within CLOSED_WITHIN_DAYS of today. For each, POST
+          # Spending with search_criteria contract_id=<id> (exact), dedupe the
+          # returned checks on document_id, and bucket them by contract_id. One
+          # POST per contract: bounded, reliable, no citywide bulk page-through.
+          # A per-contract retry (SPENDING_TRIES) skips a contract that keeps
+          # failing rather than stalling the run; skips are counted and logged.
           # =================================================================
           spending_cols = ["issue_date", "check_amount", "contract_id", "document_id",
-                           "payee_name", "agency", "fiscal_year", "mocs_registered",
-                           "spending_category"]
+                           "payee_name", "agency", "fiscal_year", "mocs_registered"]
 
-          universe_cids = set(by_cid.keys())
+          def contract_value(r):
+              # Value for the scope test: current amount, fall back to original.
+              cur = to_int_amount(c(r, "prime_contract_current_amount"))
+              return cur if cur > 0 else to_int_amount(c(r, "prime_contract_original_amount"))
+
+          def reg_year(r):
+              # Registration year for the scope test: registration date year,
+              # falling back to start date year. None if neither parses.
+              d = parse_date(c(r, "prime_contract_registration_date"))
+              if d is None:
+                  d = parse_date(c(r, "prime_contract_start_date"))
+              return d.year if d else None
+
+          # "today" is the current UTC date; the closed-recently cutoff is
+          # CLOSED_WITHIN_DAYS before it. Computed once at runtime.
+          today = datetime.datetime.now(datetime.timezone.utc).date()
+          closed_cutoff = today - datetime.timedelta(days=CLOSED_WITHIN_DAYS)
+
+          def open_or_recently_closed(r):
+              # Closure judged by prime_contract_end_date (registered/scheduled end;
+              # no actual-completion field exists). Include when the end date is
+              # missing/unparseable (treat as open) OR is on/after the cutoff
+              # (open: end date in the future or unknown; or closed within the past
+              # CLOSED_WITHIN_DAYS). Exclude only when the end date is more than
+              # CLOSED_WITHIN_DAYS in the past.
+              end_d = parse_date(c(r, "prime_contract_end_date"))
+              if end_d is None:
+                  return True
+              return end_d >= closed_cutoff
+
+          def in_scope(r):
+              if contract_value(r) < AMOUNT_FLOOR:
+                  return False
+              ry = reg_year(r)
+              if ry is None or ry < SINCE_YEAR:
+                  return False
+              return open_or_recently_closed(r)
+
+          scoped = [(cid, r) for cid, r in ranked if in_scope(r)]
+          contracts_in_scope = len(scoped)
+          log("Dated scope: %d contracts of >= $%d registered in %d+ open or closed since %s "
+              "(of %d construction contracts)"
+              % (contracts_in_scope, AMOUNT_FLOOR, SINCE_YEAR, closed_cutoff.isoformat(), len(by_cid)))
+
+          def fetch_contract_spending(cid):
+              # Page Spending for ONE contract_id. Returns a list of check dicts, or
+              # None if every attempt failed (so the caller can skip and count it).
+              # Most contracts return under MAX_RECORDS checks, so this is usually a
+              # single page; paging is here for the rare high-volume contract.
+              rows = []
+              rf = 1
+              while True:
+                  xml = build_request_xml(
+                      "Spending", spending_cols,
+                      [("contract_id", "value", cid)], rf)
+                  ok = False
+                  for attempt in range(SPENDING_TRIES):
+                      try:
+                          resp = post(xml)
+                      except Exception as e:
+                          log("  contract_id=%s page rf=%d POST raised: %s" % (cid, rf, e))
+                          time.sleep(2 * (attempt + 1))
+                          continue
+                      recs, _ = parse_records(resp)
+                      if recs is None:
+                          # API failure/parse error on this page: retry a few times.
+                          time.sleep(2 * (attempt + 1))
+                          continue
+                      ok = True
+                      break
+                  if not ok:
+                      return None   # give up on this contract; caller skips it
+                  rows.extend(recs)
+                  got = len(recs)
+                  if got < MAX_RECORDS:
+                      break
+                  rf += MAX_RECORDS
+                  time.sleep(0.5)
+                  if rf > 100000:
+                      log("  WARNING per-contract paging cap hit for contract_id=%s" % cid)
+                      break
+              return rows
 
           # contract_id -> {document_id -> (date, amount)} ; dedupe on document_id.
           payments = {}
-          spending_rows_seen = 0     # rows returned by the API (any contract_id)
-          spending_rows_kept = 0     # rows attributed to a universe contract (deduped)
-          rows_fetched_by_fy = {}    # (category, fy) -> rows pulled, for meta/log
-          record_count_by_fy = {}    # (category, fy) -> API record_count, for meta/log
-          aborted = False            # set if a safety cap tripped
-          abort_reason = None
+          spending_rows_seen = 0     # checks returned across all scoped contracts
+          spending_rows_kept = 0     # deduped checks attributed to a scoped contract
+          contracts_skipped = 0      # scoped contracts that failed all retries
+          skipped_ids = []
 
-          def fetch_spending_page(category, fy, rf):
-              # One Spending page POST with the generic capped-retry post(). Returns
-              # (recs, record_count) ; recs is None on hard failure. Requests up to
-              # SPENDING_PAGE rows; the server may return fewer per page, so the
-              # caller advances by the count actually returned.
-              xml = build_request_xml(
-                  "Spending", spending_cols,
-                  [("spending_category", "value", category),
-                   ("fiscal_year", "value", str(fy))], rf, max_records=SPENDING_PAGE)
-              resp = post(xml)
-              recs, raw = parse_records(resp)
-              rc = None
-              try:
-                  root = ET.fromstring(raw)
-                  for el in root.iter():
-                      if el.tag.lower() == "record_count":
-                          rc = (el.text or "").strip()
-                          break
-              except Exception:
-                  rc = None
-              return recs, rc
-
-          for category in CONSTR_SPENDING_CATEGORIES:
-              if aborted:
-                  break
-              for fy in FYS:
-                  if aborted:
-                      break
-                  log("--- Spending category=%r FY%d ---" % (category, fy))
-                  rf = 1
-                  page = 0
-                  fetched_here = 0
-                  while True:
-                      recs, rc = fetch_spending_page(category, fy, rf)
-                      if page == 0:
-                          record_count_by_fy[(category, fy)] = rc
-                          log("  [api record_count = %s] for category=%r FY%d"
-                              % (rc, category, fy))
-                      if recs is None:
-                          # API failure/parse error: log and move to the next (cat, FY).
-                          # A wrong/rejected category code lands here and is caught by
-                          # the quality gate downstream (no rows kept -> keep last-good).
-                          log("  category=%r FY%d returned no parseable page at rf=%d; "
-                              "moving on" % (category, fy, rf))
-                          break
-                      got = len(recs)
-                      fetched_here += got
-                      for r in recs:
-                          spending_rows_seen += 1
-                          rcid = c(r, "contract_id")
-                          if not rcid or rcid not in universe_cids:
-                              continue   # not one of our construction contracts
-                          doc = c(r, "document_id")
-                          if not doc:
-                              doc = "%s|%s|%s" % (rcid, c(r, "issue_date"),
-                                                  c(r, "check_amount"))
-                          bucket = payments.setdefault(rcid, {})
-                          if doc in bucket:
-                              continue   # re-reported check: count once
-                          d = parse_date(c(r, "issue_date"))
-                          amt = to_int_amount(c(r, "check_amount"))
-                          bucket[doc] = (d, amt)
-                          spending_rows_kept += 1
-                      page += 1
-                      if got == 0:
-                          break   # empty page: exhausted this (category, FY)
-                      # ---- safety caps ----
-                      if spending_rows_seen >= MAX_SPENDING_ROWS:
-                          aborted = True
-                          abort_reason = ("total rows fetched (%d) hit MAX_SPENDING_ROWS (%d)"
-                                          % (spending_rows_seen, MAX_SPENDING_ROWS))
-                          log("  SAFETY CAP: %s; stopping the Spending pull." % abort_reason)
-                          break
-                      if page >= SPENDING_PAGE_CAP:
-                          aborted = True
-                          abort_reason = ("paging cap (%d pages) hit for category=%r FY%d"
-                                          % (SPENDING_PAGE_CAP, category, fy))
-                          log("  SAFETY CAP: %s; stopping the Spending pull." % abort_reason)
-                          break
-                      # Advance by the count actually returned (server may cap a page
-                      # below SPENDING_PAGE); stop when a short page signals the tail.
-                      rf += got
-                      if got < SPENDING_PAGE:
-                          break   # last (short) page for this (category, FY)
-                      time.sleep(SPENDING_PACE)
-                  rows_fetched_by_fy[(category, fy)] = fetched_here
-                  log("  category=%r FY%d: fetched %d rows, running kept=%d"
-                      % (category, fy, fetched_here, spending_rows_kept))
+          for idx, (cid, _r) in enumerate(scoped):
+              recs = fetch_contract_spending(cid)
+              if recs is None:
+                  contracts_skipped += 1
+                  if len(skipped_ids) < 200:
+                      skipped_ids.append(cid)
+                  log("  [%d/%d] contract_id=%s SKIPPED after %d failed attempts"
+                      % (idx + 1, contracts_in_scope, cid, SPENDING_TRIES))
                   time.sleep(SPENDING_PACE)
+                  continue
+              kept_here = 0
+              for r in recs:
+                  spending_rows_seen += 1
+                  rcid = c(r, "contract_id")
+                  # Exact-match search can still return near-matches; keep only the
+                  # checks whose contract_id is exactly this contract.
+                  if rcid and rcid != cid:
+                      continue
+                  doc = c(r, "document_id")
+                  if not doc:
+                      doc = "%s|%s|%s" % (cid, c(r, "issue_date"), c(r, "check_amount"))
+                  bucket = payments.setdefault(cid, {})
+                  if doc in bucket:
+                      continue   # re-reported check: count once
+                  d = parse_date(c(r, "issue_date"))
+                  amt = to_int_amount(c(r, "check_amount"))
+                  bucket[doc] = (d, amt)
+                  spending_rows_kept += 1
+                  kept_here += 1
+              if (idx + 1) % 100 == 0 or kept_here:
+                  log("  [%d/%d] contract_id=%s kept=%d (running kept=%d, skipped=%d)"
+                      % (idx + 1, contracts_in_scope, cid, kept_here,
+                         spending_rows_kept, contracts_skipped))
+              time.sleep(SPENDING_PACE)
 
           contracts_swept = len(payments)
-          log("Spending (bulk, construction-filtered): categories=%s seen=%d kept=%d "
-              "contracts_with_checks=%d aborted=%s"
-              % (CONSTR_SPENDING_CATEGORIES, spending_rows_seen, spending_rows_kept,
-                 contracts_swept, aborted))
-          for (cat, fy), n in sorted(rows_fetched_by_fy.items()):
-              log("  rows_fetched[category=%r FY%d] = %d (record_count=%s)"
-                  % (cat, fy, n, record_count_by_fy.get((cat, fy))))
+          log("Per-contract Spending complete: scope=%d seen=%d kept=%d "
+              "contracts_with_checks=%d skipped=%d"
+              % (contracts_in_scope, spending_rows_seen, spending_rows_kept,
+                 contracts_swept, contracts_skipped))
 
           # =================================================================
           # STAGE 3 - best-effort bid_due_date from the City Record archive.
@@ -527,13 +532,11 @@ jobs:
           # "Paid to date" column, "% paid" value, and sort all use, so every row
           # is consistent.
           #
-          # EVERY contract that had a disbursement in the bulk Spending pull
-          # ADDITIONALLY carries the dated velocity metrics and the monthly
-          # cumulative spend curve, drawn from its Checkbook disbursement stream
-          # (payments_swept=True). A contract with NO disbursement in-window has
-          # those dated fields set to null and payments_swept=False; total_paid
-          # (dated sum) is also null there to keep the dated view distinct from the
-          # contract-record paid_to_date.
+          # EVERY contract in the SCOPED subset that drew a check ADDITIONALLY
+          # carries the dated velocity metrics and the monthly cumulative spend
+          # curve from its Checkbook disbursement stream (payments_swept=True). A
+          # contract with no dated stream (out of scope, or scoped but no check
+          # found / skipped) has those dated fields null and payments_swept=False.
           # =================================================================
           def build_record(cid, r):
               reg_d = parse_date(c(r, "prime_contract_registration_date"))
@@ -573,10 +576,11 @@ jobs:
                   "pct_paid_to_date": pct_paid_to_date,  # paid_to_date / current (ALL contracts)
               }
 
-              swept = cid in payments
+              docs = payments.get(cid)
+              swept = bool(docs)
               if not swept:
-                  # No disbursement found in-window: searchable with contract-level
-                  # amounts, but no dated timing. All dated fields null + flag.
+                  # No dated stream (out of scope, or scoped with no check found):
+                  # searchable with contract-level amounts, no dated timing.
                   rec.update({
                       "payments_swept": False,
                       "first_payment_lag_days": None,
@@ -593,7 +597,6 @@ jobs:
               # Swept contract: build the dated stream + velocity metrics. Drop
               # entries with no usable date from the timeline but still count their
               # dollars in total_paid (a check with no date is still cash out).
-              docs = payments.get(cid, {})
               dated = []
               undated_amt = 0
               for doc, (d, amt) in docs.items():
@@ -650,7 +653,7 @@ jobs:
               })
               return rec
 
-          # Build all records (ranked already computed in Stage 2).
+          # Build ALL Stage-1 records (every construction contract is searchable).
           records = [build_record(cid, r) for cid, r in ranked]
 
           # Reconciliation signal (swept contracts only): how often sum-of-checks
@@ -671,50 +674,46 @@ jobs:
           contracts_with_dated_payments = sum(1 for rec in records
                                               if rec.get("payments_swept") and (rec["payment_count"] or 0) > 0)
 
-          # rows-fetched-per-FY, keyed by a readable string for the JSON meta.
-          rows_per_fy = {}
-          for (cat, fy), n in rows_fetched_by_fy.items():
-              rows_per_fy["category=%s FY%d" % (cat, fy)] = {
-                  "rows_fetched": n,
-                  "api_record_count": record_count_by_fy.get((cat, fy)),
-              }
-
           meta = {
               "generated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
               "source": ("Checkbook NYC API (checkbooknyc.com): Registered Contracts (expense) "
-                         "for the contract universe and Spending (filtered by spending_category) "
-                         "for dated disbursements on every construction contract"),
+                         "for the contract universe and per-contract Spending (search_criteria "
+                         "contract_id) for dated disbursements on the scoped subset"),
               "fiscal_years": FYS,
-              "sweep_strategy": ("construction-filtered bulk Spending (search_criteria "
-                                 "spending_category + fiscal_year, paged, deduped on document_id) "
-                                 "bucketed by contract_id and attributed to the registered "
-                                 "construction contract universe"),
-              "spending_category_filter": CONSTR_SPENDING_CATEGORIES,
-              "spending_rows_per_fy": rows_per_fy,
+              "sweep_strategy": ("per-contract Spending (one POST per contract_id, deduped on "
+                                 "document_id, bucketed by contract_id) over every registered "
+                                 "construction contract of at least the amount floor registered "
+                                 "since the scope year that is open or closed within the past year"),
+              "amount_floor": AMOUNT_FLOOR,
+              "since_year": SINCE_YEAR,
+              "closed_within_days": CLOSED_WITHIN_DAYS,
               "contracts": len(records),
+              "contracts_in_scope": contracts_in_scope,
               "contracts_with_dated_payments": contracts_with_dated_payments,
               "contracts_swept": contracts_swept,
+              "contracts_skipped": contracts_skipped,
               "spending_rows_seen": spending_rows_seen,
               "spending_rows_kept": spending_rows_kept,
               "recon_pct_total_paid_vs_spent_to_date": recon_pct,
-              "coverage_note": ("Paid-to-date and percent paid come from the City's registered "
-                                "contract record and cover every contract in the index. Dated "
-                                "payment timing (the spend curve and velocity) covers every "
-                                "registered construction contract with a Checkbook NYC "
-                                "disbursement in FY2021-2025; a contract with no disbursement in "
-                                "that window is fully searchable with its contract-level amounts "
-                                "but carries no dated timing."),
+              "coverage_note": ("Dated payment timing (the spend curve and velocity) covers "
+                                "construction contracts of $500,000 or more registered since 2019 "
+                                "that are open or closed within the past year, with closure judged by "
+                                "the registered end date. All registered construction contracts remain "
+                                "searchable with their amounts and paid-to-date; paid-to-date and "
+                                "percent paid come from the City's registered-contract record and "
+                                "cover every contract in the index."),
               "coverage_notes": [
                   "Universe is construction registered contracts (category=expense, "
                   "status=registered, industry matches construction) registered in FY2021-2025.",
                   "Paid to date and percent paid are the City's registered-contract figures "
                   "(prime_vendor_spent_to_date over current amount) and cover every contract.",
-                  "Dated payment timing covers every registered construction contract with a "
-                  "Checkbook NYC disbursement in FY2021-2025; checks are pulled by spending "
-                  "category, bucketed by contract, and deduped on document_id.",
-                  "Where a contract had no disbursement in the window, the spend curve and "
-                  "velocity read as a dash; its paid-to-date and percent paid still come from "
-                  "the contract record.",
+                  "Dated payment timing covers construction contracts of $500,000 or more "
+                  "registered since 2019 that are open or closed within the past year (closure "
+                  "judged by the registered end date); their checks are pulled one contract at a "
+                  "time from Checkbook NYC Spending and deduped on document_id.",
+                  "Where a contract is outside that scope, or drew no disbursement, the spend "
+                  "curve and velocity read as a dash; its paid-to-date and percent paid still "
+                  "come from the contract record.",
                   "end_date is the contract's SCHEDULED end, not actual completion.",
                   "bid_due_date is a best-effort City Record pin join with partial coverage; "
                   "null where no match.",
@@ -725,8 +724,8 @@ jobs:
                   "No location/borough field is published for these records by design.",
               ],
           }
-          if aborted:
-              meta["spending_pull_aborted"] = abort_reason
+          if contracts_skipped:
+              meta["skipped_contract_ids_sample"] = skipped_ids
 
           out = {"meta": meta, "contracts": records}
 
@@ -743,25 +742,21 @@ jobs:
               payload = json.dumps(out, separators=(",", ":"), ensure_ascii=False)
 
           log("=== SUMMARY ===")
-          log("contracts=%d dated=%d swept=%d seen=%d spending_kept=%d categories=%s aborted=%s recon=%s bytes=%d"
-              % (len(records), contracts_with_dated_payments, contracts_swept,
-                 spending_rows_seen, spending_rows_kept, CONSTR_SPENDING_CATEGORIES,
-                 aborted, recon_pct, len(payload.encode("utf-8"))))
+          log("contracts=%d in_scope=%d dated=%d swept=%d skipped=%d seen=%d kept=%d recon=%s bytes=%d"
+              % (len(records), contracts_in_scope, contracts_with_dated_payments,
+                 contracts_swept, contracts_skipped, spending_rows_seen,
+                 spending_rows_kept, recon_pct, len(payload.encode("utf-8"))))
 
-          # Quality gate. On a thin/degraded pull, or any safety-cap abort, KEEP
-          # last-good data and exit 0. Only a genuine code error (uncaught
-          # exception) fails the job and emails the owner. Identical spirit to
-          # checkbook.yml.
-          ok = (not aborted
-                and len(records) >= 50
-                and contracts_with_dated_payments >= 25
-                and spending_rows_kept >= 200)
-          if not ok:
-              log("WARNING: payments pull looks partial, degraded, or aborted "
-                  "(contracts=%d, with_dated_payments=%d, spending_kept=%d, aborted=%s). "
-                  "Keeping the existing data file and exiting without committing."
-                  % (len(records), contracts_with_dated_payments, spending_rows_kept, aborted))
-              sys.exit(0)
+          # SOFT quality gate: on a thin/degraded pull, LOG a warning but ALWAYS
+          # write the file. Every Stage-1 contract is still a searchable record
+          # with its contract-level fields and paid_to_date, so a thin dated pull
+          # never justifies skipping the write (the old skip-on-thin path is what
+          # left data/contract-search.json missing and broke the commit step).
+          if len(records) < 50 or contracts_with_dated_payments < 25:
+              log("WARNING: dated pull looks thin "
+                  "(contracts=%d, with_dated_payments=%d, skipped=%d). Writing the file "
+                  "anyway; every contract remains searchable with its contract-level fields."
+                  % (len(records), contracts_with_dated_payments, contracts_skipped))
 
           with open("data/contract-search.json", "w") as f:
               f.write(payload)
@@ -773,8 +768,15 @@ jobs:
         run: |
           git config user.name "concrete-index-payments"
           git config user.email "actions@users.noreply.github.com"
-          git add data/contract-search.json
-          git diff --cached --quiet && echo "No changes today" || {
+          # Stage everything under data/ so a never-before-committed file does not
+          # trip `pathspec did not match any files` (the old single-pathspec bug).
+          git add -A data/
+          if git diff --cached --quiet; then
+            echo "No changes today"
+          else
             git commit -m "Checkbook dated payments $(date -u +%Y-%m-%d)"
+            # Rebase onto the latest main before pushing so a concurrent nightly
+            # push cannot cause a non-fast-forward rejection (exit 128).
+            git pull --rebase origin main
             git push
-          }
+          fi
