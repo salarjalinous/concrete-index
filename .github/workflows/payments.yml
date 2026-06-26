@@ -1,0 +1,634 @@
+name: Checkbook NYC dated payments
+
+# Builds data/contract-search.json: per construction registered contract, a
+# dated disbursement stream from the Checkbook NYC Spending domain plus
+# velocity metrics (first-payment lag, days-to-50pct/90pct paid, monthly
+# cumulative curve). Source of truth for the contract-search / payment-velocity
+# page. Mirrors site/checkbook.yml: stdlib-only Python (urllib + xml), no extra
+# deps, generous backoff, a quality gate that KEEPS last-good data on a thin
+# pull, and commit-if-changed. Never call the live API outside the Action
+# (Checkbook is POST-XML with no CORS).
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '50 6 * * *'   # 06:50 UTC daily (~1:50am New York), after archive + checkbook
+
+permissions:
+  contents: write
+
+jobs:
+  payments:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build contract-search.json
+        run: |
+          mkdir -p data
+          python3 - <<'PYEOF'
+          import json, sys, time, re, os, datetime
+          import urllib.request, urllib.error
+          import xml.etree.ElementTree as ET
+
+          API = "https://www.checkbooknyc.com/api"
+          FYS = [2021, 2022, 2023, 2024, 2025]
+          MAX_RECORDS = 1000
+          CONSTR_RE = re.compile(r"constr|engineer|architect|paving|excavat|infrastructure", re.I)
+
+          # Keep full dated detail for the biggest contracts; lighter records for
+          # the rest so the static file stays small. (Mirrors checkbook.yml's
+          # truncation discipline.)
+          FULL_DETAIL_TOP = 1200
+          MAX_BYTES = 1_400_000
+
+          # ---- normalizer: byte-for-byte equivalent of the /vendors/ page normName() ----
+          # JS: (s||'').trim().replace(/\s+/g,' ').toUpperCase().replace(/[.,;:&/\\'"`\-\s]+$/,'').trim()
+          _TRAIL = re.compile(r"[.,;:&/\\'\"`\-\s]+$")
+          def norm_name(s):
+              if s is None:
+                  s = ""
+              s = s.strip()
+              s = re.sub(r"\s+", " ", s)
+              s = s.upper()
+              s = _TRAIL.sub("", s)
+              return s.strip()
+
+          def log(*a):
+              print(*a, flush=True)
+
+          def build_request_xml(type_of_data, columns, criteria, records_from):
+              crit_xml = ""
+              for nm, ty, val in criteria:
+                  crit_xml += ("<criteria><name>%s</name><type>%s</type><value>%s</value></criteria>"
+                               % (nm, ty, val))
+              cols_xml = "".join("<column><name>%s</name></column>" % c for c in columns)
+              return ('<?xml version="1.0"?>'
+                      "<request>"
+                      "<type_of_data>%s</type_of_data>"
+                      "<records_from>%d</records_from>"
+                      "<max_records>%d</max_records>"
+                      "<search_criteria>%s</search_criteria>"
+                      "<response_columns>%s</response_columns>"
+                      "</request>") % (type_of_data, records_from, MAX_RECORDS, crit_xml, cols_xml)
+
+          UA = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/124.0 Safari/537.36 "
+                "ConcreteIndex/1.0 (+https://concreteindex.co)")
+
+          def post(xml_body, tries=6):
+              last = None
+              for attempt in range(tries):
+                  try:
+                      req = urllib.request.Request(
+                          API, data=xml_body.encode("utf-8"),
+                          headers={"Content-Type": "text/xml", "Accept": "text/xml",
+                                   "User-Agent": UA},
+                          method="POST")
+                      with urllib.request.urlopen(req, timeout=120) as r:
+                          return r.read().decode("utf-8", "replace")
+                  except urllib.error.HTTPError as e:
+                      last = e
+                      log("  POST attempt %d failed: HTTP %s" % (attempt + 1, e.code))
+                      if e.code in (403, 429):   # rate-limited: generous backoff
+                          time.sleep(min(60, 8 * (2 ** attempt)))
+                      else:
+                          time.sleep(3 * (attempt + 1))
+                  except Exception as e:
+                      last = e
+                      log("  POST attempt %d failed: %s" % (attempt + 1, e))
+                      time.sleep(3 * (attempt + 1))
+              raise RuntimeError("POST failed after %d tries: %s" % (tries, last))
+
+          def parse_records(xml_text):
+              # Returns (recs, raw). recs is None on hard error (parse fail or API
+              # <result>failure</result>); [] on a clean empty page. Structure of
+              # the parser is identical to checkbook.yml: row elements inside
+              # <result_records> are detected by "all children are leaves".
+              try:
+                  root = ET.fromstring(xml_text)
+              except ET.ParseError as e:
+                  log("  XML parse error:", e)
+                  log("  first 600 chars:", xml_text[:600])
+                  return None, xml_text
+              result = None
+              for el in root.iter():
+                  if el.tag.lower() == "result":
+                      result = (el.text or "").strip().lower()
+                      break
+              if result == "failure":
+                  msgs = []
+                  for m in root.iter():
+                      if m.tag.lower() == "description":
+                          msgs.append((m.text or "").strip())
+                  log("  API returned failure. messages:")
+                  for m in msgs:
+                      log("    -", m)
+                  return None, xml_text
+              for el in root.iter():
+                  if el.tag.lower() == "record_count":
+                      log("  [api record_count = %s]" % ((el.text or "").strip()))
+                      break
+              container = None
+              for el in root.iter():
+                  if el.tag.lower() == "result_records":
+                      container = el
+                      break
+              recs = []
+              if container is not None:
+                  def is_row(e):
+                      kids = list(e)
+                      return len(kids) > 0 and all(len(list(k)) == 0 for k in kids)
+                  candidates = []
+                  for child in container:
+                      if is_row(child):
+                          candidates.append(child)
+                      else:
+                          for gc in child:
+                              if is_row(gc):
+                                  candidates.append(gc)
+                  for rec in candidates:
+                      d = {}
+                      for c in rec:
+                          d[c.tag.lower()] = (c.text or "").strip()
+                      if d:
+                          recs.append(d)
+              return recs, xml_text
+
+          def fetch_all(type_of_data, columns, criteria):
+              # Generic pager. criteria is a fully-formed list of (name,type,value).
+              rows = []
+              raw_first = None
+              rf = 1
+              page = 0
+              while True:
+                  xml = build_request_xml(type_of_data, columns, criteria, rf)
+                  resp = post(xml)
+                  recs, raw = parse_records(resp)
+                  if page == 0:
+                      raw_first = raw
+                  if recs is None:
+                      time.sleep(0.7)
+                      return rows, raw_first
+                  rows.extend(recs)
+                  got = len(recs)
+                  page += 1
+                  if got < MAX_RECORDS:
+                      break
+                  rf += MAX_RECORDS
+                  time.sleep(1.0)   # pace paging to avoid 403 rate-limit
+                  if rf > 500000:
+                      log("  WARNING paging cap hit for", type_of_data, criteria)
+                      break
+              time.sleep(0.7)       # pace between request groups
+              return rows, raw_first
+
+          def to_int_amount(s):
+              if not s:
+                  return 0
+              s = s.replace(",", "").replace("$", "").strip()
+              try:
+                  return int(round(float(s)))
+              except ValueError:
+                  return 0
+
+          def parse_date(s):
+              # Checkbook dates come as YYYY-MM-DD (sometimes with a time). Return a
+              # date or None. Robust to a couple of stray formats.
+              if not s:
+                  return None
+              s = s.strip()
+              m = re.match(r"(\d{4})-(\d{2})-(\d{2})", s)
+              if m:
+                  try:
+                      return datetime.date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+                  except ValueError:
+                      return None
+              m = re.match(r"(\d{1,2})/(\d{1,2})/(\d{4})", s)
+              if m:
+                  try:
+                      return datetime.date(int(m.group(3)), int(m.group(1)), int(m.group(2)))
+                  except ValueError:
+                      return None
+              return None
+
+          def iso(d):
+              return d.isoformat() if d else None
+
+          def month_key(d):
+              return "%04d-%02d" % (d.year, d.month)
+
+          def load_aliases(path):
+              with open(path) as f:
+                  raw = json.load(f)
+              v2p = {}
+              for g in raw:
+                  for v in g.get("variants", []):
+                      nv = norm_name(v)
+                      if nv:
+                          v2p[nv] = g["parent"]
+              return v2p
+
+          alias_path = "site/data/vendor-aliases.json"
+          if not os.path.exists(alias_path):
+              alias_path = "data/vendor-aliases.json"
+          variant_to_parent = load_aliases(alias_path)
+          log("Loaded %d normalized variant keys from %s" % (len(variant_to_parent), alias_path))
+
+          def resolve_vendor(name):
+              k = norm_name(name)
+              parent = variant_to_parent.get(k)
+              if parent:
+                  return parent
+              return (name or "").strip()
+
+          # =================================================================
+          # STAGE 1 - the construction registered-contracts universe.
+          # Reuses the EXACT criteria/columns/construction filter from
+          # checkbook.yml so this job and the vendor job share one definition of
+          # "construction registered contract". Adds the contract-level date and
+          # award fields the velocity math needs.
+          # =================================================================
+          contracts_cols = ["prime_vendor", "prime_contract_id", "prime_contracting_agency",
+                            "prime_contract_industry", "prime_contract_current_amount",
+                            "prime_vendor_spent_to_date", "prime_contract_original_amount",
+                            "prime_contract_purpose", "prime_contract_pin",
+                            "prime_contract_award_method",
+                            "prime_contract_registration_date",
+                            "prime_contract_start_date", "prime_contract_end_date"]
+
+          # category=expense + status=registered are both accepted on Contracts.
+          CONTRACTS_BASE = [("category", "value", "expense"),
+                            ("status", "value", "registered")]
+
+          def c(r, k, default=""):
+              return r.get(k, default) or default
+
+          all_contracts = []
+          for fy in FYS:
+              log("--- Contracts FY%d ---" % fy)
+              crit = CONTRACTS_BASE + [("fiscal_year", "value", str(fy))]
+              rows, _ = fetch_all("Contracts", contracts_cols, crit)
+              log("  %d contract rows" % len(rows))
+              all_contracts.extend(rows)
+
+          # Construction filter, client-side on the returned industry text (the
+          # server industry filter needs a 2-char code we do not have; identical
+          # decision to checkbook.yml).
+          def keep_c(r):
+              return bool(CONSTR_RE.search(c(r, "prime_contract_industry")))
+
+          constr = [r for r in all_contracts if keep_c(r)]
+          log("After construction filter: %d contracts" % len(constr))
+
+          # Dedupe on prime_contract_id, keeping the row with the max registered
+          # (current) amount (latest, most-complete view of the contract).
+          by_cid = {}
+          for r in constr:
+              cid = c(r, "prime_contract_id")
+              if not cid:
+                  continue
+              amt = to_int_amount(c(r, "prime_contract_current_amount"))
+              prev = by_cid.get(cid)
+              if prev is None or amt > to_int_amount(c(prev, "prime_contract_current_amount")):
+                  by_cid[cid] = r
+          log("Distinct construction contract_ids: %d" % len(by_cid))
+
+          cid_set = set(by_cid.keys())
+
+          # Agency set actually carrying construction contracts. We sweep ONLY
+          # these agencies (not all city agencies), keeping the Spending pull tight.
+          agencies = {}
+          for cid, r in by_cid.items():
+              ag = c(r, "prime_contracting_agency")
+              if ag:
+                  agencies.setdefault(ag, 0)
+                  agencies[ag] += 1
+          log("Construction-active agencies: %d" % len(agencies))
+
+          # =================================================================
+          # STAGE 2 - dated Spending disbursements.
+          #
+          # SWEEP STRATEGY: AGENCY-SCOPED (agency_code + fiscal_year, paged, then
+          # client-filter rows whose contract_id is in cid_set).
+          #
+          # Why this and not per-contract_id:
+          #   - The construction universe is ~thousands of distinct contract_ids
+          #     across only a few dozen agencies x 5 FY. Agency x FY is at most a
+          #     few hundred request GROUPS (each internally paged), versus
+          #     thousands of one-contract requests. Far fewer round trips, far
+          #     less rate-limit exposure, and every page carries many contracts.
+          #   - A citywide unfiltered Spending pull is ~3.2M checks/FY and is
+          #     intractable in an Action; agency+FY bounds each pull to that one
+          #     agency's checks, which is small and pageable.
+          #   - We only sweep agencies that actually hold a construction contract
+          #     (derived from Stage 1), so we never pay for irrelevant agencies.
+          #
+          # Checkbook quirk locked from checkbook.yml's failure messages:
+          # agency is "agency_code" on INPUT but "agency" on OUTPUT. We pass the
+          # agency text we got from Contracts as agency_code; if an agency's pull
+          # comes back failure/empty we fall back to a payee_name sweep for that
+          # agency's vendors (payee_name matches first 3 letters) so a single
+          # rejected agency code cannot blank that agency's contracts.
+          # =================================================================
+          spending_cols = ["contract_id", "document_id", "issue_date", "check_amount",
+                           "payee_name", "agency", "expense_category", "fiscal_year"]
+
+          # contract_id -> {document_id -> (date, amount)} ; dedupe on document_id.
+          payments = {cid: {} for cid in cid_set}
+          seen_docs = set()
+          spending_rows_seen = 0
+          spending_rows_kept = 0
+          agencies_via_payee = 0
+
+          def ingest(rows):
+              global spending_rows_seen, spending_rows_kept
+              for r in rows:
+                  spending_rows_seen += 1
+                  cid = c(r, "contract_id")
+                  if cid not in cid_set:
+                      continue
+                  doc = c(r, "document_id")
+                  if not doc:
+                      doc = "%s|%s|%s" % (cid, c(r, "issue_date"), c(r, "check_amount"))
+                  if doc in seen_docs:
+                      continue
+                  seen_docs.add(doc)
+                  d = parse_date(c(r, "issue_date"))
+                  amt = to_int_amount(c(r, "check_amount"))
+                  payments[cid][doc] = (d, amt)
+                  spending_rows_kept += 1
+
+          # Precompute the distinct payee first-3-letters per agency for the
+          # fallback sweep.
+          payee_prefixes_by_agency = {}
+          for cid, r in by_cid.items():
+              ag = c(r, "prime_contracting_agency")
+              v = c(r, "prime_vendor")
+              if ag and len(v) >= 3:
+                  payee_prefixes_by_agency.setdefault(ag, set()).add(v[:3].upper())
+
+          for ag in sorted(agencies):
+              got_any = False
+              for fy in FYS:
+                  crit = [("agency_code", "value", ag), ("fiscal_year", "value", str(fy))]
+                  rows, raw = fetch_all("Spending", spending_cols, crit)
+                  if rows:
+                      got_any = True
+                  before = spending_rows_kept
+                  ingest(rows)
+                  log("  Spending agency=%r FY%d: %d rows, +%d kept"
+                      % (ag, fy, len(rows), spending_rows_kept - before))
+              if not got_any:
+                  # Fallback: agency_code rejected/empty -> sweep this agency's
+                  # vendors by payee_name (first-3-letter match) over each FY.
+                  prefixes = payee_prefixes_by_agency.get(ag, set())
+                  if prefixes:
+                      agencies_via_payee += 1
+                      log("  agency=%r empty via agency_code; payee fallback (%d prefixes)"
+                          % (ag, len(prefixes)))
+                  for pref in sorted(prefixes):
+                      for fy in FYS:
+                          crit = [("payee_name", "value", pref), ("fiscal_year", "value", str(fy))]
+                          rows, raw = fetch_all("Spending", spending_cols, crit)
+                          ingest(rows)
+
+          log("Spending: seen=%d kept=%d (deduped on document_id), payee-fallback agencies=%d"
+              % (spending_rows_seen, spending_rows_kept, agencies_via_payee))
+
+          # =================================================================
+          # STAGE 3 - best-effort bid_due_date from the City Record archive.
+          # Joins City-Record pin -> Checkbook prime_contract_pin. Partial
+          # coverage by design; never required. Read from the archived
+          # awards.json the nightly archive job committed (no extra API call,
+          # same-repo file). Skipped silently if absent.
+          # =================================================================
+          bid_due_by_pin = {}
+          for ap in ("data/awards.json", "site/data/awards.json"):
+              if os.path.exists(ap):
+                  try:
+                      aw = json.load(open(ap))
+                      for row in aw:
+                          pin = (row.get("pin") or "").strip()
+                          dd = (row.get("due_date") or "").strip()
+                          if pin and dd and pin not in bid_due_by_pin:
+                              bid_due_by_pin[pin] = dd[:10]
+                      log("Loaded %d pin->due_date pairs from %s" % (len(bid_due_by_pin), ap))
+                  except Exception as e:
+                      log("  could not read awards for bid_due_date:", e)
+                  break
+
+          def lookup_bid_due(pin):
+              pin = (pin or "").strip()
+              if not pin:
+                  return None
+              if pin in bid_due_by_pin:
+                  return bid_due_by_pin[pin]
+              # loose contains-match either direction (pins are partially coverable)
+              for k, v in bid_due_by_pin.items():
+                  if k and (k in pin or pin in k):
+                      return v
+              return None
+
+          # =================================================================
+          # STAGE 4 - per-contract velocity metrics.
+          # =================================================================
+          def build_record(cid, r, light=False):
+              reg_d = parse_date(c(r, "prime_contract_registration_date"))
+              start_d = parse_date(c(r, "prime_contract_start_date"))
+              end_d = parse_date(c(r, "prime_contract_end_date"))
+              original = to_int_amount(c(r, "prime_contract_original_amount"))
+              current = to_int_amount(c(r, "prime_contract_current_amount"))
+              spent_to_date = to_int_amount(c(r, "prime_vendor_spent_to_date"))
+              vendor = resolve_vendor(c(r, "prime_vendor"))
+              agency = c(r, "prime_contracting_agency")
+              category = c(r, "prime_contract_industry")
+              award_method = c(r, "prime_contract_award_method")
+              pin = c(r, "prime_contract_pin")
+              purpose = c(r, "prime_contract_purpose")
+
+              # Dated payment stream, sorted by issue_date. Drop entries with no
+              # usable date for the velocity timeline but still count their dollars
+              # in total_paid (a check with no date is still cash out).
+              docs = payments.get(cid, {})
+              dated = []
+              undated_amt = 0
+              for doc, (d, amt) in docs.items():
+                  if d is not None:
+                      dated.append((d, amt))
+                  else:
+                      undated_amt += amt
+              dated.sort(key=lambda x: x[0])
+
+              total_paid = sum(a for _, a in dated) + undated_amt
+              payment_count = len(docs)
+              first_payment_date = dated[0][0] if dated else None
+              last_payment_date = dated[-1][0] if dated else None
+
+              # Denominator for "pct paid" velocity: prefer current (registered)
+              # amount, fall back to original. pct_paid_to_date uses total_paid.
+              denom = current or original or 0
+              pct_paid_to_date = round(total_paid / denom, 4) if denom > 0 else None
+
+              first_payment_lag_days = None
+              if reg_d and first_payment_date:
+                  first_payment_lag_days = (first_payment_date - reg_d).days
+
+              # Walk the cumulative stream from registration to find the first
+              # date at which cumulative paid crosses 50% / 90% of denom.
+              days_to_50pct_paid = None
+              days_to_90pct_paid = None
+              if reg_d and denom > 0 and dated:
+                  cum = 0
+                  for d, amt in dated:
+                      cum += amt
+                      if days_to_50pct_paid is None and cum >= 0.50 * denom:
+                          days_to_50pct_paid = (d - reg_d).days
+                      if days_to_90pct_paid is None and cum >= 0.90 * denom:
+                          days_to_90pct_paid = (d - reg_d).days
+                          break
+
+              # Compact monthly cumulative spend series: [["YYYY-MM", cum_dollars], ...]
+              monthly = []
+              if dated:
+                  by_month = {}
+                  for d, amt in dated:
+                      by_month[month_key(d)] = by_month.get(month_key(d), 0) + amt
+                  cum = 0
+                  for mk in sorted(by_month):
+                      cum += by_month[mk]
+                      monthly.append([mk, cum])
+
+              rec = {
+                  "contract_id": cid,
+                  "vendor": vendor,
+                  "agency": agency,
+                  "category": category,
+                  "award_method": award_method,
+                  "registration_date": iso(reg_d),
+                  "start_date": iso(start_d),
+                  "end_date": iso(end_d),            # SCHEDULED end (not actual completion)
+                  "bid_due_date": lookup_bid_due(pin),   # best-effort, may be null
+                  "original_amount": original,
+                  "current_amount": current,
+                  "paid_to_date": spent_to_date,         # contract-domain figure
+                  "first_payment_lag_days": first_payment_lag_days,
+                  "days_to_50pct_paid": days_to_50pct_paid,
+                  "days_to_90pct_paid": days_to_90pct_paid,
+                  "pct_paid_to_date": pct_paid_to_date,
+                  "payment_count": payment_count,
+                  "total_paid": total_paid,              # sum of dated checks (+ undated $)
+                  "first_payment_date": iso(first_payment_date),
+                  "last_payment_date": iso(last_payment_date),
+              }
+              if not light:
+                  rec["monthly_cumulative"] = monthly
+              return rec, current
+
+          # Build all records, ranked by current amount for the truncation policy.
+          ranked = sorted(by_cid.items(),
+                          key=lambda kv: -to_int_amount(c(kv[1], "prime_contract_current_amount")))
+          records = []
+          truncated = False
+          for i, (cid, r) in enumerate(ranked):
+              light = i >= FULL_DETAIL_TOP
+              rec, _cur = build_record(cid, r, light=light)
+              if light:
+                  truncated = True
+              records.append(rec)
+
+          # Reconciliation signal: how often sum-of-checks (total_paid) tracks the
+          # contract-domain prime_vendor_spent_to_date. Reported in meta, not used
+          # to gate a row (the two can legitimately differ: spent_to_date can lag
+          # or include non-check spend).
+          recon_close = 0
+          recon_have_both = 0
+          for rec in records:
+              ptd = rec["paid_to_date"]
+              tp = rec["total_paid"]
+              if ptd > 0 and tp > 0:
+                  recon_have_both += 1
+                  if abs(tp - ptd) <= max(1000, int(0.05 * ptd)):
+                      recon_close += 1
+          recon_pct = round(recon_close / recon_have_both, 4) if recon_have_both else None
+
+          contracts_with_payments = sum(1 for rec in records if rec["payment_count"] > 0)
+
+          meta = {
+              "generated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+              "source": ("Checkbook NYC API (checkbooknyc.com): Registered Contracts (expense) "
+                         "for the contract universe and Spending for dated disbursements"),
+              "fiscal_years": FYS,
+              "sweep_strategy": ("agency-scoped Spending (agency_code + fiscal_year, paged, "
+                                 "client-filtered to construction contract_ids; payee_name "
+                                 "fallback per agency on empty agency_code)"),
+              "contracts": len(records),
+              "contracts_with_payments": contracts_with_payments,
+              "spending_rows_kept": spending_rows_kept,
+              "agencies_swept": len(agencies),
+              "agencies_via_payee_fallback": agencies_via_payee,
+              "recon_pct_total_paid_vs_spent_to_date": recon_pct,
+              "coverage_notes": [
+                  "Universe is construction registered contracts (category=expense, "
+                  "status=registered, industry matches construction) registered in FY2021-2025.",
+                  "Payments are individual Checkbook Spending disbursements deduped on "
+                  "document_id; a contract registered in-window may have checks dated "
+                  "outside the swept fiscal years, so total_paid can understate lifetime spend.",
+                  "end_date is the contract's SCHEDULED end, not actual completion.",
+                  "bid_due_date is a best-effort City Record pin join with partial coverage; "
+                  "null where no match.",
+                  "Velocity denominators use current (registered) amount, falling back to "
+                  "original; days_to_50pct/90pct are null when never reached in-window.",
+                  "paid_to_date is the contract-domain prime_vendor_spent_to_date; total_paid "
+                  "is the sum of swept checks. They can differ; recon_pct reports agreement.",
+                  "No location/borough field is published for these records by design.",
+              ],
+          }
+          if truncated:
+              meta["truncated"] = True
+              meta["full_detail_top"] = FULL_DETAIL_TOP
+
+          out = {"meta": meta, "contracts": records}
+
+          # If still too big, drop monthly_cumulative from the lightest records.
+          payload = json.dumps(out, separators=(",", ":"), ensure_ascii=False)
+          if len(payload.encode("utf-8")) > MAX_BYTES:
+              for rec in records[FULL_DETAIL_TOP:]:
+                  rec.pop("monthly_cumulative", None)
+              meta["truncated"] = True
+              meta["full_detail_top"] = FULL_DETAIL_TOP
+              payload = json.dumps(out, separators=(",", ":"), ensure_ascii=False)
+
+          log("=== SUMMARY ===")
+          log("contracts=%d with_payments=%d spending_kept=%d agencies=%d recon=%s bytes=%d"
+              % (len(records), contracts_with_payments, spending_rows_kept,
+                 len(agencies), recon_pct, len(payload.encode("utf-8"))))
+
+          # Quality gate. On a thin/degraded pull, KEEP last-good data and exit 0.
+          # Only a genuine code error (uncaught exception) fails the job and emails
+          # the owner. Identical spirit to checkbook.yml.
+          ok = (len(records) >= 50
+                and contracts_with_payments >= 25
+                and spending_rows_kept >= 200)
+          if not ok:
+              log("WARNING: payments pull looks partial or degraded "
+                  "(contracts=%d, with_payments=%d, spending_kept=%d). "
+                  "Keeping the existing data file and exiting without committing."
+                  % (len(records), contracts_with_payments, spending_rows_kept))
+              sys.exit(0)
+
+          with open("data/contract-search.json", "w") as f:
+              f.write(payload)
+          log("Wrote data/contract-search.json (%d bytes, %d contracts)"
+              % (os.path.getsize("data/contract-search.json"), len(records)))
+          PYEOF
+
+      - name: Commit if changed
+        run: |
+          git config user.name "concrete-index-payments"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/contract-search.json
+          git diff --cached --quiet && echo "No changes today" || {
+            git commit -m "Checkbook dated payments $(date -u +%Y-%m-%d)"
+            git push
+          }
