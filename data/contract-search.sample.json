@@ -9,8 +9,17 @@
       2024,
       2025
     ],
-    "sweep_strategy": "per-contract Spending (search_criteria contract_id, exact match, deduped on document_id) for the top N construction contracts by current amount",
+    "sweep_strategy": "construction-filtered bulk Spending (search_criteria spending_category + fiscal_year, paged, deduped on document_id) bucketed by contract_id and attributed to the registered construction contract universe",
+    "spending_category_filter": ["c"],
+    "spending_rows_per_fy": {
+      "category=c FY2021": { "rows_fetched": 8, "api_record_count": "8" },
+      "category=c FY2022": { "rows_fetched": 10, "api_record_count": "10" },
+      "category=c FY2023": { "rows_fetched": 7, "api_record_count": "7" },
+      "category=c FY2024": { "rows_fetched": 6, "api_record_count": "6" },
+      "category=c FY2025": { "rows_fetched": 5, "api_record_count": "5" }
+    },
     "contracts": 16,
+    "spending_rows_seen": 36,
     "spending_rows_kept": 36,
     "recon_pct_total_paid_vs_spent_to_date": 1.0,
     "fixture": true,
@@ -18,19 +27,17 @@
       "SYNTHETIC fixture for page development and the velocity unit test; not from the live API.",
       "Universe is construction registered contracts (category=expense, status=registered, industry matches construction) registered in FY2021-2025.",
       "Paid to date and percent paid are the City's registered-contract figures (prime_vendor_spent_to_date over current amount) and cover every contract.",
-      "Dated payment timing is computed for the 1500 largest contracts by value; their checks are individual Checkbook Spending disbursements deduped on document_id.",
-      "Where a contract is not in the dated set, the spend curve and velocity read as a dash; its paid-to-date and percent paid still come from the contract record.",
+      "Dated payment timing covers every registered construction contract with a Checkbook NYC disbursement in FY2021-2025; checks are pulled by spending category, bucketed by contract, and deduped on document_id.",
+      "Where a contract had no disbursement in the window, the spend curve and velocity read as a dash; its paid-to-date and percent paid still come from the contract record.",
       "end_date is the contract's SCHEDULED end, not actual completion.",
       "bid_due_date is a best-effort City Record pin join with partial coverage; null where no match.",
       "Velocity denominators use current (registered) amount, falling back to original; days_to_50pct/90pct are null when never reached in the dated stream.",
-      "For swept contracts, total_paid is the dated check sum and can differ from paid_to_date; recon_pct reports agreement.",
+      "For dated contracts, total_paid is the dated check sum and can differ from paid_to_date; recon_pct reports agreement.",
       "No location/borough field is published for these records by design."
     ],
-    "dated_payment_cap": 1500,
     "contracts_with_dated_payments": 12,
     "contracts_swept": 13,
-    "contracts_skipped": 0,
-    "coverage_note": "Paid-to-date and percent paid come from the City's registered contract record and cover every contract in the index. Dated payment timing (the spend curve and velocity) is computed from Checkbook NYC disbursements for the 1500 largest construction contracts by value; smaller contracts are fully searchable with their contract-level amounts but carry no dated timing."
+    "coverage_note": "Paid-to-date and percent paid come from the City's registered contract record and cover every contract in the index. Dated payment timing (the spend curve and velocity) covers every registered construction contract with a Checkbook NYC disbursement in FY2021-2025; a contract with no disbursement in that window is fully searchable with its contract-level amounts but carries no dated timing."
   },
   "contracts": [
     {
