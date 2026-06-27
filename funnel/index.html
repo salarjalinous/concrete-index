@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data: https://images.unsplash.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://data.cityofnewyork.us https://data.ny.gov; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://data.cityofnewyork.us; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="canonical" href="https://concreteindex.co/funnel/">
 <meta property="og:type" content="website">
@@ -300,7 +300,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div style="margin-top:6px;font-size:12px;color:var(--faint);max-width:430px">An independent project built by Salar Jalinous using only public data. Not affiliated with any employer.</div>
     </div>
     <div style="text-align:right" class="f-meta">
-      <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
+      <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed daily</div>
       <div style="margin-top:5px"><a href="https://github.com/salarjalinous/concrete-index" target="_blank" rel="noopener">Source on GitHub</a></div>
       <div style="margin-top:5px">© 2026 <a href="/about/">Salar Jalinous</a></div>
     </div>
@@ -579,6 +579,12 @@ function renderKpis(){
   document.getElementById('kpi-coverage').textContent = spent > 0 ? (committed/spent).toFixed(1) + ' yrs' : '–';
 }
 
+function cbkFY(){
+  var ys=(state.checkbook.meta&&Array.isArray(state.checkbook.meta.fiscal_years))?state.checkbook.meta.fiscal_years:null;
+  if(!ys||!ys.length) return { short:'FY21–25', long:'fiscal years 2021 to 2025' };
+  var a=ys[0], b=ys[ys.length-1];
+  return { short:'FY'+String(a).slice(2)+'–'+String(b).slice(2), long:'fiscal years '+a+' to '+b };
+}
 function renderStages(){
   const stages = [
     { t:'Committed', s:'stock · full capital plan, unspent', v: state.pipeline.total, c: COLOR_B },
@@ -589,7 +595,7 @@ function renderStages(){
   // construction contracts to named vendors, City scope, FY2021-2025. Shown
   // only when the static Checkbook file loaded; never summed with Spent.
   if(state.checkbookOk){
-    stages.push({ t:'Paid (Checkbook)', s:'disbursed · registered contracts, FY21–25',
+    stages.push({ t:'Paid (Checkbook)', s:'disbursed · registered contracts, '+cbkFY().short,
       v: state.checkbook.paid, c: COLOR_B });
   }
   document.getElementById('stages-title').textContent =
@@ -607,7 +613,7 @@ function renderStages(){
     + 'The bar lengths share a scale only to make the magnitudes comparable.';
   const cbkNote = state.checkbookOk
     ? ' Paid (Checkbook) is a different ledger again: disbursements on registered construction contracts to named vendors, '
-      + 'NYC City scope, fiscal years 2021 to 2025, from the Comptroller’s Checkbook NYC. '
+      + 'NYC City scope, ' + cbkFY().long + ', from the Comptroller’s Checkbook NYC. '
       + 'It is not the same number as Spent, which is capital-plan outlays across all construction between plan snapshots, '
       + 'and the two are not added together.'
     : '';
@@ -618,7 +624,7 @@ function vBar(canvasId, labels, data, color){
   destroy(canvasId);
   charts[canvasId] = new Chart(document.getElementById(canvasId), {
     type:'bar',
-    data:{ labels, datasets:[{ data, backgroundColor: color, borderRadius:3 }] },
+    data:{ labels, datasets:[{ data, backgroundColor: color, borderRadius:1 }] },
     options:{
       responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{display:false},
