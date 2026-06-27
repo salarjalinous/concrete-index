@@ -809,6 +809,8 @@ jobs:
                   "agency": agency,
                   "category": category,
                   "award_method": award_method,
+                  "purpose": purpose or None,        # City free-text scope description
+                  "pin": pin or None,                # procurement identification number
                   "registration_date": iso(reg_d),
                   "start_date": iso(start_d),
                   "end_date": iso(end_d),            # SCHEDULED end (not actual completion)
@@ -923,6 +925,21 @@ jobs:
           contracts_with_dated_payments = sum(1 for rec in records
                                               if rec.get("payments_swept") and (rec["payment_count"] or 0) > 0)
 
+          # contracts_skipped: in the dated scope but drew no usable dated check
+          # (so they stay searchable with contract-level amounts, no spend curve).
+          contracts_skipped = max(contracts_in_scope - contracts_with_dated_payments, 0)
+
+          # Index-wide aggregates (every contract in view), so the JSON carries the
+          # same totals the page tape computes in the browser. total_registered and
+          # total_paid_to_date are the contract-record current and spent-to-date
+          # sums; total_dated_disbursements is the dated-check floor across swept
+          # contracts. Not a market aggregate, the value of the contracts indexed.
+          total_registered = sum((rec["current_amount"] or rec["original_amount"] or 0)
+                                  for rec in records)
+          total_paid_to_date = sum((rec["paid_to_date"] or 0) for rec in records)
+          total_dated_disbursements = sum((rec["total_paid"] or 0) for rec in records
+                                          if rec.get("payments_swept"))
+
           meta = {
               "generated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
               "source": ("Checkbook NYC API (checkbooknyc.com): Registered Contracts (expense) "
@@ -973,7 +990,11 @@ jobs:
               "contracts": len(records),
               "contracts_in_scope": contracts_in_scope,
               "contracts_with_dated_payments": contracts_with_dated_payments,
+              "contracts_skipped": contracts_skipped,
               "contracts_swept": contracts_swept,
+              "total_registered": total_registered,
+              "total_paid_to_date": total_paid_to_date,
+              "total_dated_disbursements": total_dated_disbursements,
               "spending_rows_seen": spending_rows_seen,
               "spending_rows_kept": spending_rows_kept,
               "recon_pct_total_paid_vs_spent_to_date": recon_pct,
@@ -1004,6 +1025,15 @@ jobs:
                   "original; days_to_50pct/90pct are null when never reached in the dated stream.",
                   "For dated contracts, total_paid is the dated check sum and can differ from "
                   "paid_to_date; recon_pct reports how closely they agree.",
+                  "purpose is the City's free-text contract scope description and pin is the "
+                  "procurement identification number, both from the registered-contract record; "
+                  "either reads null where the record carries no value.",
+                  "contracts_skipped counts contracts inside the dated scope that drew no usable "
+                  "dated check; they stay searchable with contract-level amounts.",
+                  "total_registered and total_paid_to_date sum the contract-record current "
+                  "(registered) and spent-to-date amounts across every contract in the index; "
+                  "total_dated_disbursements sums the dated check floor across swept contracts. "
+                  "These describe the contracts indexed, not the NYC construction market.",
                   "No location/borough field is published for these records by design.",
               ],
           }
@@ -1027,10 +1057,12 @@ jobs:
               "non_contract_skipped=%s probe_fell_back=%s"
               % (probed_code_name_map or "{}", category_codes_used or "[]",
                  unmapped_names or "[]", probe_fell_back))
-          log("contracts=%d in_scope=%d dated=%d swept=%d seen=%d kept=%d recon=%s bytes=%d"
+          log("contracts=%d in_scope=%d dated=%d skipped=%d swept=%d seen=%d kept=%d "
+              "registered=%d paid=%d recon=%s bytes=%d"
               % (len(records), contracts_in_scope, contracts_with_dated_payments,
-                 contracts_swept, spending_rows_seen,
-                 spending_rows_kept, recon_pct, len(payload.encode("utf-8"))))
+                 contracts_skipped, contracts_swept, spending_rows_seen,
+                 spending_rows_kept, total_registered, total_paid_to_date,
+                 recon_pct, len(payload.encode("utf-8"))))
 
           # SOFT quality gate: on a thin/degraded pull, LOG a warning but ALWAYS
           # write the file. Every Stage-1 contract is still a searchable record
