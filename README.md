@@ -1,6 +1,6 @@
 # The Concrete Index
 
-**NYC public construction capital, from commitment to cash.**
+**NYC public construction capital, tracked end to end.**
 
 Live at **[concreteindex.co](https://concreteindex.co)**
 
@@ -18,7 +18,7 @@ The **[Briefing](https://concreteindex.co/briefing/)** page composes a written "
 
 ## The differentiator
 
-Most public tools show one ledger at a time. The Concrete Index measures the *flow between* them: how much funded work is stacked upstream, how fast it converts to awards and cash, and which agencies move money fast or slow. **Backlog coverage**, unspent committed dollars divided by trailing-year spending, is the demand-side counterpart to a contractor's backlog ratio.
+The Concrete Index measures the *flow between* ledgers: how much funded work is stacked upstream and how fast it converts to awards and cash. **Backlog coverage**, unspent committed dollars divided by trailing-year spending, is the demand-side counterpart to a contractor's backlog ratio.
 
 ## Architecture
 
