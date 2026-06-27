@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data: https://images.unsplash.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://data.cityofnewyork.us https://data.ny.gov; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://data.cityofnewyork.us https://data.ny.gov; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="canonical" href="https://concreteindex.co/competitive/">
 <meta property="og:type" content="website">
@@ -275,7 +275,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 
 <div class="wrap hero">
   <div class="kicker">Contractors &amp; market structure</div>
-  <h1>Read one contractor, then the market it competes in.</h1>
+  <h1>One contractor's record, and the market around it.</h1>
   <p class="sub">Look up any firm's public award record across City and State construction, then read how award dollars and counts spread across the market by award-size band. The contractor lookup is the underwriting-critical view; the market-structure read follows below it. Awardee names in the market section are a grouping key only and are never published, ranked, or scored.</p>
   <div class="searchbar">
     <input id="q" type="search" placeholder="Try a contractor name, e.g. Deboe or Iannelli" autocomplete="off">
@@ -1321,7 +1321,7 @@ Chart.defaults.font.size = 10;
 Chart.defaults.color = '#6e5d52';
 Object.assign(Chart.defaults.plugins.tooltip, {
   backgroundColor:'#fffaf4', titleColor:'#22150e', bodyColor:'#6e5d52',
-  borderColor:'#b5482a', borderWidth:1, cornerRadius:2, padding:10, displayColors:true,
+  borderColor:'#b5482a', borderWidth:1, cornerRadius:2, padding:10, displayColors:false,
   boxWidth:10, boxHeight:10,
   titleFont:{family:"'Public Sans',sans-serif",weight:'600',size:12}, bodyFont:{family:"'IBM Plex Mono',monospace",size:12},
   caretSize:5
@@ -1348,8 +1348,8 @@ function renderBandsChart(a){
   state.charts['chart-bands'] = new Chart(document.getElementById('chart-bands'), {
     type:'bar',
     data:{ labels, datasets:[
-      { label:'Count share', data:a.bands.map(b => +(b.countShare*100).toFixed(2)), backgroundColor:COLOR_B, borderRadius:3 },
-      { label:'Dollar share', data:a.bands.map(b => +(b.dollarShare*100).toFixed(2)), backgroundColor:COLOR_A, borderRadius:3 }
+      { label:'Count share', data:a.bands.map(b => +(b.countShare*100).toFixed(2)), backgroundColor:COLOR_B, borderRadius:1 },
+      { label:'Dollar share', data:a.bands.map(b => +(b.dollarShare*100).toFixed(2)), backgroundColor:COLOR_A, borderRadius:1 }
     ]},
     options:{
       responsive:true, maintainAspectRatio:false,
