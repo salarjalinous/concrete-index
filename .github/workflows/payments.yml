@@ -167,7 +167,13 @@ jobs:
           # rate-limiting from stalling the (now short) run.
           SPENDING_PACE = 0.5        # seconds between bulk Spending pages
 
-          MAX_BYTES = 1_400_000
+          # Ceiling for the published JSON. The searchable universe alone (~3,200
+          # construction contracts with their contract-level fields) is ~2.0 MB
+          # before any dated curves, so a cap below that silently strips every
+          # monthly_cumulative series and leaves the S-curve with no data. Set
+          # well above the universe + curves (~2.3 MB) with headroom for coverage
+          # growth; GitHub Pages gzips the file, so wire transfer stays small.
+          MAX_BYTES = 6_000_000
 
           # ---- normalizer: byte-for-byte equivalent of the /vendors/ page normName() ----
           # JS: (s||'').trim().replace(/\s+/g,' ').toUpperCase().replace(/[.,;:&/\\'"`\-\s]+$/,'').trim()
