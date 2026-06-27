@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data: https://images.unsplash.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://data.cityofnewyork.us https://data.ny.gov; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://data.cityofnewyork.us; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="canonical" href="https://concreteindex.co/analysis/">
 <meta property="og:type" content="website">
@@ -375,7 +375,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div style="margin-top:6px;font-size:12px;color:var(--faint);max-width:430px">An independent project built by Salar Jalinous using only public data. Not affiliated with any employer.</div>
     </div>
     <div style="text-align:right" class="f-meta">
-      <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
+      <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed daily</div>
       <div style="margin-top:5px">© 2026 <a href="/about/">Salar Jalinous</a></div>
     </div>
   </div>
@@ -848,7 +848,7 @@ function renderSeasonality(){
   charts.season = new Chart(document.getElementById('chart-season'), {
     type:'bar',
     data:{ labels: MONTH_SHORT, datasets:[{
-      data: D.season, backgroundColor: D.season.map(s=> s===Math.max(...D.season) ? COLOR_A : COLOR_B), borderRadius:3
+      data: D.season, backgroundColor: D.season.map(s=> s===Math.max(...D.season) ? COLOR_A : COLOR_B), borderRadius:1
     }]},
     options:{
       responsive:true, maintainAspectRatio:false,
@@ -890,7 +890,7 @@ function renderEscalation(){
   charts.esc = new Chart(document.getElementById('chart-esc'), {
     type:'bar',
     data:{ labels: D.esc.agRows.map(r=>agencyLabel(r[0])), datasets:[{
-      data: D.esc.agRows.map(r=>r[1]*100), backgroundColor: COLOR_A, borderRadius:3, barThickness:18
+      data: D.esc.agRows.map(r=>r[1]*100), backgroundColor: COLOR_A, borderRadius:1, barThickness:18
     }]},
     options:{
       indexAxis:'y', responsive:true, maintainAspectRatio:false,
@@ -933,7 +933,7 @@ function unavailNote(host){
 
   const planSpan = D.planOk ? `capital plan snapshots ${fmtPeriodLong(D.periods[0])} → ${fmtPeriodLong(D.periods[3])}` : 'capital plan temporarily unavailable';
   document.getElementById('asof').innerHTML =
-    `Award history since 2003 · ${planSpan} · recomputed live on every load`;
+    `Award history since 2003 · ${planSpan} · awards refreshed on load, cost series nightly`;
   document.getElementById('loader').style.display='none';
   document.getElementById('app').style.display='block';
 
