@@ -436,10 +436,25 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2>The full velocity table</h2><span class="cap">RANKED BY PIPELINE</span></div>
       <div class="h-sub">Every managing agency with an open construction pipeline, ranked by pipeline size. Awarded is trailing-twelve City Record awards where the agency name maps across sources.</div>
       <table id="tbl-velocity">
-        <thead><tr><th>Agency</th><th class="num">Open pipeline</th><th class="num">Spent (TTM)</th><th class="num">Awarded (TTM)</th><th class="num">Backlog, years</th></tr></thead>
+        <thead><tr><th>Agency</th><th class="num">Open pipeline</th><th class="num">Spent (TTM)</th><th class="num">Awarded (TTM)</th><th class="num">Backlog, years</th><th class="num">Days to 50% paid</th></tr></thead>
         <tbody></tbody>
       </table>
-      <div class="tnote">Every managing agency with an open construction pipeline, ranked by pipeline size. Open pipeline is committed-but-unspent construction capital; Spent and Awarded are trailing-twelve-month totals; Backlog, years = open pipeline &divide; Spent (TTM). The Awarded column is blank where an agency's name does not map cleanly between the capital plan and the City Record.</div>
+      <div class="tnote">Every managing agency with an open construction pipeline, ranked by pipeline size. Open pipeline is committed-but-unspent construction capital; Spent and Awarded are trailing-twelve-month totals; Backlog, years = open pipeline &divide; Spent (TTM). The Awarded column is blank where an agency's name does not map cleanly between the capital plan and the City Record. Days to 50% paid is the median, from registration, over the agency's dated construction contracts (those with confirmed Checkbook NYC disbursements), shown only where the agency has at least 8 such contracts, an en dash otherwise.</div>
+    </div>
+  </section>
+
+  <section class="grid" id="payvel-sec">
+    <div class="card">
+      <div class="sec-head"><h2>Payment velocity across agencies</h2><span class="cap" id="payvel-cap">DATED SET · DAYS</span></div>
+      <div class="h-sub">How fast each agency turns a registered award into cash, read from confirmed Checkbook NYC disbursements. Two clocks per agency: the median wait for the first payment after registration, and the median days to reach half the contract paid. Fastest to half-paid sits at the top.</div>
+      <div id="payvel-unavail"></div>
+      <div class="chart-box tall" id="payvel-chartbox"><canvas id="chart-payvel"></canvas></div>
+      <table id="tbl-payvel">
+        <thead><tr><th>Agency</th><th class="num">Dated contracts</th><th class="num">First payment, days</th><th class="num">Days to 50% paid</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="reading" id="payvel-reading"></div>
+      <div class="tnote">Computed from the dated set, the construction contracts with confirmed Checkbook NYC disbursements. For each agency, the first-payment figure is the median first-payment lag after registration and the days-to-50% figure is the median days from registration to half the contract value paid, both over its dated contracts, ignoring contracts that never reached the mark. Days to 50% is measured from registration. Agencies with fewer than 8 dated contracts are omitted; the bar shows median days to 50% paid, fastest first.</div>
     </div>
   </section>
 
@@ -996,7 +1011,10 @@ function renderVelocityRanking(){
     <td class="num amt">${r.sp>0 ? fmtMoney(r.sp) : '–'}</td>
     <td class="num amt">${(velState.awardsOk && r.aw!==undefined) ? fmtMoney(r.aw) : '–'}</td>
     <td class="num"><span class="yrs ${r.yrs===null?'':(r.yrs>med*1.5?'slow':(r.yrs<med*.67?'fast':''))}">${r.yrs===null?'–':r.yrs.toFixed(1)}</span></td>
+    <td class="num payvel-cell" data-code="${esc(r.code)}">–</td>
   </tr>`).join('');
+  // The dated-payment column is filled asynchronously by the payment module once
+  // the contract file loads; default to an en dash so the row reads cleanly meanwhile.
 
   // backlog-coverage chart: agencies with a computable ratio, top 10 by pipeline
   const charted = rows.filter(r=>r.yrs!==null).slice(0,10);
@@ -1250,6 +1268,180 @@ function wireControls(){
   document.getElementById('agency').value = def;
   renderVelocityRanking();
   await selectAgency(def);
+})();
+
+/* ===========================================================================
+   Dated-payment tiles on the Agency page:
+   TILE 1  cross-agency payment-velocity section (chart + table)
+   TILE 4  a "days to 50% paid" column on the full velocity table
+   Self-contained: reads the same same-origin file the Contracts page uses
+   (/data/contract-search.json, sample fallback), independent of the plan and
+   award fetches above so it never blocks or blanks the profile.
+   =========================================================================== */
+(function(){
+  'use strict';
+  var LIVE_URL = '/data/contract-search.json';
+  var SAMPLE_URL = '/data/contract-search.sample.json';
+  var MIN_AGENCY_N = 8;
+  var PV_A = '#b5482a', PV_GRID = '#ead9c9';
+  var pvCharts = {};
+  function pvDestroy(k){ if(pvCharts[k]){ pvCharts[k].destroy(); delete pvCharts[k]; } }
+  function escv(s){ var d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
+
+  /* capital-plan code -> contract-file agency NAME (the full "Department of ..."
+     form the contract JSON uses), for the TILE 4 column join. Codes absent here
+     have no clean dated-payment name and read as a dash. */
+  var CODE_TO_CONTRACT_NAME = {
+    DDC: 'Department of Design and Construction',
+    DEP: 'Department of Environmental Protection',
+    DOT: 'Department of Transportation',
+    DPR: 'Department of Parks and Recreation',
+    DSNY: 'Department of Sanitation',
+    DCAS: 'Department of Citywide Administrative Services',
+    NYPD: 'Police Department',
+    FDNY: 'Fire Department',
+    DOC: 'Department of Correction',
+    DOHMH: 'Department of Health and Mental Hygiene',
+    HPD: 'Department of Housing Preservation and Development'
+  };
+
+  function sweptContracts(cs){ return (cs || []).filter(function(c){ return c && c.payments_swept === true; }); }
+  function median(arr){
+    var a = (arr || []).filter(function(v){ return v != null && !isNaN(v); }).sort(function(x,y){ return x - y; });
+    if(!a.length) return null;
+    var m = Math.floor(a.length / 2);
+    return a.length % 2 ? a[m] : (a[m-1] + a[m]) / 2;
+  }
+  function groupBy(arr, keyFn){
+    var m = new Map();
+    (arr || []).forEach(function(x){ var k = keyFn(x); if(!m.has(k)) m.set(k, []); m.get(k).push(x); });
+    return m;
+  }
+  /* TILE 1: per-agency median first-payment lag + median days-to-50%, n>=floor */
+  function agencyVelocity(cs){
+    var swept = sweptContracts(cs);
+    var rows = [];
+    groupBy(swept, function(c){ return c.agency || '–'; }).forEach(function(list, agency){
+      if(list.length < MIN_AGENCY_N) return;
+      rows.push({ agency: agency, n: list.length,
+        medLag: median(list.map(function(c){ return c.first_payment_lag_days; })),
+        med50: median(list.map(function(c){ return c.days_to_50pct_paid; })) });
+    });
+    rows.sort(function(a,b){
+      if(a.med50 == null && b.med50 == null) return 0;
+      if(a.med50 == null) return 1;
+      if(b.med50 == null) return -1;
+      return a.med50 - b.med50;
+    });
+    return rows;
+  }
+  /* TILE 4: agency NAME -> median days-to-50% (null below floor) */
+  function med50ByName(cs){
+    var swept = sweptContracts(cs);
+    var out = new Map();
+    groupBy(swept, function(c){ return c.agency || '–'; }).forEach(function(list, agency){
+      out.set(agency, list.length >= MIN_AGENCY_N ? median(list.map(function(c){ return c.days_to_50pct_paid; })) : null);
+    });
+    return out;
+  }
+  function shortAgency(name){ return String(name || '').replace(/^Department of /, '').replace(/^New York City /, ''); }
+
+  /* ----- TILE 1 render ----- */
+  function renderPayVel(cs){
+    var card = document.getElementById('payvel-sec');
+    var rows = agencyVelocity(cs);
+    if(!rows.length){
+      pvDestroy('payvel');
+      var cb = document.getElementById('payvel-chartbox'); if(cb) cb.style.display = 'none';
+      var tbl = document.getElementById('tbl-payvel'); if(tbl) tbl.style.display = 'none';
+      var rd0 = document.getElementById('payvel-reading'); if(rd0) rd0.style.display = 'none';
+      var un = document.getElementById('payvel-unavail');
+      if(un) un.innerHTML = '<div class="unavail">No agency has at least ' + MIN_AGENCY_N
+        + ' dated contracts (those with confirmed Checkbook NYC disbursements) yet, so the cross-agency payment-velocity view is held until the dated set fills in.</div>';
+      return;
+    }
+    // chart: median days to 50% paid, fastest first, agencies with a value
+    var charted = rows.filter(function(r){ return r.med50 != null; });
+    pvDestroy('payvel');
+    pvCharts.payvel = new Chart(document.getElementById('chart-payvel'), {
+      type: 'bar',
+      data: { labels: charted.map(function(r){ return shortAgency(r.agency); }),
+        datasets: [{ data: charted.map(function(r){ return r.med50; }), backgroundColor: PV_A, borderRadius: 1, barThickness: 18 }] },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false },
+          tooltip: { callbacks: { label: function(c){ return Math.round(c.parsed.x) + ' days to 50% paid'; } } } },
+        scales: { x: { grid: { color: PV_GRID }, border: { display: false },
+            title: { display: true, text: 'median days to 50% paid', color: '#9b8979', font: { family: "'IBM Plex Mono',monospace", size: 10 } },
+            ticks: { maxTicksLimit: 6, callback: function(v){ return v + 'd'; } } },
+          y: { grid: { display: false }, ticks: { autoSkip: false, font: { family: "'Public Sans',sans-serif", size: 11.5 } } } } }
+    });
+    // table
+    document.querySelector('#tbl-payvel tbody').innerHTML = rows.map(function(r){
+      return '<tr><td><span class="t-title">' + escv(r.agency) + '</span></td>'
+        + '<td class="num">' + r.n + '</td>'
+        + '<td class="num">' + (r.medLag != null ? Math.round(r.medLag) : '–') + '</td>'
+        + '<td class="num amt">' + (r.med50 != null ? Math.round(r.med50) : '–') + '</td></tr>';
+    }).join('');
+    document.getElementById('payvel-cap').textContent = 'DATED SET · ' + rows.length + ' AGENCIES';
+    var fastest = charted[0], slowest = charted[charted.length - 1];
+    var rd = document.getElementById('payvel-reading');
+    if(rd && fastest) rd.innerHTML = '<strong>Reading:</strong> among agencies with enough dated contracts, '
+      + '<strong>' + escv(shortAgency(fastest.agency)) + '</strong> reaches half paid fastest at about <strong>'
+      + Math.round(fastest.med50) + ' days</strong>' + (slowest && slowest !== fastest
+        ? ', and <strong>' + escv(shortAgency(slowest.agency)) + '</strong> slowest at about <strong>' + Math.round(slowest.med50) + ' days</strong>'
+        : '') + '. A longer wait to half-paid is working capital a contractor carries on that agency’s jobs; it is a cash-flow read on the agency, not a judgment of the work.';
+  }
+
+  /* ----- TILE 4: fill the velocity table column ----- */
+  function fillVelocityColumn(cs){
+    var byName = med50ByName(cs);
+    document.querySelectorAll('#tbl-velocity .payvel-cell').forEach(function(td){
+      var code = td.getAttribute('data-code');
+      var name = CODE_TO_CONTRACT_NAME[code];
+      var v = name ? byName.get(name) : null;
+      td.textContent = (v != null) ? Math.round(v) : '–';
+    });
+  }
+
+  function loadJSON(url){
+    return fetch(url, { cache: 'no-store' }).then(function(res){
+      if(!res.ok) throw new Error('HTTP ' + res.status); return res.json();
+    });
+  }
+  function paintAll(payload){
+    var cs = (payload && Array.isArray(payload.contracts)) ? payload.contracts : [];
+    try { renderPayVel(cs); } catch(e){ if(window.console) console.error('payvel render', e); var s = document.getElementById('payvel-sec'); if(s) s.style.display = 'none'; }
+    try { fillVelocityColumn(cs); } catch(e){ if(window.console) console.error('payvel column', e); }
+  }
+  function hideTile1(){ var el = document.getElementById('payvel-sec'); if(el) el.style.display = 'none'; }
+  function start(){
+    if(typeof Chart === 'undefined'){ hideTile1(); return; }
+    var payloadP = loadJSON(LIVE_URL).catch(function(){ return loadJSON(SAMPLE_URL); });
+    var tries = 0;
+    (function whenReady(){
+      // wait for #app reveal (charts need layout) AND for the velocity table to
+      // have rendered its rows, so the TILE 4 column has cells to fill.
+      var app = document.getElementById('app');
+      var hasRows = document.querySelector('#tbl-velocity .payvel-cell');
+      if(app && app.offsetParent !== null && hasRows){
+        payloadP.then(paintAll).catch(function(err){
+          if(window.console) console.error('contract-search load failed (agency tiles)', err); hideTile1();
+        });
+        return;
+      }
+      // app revealed but velocity table never rendered (velocity source failed):
+      // still paint TILE 1, which does not depend on the table.
+      if(app && app.offsetParent !== null && tries > 60){
+        payloadP.then(paintAll).catch(function(err){
+          if(window.console) console.error('contract-search load failed (agency tiles)', err); hideTile1();
+        });
+        return;
+      }
+      if(tries++ < 200) setTimeout(whenReady, 80);
+      else hideTile1();
+    })();
+  }
+  if(document.readyState !== 'loading') start(); else document.addEventListener('DOMContentLoaded', start);
 })();
 </script>
 
