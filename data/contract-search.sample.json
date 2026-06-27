@@ -110,7 +110,9 @@
           "check_amount": 18000000
         }
       ],
-      "payments_swept": true
+      "payments_swept": true,
+      "purpose": "Reconstruction of sanitary and storm sewers and water mains, with roadway restoration.",
+      "pin": "8502024SE0012345"
     },
     {
       "contract_id": "DEP20200098765",
@@ -169,7 +171,9 @@
           "check_amount": 11200000
         }
       ],
-      "payments_swept": true
+      "payments_swept": true,
+      "purpose": "Replacement of mechanical, electrical and plumbing systems at a city facility.",
+      "pin": "8562023RC0098765"
     },
     {
       "contract_id": "DOT20240011111",
@@ -194,7 +198,9 @@
       "last_payment_date": null,
       "monthly_cumulative": [],
       "_raw_payments": [],
-      "payments_swept": true
+      "payments_swept": true,
+      "purpose": "Resiliency and coastal protection works including bulkhead and drainage upgrades.",
+      "pin": "8262024CP0054321"
     },
     {
       "contract_id": "SCA20220033333",
@@ -237,7 +243,9 @@
           "check_amount": 8000000
         }
       ],
-      "payments_swept": true
+      "payments_swept": true,
+      "purpose": "Rehabilitation of a bridge structure including deck and steel repairs.",
+      "pin": "8412022BR0011223"
     },
     {
       "contract_id": "DDC20220044444",
@@ -292,7 +300,9 @@
           "check_amount": 12000000
         }
       ],
-      "payments_swept": true
+      "payments_swept": true,
+      "purpose": "Reconstruction of sanitary and storm sewers and water mains, with roadway restoration.",
+      "pin": "8502024SE0012345"
     },
     {
       "contract_id": "DEP20230055555",
@@ -327,7 +337,9 @@
           "check_amount": 14000000
         }
       ],
-      "payments_swept": true
+      "payments_swept": true,
+      "purpose": "Replacement of mechanical, electrical and plumbing systems at a city facility.",
+      "pin": "8562023RC0098765"
     },
     {
       "contract_id": "DOT20210066666",
@@ -386,7 +398,9 @@
           "check_amount": 5000000
         }
       ],
-      "payments_swept": true
+      "payments_swept": true,
+      "purpose": "Resiliency and coastal protection works including bulkhead and drainage upgrades.",
+      "pin": "8262024CP0054321"
     },
     {
       "contract_id": "DPR20200077777",
@@ -429,7 +443,9 @@
           "check_amount": 3100000
         }
       ],
-      "payments_swept": true
+      "payments_swept": true,
+      "purpose": "Rehabilitation of a bridge structure including deck and steel repairs.",
+      "pin": "8412022BR0011223"
     },
     {
       "contract_id": "DDC20230088888",
@@ -480,7 +496,9 @@
           "check_amount": 6800000
         }
       ],
-      "payments_swept": true
+      "payments_swept": true,
+      "purpose": "Reconstruction of sanitary and storm sewers and water mains, with roadway restoration.",
+      "pin": "8502024SE0012345"
     },
     {
       "contract_id": "DEP20240099999",
@@ -523,7 +541,9 @@
           "check_amount": 28000000
         }
       ],
-      "payments_swept": true
+      "payments_swept": true,
+      "purpose": "Replacement of mechanical, electrical and plumbing systems at a city facility.",
+      "pin": "8562023RC0098765"
     },
     {
       "contract_id": "SCA20210101010",
@@ -566,7 +586,9 @@
           "check_amount": 2000000
         }
       ],
-      "payments_swept": true
+      "payments_swept": true,
+      "purpose": "Resiliency and coastal protection works including bulkhead and drainage upgrades.",
+      "pin": "8262024CP0054321"
     },
     {
       "contract_id": "DOT20220111111",
@@ -617,7 +639,9 @@
           "check_amount": 18000000
         }
       ],
-      "payments_swept": true
+      "payments_swept": true,
+      "purpose": "Rehabilitation of a bridge structure including deck and steel repairs.",
+      "pin": "8412022BR0011223"
     },
     {
       "contract_id": "DDC20210121212",
@@ -668,7 +692,9 @@
           "check_amount": 4500000
         }
       ],
-      "payments_swept": true
+      "payments_swept": true,
+      "purpose": "Reconstruction of sanitary and storm sewers and water mains, with roadway restoration.",
+      "pin": "8502024SE0012345"
     },
     {
       "contract_id": "HPD20230131313",
@@ -693,7 +719,9 @@
       "first_payment_date": null,
       "last_payment_date": null,
       "monthly_cumulative": null,
-      "_raw_payments": []
+      "_raw_payments": [],
+      "purpose": "Replacement of mechanical, electrical and plumbing systems at a city facility.",
+      "pin": "8562023RC0098765"
     },
     {
       "contract_id": "DSNY20220141414",
@@ -718,7 +746,9 @@
       "first_payment_date": null,
       "last_payment_date": null,
       "monthly_cumulative": null,
-      "_raw_payments": []
+      "_raw_payments": [],
+      "purpose": "Resiliency and coastal protection works including bulkhead and drainage upgrades.",
+      "pin": "8262024CP0054321"
     },
     {
       "contract_id": "DOT20240151515",
@@ -743,7 +773,9 @@
       "first_payment_date": null,
       "last_payment_date": null,
       "monthly_cumulative": null,
-      "_raw_payments": []
+      "_raw_payments": [],
+      "purpose": "Rehabilitation of a bridge structure including deck and steel repairs.",
+      "pin": "8412022BR0011223"
     }
   ]
 }
