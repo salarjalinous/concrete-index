@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data: https://images.unsplash.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://data.cityofnewyork.us https://data.ny.gov; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://data.cityofnewyork.us; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="canonical" href="https://concreteindex.co/briefing/">
 <meta property="og:type" content="website">
@@ -426,6 +426,7 @@ function trendWord(d){
 }
 function num(s){ return `<span class="num">${s}</span>`; }
 function capFirst(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+function esc(s){ var d=document.createElement('div'); d.textContent=(s==null?'':s); return d.innerHTML; }
 
 /* ================= composition ================= */
 function unavailNote(host){
@@ -457,12 +458,12 @@ function compose(){
 
   const blocks = [];
   if(D.awardsOk){
-    blocks.push(`<h2>The award market</h2><p>New York City agencies awarded ${num(fmtMoney(D.awardTTM))} of construction and construction-services work over the trailing twelve months, across ${num(fmtInt(D.awardCount))} contract awards. Award volume has ${trendWord(D.awardDelta)}, ${D.awardDelta!==null ? num((D.awardDelta>=0?'+':'−')+fmtPct(D.awardDelta)) + ' versus the preceding twelve months' : 'with no prior-year comparison available'}. Hard construction makes up ${num(fmtPct(D.hardShare))} of awarded value; design, engineering, and construction management make up the rest. ${D.topAwardAgency.agency_name ? capFirst(AWARD_AGENCY_SHORT[D.topAwardAgency.agency_name]||D.topAwardAgency.agency_name)+' is the busiest buyer, accounting for '+num(fmtPct(D.topAwardShare))+' of trailing-year award value.' : ''}</p>`);
+    blocks.push(`<h2>The award market</h2><p>New York City agencies awarded ${num(fmtMoney(D.awardTTM))} of construction and construction-services work over the trailing twelve months, across ${num(fmtInt(D.awardCount))} contract awards. Award volume has ${trendWord(D.awardDelta)}, ${D.awardDelta!==null ? num((D.awardDelta>=0?'+':'−')+fmtPct(D.awardDelta)) + ' versus the preceding twelve months' : 'with no prior-year comparison available'}. Hard construction makes up ${num(fmtPct(D.hardShare))} of awarded value; design, engineering, and construction management make up the rest. ${D.topAwardAgency.agency_name ? esc(capFirst(AWARD_AGENCY_SHORT[D.topAwardAgency.agency_name]||D.topAwardAgency.agency_name))+' is the busiest buyer, accounting for '+num(fmtPct(D.topAwardShare))+' of trailing-year award value.' : ''}</p>`);
   } else {
     blocks.push(`<h2>The award market</h2>${unavailNote('City Record awards')}`);
   }
   if(D.planOk){
-    blocks.push(`<h2>The pipeline behind it</h2><p>Behind the award market sits a funded pipeline of ${num(fmtMoney(D.pipe))}, budgets committed to ${num(fmtInt(D.pipeCount))} open capital projects in the City's ${latestPlan} plan that have not yet been spent. ${num(fmtPct(D.pipe>0?D.pipePre/D.pipe*100:0))} of that money is attached to projects still in pre-construction (pending, pre-design, design, or procurement): demand that has not yet reached the market. ${D.topPipeAgency ? capFirst(AGENCY_FULL[D.topPipeAgency[0]]||D.topPipeAgency[0])+' holds the largest share of the pipeline at '+num(fmtMoney(D.topPipeAgency[1]))+'.' : ''}</p>`);
+    blocks.push(`<h2>The pipeline behind it</h2><p>Behind the award market sits a funded pipeline of ${num(fmtMoney(D.pipe))}, budgets committed to ${num(fmtInt(D.pipeCount))} open capital projects in the City's ${latestPlan} plan that have not yet been spent. ${num(fmtPct(D.pipe>0?D.pipePre/D.pipe*100:0))} of that money is attached to projects still in pre-construction (pending, pre-design, design, or procurement): demand that has not yet reached the market. ${D.topPipeAgency ? esc(capFirst(AGENCY_FULL[D.topPipeAgency[0]]||D.topPipeAgency[0]))+' holds the largest share of the pipeline at '+num(fmtMoney(D.topPipeAgency[1]))+'.' : ''}</p>`);
     blocks.push(`<h2>The pace of conversion</h2><p>The City paid out ${num(fmtMoney(D.spendTTM))} on capital projects over the trailing year of plan snapshots. ${D.coverage!=null ? `At that pace, the current funded pipeline represents ${num(D.coverage.toFixed(1)+' years')} of work, the demand-side equivalent of a contractor's backlog ratio. ` : `Trailing-year spend is not yet measurable from the plan snapshots, so a backlog-coverage ratio is not shown. `}${D.awardsOk ? market : ''}</p>`);
   } else {
     blocks.push(`<h2>The pipeline behind it</h2>${unavailNote('OMB capital plan')}`);
