@@ -317,6 +317,28 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     </div>
   </section>
 
+  <section class="grid" id="scurve">
+    <div class="card">
+      <div class="sec-head"><h2>How fast the City pays a contract down</h2><span class="cap" id="scurve-cap">DATED SET · MONTHS SINCE REGISTRATION</span></div>
+      <div class="h-sub">Every dated contract drawn against its own registration month, then averaged into one citywide payment curve, with the busiest agencies overlaid. The vertical reads percent of contract value paid; the horizontal reads months since the contract was registered.</div>
+      <div id="scurve-unavail"></div>
+      <div class="chart-box tall"><canvas id="chart-scurve"></canvas></div>
+      <div class="reading" id="scurve-reading"></div>
+      <div class="tnote" id="scurve-method">Each dated contract's cumulative dollars paid are read at each month against its registered amount (original amount where the registered figure is missing) and placed at the whole-month index since its registration date. For each integer month the curve averages percent paid across every dated contract that carries a value there, so the contract set behind each point changes as contracts enter and finish; the line is a population average, not one contract's path. Overlay lines are the agencies with the most dated contracts. The horizon is capped at 60 months. Nominal dollars; a floor built on confirmed Checkbook NYC disbursements. Agencies with fewer than 8 dated contracts are not overlaid.</div>
+    </div>
+  </section>
+
+  <section class="grid" id="schedpace">
+    <div class="card">
+      <div class="sec-head"><h2>Does the agency pay ahead of or behind schedule</h2><span class="cap" id="schedpace-cap">DATED SET · AGENCY MEANS</span></div>
+      <div class="h-sub">Each point is one agency: how far its contracts have run through their planned schedule against how much of their value has been paid. The diagonal is pay-keeping-pace; above it an agency is paying ahead of where the calendar sits, below it behind.</div>
+      <div id="schedpace-unavail"></div>
+      <div class="chart-box tall"><canvas id="chart-schedpace"></canvas></div>
+      <div class="reading" id="schedpace-reading"></div>
+      <div class="tnote" id="schedpace-method">For each agency's dated contracts, schedule elapsed is time from start date to today as a share of start-to-end, clamped to 0 to 150 percent; paid is percent of value paid to date. The point is the agency mean of each. Contracts missing a start or end date are skipped. The end date is the registered or planned end, not actual completion, so a point below the diagonal can mean a contract running long rather than an agency paying slowly; read this as directional, not a completion measure. Agencies with fewer than 8 dated contracts are omitted.</div>
+    </div>
+  </section>
+
   <section class="method" id="methodology">
     <div class="card">
       <div class="sec-head"><h2>Analysis · Methodology &amp; definitions</h2><span class="m-cap">SERIES NOTES</span></div>
@@ -333,6 +355,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <p>Projects are matched across consecutive capital plan snapshots (roughly four months apart) by agency and FMS ID, pooled over the two most recent transitions. A project "advances" when its delivery phase moves forward in the sequence pending → pre-design → design → procurement → construction → close-out. Projects that leave the dataset between snapshots are not counted.</p>
       <h3>Budget escalation</h3>
       <p>Projects present in both the earliest available plan snapshot (May 2023) and the most recent one, with budgets above $1M in both, are matched by agency and FMS ID. Escalation is each project's total-budget growth across that span; the headline figure is the median. Budget growth blends scope changes with cost escalation. The public record doesn't separate the two, so neither does this page.</p>
+      <h3>Dated payment timing</h3>
+      <p>Two sections read a separate, same-origin dataset, <code>/data/contract-search.json</code> (the file the “<a href="/contracts/">Contracts</a>” page uses), falling back to a bundled sample if the live file is absent. It holds registered construction contracts; only those with confirmed Checkbook NYC disbursements carry dated payment timing, and only those are used here. The <strong>payment curve</strong> averages percent of contract value paid at each whole month since registration across the dated set, with the three agencies holding the most dated contracts overlaid; the contract set behind each month changes as contracts enter and finish, so the line is a population average rather than one contract's path, the horizon is capped at 60 months, and dollars are nominal. The <strong>schedule-pace scatter</strong> plots each agency's mean schedule-elapsed against its mean paid-to-date; schedule elapsed is start-to-today over start-to-end, clamped to 0 to 150 percent, and the end date is the registered or planned end, not actual completion, so the read is directional rather than a measure of completion. Both sections require at least eight dated contracts per agency before an agency is shown.</p>
       <h3>Sources</h3>
       <p>Award history: City Record Recent Contract Awards (<code>qyyg-4tf5</code>), 2003→present. Capital plan: Capital Projects Dashboard (<code>fb86-vt7u</code>), snapshots May 2023→present. Both on NYC Open Data, queried live on every page load. Construction cost: BLS series <code>WPUSI012011</code> (national materials) and <code>SMU36000002000000008</code> (New York State construction labor, NSA), 2004→present, fetched server-side by the nightly archive and read here from a same-origin snapshot.</p>
     </div>
@@ -956,6 +980,272 @@ function unavailNote(host){
       if(jumpTries++ < 150) setTimeout(tryJump, 80);   // wait up to ~12s for data + reveal
     })();
   }
+})();
+
+/* ===========================================================================
+   Dated-payment tiles (payment S-curve + schedule-pace scatter).
+   Self-contained: reads the same same-origin file the Contracts page uses
+   (/data/contract-search.json, sample fallback), independent of the award and
+   plan fetches above so a slow or failed contract file never blanks the page.
+   =========================================================================== */
+(function(){
+  'use strict';
+  var LIVE_URL = '/data/contract-search.json';
+  var SAMPLE_URL = '/data/contract-search.sample.json';
+  var MIN_AGENCY_N = 8;          // min dated contracts for an agency to be shown
+  var SCURVE_HORIZON = 60;       // x-axis cap, months since registration
+  var SCURVE_OVERLAY_AGENCIES = 3;
+  var PC_A = '#b5482a', PC_B = '#243b53', PC_C = '#2f5d8f', PC_GRID = '#ead9c9';
+  var pcCharts = {};
+  function pcDestroy(k){ if(pcCharts[k]){ pcCharts[k].destroy(); delete pcCharts[k]; } }
+  function escp(s){ var d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
+
+  /* ----- pure aggregations (mirror site/test/payment-tiles.test.js) ----- */
+  function sweptContracts(cs){ return (cs || []).filter(function(c){ return c && c.payments_swept === true; }); }
+  function median(arr){
+    var a = (arr || []).filter(function(v){ return v != null && !isNaN(v); }).sort(function(x,y){ return x - y; });
+    if(!a.length) return null;
+    var m = Math.floor(a.length / 2);
+    return a.length % 2 ? a[m] : (a[m-1] + a[m]) / 2;
+  }
+  function groupBy(arr, keyFn){
+    var m = new Map();
+    (arr || []).forEach(function(x){ var k = keyFn(x); if(!m.has(k)) m.set(k, []); m.get(k).push(x); });
+    return m;
+  }
+  function monthIndex(reg, ym){
+    if(!reg || !ym) return null;
+    var ry = +reg.slice(0,4), rm = +reg.slice(5,7), py = +ym.slice(0,4), pm = +ym.slice(5,7);
+    if(!ry || !rm || !py || !pm) return null;
+    return (py - ry) * 12 + (pm - rm);
+  }
+  function contractCurvePoints(c){
+    var denom = (c.current_amount > 0) ? c.current_amount : (c.original_amount > 0) ? c.original_amount : 0;
+    if(!denom || !Array.isArray(c.monthly_cumulative)) return [];
+    var out = [];
+    c.monthly_cumulative.forEach(function(pair){
+      if(!Array.isArray(pair) || pair.length < 2) return;
+      var idx = monthIndex(c.registration_date, pair[0]); var cum = +pair[1];
+      if(idx == null || idx < 0 || isNaN(cum)) return;
+      out.push({ idx: idx, pct: cum / denom * 100 });
+    });
+    return out;
+  }
+  function sCurve(list){
+    var sums = [], counts = [];
+    for(var i = 0; i <= SCURVE_HORIZON; i++){ sums[i] = 0; counts[i] = 0; }
+    list.forEach(function(c){
+      contractCurvePoints(c).forEach(function(p){
+        if(p.idx > SCURVE_HORIZON) return;
+        sums[p.idx] += p.pct; counts[p.idx] += 1;
+      });
+    });
+    var pts = [];
+    for(var j = 0; j <= SCURVE_HORIZON; j++) if(counts[j] > 0) pts.push({ x: j, y: sums[j] / counts[j], n: counts[j] });
+    return pts;
+  }
+  function sCurveBundle(cs){
+    var swept = sweptContracts(cs);
+    var citywide = sCurve(swept);
+    var ranked = [];
+    groupBy(swept, function(c){ return c.agency || '–'; }).forEach(function(list, agency){ ranked.push({ agency: agency, n: list.length, list: list }); });
+    ranked.sort(function(a,b){ return b.n - a.n; });
+    var overlays = ranked.slice(0, SCURVE_OVERLAY_AGENCIES)
+      .filter(function(r){ return r.n >= MIN_AGENCY_N; })
+      .map(function(r){ return { agency: r.agency, n: r.n, points: sCurve(r.list) }; });
+    return { citywide: citywide, overlays: overlays, sweptTotal: swept.length };
+  }
+  function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+  function scheduleElapsedPct(c, today){
+    if(!c.start_date || !c.end_date) return null;
+    var s = new Date(c.start_date).getTime(), e = new Date(c.end_date).getTime();
+    if(isNaN(s) || isNaN(e) || e <= s) return null;
+    return clamp((today - s) / (e - s) * 100, 0, 150);
+  }
+  function scatterAgencyMeans(cs){
+    var today = Date.now();
+    var swept = sweptContracts(cs);
+    var rows = [];
+    groupBy(swept, function(c){ return c.agency || '–'; }).forEach(function(list, agency){
+      if(list.length < MIN_AGENCY_N) return;
+      var sch = [], paid = [];
+      list.forEach(function(c){
+        var se = scheduleElapsedPct(c, today);
+        if(se == null) return;
+        if(c.pct_paid_to_date == null || isNaN(c.pct_paid_to_date)) return;
+        sch.push(se); paid.push(c.pct_paid_to_date * 100);
+      });
+      if(!sch.length) return;
+      var mean = function(a){ return a.reduce(function(x,y){ return x + y; }, 0) / a.length; };
+      rows.push({ agency: agency, n: list.length, used: sch.length, schedElapsed: mean(sch), paidPct: mean(paid) });
+    });
+    return rows;
+  }
+  function shortAgency(name){
+    return String(name || '').replace(/^Department of /, '').replace(/^New York City /, '');
+  }
+
+  /* ----- render: S-curve ----- */
+  function renderSCurve(cs){
+    var card = document.getElementById('scurve');
+    var bundle = sCurveBundle(cs);
+    if(!bundle.citywide.length){
+      if(card) card.style.display = 'none';
+      return;
+    }
+    var maxX = bundle.citywide.reduce(function(a,p){ return Math.max(a, p.x); },
+      bundle.overlays.reduce(function(a,o){ return o.points.reduce(function(b,p){ return Math.max(b,p.x); }, a); }, 0));
+    var xCap = Math.min(SCURVE_HORIZON, Math.max(12, maxX));
+    var overlayColors = [PC_B, PC_C, '#7a6a5e'];
+    var datasets = [{
+      label: 'Citywide average', data: bundle.citywide.map(function(p){ return { x: p.x, y: p.y }; }),
+      borderColor: PC_A, borderWidth: 2.4, pointRadius: 0, tension: 0.25, fill: false, order: 1
+    }];
+    bundle.overlays.forEach(function(o, i){
+      datasets.push({
+        label: shortAgency(o.agency) + ' (n ' + o.n + ')',
+        data: o.points.map(function(p){ return { x: p.x, y: p.y }; }),
+        borderColor: overlayColors[i % overlayColors.length], borderWidth: 1.6,
+        pointRadius: 0, tension: 0.25, fill: false, borderDash: [4, 3], order: 2 + i
+      });
+    });
+    pcDestroy('scurve');
+    pcCharts.scurve = new Chart(document.getElementById('chart-scurve'), {
+      type: 'line',
+      data: { datasets: datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false, parsing: false,
+        interaction: { mode: 'nearest', intersect: false },
+        plugins: {
+          legend: { display: true, position: 'top', align: 'end', labels: { boxWidth: 9, boxHeight: 9, font: { family: "'Public Sans',sans-serif", size: 11 }, color: '#22150e' } },
+          tooltip: { callbacks: { title: function(items){ return 'Month ' + items[0].parsed.x; },
+            label: function(c){ return c.dataset.label + ': ' + c.parsed.y.toFixed(0) + '% paid'; } } }
+        },
+        scales: {
+          x: { type: 'linear', min: 0, max: xCap, grid: { display: false },
+               title: { display: true, text: 'months since registration', color: '#9b8979', font: { family: "'IBM Plex Mono',monospace", size: 10 } },
+               ticks: { maxTicksLimit: 10, stepSize: 6, callback: function(v){ return v; } } },
+          y: { min: 0, suggestedMax: 100, grid: { color: PC_GRID }, border: { display: false },
+               ticks: { maxTicksLimit: 6, callback: function(v){ return v + '%'; } } }
+        }
+      }
+    });
+    var cap = document.getElementById('scurve-cap');
+    if(cap) cap.textContent = 'DATED SET · ' + bundle.sweptTotal + ' CONTRACTS';
+    var last = bundle.citywide[bundle.citywide.length - 1];
+    var reach50 = bundle.citywide.find(function(p){ return p.y >= 50; });
+    var rd = document.getElementById('scurve-reading');
+    if(rd) rd.innerHTML = '<strong>Reading:</strong> across the dated set, the average contract crosses '
+      + (reach50 ? '<strong>50% paid</strong> around month <strong>' + reach50.x + '</strong>' : 'its midpoint late in the window')
+      + ', and by month <strong>' + last.x + '</strong> stands near <strong>' + last.y.toFixed(0)
+      + '%</strong> of value paid. Because the contract set behind each month changes as work enters and finishes, the line reads the population, not any one contract; the overlays show where the busiest agencies pay faster or slower than that average.';
+  }
+
+  /* ----- render: schedule-pace scatter ----- */
+  function renderSchedPace(cs){
+    var card = document.getElementById('schedpace');
+    var rows = scatterAgencyMeans(cs);
+    var unavail = document.getElementById('schedpace-unavail');
+    if(!rows.length){
+      pcDestroy('schedpace');
+      var box = document.querySelector('#schedpace .chart-box'); if(box) box.style.display = 'none';
+      var rd0 = document.getElementById('schedpace-reading'); if(rd0) rd0.style.display = 'none';
+      if(unavail) unavail.innerHTML = '<div class="unavail">No agency has at least ' + MIN_AGENCY_N
+        + ' dated contracts with usable start and end dates yet, so the schedule-pace view is held until the dated set fills in.</div>';
+      return;
+    }
+    var pts = rows.map(function(r){ return { x: r.schedElapsed, y: r.paidPct, agency: shortAgency(r.agency), n: r.n }; });
+    pcDestroy('schedpace');
+    var diagonalLine = {
+      id: 'diag',
+      beforeDatasetsDraw: function(chart){
+        var sc = chart.scales; if(!sc.x || !sc.y) return;
+        var ctx = chart.ctx;
+        var lo = Math.max(sc.x.min, sc.y.min), hi = Math.min(sc.x.max, sc.y.max);
+        ctx.save(); ctx.strokeStyle = '#9b8979'; ctx.lineWidth = 1; ctx.setLineDash([5, 4]);
+        ctx.beginPath(); ctx.moveTo(sc.x.getPixelForValue(lo), sc.y.getPixelForValue(lo));
+        ctx.lineTo(sc.x.getPixelForValue(hi), sc.y.getPixelForValue(hi)); ctx.stroke(); ctx.restore();
+      }
+    };
+    var labelPoints = {
+      id: 'plabels',
+      afterDatasetsDraw: function(chart){
+        var ctx = chart.ctx, meta = chart.getDatasetMeta(0);
+        ctx.save(); ctx.fillStyle = '#22150e';
+        ctx.font = "10px 'IBM Plex Mono', monospace"; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        meta.data.forEach(function(el, i){ if(el) ctx.fillText(pts[i].agency, el.x + 7, el.y); });
+        ctx.restore();
+      }
+    };
+    pcCharts.schedpace = new Chart(document.getElementById('chart-schedpace'), {
+      type: 'scatter',
+      data: { datasets: [{ label: 'Agency mean', data: pts, backgroundColor: PC_A,
+        borderColor: PC_A, pointRadius: 5, pointHoverRadius: 7 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: function(c){ var p = pts[c.dataIndex];
+            return [p.agency + ' (n ' + p.n + ')', 'schedule elapsed: ' + p.x.toFixed(0) + '%', 'paid to date: ' + p.y.toFixed(0) + '%']; } } }
+        },
+        scales: {
+          x: { min: 0, max: 150, grid: { color: PC_GRID }, border: { display: false },
+               title: { display: true, text: 'schedule elapsed (%)', color: '#9b8979', font: { family: "'IBM Plex Mono',monospace", size: 10 } },
+               ticks: { maxTicksLimit: 7, callback: function(v){ return v + '%'; } } },
+          y: { min: 0, max: 120, grid: { color: PC_GRID }, border: { display: false },
+               title: { display: true, text: 'paid to date (%)', color: '#9b8979', font: { family: "'IBM Plex Mono',monospace", size: 10 } },
+               ticks: { maxTicksLimit: 7, callback: function(v){ return v + '%'; } } }
+        }
+      },
+      plugins: [diagonalLine, labelPoints]
+    });
+    var ahead = rows.filter(function(r){ return r.paidPct > r.schedElapsed; }).length;
+    var cap = document.getElementById('schedpace-cap');
+    if(cap) cap.textContent = 'DATED SET · ' + rows.length + ' AGENCIES';
+    var rd = document.getElementById('schedpace-reading');
+    if(rd) rd.innerHTML = '<strong>Reading:</strong> of the <strong>' + rows.length
+      + '</strong> agencies with enough dated contracts, <strong>' + ahead
+      + '</strong> sit above the pay-keeping-pace diagonal, paying ahead of where the planned calendar would put them; the rest sit below. The end date is the planned end, not actual completion, so a point below the line can mean contracts running long rather than an agency holding back payment. Read the pattern, not any single point.';
+  }
+
+  function loadJSON(url){
+    return fetch(url, { cache: 'no-store' }).then(function(res){
+      if(!res.ok) throw new Error('HTTP ' + res.status); return res.json();
+    });
+  }
+  function paintAll(payload){
+    var cs = (payload && Array.isArray(payload.contracts)) ? payload.contracts : [];
+    try { renderSCurve(cs); } catch(e){ if(window.console) console.error('scurve render', e); var s = document.getElementById('scurve'); if(s) s.style.display = 'none'; }
+    try { renderSchedPace(cs); } catch(e){ if(window.console) console.error('schedpace render', e); var p = document.getElementById('schedpace'); if(p) p.style.display = 'none'; }
+  }
+  function hideTiles(){
+    ['scurve','schedpace'].forEach(function(id){ var el = document.getElementById(id); if(el) el.style.display = 'none'; });
+  }
+  function fetchOnce(){
+    return loadJSON(LIVE_URL).catch(function(){ return loadJSON(SAMPLE_URL); });
+  }
+  function start(){
+    if(typeof Chart === 'undefined'){ hideTiles(); return; }
+    // The tiles live inside #app, which the main init() reveals only after its
+    // own fetches settle. Fetch the contract file now, but defer painting until
+    // #app is visible so the canvases lay out at full size, then paint once.
+    var payloadP = fetchOnce();
+    var tries = 0;
+    (function whenVisible(){
+      var app = document.getElementById('app');
+      if(app && app.offsetParent !== null){
+        payloadP.then(paintAll).catch(function(err){
+          if(window.console) console.error('contract-search load failed (analysis tiles)', err); hideTiles();
+        });
+        return;
+      }
+      if(tries++ < 200) setTimeout(whenVisible, 80); // wait up to ~16s for reveal
+      else { // app never revealed (both upstream sources failed); leave tiles hidden
+        hideTiles();
+      }
+    })();
+  }
+  if(document.readyState !== 'loading') start(); else document.addEventListener('DOMContentLoaded', start);
 })();
 
 </script>
