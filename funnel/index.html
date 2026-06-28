@@ -74,7 +74,7 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .kpi.hl{border-top-color:var(--accent)}
 .kpi .k-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
 .kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--navy);line-height:1}
-.kpi.hl .k-value{color:var(--ink)}
+.kpi.hl .k-value{font-size:clamp(30px,4.5vw,38px);color:var(--ink)}.kpi:not(.hl) .k-value{color:var(--navy)}
 .kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:8px}
 
 /* ---------- section heads ---------- */
@@ -324,8 +324,7 @@ const state = {
 };
 
 async function getJSON(api, params){
-  params['$$app_token'] = '3TAzQQPiSG2T4WGWfYYUxxqfJ';
-  const res = await fetch(api + '?' + new URLSearchParams(params));
+  const res = await fetch(api + '?' + new URLSearchParams(params), { headers: { 'X-App-Token': '3TAzQQPiSG2T4WGWfYYUxxqfJ' } });
   if(!res.ok) throw new Error('API ' + res.status);
   return res.json();
 }
