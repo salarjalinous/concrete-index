@@ -80,6 +80,8 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:28px 0 8px;border-left:1px solid var(--line)}
 .kpi{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px 18px}
 .kpi.hl{border-top-color:var(--accent)}
+.kpi.hl .k-value{font-size:clamp(30px,4.5vw,38px);color:var(--ink)}
+.kpi:not(.hl) .k-value{color:var(--navy)}
 .kpi .k-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
 .kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--navy);line-height:1}
 .kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:8px}
@@ -112,7 +114,7 @@ td.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
 td .t-title{font-weight:500;color:var(--ink)}
 td .t-sub{font-size:12px;color:var(--muted);margin-top:3px;font-family:'Public Sans',sans-serif}
 .amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
-.pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.03em;border-radius:3px;padding:2px 6px;white-space:nowrap;background:#dde6ee;color:var(--steel)}
+.pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.03em;border-radius:3px;padding:2px 6px;white-space:nowrap;background:var(--band);color:var(--steel)}
 .pill.c{background:var(--accent-soft);color:var(--accent)}
 .rank{color:var(--faint);font-weight:600;width:28px;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
 
@@ -356,8 +358,7 @@ function phaseRank(b){
 }
 
 async function getJSON(params){
-  params['$$app_token'] = '3TAzQQPiSG2T4WGWfYYUxxqfJ';
-  const res = await fetch(API + '?' + new URLSearchParams(params));
+  const res = await fetch(API + '?' + new URLSearchParams(params), { headers: { 'X-App-Token': '3TAzQQPiSG2T4WGWfYYUxxqfJ' } });
   if(!res.ok) throw new Error('API ' + res.status);
   return res.json();
 }
