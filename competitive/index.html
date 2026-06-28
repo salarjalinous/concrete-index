@@ -83,7 +83,7 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .kpi.hl{border-top-color:var(--accent)}
 .kpi .k-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
 .kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--navy);line-height:1}
-.kpi.hl .k-value{color:var(--ink)}
+.kpi.hl .k-value{font-size:clamp(30px,4.5vw,38px);color:var(--ink)}.kpi:not(.hl) .k-value{color:var(--navy)}
 .kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:8px}
 
 /* ---------- section heads ---------- */
@@ -124,7 +124,7 @@ td .t-sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint
 .conc .c-row .lab{color:var(--muted)}
 .conc .c-row .val{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:15px;font-variant-numeric:tabular-nums;color:var(--ink)}
 .pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.03em;border-radius:3px;padding:2px 7px}
-.pill.frag{background:#dde6ee;color:var(--steel)}
+.pill.frag{background:var(--band);color:var(--steel)}
 .pill.mod{background:var(--accent-soft);color:var(--accent-deep)}
 .pill.conc{background:#f1d6d1;color:var(--red)}
 
@@ -201,7 +201,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 #lookup td .t-title{font-weight:500;color:var(--ink)}
 #lookup td .t-sub{font-family:'Public Sans',sans-serif;font-size:12px;color:var(--muted);margin-top:3px}
 .pill.hard{background:var(--accent-soft);color:var(--accent)}
-.pill.rel{background:#dde6ee;color:var(--steel)}
+.pill.rel{background:var(--band);color:var(--steel)}
 .readstrip{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
 .rd{padding:16px 18px;border-right:1px solid var(--line);border-top:3px solid var(--steel)}
 .rd:last-child{border-right:0}
@@ -536,15 +536,13 @@ let charts = {};
 function destroy(k){ if(charts[k]){ charts[k].destroy(); delete charts[k]; } }
 
 async function getJSON(params){
-  params['$$app_token'] = TOKEN;
-  const res = await fetch(API + '?' + new URLSearchParams(params));
+  const res = await fetch(API + '?' + new URLSearchParams(params), { headers: { 'X-App-Token': '3TAzQQPiSG2T4WGWfYYUxxqfJ' } });
   if(!res.ok) throw new Error('API ' + res.status);
   return res.json();
 }
 // data.ny.gov fetch (same Socrata app token works on both portals).
 async function getNY(ds, params){
-  params['$$app_token'] = TOKEN;
-  const res = await fetch(NY_API + '/' + ds + '.json?' + new URLSearchParams(params));
+  const res = await fetch(NY_API + '/' + ds + '.json?' + new URLSearchParams(params), { headers: { 'X-App-Token': '3TAzQQPiSG2T4WGWfYYUxxqfJ' } });
   if(!res.ok) throw new Error('NY ' + res.status);
   return res.json();
 }
@@ -1127,8 +1125,7 @@ const state = {
 };
 
 async function getJSON(params){
-  params['$$app_token'] = APP_TOKEN;
-  const res = await fetch(AWARD_API + '?' + new URLSearchParams(params), {cache:'no-store'});
+  const res = await fetch(AWARD_API + '?' + new URLSearchParams(params), {cache:'no-store', headers:{'X-App-Token':'3TAzQQPiSG2T4WGWfYYUxxqfJ'}});
   if(!res.ok) throw new Error('API ' + res.status);
   return res.json();
 }
