@@ -123,7 +123,7 @@ td .t-sub{font-size:12px;color:var(--muted);margin-top:3px;font-family:'Public S
 .amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
 .pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.03em;border-radius:3px;padding:2px 6px;white-space:nowrap}
 .pill.hard{background:var(--accent-soft);color:var(--accent)}
-.pill.rel{background:#dde6ee;color:var(--steel)}
+.pill.rel{background:var(--band);color:var(--steel)}
 .rank{color:var(--faint);font-weight:600;width:28px;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
 
 /* ---------- reading box ---------- */
@@ -446,8 +446,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     var byPin=new Map(), off=0, PAGE=50000;
     var where="starts_with(category_description,'Construction') AND contract_amount>0 AND contract_amount<"+MEGA;
     function page(){
-      var u=API+'?'+new URLSearchParams({'$select':'pin,contract_amount,start_date,selection_method_description','$where':where,'$order':'pin','$limit':String(PAGE),'$offset':String(off),'$$app_token':TOKEN});
-      return fetch(u).then(function(r){ if(!r.ok) throw new Error('api'); return r.json(); }).then(function(b){
+      var u=API+'?'+new URLSearchParams({'$select':'pin,contract_amount,start_date,selection_method_description','$where':where,'$order':'pin','$limit':String(PAGE),'$offset':String(off)});
+      return fetch(u,{headers:{'X-App-Token':'3TAzQQPiSG2T4WGWfYYUxxqfJ'}}).then(function(r){ if(!r.ok) throw new Error('api'); return r.json(); }).then(function(b){
         for(var i=0;i<b.length;i++){ var r=b[i]; var amt=parseFloat(r.contract_amount); if(!(amt>0)||amt>=MEGA) continue; var pin=r.pin||('_np_'+off+'_'+i); var rec={amt:amt,m:r.start_date?r.start_date.slice(0,7):null,cont:isCont(r.selection_method_description)}; var p=byPin.get(pin); if(!p||rec.amt>p.amt) byPin.set(pin,rec); }
         if(b.length>=PAGE && off<400000){ off+=PAGE; return page(); }
       });
