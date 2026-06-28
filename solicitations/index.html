@@ -98,9 +98,9 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .due-sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);margin-top:3px}
 .pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.03em;border-radius:3px;padding:2px 6px;white-space:nowrap}
 .pill.hard{background:var(--accent-soft);color:var(--accent)}
-.pill.rel{background:#dde6ee;color:var(--steel)}
+.pill.rel{background:var(--band);color:var(--steel)}
 .pill.wt{background:var(--band);color:var(--muted);border:1px solid var(--line);text-transform:none;letter-spacing:0}
-.pill.boro{background:#e7eef5;color:var(--navy)}
+.pill.boro{background:var(--band);color:var(--navy)}
 .s-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
 .csv-link{color:var(--accent);font-weight:500}
 .csv-link:hover{text-decoration:underline}
@@ -351,8 +351,7 @@ async function fetchSolicitations(){
     '$order':'due_date',
     '$limit':'2000'
   });
-  params.set('$$app_token', '3TAzQQPiSG2T4WGWfYYUxxqfJ');
-  const res = await fetch(`${API}?${params}`);
+  const res = await fetch(`${API}?${params}`, { headers: { 'X-App-Token': '3TAzQQPiSG2T4WGWfYYUxxqfJ' } });
   if(!res.ok) throw new Error('API '+res.status);
   const raw = await res.json();
   const seen = new Set();
