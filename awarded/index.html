@@ -124,7 +124,7 @@ td .t-sub{font-size:12px;color:var(--muted);margin-top:3px;font-family:'Public S
 .amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
 .pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.03em;border-radius:3px;padding:2px 6px;white-space:nowrap}
 .pill.hard{background:var(--accent-soft);color:var(--accent)}
-.pill.rel{background:#dde6ee;color:var(--steel)}
+.pill.rel{background:var(--band);color:var(--steel)}
 .rank{color:var(--faint);font-weight:600;width:28px;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
 
 /* ---------- reading box ---------- */
@@ -436,8 +436,7 @@ async function fetchAwards(){
     '$order': 'start_date DESC',
     '$limit': String(AWARD_LIMIT)
   });
-  params.set('$$app_token', '3TAzQQPiSG2T4WGWfYYUxxqfJ');
-  const res = await fetch(`${API}?${params}`);
+  const res = await fetch(`${API}?${params}`, { headers: { 'X-App-Token': '3TAzQQPiSG2T4WGWfYYUxxqfJ' } });
   if(!res.ok) throw new Error('API ' + res.status);
   const raw = await res.json();
   // Truncation guard: if the returned row count equals the cap, the single-page
