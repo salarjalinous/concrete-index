@@ -35,3 +35,6 @@ Data treatment highlights (full definitions on each page's methodology section):
 ## Author
 
 Built by Salar Jalinous · [salar.jalinous@gmail.com](mailto:salar.jalinous@gmail.com)
+
+
+<!-- deploy: trigger clean Pages build 2026-07-02 -->
