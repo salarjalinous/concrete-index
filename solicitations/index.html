@@ -296,12 +296,16 @@ function cleanPhone(v){
   if(!/[1-9]/.test(s.replace(/\D/g,''))) return '';
   return s;
 }
-// Sentinel due dates (year 2099, 2999, 9999) mark always-open pre-qualified
-// lists, not real near-term deadlines; bucketed out of the chronological sort.
+// Placeholder due dates (year 2040, 2099, 2105, 9999, and the like) mark
+// always-open pre-qualified lists, not real near-term deadlines. Real
+// construction bids close within months, so any due date more than five years
+// out is treated as standing and bucketed out of the chronological sort. A
+// horizon test, not an enumerated set, so no new placeholder year can leak
+// through as a live countdown.
+const SENTINEL_HORIZON_MS = 5 * 365.25 * 86400000; // ~5 years
 function isSentinelDate(d){
   if(!(d instanceof Date) || isNaN(d)) return false;
-  const y = d.getUTCFullYear();
-  return y >= 2099 && (y === 2099 || y === 2999 || y === 9999);
+  return (d.getTime() - Date.now()) > SENTINEL_HORIZON_MS;
 }
 
 // Work-type lexicon and classifier, reused verbatim from the Awarded page so a
