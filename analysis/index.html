@@ -561,10 +561,16 @@ function buildAdjusted(){
   for(const s of cost.series){ if(s && s.month != null && s.deflator != null) deflByMonth.set(s.month, +s.deflator); }
   if(!deflByMonth.size) return false;
   const firstDefl = +cost.series[0].deflator;
+  const lastDeflMonth = cost.series[cost.series.length-1].month;
+  const lastDefl = +cost.series[cost.series.length-1].deflator;
   const { months, v, c } = D.monthlyVC;
-  // real (deflated) monthly value
+  // real (deflated) monthly value. Award months past the last published cost
+  // month are forward-filled at the latest deflator (BLS posts a month or two
+  // behind, so the most recent award month has no own-month figure yet); award
+  // months before the series begins fall back to the earliest deflator.
   const realV = months.map((m,i)=>{
-    const d = deflByMonth.has(m) ? deflByMonth.get(m) : firstDefl;
+    const d = deflByMonth.has(m) ? deflByMonth.get(m)
+              : (m > lastDeflMonth ? lastDefl : firstDefl);
     return (d>0) ? v[i] / (d/100) : v[i];
   });
   // trailing-twelve nominal value, real value, count
