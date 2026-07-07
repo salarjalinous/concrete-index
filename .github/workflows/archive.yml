@@ -254,9 +254,17 @@ jobs:
                       defl[s['month']] = float(s['deflator'])
               if defl:
                   first_defl = float(cost['series'][0]['deflator'])
+                  last_defl_month = cost['series'][-1]['month']
+                  last_defl = float(cost['series'][-1]['deflator'])
                   rv = []
                   for i, m in enumerate(months):
-                      d = defl.get(m, first_defl)
+                      # forward-fill the latest deflator for award months past the
+                      # last published cost month (BLS posts a month or two behind);
+                      # months before the series begins fall back to the earliest.
+                      if m in defl:
+                          d = defl[m]
+                      else:
+                          d = last_defl if m > last_defl_month else first_defl
                       rv.append(vv[i] / (d/100.0) if d > 0 else vv[i])
                   tRV = []; sr = 0.0
                   for i in range(len(months)):
