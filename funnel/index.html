@@ -237,7 +237,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2 id="stages-title">Three separate measures</h2><span class="cap">USD · TTM</span></div>
       <div class="h-sub" id="stages-sub"></div>
       <div id="stage-rows"></div>
-      <div class="tnote">Each gauge is a separate measure from a separate source and is never summed with the others. Committed is unspent capital in the OMB plan (budget minus spend-to-date, floored at zero, over construction projects). Awarded is the trailing-twelve-month City Record construction total, deduplicated to one record per procurement. Spent is the snapshot-over-snapshot growth in cumulative outlays. They describe the same market at different stages, not the same dollars followed through.</div>
+      <div class="tnote">Each gauge is a separate measure from a separate source and is never summed with the others. Committed is unspent capital in the OMB plan (budget minus spend-to-date, floored at zero, over construction projects). Awarded is the trailing-twelve-month City Record construction total, deduplicated to one record per procurement, measured over the twelve fully-elapsed months so it aligns with the Analysis index and the Briefing. Spent is the snapshot-over-snapshot growth in cumulative outlays. They describe the same market at different stages, not the same dollars followed through.</div>
     </div>
   </section>
 
@@ -422,8 +422,12 @@ async function fetchAwards(){
   // (max contract_amount). Pull rows rather than a server-side sum so the
   // canonical pin-dedupe applies; the same award is published as several
   // near-duplicate notices, so a raw sum overstates the total.
-  const since = isoMonthsAgo(12);
-  const rows = await fetchAwardRows(since);
+  // Trailing twelve FULLY-ELAPSED months, matching the Analysis index and the
+  // Briefing: the current partial month is excluded so a few days of the month
+  // in progress do not understate the awarded total or the pages disagree.
+  const c0 = isoCompleteMonthBoundary(0);     // first day of the current (incomplete) month
+  const since = isoCompleteMonthBoundary(12); // first day, twelve complete months back
+  const rows = (await fetchAwardRows(since)).filter(r => (r.start_date || '') < c0);
   const deduped = dedupeAwardsByPin(rows);
   let ttm = 0; const byAgency = new Map(); const byMonth = new Map();
   for(const r of deduped){
@@ -493,6 +497,15 @@ function dedupeAwardsByPin(rows){
 function isoMonthsAgo(n){
   const d = new Date(); d.setMonth(d.getMonth()-n);
   return d.toISOString().slice(0,10);
+}
+/* First-of-month boundary n complete months before the current (incomplete)
+   month, so the award window aligns to fully-elapsed months. Mirrors the
+   Analysis index and the Briefing, keeping the three pages on one window. */
+function isoCompleteMonthBoundary(n){
+  const d = new Date();
+  const b = new Date(d.getFullYear(), d.getMonth(), 1);
+  b.setMonth(b.getMonth()-n);
+  return b.toISOString().slice(0,10);
 }
 function toQuarters(byMonth){
   const qs = new Map();
