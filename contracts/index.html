@@ -29,6 +29,7 @@
   --line:#e4d4c5; --rule:#22150e;
   --accent:#b5482a; --accent-soft:#f1d9cd; --steel:#2f5d8f;
   --pos:#2f7d52; --neg:#a3302a; --radius:3px;
+  --maxw:1180px; --gut:28px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -37,7 +38,7 @@ a{color:var(--steel);text-decoration:none}
 a:hover{text-decoration:underline}
 .mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
 .serif{font-family:'Source Serif 4',Georgia,serif}
-.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
 
 /* ---------- header ---------- */
 header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2px solid var(--ink)}
@@ -55,7 +56,7 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 
 /* ---------- release-series bar ---------- */
 .series-bar{background:var(--band);border-bottom:1px solid var(--line)}
-.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px 28px;max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px var(--gut);max-width:var(--maxw);margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .series-bar b{color:var(--ink);font-weight:600}
 .series-bar .sep{color:var(--faint);padding:0 12px}
 @media(max-width:720px){.series-bar .inner{white-space:normal}}
@@ -191,8 +192,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   .kpis{grid-template-columns:1fr 1fr}
   .kpi .k-value{font-size:24px}
   .hero{padding-top:34px}
-  .wrap{padding:0 18px}
-  .series-bar .inner{padding-left:18px;padding-right:18px}
+  :root{--maxw:1180px;--gut:18px}
   select.sel{min-width:0;width:100%}
   .col-cat,.th-cat{display:none}
 }
@@ -200,7 +200,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 @media(max-width:1180px){
   .menu-btn{display:block}
   .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:61px;left:-28px;right:-28px;background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60}
+  .nav-links{display:none;position:absolute;top:61px;left:calc(-1 * var(--gut));right:calc(-1 * var(--gut));background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px var(--gut);gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60;max-height:calc(100vh - 62px);overflow-y:auto}
   .nav-links.open{display:flex}
 }
 @media (prefers-reduced-motion: reduce){
@@ -214,6 +214,38 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   .card{background:#fff !important;box-shadow:none}
   footer{background:#fff;border-top:1px solid #000;color:#000}
   footer a,a{color:#000}
+}
+
+/* ---------- display scaling: fill wide / high-resolution screens ---------- */
+@media(min-width:1400px){
+  :root{--maxw:1330px;--gut:34px}
+  body{font-size:15.5px}
+  .kpi .k-value{font-size:33px}
+  .kpi.hl .k-value{font-size:42px}
+  .hero p.sub,.lp-sub{font-size:17.5px;max-width:860px}
+  .hero h1{max-width:960px}
+  .method p{max-width:980px}
+  table{font-size:14px}
+  .chart-box{height:330px}
+  .chart-box.tall{height:376px}
+}
+@media(min-width:1750px){
+  :root{--maxw:1500px;--gut:40px}
+  body{font-size:16px}
+  .kpi .k-value{font-size:35px}
+  .kpi.hl .k-value{font-size:45px}
+  .method p{max-width:1060px}
+  table{font-size:14.5px}
+  .chart-box{height:360px}
+  .chart-box.tall{height:410px}
+}
+@media(min-width:2100px){ :root{--maxw:1620px} }
+/* ---------- narrow: wide tables scroll inside their card, not the page ---------- */
+@media(max-width:900px){
+  .card{overflow-x:auto}
+  .card table{min-width:560px}
+  .sec-head{flex-wrap:wrap}
+  .sec-head .cap{white-space:normal;text-align:left}
 }
 </style>
 </head>
