@@ -17,18 +17,18 @@
 <meta name="description" content="Search New York City construction contracts by ID, vendor, agency, or category, then open one contract to read its dates, amounts, payment velocity, and spend curve from the City's registered-contract and Checkbook spending records.">
 <meta property="og:title" content="The Concrete Index · Contracts">
 <meta property="og:description" content="Search registered NYC construction contracts and open one to read its dates, amounts, payment velocity, and spend curve.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23b5482a%22/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23ae4e34%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha384-bs/nf9FbdNouRbMiFcrcZfLXYPKiPaGVGplVbv7dLGECccEXDW+S3zjqSKR5ZEaD" crossorigin="anonymous"></script>
 <style>
 :root{
-  --paper:#fbf2ea; --surface:#fffaf4; --band:#f6ece2;
-  --ink:#22150e; --navy:#243b53; --muted:#6e5d52; --faint:#9b8979;
-  --line:#e4d4c5; --rule:#22150e;
-  --accent:#b5482a; --accent-soft:#f1d9cd; --steel:#2f5d8f;
-  --pos:#2f7d52; --neg:#a3302a; --radius:3px;
+  --paper:#f7f3ef; --surface:#fefbf8; --band:#f2ede8;
+  --ink:#201611; --navy:#243b53; --muted:#6b5e56; --faint:#968a7f;
+  --line:#ded5ce; --rule:#201611;
+  --accent:#ae4e34; --accent-soft:#eadbd4; --steel:#2f5d8f;
+  --pos:#2f7d52; --neg:#9e362f; --radius:3px;
   --maxw:1180px; --gut:28px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -84,7 +84,7 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .sec-head .cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em;text-align:right;white-space:nowrap}
 
 .grid{display:grid;gap:22px;padding:30px 0 0}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 22px;box-shadow:0 1px 0 rgba(34,21,14,.04)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 22px;box-shadow:0 1px 0 rgba(32,22,17,.04)}
 .card .h-sub{font-size:12.5px;color:var(--muted);margin-top:9px;margin-bottom:18px;max-width:760px}
 .chart-box{position:relative;height:280px}
 .tnote{font-size:11.5px;line-height:1.55;color:var(--muted);margin-top:13px;padding-top:9px;border-top:1px solid var(--line)}
@@ -102,7 +102,7 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .ctrl label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
 select.sel{font-family:'Public Sans',sans-serif;font-weight:500;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-bottom:2px solid var(--ink);border-radius:var(--radius);padding:9px 36px 9px 12px;cursor:pointer;min-width:210px;
   appearance:none;-webkit-appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23b5482a' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ae4e34' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
 select.sel:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .match-note{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);padding:6px 0 0}
 .match-note b{color:var(--ink);font-weight:600}
@@ -200,7 +200,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 @media(max-width:1180px){
   .menu-btn{display:block}
   .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:61px;left:calc(-1 * var(--gut));right:calc(-1 * var(--gut));background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px var(--gut);gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60;max-height:calc(100vh - 62px);overflow-y:auto}
+  .nav-links{display:none;position:absolute;top:61px;left:calc(-1 * var(--gut));right:calc(-1 * var(--gut));background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px var(--gut);gap:13px;box-shadow:0 10px 24px rgba(32,22,17,.16);z-index:60;max-height:calc(100vh - 62px);overflow-y:auto}
   .nav-links.open{display:flex}
 }
 @media (prefers-reduced-motion: reduce){
@@ -418,7 +418,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 var LIVE_URL   = '/data/contract-search.json';
 var SAMPLE_URL = '/data/contract-search.sample.json';
 var ROW_CAP    = 20;             // max rows painted per result set (preview)
-var COLOR_A = '#b5482a', COLOR_B = '#243b53', GRID = '#ead9c9';
+var COLOR_A = '#ae4e34', COLOR_B = '#243b53', GRID = '#e3dbd3';
 
 /* ================= helpers ================= */
 function esc(s){ var d = document.createElement('div'); d.textContent = (s === null || s === undefined) ? '' : s; return d.innerHTML; }
@@ -629,7 +629,7 @@ function drawDetailChart(c){
       label: 'Cumulative paid',
       data: data,
       borderColor: COLOR_A,
-      backgroundColor: 'rgba(181,72,42,.08)',
+      backgroundColor: 'rgba(174,78,52,.08)',
       borderWidth: 2,
       pointRadius: 3,
       pointBackgroundColor: COLOR_A,
@@ -641,7 +641,7 @@ function drawDetailChart(c){
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: '#fffaf4', titleColor: '#22150e', bodyColor: '#6e5d52',
+          backgroundColor: '#fefbf8', titleColor: '#201611', bodyColor: '#6b5e56',
           borderColor: COLOR_A, borderWidth: 1, padding: 10, displayColors: false,
           titleFont: { family: 'IBM Plex Mono', size: 11 },
           bodyFont: { family: 'IBM Plex Mono', size: 12 },
@@ -649,8 +649,8 @@ function drawDetailChart(c){
         }
       },
       scales: {
-        x: { grid: { display: false }, ticks: { font: { family: 'IBM Plex Mono', size: 10 }, color: '#9b8979' } },
-        y: { grid: { color: GRID }, ticks: { font: { family: 'IBM Plex Mono', size: 10 }, color: '#9b8979', callback: function(v){ return fmtMoney(v); } } }
+        x: { grid: { display: false }, ticks: { font: { family: 'IBM Plex Mono', size: 10 }, color: '#968a7f' } },
+        y: { grid: { color: GRID }, ticks: { font: { family: 'IBM Plex Mono', size: 10 }, color: '#968a7f', callback: function(v){ return fmtMoney(v); } } }
       }
     }
   });
