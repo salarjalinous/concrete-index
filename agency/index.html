@@ -17,17 +17,17 @@
 <meta name="description" content="Pick a New York City agency and read its construction demand: committed capital plan against awarded contracts, the trades it buys, the firms it pays, and a dollar-weighted borough footprint.">
 <meta property="og:title" content="The Concrete Index · Agency Profile">
 <meta property="og:description" content="One agency at a time: committed versus awarded, top trades, top recipients, and where the work lands across the five boroughs.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23ae4e34%22/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23ac5037%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha384-bs/nf9FbdNouRbMiFcrcZfLXYPKiPaGVGplVbv7dLGECccEXDW+S3zjqSKR5ZEaD" crossorigin="anonymous"></script>
 <style>
 :root{
-  --paper:#f7f3ef; --surface:#fefbf8; --band:#f2ede8;
-  --ink:#201611; --navy:#243b53; --muted:#6b5e56; --faint:#968a7f;
-  --line:#ded5ce; --rule:#201611;
-  --accent:#ae4e34; --accent-soft:#eadbd4; --steel:#2f5d8f;
+  --paper:#f8f4e7; --surface:#fefcf5; --band:#f2eee0;
+  --ink:#1b180e; --navy:#243b53; --muted:#656154; --faint:#908c7f;
+  --line:#dcd7c7; --rule:#1b180e;
+  --accent:#ac5037; --accent-soft:#e6dec5; --steel:#2f5d8f;
   --pos:#2f7d52; --neg:#9e362f; --radius:3px;
   --maxw:1180px; --gut:28px;
 }
@@ -75,7 +75,7 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .ctrl label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
 .agency-select{font-family:'Source Serif 4',Georgia,serif;font-weight:600;font-size:21px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-bottom:2px solid var(--ink);border-radius:var(--radius);padding:9px 38px 9px 13px;cursor:pointer;min-width:330px;
   appearance:none;-webkit-appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ae4e34' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center}
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ac5037' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center}
 .agency-select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .ctrl .ctrl-note{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint)}
 
@@ -115,7 +115,7 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 
 .grid{display:grid;gap:22px;padding:30px 0 0}
 .grid.two{grid-template-columns:1fr 1fr}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 22px;box-shadow:0 1px 0 rgba(32,22,17,.04)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 22px;box-shadow:0 1px 0 rgba(27,24,14,.04)}
 .card .h-sub{font-size:12.5px;color:var(--muted);margin-top:9px;margin-bottom:18px;max-width:760px}
 .chart-box{position:relative;height:300px}
 .chart-box.tall{height:380px}
@@ -141,9 +141,9 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .boro-svg path{stroke:var(--surface);stroke-width:1.4;cursor:pointer;transition:opacity .12s}
 .boro-svg path:hover,.boro-svg path.on{opacity:.82}
 .boro-svg .boro-lbl{pointer-events:none}
-.boro-svg .boro-lbl text{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.06em;fill:var(--surface);text-anchor:middle;paint-order:stroke;stroke:rgba(32,22,17,.28);stroke-width:.6px}
+.boro-svg .boro-lbl text{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.06em;fill:var(--surface);text-anchor:middle;paint-order:stroke;stroke:rgba(27,24,14,.28);stroke-width:.6px}
 .boro-legend{display:flex;align-items:center;gap:10px;margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--faint);letter-spacing:.03em}
-.boro-legend .ramp{flex:1;height:9px;border-radius:2px;background:linear-gradient(90deg,#eadbd4,#ae4e34)}
+.boro-legend .ramp{flex:1;height:9px;border-radius:2px;background:linear-gradient(90deg,#e6dec5,#ac5037)}
 .boro-readout{background:var(--band);border-left:3px solid var(--accent);border-radius:0;padding:15px 18px}
 .boro-readout .ro-head{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:17px;color:var(--ink)}
 .boro-readout .ro-grid{margin-top:12px;display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:13px}
@@ -219,7 +219,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 @media(max-width:1180px){
   .menu-btn{display:block}
   .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:61px;left:calc(-1 * var(--gut));right:calc(-1 * var(--gut));background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px var(--gut);gap:13px;box-shadow:0 10px 24px rgba(32,22,17,.16);z-index:60;max-height:calc(100vh - 62px);overflow-y:auto}
+  .nav-links{display:none;position:absolute;top:61px;left:calc(-1 * var(--gut));right:calc(-1 * var(--gut));background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px var(--gut);gap:13px;box-shadow:0 10px 24px rgba(27,24,14,.16);z-index:60;max-height:calc(100vh - 62px);overflow-y:auto}
   .nav-links.open{display:flex}
 }
 
@@ -549,7 +549,7 @@ const AWARD_API = 'https://data.cityofnewyork.us/resource/qyyg-4tf5.json';
 // other Construction-prefixed category is design/CM professional services. Same
 // split the Briefing uses, so recipients read the same across the site.
 const HARD_CAT = 'Construction/Construction Services';
-const COLOR_A = '#ae4e34', COLOR_B = '#243b53', GRID = '#e3dbd3';
+const COLOR_A = '#ac5037', COLOR_B = '#243b53', GRID = '#e1ddcf';
 
 async function getJSON(api, params){
   const res = await fetch(api + '?' + new URLSearchParams(params), { headers: { 'X-App-Token': '3TAzQQPiSG2T4WGWfYYUxxqfJ' } });
@@ -970,10 +970,10 @@ function computeVelocity(){
 /* ================= Chart.js defaults ================= */
 Chart.defaults.font.family = "'IBM Plex Mono',monospace";
 Chart.defaults.font.size = 10;
-Chart.defaults.color = '#6b5e56';
+Chart.defaults.color = '#656154';
 Object.assign(Chart.defaults.plugins.tooltip, {
-  backgroundColor:'#fefbf8', titleColor:'#201611', bodyColor:'#6b5e56',
-  borderColor:'#ae4e34', borderWidth:1, cornerRadius:2, padding:10, displayColors:false,
+  backgroundColor:'#fefcf5', titleColor:'#1b180e', bodyColor:'#656154',
+  borderColor:'#ac5037', borderWidth:1, cornerRadius:2, padding:10, displayColors:false,
   titleFont:{family:"'Public Sans',sans-serif",weight:'600',size:12}, bodyFont:{family:"'IBM Plex Mono',monospace",size:12},
   caretSize:5
 });
@@ -1097,7 +1097,7 @@ function renderVelocityRanking(){
     type:'bar',
     data:{ labels: charted.map(r=>agencyLabel(r.code)),
       datasets:[{ data: charted.map(r=>r.yrs), borderRadius:1, barThickness:18,
-        backgroundColor: charted.map(r=> r.yrs>med*1.5 ? '#9e362f' : (r.yrs<med*0.67 ? '#2f7d52' : '#ae4e34')) }]},
+        backgroundColor: charted.map(r=> r.yrs>med*1.5 ? '#9e362f' : (r.yrs<med*0.67 ? '#2f7d52' : '#ac5037')) }]},
     options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>c.parsed.x.toFixed(1)+' years of funded work'}} },
       scales:{ x:{grid:{color:GRID}, border:{display:false}, ticks:{callback:v=>v+' yr', maxTicksLimit:6}},
@@ -1199,10 +1199,10 @@ function paintReadout(boro, data){
 /* warm ramp accent-soft -> accent */
 function rampColor(t){
   t = Math.max(0, Math.min(1, t));
-  // eadbd4 (241,217,205) -> ae4e34 (181,72,42)
-  const r = Math.round(241 + (181-241)*t);
-  const g = Math.round(217 + (72-217)*t);
-  const b = Math.round(205 + (42-205)*t);
+  // accent-soft e6dec5 (230,222,197) -> accent ac5037 (172,80,55)
+  const r = Math.round(230 + (172-230)*t);
+  const g = Math.round(222 + (80-222)*t);
+  const b = Math.round(197 + (55-197)*t);
   return `rgb(${r},${g},${b})`;
 }
 
@@ -1357,7 +1357,7 @@ function wireControls(){
   var LIVE_URL = '/data/contract-search.json';
   var SAMPLE_URL = '/data/contract-search.sample.json';
   var MIN_AGENCY_N = 8;
-  var PV_A = '#ae4e34', PV_GRID = '#e3dbd3';
+  var PV_A = '#ac5037', PV_GRID = '#e1ddcf';
   var pvCharts = {};
   function pvDestroy(k){ if(pvCharts[k]){ pvCharts[k].destroy(); delete pvCharts[k]; } }
   function escv(s){ var d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
@@ -1445,7 +1445,7 @@ function wireControls(){
         plugins: { legend: { display: false },
           tooltip: { callbacks: { label: function(c){ return Math.round(c.parsed.x) + ' days to 50% paid'; } } } },
         scales: { x: { grid: { color: PV_GRID }, border: { display: false },
-            title: { display: true, text: 'median days to 50% paid', color: '#968a7f', font: { family: "'IBM Plex Mono',monospace", size: 10 } },
+            title: { display: true, text: 'median days to 50% paid', color: '#908c7f', font: { family: "'IBM Plex Mono',monospace", size: 10 } },
             ticks: { maxTicksLimit: 6, callback: function(v){ return v + 'd'; } } },
           y: { grid: { display: false }, ticks: { autoSkip: false, font: { family: "'Public Sans',sans-serif", size: 11.5 } } } } }
     });
@@ -1541,7 +1541,7 @@ function wireControls(){
 @media print{
   @page{margin:14mm}
   header .menu-btn,.nav-links,.controls,.series-bar,.photo-band,.exp,.pdf-btn,.pdf-bar,.badge-live,.valstrip,.seg{display:none !important}
-  header{border-bottom:2px solid #201611}
+  header{border-bottom:2px solid #1b180e}
   body{background:#fff !important}
   .wrap{max-width:none !important;width:100% !important}
   .grid,.grid.two,.grid.three{display:block !important}
@@ -1578,7 +1578,7 @@ function wireControls(){
     var src=ch.canvas,out=document.createElement('canvas');
     out.width=src.width;out.height=src.height;
     var x=out.getContext('2d');
-    x.fillStyle='#fefbf8';x.fillRect(0,0,out.width,out.height);
+    x.fillStyle='#fefcf5';x.fillRect(0,0,out.width,out.height);
     x.drawImage(src,0,0);
     dl(out.toDataURL('image/png'),name,false);
   }
