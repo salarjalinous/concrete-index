@@ -74,6 +74,14 @@ on:
 permissions:
   contents: write
 
+# Four nightly jobs (archive, checkbook, payments, doing-business) all push to
+# main on overlapping crons and GitHub's scheduler drifts them into each other.
+# One shared concurrency group makes them QUEUE instead of collide. cancel-in-
+# progress is false: every one of these runs must finish, none may be dropped.
+concurrency:
+  group: main-data-push
+  cancel-in-progress: false
+
 jobs:
   payments:
     runs-on: ubuntu-latest
@@ -1083,6 +1091,7 @@ jobs:
 
       - name: Commit if changed
         run: |
+          set -euo pipefail
           git config user.name "concrete-index-payments"
           git config user.email "actions@users.noreply.github.com"
           # Stage everything under data/ so a never-before-committed file does not
@@ -1090,10 +1099,26 @@ jobs:
           git add -A data/
           if git diff --cached --quiet; then
             echo "No changes today"
-          else
-            git commit -m "Checkbook dated payments $(date -u +%Y-%m-%d)"
-            # Rebase onto the latest main before pushing so a concurrent nightly
-            # push cannot cause a non-fast-forward rejection (exit 128).
-            git pull --rebase origin main
-            git push
+            exit 0
           fi
+          git commit -m "Checkbook dated payments $(date -u +%Y-%m-%d)"
+          # Rebase onto the latest main before pushing so a concurrent nightly push
+          # cannot cause a non-fast-forward rejection (exit 128). Retried, because a
+          # racing job can land again between our fetch and our push. Only a rebase
+          # CONFLICT (a real problem) fails the job. Same step the checkbook job
+          # runs; the shared concurrency group above should keep these serialized.
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase origin main || {
+              echo "Rebase onto origin/main failed (conflict) on attempt $attempt"
+              git rebase --abort || true
+              exit 1
+            }
+            if git push origin HEAD:main; then
+              echo "Pushed on attempt $attempt"
+              exit 0
+            fi
+            echo "Push rejected on attempt $attempt (main moved again); retrying"
+            sleep $((attempt * 10))
+          done
+          echo "Could not push after 5 rebase+push attempts"
+          exit 1

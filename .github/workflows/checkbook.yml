@@ -13,9 +13,20 @@ on:
 permissions:
   contents: write
 
+# Four nightly jobs (archive, checkbook, payments, doing-business) all push to
+# main on overlapping crons and GitHub's scheduler drifts them into each other:
+# this job died on a non-fast-forward push 12 nights running. One shared
+# concurrency group makes them QUEUE instead of collide. cancel-in-progress is
+# false: every one of these runs must finish, none may be dropped. The rebase-
+# and-retry in the commit step below stays as the second line of defence.
+concurrency:
+  group: main-data-push
+  cancel-in-progress: false
+
 jobs:
   checkbook:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -398,7 +409,21 @@ jobs:
           # figure, since paid is sourced from the Contracts pull, not a separate
           # Spending fetch (the Spending domain is 3.2M+ checks/FY, unpageable here).
           spending_rows = sum(1 for r in contracts if to_int_amount(c_paid(r)) > 0)
-          meta = {"generated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+          now_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+          meta = {"generated": now_iso,
+                  "last_attempt": now_iso,
+                  "last_attempt_status": "ok",
+                  # Declared refresh contract, read by /funnel/ to decide when the
+                  # Paid gauge is too old to publish. cadence_hours = how often the
+                  # job is scheduled; stale_after_hours = the grace the page allows
+                  # (two missed runs) before it discloses staleness on the figure;
+                  # drop_after_hours = the hard floor past which the page must stop
+                  # showing the figure entirely rather than power it from a stale
+                  # file. Published in the data so page and pipeline can never
+                  # define the cadence differently.
+                  "cadence_hours": 24,
+                  "stale_after_hours": 48,
+                  "drop_after_hours": 336,
                   "source": "Checkbook NYC API (checkbooknyc.com), Registered Contracts (expense)",
                   "fiscal_years": FYS,
                   "industry_filter_mode": industry_mode, "contracts_rows": len(contracts),
@@ -417,19 +442,49 @@ jobs:
           tp_key = norm_name("Tutor Perini")
           log("Tutor Perini key = %r -> %s" % (tp_key, json.dumps(vendors.get(tp_key, "MISSING"))))
 
-          # Quality gate. On a thin or partial pull, KEEP the last good data file
-          # and exit cleanly (exit 0) instead of failing the job. A failed job
-          # emails the repo owner, and a nightly data-refresh should never do that
-          # for a transient upstream hiccup: the previously committed file stays in
-          # place and the page keeps showing the last good numbers. Only a genuine
-          # code error (an uncaught exception) will fail the job and notify.
+          # Quality gate. On a thin or partial pull, KEEP the last good VENDOR
+          # NUMBERS and exit cleanly (exit 0) instead of failing the job: a
+          # nightly data-refresh should not email the owner over a transient
+          # upstream hiccup.
+          #
+          # But it must not fail SILENTLY either. The old path returned early and
+          # left the file byte-identical, so a degraded pull was invisible to the
+          # page and /funnel/ went on drawing "Paid" from data of unknown age. So
+          # the degraded path now REWRITES the existing file in place, keeping the
+          # last good vendors and the ORIGINAL `generated` stamp (the age of the
+          # numbers is the age of the numbers) while stamping last_attempt /
+          # last_attempt_status = "degraded" on the meta. The figure the page draws
+          # is unchanged; the fact that it is aging is now on the record, and the
+          # page's own staleness check keys off `generated`.
           ok = (len(contracts) > 0 and spending_rows > 0
                 and group_count >= 50 and total_registered >= 1_000_000_000)
           if not ok:
-              log("WARNING: Checkbook pull looks partial or degraded "
-                  "(contracts=%d, paid_rows=%d, groups=%d, registered=$%d). "
-                  "Keeping the existing data file and exiting without committing."
-                  % (len(contracts), spending_rows, group_count, total_registered))
+              note = ("degraded pull: contracts=%d, paid_rows=%d, groups=%d, registered=$%d"
+                      % (len(contracts), spending_rows, group_count, total_registered))
+              log("WARNING: Checkbook pull looks partial or degraded (%s). "
+                  "Keeping the last good vendor numbers and stamping the failed "
+                  "attempt on the file's meta." % note)
+              prev = None
+              try:
+                  with open("data/checkbook-vendors.json") as f:
+                      prev = json.load(f)
+              except Exception as e:
+                  log("  no readable previous file (%s); nothing to preserve, exiting." % e)
+                  sys.exit(0)
+              pm = prev.get("meta") or {}
+              pm["last_attempt"] = now_iso
+              pm["last_attempt_status"] = "degraded"
+              pm["last_attempt_note"] = note
+              # Backfill the freshness contract onto files written before it existed.
+              pm.setdefault("cadence_hours", 24)
+              pm.setdefault("stale_after_hours", 48)
+              pm.setdefault("drop_after_hours", 336)
+              prev["meta"] = pm
+              with open("data/checkbook-vendors.json", "w") as f:
+                  json.dump(prev, f, separators=(",", ":"), ensure_ascii=False)
+              log("Rewrote data/checkbook-vendors.json meta only: vendors and "
+                  "generated=%r preserved, last_attempt=%s status=degraded"
+                  % (pm.get("generated"), now_iso))
               sys.exit(0)
 
           with open("data/checkbook-vendors.json", "w") as f:
@@ -440,10 +495,41 @@ jobs:
 
       - name: Commit if changed
         run: |
+          set -euo pipefail
           git config user.name "concrete-index-checkbook"
           git config user.email "actions@users.noreply.github.com"
-          git add data/checkbook-vendors.json data/checkbook-industries.json
-          git diff --cached --quiet && echo "No changes today" || {
-            git commit -m "Checkbook vendor data $(date -u +%Y-%m-%d)"
-            git push
-          }
+          # Stage everything under data/ so a never-before-committed file does not
+          # trip `pathspec did not match any files` (the same bug payments.yml hit).
+          git add -A data/
+          if git diff --cached --quiet; then
+            echo "No changes today"
+            exit 0
+          fi
+          git commit -m "Checkbook vendor data $(date -u +%Y-%m-%d)"
+          # THE FAILURE THIS FIXES: this job checks out main, then spends ~6 minutes
+          # on the Checkbook API. The archive, doing-business and payments jobs push
+          # to main on their own crons, and GitHub's scheduler drifts them into that
+          # window, so by the time this job pushed, main had moved:
+          #     ! [rejected]  main -> main (fetch first)
+          #     error: failed to push some refs
+          #     Error: Process completed with exit code 1
+          # That is 12 of the last 13 runs (run #43: doing-business pushed at
+          # 10:00:07Z, mid-run). The push is not a fast-forward, so it must rebase
+          # onto the latest main first -- exactly what payments.yml already does.
+          # Retried, because the racing job can land again between our fetch and our
+          # push. Only a rebase CONFLICT (a real problem) fails the job.
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase origin main || {
+              echo "Rebase onto origin/main failed (conflict) on attempt $attempt"
+              git rebase --abort || true
+              exit 1
+            }
+            if git push origin HEAD:main; then
+              echo "Pushed on attempt $attempt"
+              exit 0
+            fi
+            echo "Push rejected on attempt $attempt (main moved again); retrying"
+            sleep $((attempt * 10))
+          done
+          echo "Could not push after 5 rebase+push attempts"
+          exit 1

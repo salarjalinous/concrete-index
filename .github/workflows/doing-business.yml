@@ -16,6 +16,16 @@ on:
 permissions:
   contents: write
 
+# Four nightly jobs (archive, checkbook, payments, doing-business) all push to
+# main on overlapping crons and GitHub's scheduler drifts them into each other
+# (run #43 of the checkbook job died because this one pushed at 10:00:07Z, mid-
+# run). One shared concurrency group makes them QUEUE instead of collide.
+# cancel-in-progress is false: every one of these runs must finish, none may be
+# dropped.
+concurrency:
+  group: main-data-push
+  cancel-in-progress: false
+
 jobs:
   doing-business:
     runs-on: ubuntu-latest
@@ -29,12 +39,35 @@ jobs:
 
       - name: Commit if changed
         run: |
+          set -euo pipefail
           git config user.name "concrete-index-doingbusiness"
           git config user.email "actions@users.noreply.github.com"
           # Add ONLY the safe, organization-level corroboration file. Never -A, so a
           # local candidate file (db-merge-candidates.txt) can never be committed here.
           git add data/doing-business-corroboration.json
-          git diff --cached --quiet && echo "No changes today" || {
-            git commit -m "Doing Business corroboration $(date -u +%Y-%m-%d)"
-            git push
-          }
+          if git diff --cached --quiet; then
+            echo "No changes today"
+            exit 0
+          fi
+          git commit -m "Doing Business corroboration $(date -u +%Y-%m-%d)"
+          # A sibling nightly job can land on main while this one runs, so a bare
+          # `git push` is not a fast-forward and is rejected. Rebase onto the latest
+          # main before pushing, and retry, because a racing job can land again
+          # between our fetch and our push. Only a rebase CONFLICT (a real problem)
+          # fails the job. The shared concurrency group above should keep these
+          # serialized; this is the belt to that suspenders.
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase origin main || {
+              echo "Rebase onto origin/main failed (conflict) on attempt $attempt"
+              git rebase --abort || true
+              exit 1
+            }
+            if git push origin HEAD:main; then
+              echo "Pushed on attempt $attempt"
+              exit 0
+            fi
+            echo "Push rejected on attempt $attempt (main moved again); retrying"
+            sleep $((attempt * 10))
+          done
+          echo "Could not push after 5 rebase+push attempts"
+          exit 1
