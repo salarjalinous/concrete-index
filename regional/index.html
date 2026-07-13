@@ -30,6 +30,7 @@
   --line:#e4d4c5; --rule:#22150e;
   --accent:#b5482a; --accent-soft:#f1d9cd; --steel:#2f5d8f;
   --pos:#2f7d52; --neg:#a3302a; --radius:3px;
+  --maxw:1180px; --gut:28px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -37,7 +38,7 @@ body{font-family:'Public Sans',-apple-system,sans-serif;background:var(--paper);
 a{color:var(--steel);text-decoration:none}
 a:hover{text-decoration:underline}
 .mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
-.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
 
 /* ---------- header ---------- */
 header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2px solid var(--ink)}
@@ -55,7 +56,7 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 
 /* ---------- release-series bar ---------- */
 .series-bar{background:var(--band);border-bottom:1px solid var(--line)}
-.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px 28px;max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px var(--gut);max-width:var(--maxw);margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .series-bar b{color:var(--ink);font-weight:600}
 .series-bar .sep{color:var(--faint);padding:0 12px}
 @media(max-width:720px){.series-bar .inner{white-space:normal}}
@@ -133,14 +134,13 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   .kpis{grid-template-columns:1fr 1fr}
   .kpi .k-value{font-size:24px}
   .hero{padding-top:34px}
-  .wrap{padding:0 18px}
-  .series-bar .inner{padding-left:18px;padding-right:18px}
+  :root{--maxw:1180px;--gut:18px}
 }
 .menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
 @media(max-width:1180px){
   .menu-btn{display:block}
   .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:61px;left:-28px;right:-28px;background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60}
+  .nav-links{display:none;position:absolute;top:61px;left:calc(-1 * var(--gut));right:calc(-1 * var(--gut));background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px var(--gut);gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60;max-height:calc(100vh - 62px);overflow-y:auto}
   .nav-links.open{display:flex}
 }
 .photo-band{position:relative;height:200px;background-size:cover;background-position:center 38%;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);filter:sepia(.32) saturate(.7) contrast(1.02) brightness(.96);margin-top:22px}
@@ -161,6 +161,38 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   .card{background:#fff !important;box-shadow:none}
   footer{background:#fff;border-top:1px solid #000;color:#000}
   footer a,a{color:#000}
+}
+
+/* ---------- display scaling: fill wide / high-resolution screens ---------- */
+@media(min-width:1400px){
+  :root{--maxw:1330px;--gut:34px}
+  body{font-size:15.5px}
+  .kpi .k-value{font-size:33px}
+  .kpi.hl .k-value{font-size:42px}
+  .hero p.sub,.lp-sub{font-size:17.5px;max-width:860px}
+  .hero h1{max-width:960px}
+  .method p{max-width:980px}
+  table{font-size:14px}
+  .chart-box{height:330px}
+  .chart-box.tall{height:376px}
+}
+@media(min-width:1750px){
+  :root{--maxw:1500px;--gut:40px}
+  body{font-size:16px}
+  .kpi .k-value{font-size:35px}
+  .kpi.hl .k-value{font-size:45px}
+  .method p{max-width:1060px}
+  table{font-size:14.5px}
+  .chart-box{height:360px}
+  .chart-box.tall{height:410px}
+}
+@media(min-width:2100px){ :root{--maxw:1620px} }
+/* ---------- narrow: wide tables scroll inside their card, not the page ---------- */
+@media(max-width:900px){
+  .card{overflow-x:auto}
+  .card table{min-width:560px}
+  .sec-head{flex-wrap:wrap}
+  .sec-head .cap{white-space:normal;text-align:left}
 }
 </style>
 </head>
@@ -191,7 +223,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 </header>
 
 <div class="series-bar">
-  <div class="inner">SERIES&nbsp;·&nbsp;<b>CI-SCA-MTA</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>SCA (8586-3zfm), LIVE · MTA (kizb-nxtu), LIVE</b><span class="sep">·</span>UNITS&nbsp;·&nbsp;<b>USD</b></div>
+  <div class="inner">SERIES&nbsp;·&nbsp;<b>CI-SCA-MTA</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>SCA (8586-3zfm), LIVE · MTA (kizb-nxtu), LIVE</b><span class="sep">·</span>SCA AS OF&nbsp;·&nbsp;<b id="series-asof">–</b><span class="sep">·</span>UNITS&nbsp;·&nbsp;<b>USD</b></div>
 </div>
 
 <div class="wrap hero">
@@ -228,7 +260,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="h-sub">Awarded construction value of projects currently under construction, by borough</div>
       <div class="chart-box"><canvas id="chart-sca-boro"></canvas></div>
       <div class="reading" id="sca-reading"></div>
-      <div class="tnote">Each bar is the awarded construction value of School Construction Authority projects currently under construction, grouped by borough. This is the value of active work under contract, not committed or future budget, and the SCA dataset names no contractor.</div>
+      <div class="tnote">Each bar is the awarded construction value of School Construction Authority projects currently under construction, grouped by the borough code the SCA assigns each project. This is the value of active work under contract, not committed or future budget, and the SCA dataset names no contractor. <span id="sca-boro-note"></span></div>
     </div>
     <div class="card">
       <div class="sec-head"><h2>SCA: largest active projects</h2><span class="cap">TOP 10 · USD</span></div>
@@ -261,7 +293,9 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     <div class="card">
       <div class="sec-head"><h2>SCA &amp; MTA · Methodology &amp; definitions</h2><span class="m-cap">SERIES NOTES</span></div>
       <h3>School Construction Authority</h3>
-      <p>SCA figures come from <a href="https://data.cityofnewyork.us/Housing-Development/Active-Projects-Under-Construction/8586-3zfm" target="_blank" rel="noopener">Active Projects Under Construction</a> on NYC Open Data (dataset <code>8586-3zfm</code>): new-capacity school projects and capital improvement projects currently in construction, with their awarded construction value. This is work in the ground today, the SCA's separate five-year plan commits additional future work not shown here.</p>
+      <p>SCA figures come from <a href="https://data.cityofnewyork.us/Housing-Development/Active-Projects-Under-Construction/8586-3zfm" target="_blank" rel="noopener">Active Projects Under Construction</a> on NYC Open Data (dataset <code>8586-3zfm</code>): new-capacity school projects and capital improvement projects currently in construction, with their awarded construction value. This is work in the ground today, the SCA's separate five-year plan commits additional future work not shown here. The SCA republishes the extract periodically rather than continuously, so the page carries the snapshot date the City stamps on the dataset, read live from its metadata.</p>
+      <h3>The headline total and the borough split</h3>
+      <p>The headline value and project count are an ungrouped aggregate over every record in the dataset, so no project can fall out of them. The borough breakdown is grouped separately, on the structured borough code the SCA assigns each project. That matters: the dataset's free-text borough column is blank on a small number of records while the code is filled in on all of them, and grouping on the text column drops the blanks. Earlier versions of this page did exactly that, and understated the headline. The bars now sum back to the headline; anything the SCA leaves without a code would show as its own “Not assigned” bar rather than disappearing.</p>
       <h3>MTA</h3>
       <p>MTA figures come from the <a href="https://data.ny.gov/Transportation/Metropolitan-Transportation-Authority-MTA-Capital-/kizb-nxtu" target="_blank" rel="noopener">MTA Capital Dashboard: Agencies Detail</a> on data.ny.gov (dataset <code>kizb-nxtu</code>), using each project's current budget submission. Source values are reported in thousands of dollars and converted here. Allocations measure planned capital budgets by plan, not construction contract awards, the MTA stage is most comparable to the City's “<a href="/pipeline/">Pipeline</a>”, not its award flow.</p>
       <h3>Why these aren't merged into the City funnel</h3>
@@ -292,6 +326,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 'use strict';
 const TOKEN = '3TAzQQPiSG2T4WGWfYYUxxqfJ';
 const SCA_API = 'https://data.cityofnewyork.us/resource/8586-3zfm.json';
+const SCA_META = 'https://data.cityofnewyork.us/api/views/8586-3zfm.json';
 const MTA_API = 'https://data.ny.gov/resource/kizb-nxtu.json';
 const COLOR_A = '#b5482a', COLOR_B = '#243b53', GRID = '#ead9c9';
 
@@ -309,38 +344,86 @@ function fmtMoney(v){
 function fmtInt(v){ return v.toLocaleString('en-US'); }
 function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 function titleCase(s){ return (s||'').toLowerCase().replace(/\b[a-z]/g,c=>c.toUpperCase()); }
+function fmtDay(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+
+// The SCA borough breakdown is keyed on the structured single-letter borough
+// code, not the free-text `borough` column. The text column is blank on a small
+// number of records while the code is populated on every one, and a grouped
+// query silently drops the blanks: those records fell out of a headline labelled
+// "awarded value in active construction", understating it. The headline is now
+// taken from an ungrouped aggregate over the whole dataset, and the breakdown
+// groups on the code so it reconciles back to that headline.
+const BORO_CODES = { K:'Brooklyn', M:'Manhattan', Q:'Queens', R:'Staten Island', X:'Bronx' };
+// One name for a project row, from the code first, the free-text column second.
+function boroName(r){
+  const code = String((r && r.boro) || '').trim().toUpperCase();
+  if(BORO_CODES[code]) return BORO_CODES[code];
+  const text = String((r && r.borough) || '').trim();
+  return text ? titleCase(text) : 'Not assigned';
+}
 
 const D = {};
 async function fetchAll(){
   // SCA lives on data.cityofnewyork.us, MTA on data.ny.gov. Settle each
   // independently so one host being down does not blank the other's sections.
   const results = await Promise.allSettled([
-    getJSON(SCA_API, {'$select':'borough,count(*) as n,sum(award) as s','$group':'borough','$order':'s DESC'}),
+    getJSON(SCA_API, {'$select':'count(*) as n,sum(award) as s'}),
+    getJSON(SCA_API, {'$select':'boro,count(*) as n,sum(award) as s','$group':'boro','$order':'s DESC'}),
     getJSON(SCA_API, {'$select':'consttype,count(*) as n,sum(award) as s','$group':'consttype'}),
-    getJSON(SCA_API, {'$select':'name,projdesc,borough,award','$order':'award DESC','$limit':'10'}),
+    getJSON(SCA_API, {'$select':'name,projdesc,borough,boro,award','$order':'award DESC','$limit':'10'}),
     getJSON(MTA_API, {'$select':'agency_name,sum(total_allocation) as s',
       '$where':"budget_submission_date='Current' AND capital_plan='Capital Plan 2025 - 2029'",
       '$group':'agency_name','$order':'s DESC'}),
     getJSON(MTA_API, {'$select':'capital_plan,sum(total_allocation) as s',
-      '$where':"budget_submission_date='Current'",'$group':'capital_plan','$order':'capital_plan'})
+      '$where':"budget_submission_date='Current'",'$group':'capital_plan','$order':'capital_plan'}),
+    // Snapshot date for the SCA extract. Metadata only, so a failure here costs
+    // the "as of" line and nothing else.
+    fetch(SCA_META).then(r => r.ok ? r.json() : Promise.reject(new Error('meta ' + r.status)))
   ]);
   const val = i => results[i].status === 'fulfilled' ? results[i].value : null;
-  const boro = val(0), type = val(1), top = val(2), mtaAg = val(3), mtaPlans = val(4);
+  const tot = val(0), boro = val(1), type = val(2), top = val(3), mtaAg = val(4), mtaPlans = val(5), meta = val(6);
 
-  D.scaOk = boro !== null && type !== null && top !== null;
+  D.scaOk = tot !== null && boro !== null && type !== null && top !== null;
   D.mtaOk = mtaAg !== null && mtaPlans !== null;
 
   if(D.scaOk){
-    D.boro = boro.filter(r=>r.borough);
+    // Headline: every active project, no grouping, nothing dropped.
+    D.scaTotal = parseFloat(tot[0] && tot[0].s) || 0;
+    D.scaCount = parseInt(tot[0] && tot[0].n, 10) || 0;
     D.type = type;
     D.top = top;
-    D.scaTotal = D.boro.reduce((a,r)=>a+(parseFloat(r.s)||0),0);
-    D.scaCount = D.boro.reduce((a,r)=>a+(parseInt(r.n)||0),0);
+
+    // Breakdown: group the codes into named boroughs, folding any unknown or
+    // missing code into one honest "Not assigned" bucket.
+    const byName = new Map();
+    boro.forEach(r => {
+      const name = BORO_CODES[String(r.boro || '').trim().toUpperCase()] || 'Not assigned';
+      const cur = byName.get(name) || { name, n:0, s:0 };
+      cur.n += parseInt(r.n, 10) || 0;
+      cur.s += parseFloat(r.s) || 0;
+      byName.set(name, cur);
+    });
+    // Reconcile the breakdown back to the headline. If the two ever diverge (a
+    // future record with no code at all), the gap is shown as "Not assigned"
+    // rather than quietly leaving the chart short of its own headline.
+    const gapS = D.scaTotal - [...byName.values()].reduce((a,r)=>a+r.s, 0);
+    const gapN = D.scaCount - [...byName.values()].reduce((a,r)=>a+r.n, 0);
+    if(gapN > 0 || gapS > 1){
+      const cur = byName.get('Not assigned') || { name:'Not assigned', n:0, s:0 };
+      cur.n += Math.max(gapN, 0);
+      cur.s += Math.max(gapS, 0);
+      byName.set('Not assigned', cur);
+    }
+    D.boro = [...byName.values()].sort((a,b)=>b.s-a.s);
+    D.boroUnassigned = byName.get('Not assigned') || null;
   }
   if(D.mtaOk){
     D.mtaAg = mtaAg.map(r=>({a:r.agency_name, s:(parseFloat(r.s)||0)*1000}));
     D.mtaPlans = mtaPlans.map(r=>({p:(r.capital_plan||'').replace('Capital Plan ',''), s:(parseFloat(r.s)||0)*1000}));
   }
+  // rowsUpdatedAt is epoch seconds: the last time the SCA extract itself changed.
+  const stamp = meta && (meta.rowsUpdatedAt || meta.viewLastModified);
+  D.scaAsOf = stamp ? new Date(stamp * 1000) : null;
 }
 
 Chart.defaults.font.family = "'IBM Plex Mono',monospace";
@@ -354,6 +437,17 @@ Object.assign(Chart.defaults.plugins.tooltip, {
 });
 const charts = {};
 function destroyChart(k){ if(charts[k]){ charts[k].destroy(); delete charts[k]; } }
+
+// Category labels on the y axis get whatever width Chart.js will give them, and
+// a long agency name ("Metropolitan Transportation Authority") was being cut off
+// mid-word with no ellipsis, reading as "tropolitan Transportation Authority".
+// Truncate the tick to a fixed width; the tooltip still carries the full name.
+const TICK_MAX = 24;
+function truncTick(s){
+  s = String(s == null ? '' : s);
+  return s.length > TICK_MAX ? s.slice(0, TICK_MAX - 1).trimEnd() + '…' : s;
+}
+
 function hBar(canvasId, labels, data, color, countFor){
   destroyChart(canvasId);
   charts[canvasId] = new Chart(document.getElementById(canvasId), {
@@ -362,10 +456,13 @@ function hBar(canvasId, labels, data, color, countFor){
     options:{
       indexAxis:'y', responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{display:false},
-        tooltip:{callbacks:{label:(c)=> fmtMoney(c.parsed.x) + (countFor ? ' · ' + countFor[c.dataIndex] : '')}} },
+        tooltip:{callbacks:{
+          title:(items)=> items.length ? String(labels[items[0].dataIndex]) : '',
+          label:(c)=> fmtMoney(c.parsed.x) + (countFor ? ' · ' + countFor[c.dataIndex] : '')}} },
       scales:{
         x:{grid:{color:GRID}, border:{display:false}, ticks:{callback:v=>fmtMoney(v), maxTicksLimit:5}},
-        y:{grid:{display:false}, ticks:{autoSkip:false, font:{size:11.5}}}
+        y:{grid:{display:false}, ticks:{autoSkip:false, font:{size:11.5},
+          callback:function(v){ return truncTick(this.getLabelForValue(v)); }}}
       }
     }
   });
@@ -387,15 +484,22 @@ function renderSCA(){
   document.getElementById('kpi-sca-note').textContent = 'awarded value in active construction';
   document.getElementById('kpi-sca-n').textContent = fmtInt(D.scaCount);
 
-  hBar('chart-sca-boro', D.boro.map(r=>titleCase(r.borough)), D.boro.map(r=>parseFloat(r.s)||0), COLOR_B,
-    D.boro.map(r=>fmtInt(parseInt(r.n)||0)+' projects'));
+  hBar('chart-sca-boro', D.boro.map(r=>r.name), D.boro.map(r=>r.s), COLOR_B,
+    D.boro.map(r=>fmtInt(r.n)+' projects'));
+  // The bars sum to the headline. Say so, and name the exception if one exists.
+  const un = D.boroUnassigned;
+  document.getElementById('sca-boro-note').textContent = un
+    ? 'The bars sum to the headline. ' + fmtInt(un.n) + ' project' + (un.n===1?'':'s') +
+      ' carrying no borough code appear as Not assigned.'
+    : 'The bars sum to the headline: every active project carries a borough.';
+
   const cip = D.type.find(t=>t.consttype==='CIP'), cap = D.type.find(t=>t.consttype==='Capacity');
   document.getElementById('sca-reading').innerHTML =
     `<strong>Reading:</strong> ${cip&&cap ? `capital improvements (roofs, masonry, systems) make up ${fmtMoney(parseFloat(cip.s))} of the active program; new capacity (new schools and additions) accounts for ${fmtMoney(parseFloat(cap.s))}.` : ''} School construction runs steady and spreads across all five boroughs, a base layer of demand under the city's construction market.`;
 
   document.querySelector('#tbl-sca tbody').innerHTML = D.top.map((r,i)=>`<tr>
     <td class="rank">${i+1}</td>
-    <td><div class="t-title">${esc(r.name)}</div><div class="t-sub">${esc(titleCase(r.borough||''))} · ${esc((r.projdesc||'').slice(0,60).toLowerCase())}</div></td>
+    <td><div class="t-title">${esc(r.name)}</div><div class="t-sub">${esc(boroName(r))} · ${esc((r.projdesc||'').slice(0,60).toLowerCase())}</div></td>
     <td class="num amt">${fmtMoney(parseFloat(r.award)||0)}</td></tr>`).join('');
 }
 
@@ -452,8 +556,12 @@ function render(){ renderSCA(); renderMTA(); }
     document.getElementById('error').style.display='block';
     return;
   }
+  // The SCA extract is a snapshot, not a live feed: say when it was last
+  // republished, so nobody reads today's page as today's site conditions.
+  const asOf = D.scaAsOf ? `SCA snapshot as of <strong>${esc(fmtDay(D.scaAsOf))}</strong> · ` : '';
+  document.getElementById('series-asof').textContent = D.scaAsOf ? fmtDay(D.scaAsOf).toUpperCase() : '–';
   document.getElementById('asof').innerHTML = D.scaOk
-    ? `SCA active construction and MTA capital dashboard · <strong>${fmtInt(D.scaCount)}</strong> school projects · five MTA plans · refreshed on load`
+    ? `${asOf}SCA active construction and MTA capital dashboard · <strong>${fmtInt(D.scaCount)}</strong> school projects · five MTA plans · refreshed on load`
     : `MTA capital dashboard · SCA data temporarily unavailable · refreshed on load`;
   document.getElementById('loader').style.display='none';
   document.getElementById('app').style.display='block';
@@ -470,7 +578,7 @@ function render(){ renderSCA(); renderMTA(); }
 .pdf-btn{background:none;border:1px solid var(--line);color:var(--muted);font:600 11px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;cursor:pointer;white-space:nowrap;transition:color .12s,border-color .12s}
 .pdf-btn:hover{color:var(--accent);border-color:var(--accent)}
 .series-bar .inner .pdf-btn{margin-left:auto;font-size:10px;padding:4px 9px;align-self:center}
-.pdf-bar{display:flex;justify-content:flex-end;max-width:1180px;margin:0 auto;padding:6px 28px}
+.pdf-bar{display:flex;justify-content:flex-end;max-width:var(--maxw);margin:0 auto;padding:6px var(--gut)}
 @media (max-width:720px){.pdf-bar{padding:6px 18px}}
 @media print{
   @page{margin:14mm}
