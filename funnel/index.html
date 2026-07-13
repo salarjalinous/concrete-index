@@ -37,7 +37,7 @@ a{color:var(--steel);text-decoration:none}
 a:hover{text-decoration:underline}
 .mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
 .serif{font-family:'Source Serif 4',Georgia,serif}
-.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
 
 /* ---------- header ---------- */
 header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2px solid var(--ink)}
@@ -55,7 +55,7 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 
 /* ---------- release-series bar ---------- */
 .series-bar{background:var(--band);border-bottom:1px solid var(--line)}
-.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px 28px;max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px var(--gut);max-width:var(--maxw);margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .series-bar b{color:var(--ink);font-weight:600}
 .series-bar .sep{color:var(--faint);padding:0 12px}
 @media(max-width:720px){.series-bar .inner{white-space:normal}}
@@ -146,14 +146,13 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   .kpis{grid-template-columns:1fr 1fr}
   .kpi .k-value{font-size:24px}
   .hero{padding-top:34px}
-  .wrap{padding:0 18px}
-  .series-bar .inner{padding-left:18px;padding-right:18px}
+  :root{--maxw:1180px;--gut:18px}
 }
 .menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
 @media(max-width:1180px){
   .menu-btn{display:block}
   .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:61px;left:-28px;right:-28px;background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60}
+  .nav-links{display:none;position:absolute;top:61px;left:calc(-1 * var(--gut));right:calc(-1 * var(--gut));background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px var(--gut);gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60;max-height:calc(100vh - 62px);overflow-y:auto}
   .nav-links.open{display:flex}
 }
 
@@ -172,6 +171,40 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   footer{background:#fff;border-top:1px solid #000;color:#000}
   footer a,a{color:#000}
 }
+
+/* ---------- display scaling: fill wide / high-resolution screens ---------- */
+@media(min-width:1400px){
+  :root{--maxw:1330px;--gut:34px}
+  body{font-size:15.5px}
+  .kpi .k-value{font-size:33px}
+  .kpi.hl .k-value{font-size:42px}
+  .hero p.sub,.lp-sub{font-size:17.5px;max-width:860px}
+  .hero h1{max-width:960px}
+  .method p{max-width:980px}
+  table{font-size:14px}
+  .chart-box{height:330px}
+  .chart-box.tall{height:376px}
+}
+@media(min-width:1750px){
+  :root{--maxw:1500px;--gut:40px}
+  body{font-size:16px}
+  .kpi .k-value{font-size:35px}
+  .kpi.hl .k-value{font-size:45px}
+  .method p{max-width:1060px}
+  table{font-size:14.5px}
+  .chart-box{height:360px}
+  .chart-box.tall{height:410px}
+}
+@media(min-width:2100px){ :root{--maxw:1620px} }
+/* ---------- narrow: wide tables scroll inside their card, not the page ---------- */
+@media(max-width:900px){
+  .card{overflow-x:auto}
+  .card table{min-width:560px}
+  .sec-head{flex-wrap:wrap}
+  .sec-head .cap{white-space:normal;text-align:left}
+}
+/* suppressed cell: a figure below the floor for a meaningful reading, not a zero */
+.na{font-family:'IBM Plex Mono',monospace;font-weight:500;color:var(--faint)}
 </style>
 </head>
 <body>
@@ -208,7 +241,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <div class="hero">
     <div class="kicker">NYC Capital Conversion</div>
     <h1>How committed dollars become cash.</h1>
-    <p class="sub">Commitments, awards, and outlays live in three separate City systems with three separate formats. This page joins them: how much funded work is stacked upstream, how fast it converts to contracts, and how fast contracts turn into cash, agency by agency.</p>
+    <p class="sub">Commitments, awards, and outlays live in separate City systems, each on its own format and its own ledger. This page sets them side by side: how much funded work is stacked upstream, how fast it converts to contracts, and how fast contracts turn into cash, agency by agency.</p>
     <p class="asof" id="asof">Assembling the funnel from live City data…</p>
   </div>
 </div>
@@ -234,10 +267,10 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 
   <section class="grid" id="stages">
     <div class="card">
-      <div class="sec-head"><h2 id="stages-title">Three separate measures</h2><span class="cap">USD · TTM</span></div>
+      <div class="sec-head"><h2 id="stages-title">Separate gauges, not one flow</h2><span class="cap">USD · TTM</span></div>
       <div class="h-sub" id="stages-sub"></div>
       <div id="stage-rows"></div>
-      <div class="tnote">Each gauge is a separate measure from a separate source and is never summed with the others. Committed is unspent capital in the OMB plan (budget minus spend-to-date, floored at zero, over construction projects). Awarded is the trailing-twelve-month City Record construction total, deduplicated to one record per procurement, measured over the twelve fully-elapsed months so it aligns with the Analysis index and the Briefing. Spent is the snapshot-over-snapshot growth in cumulative outlays. They describe the same market at different stages, not the same dollars followed through.</div>
+      <div class="tnote">Each gauge is a separate measure from a separate source and is never summed with the others. Committed is unspent capital in the OMB plan (budget minus spend-to-date, floored at zero, over construction projects). Awarded is the trailing-twelve-month City Record construction total, deduplicated to one record per procurement, measured over the twelve fully-elapsed months so it aligns with the Analysis index and the Briefing. Spent is the snapshot-over-snapshot growth in cumulative outlays, read across the projects observed in both snapshots. They describe the same market at different stages, not the same dollars followed through.</div>
     </div>
   </section>
 
@@ -246,7 +279,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2>Pace of spending</h2><span class="cap">PLAN-TO-PLAN · USD</span></div>
       <div class="h-sub">Capital dollars paid out between plan snapshots (≈4-month periods)</div>
       <div class="chart-box"><canvas id="chart-spend"></canvas></div>
-      <div class="tnote">Each bar is capital paid out in one plan period, computed as the increase in cumulative spend-to-date between two consecutive OMB plan snapshots (published roughly every four months), floored at zero. A restatement that lowers a cumulative figure reads as zero rather than negative spend, so the series understates rather than overstates outlays.</div>
+      <div class="tnote">Each bar is capital paid out in one plan period, computed as the increase in cumulative spend-to-date between two consecutive OMB plan snapshots (published roughly every four months), floored at zero. Spending is measured on a matched panel: only projects observed in both snapshots contribute, so a project's back-history does not land in the period it first appears. Spending by new entrants before they entered the plan is therefore outside the series. A restatement that lowers a cumulative figure reads as zero rather than negative spend.</div>
     </div>
     <div class="card" id="award-trend">
       <div class="sec-head"><h2>Pace of awarding</h2><span class="cap">BY QUARTER · USD</span></div>
@@ -264,7 +297,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <thead><tr><th>Agency</th><th class="num">Open pipeline</th><th class="num">Spent (TTM)</th><th class="num">Awarded (TTM)</th><th class="num">Backlog, years</th></tr></thead>
         <tbody></tbody>
       </table>
-      <div class="tnote">The ten agencies with the most open pipeline. Backlog, years = open pipeline ÷ trailing-year spend, how long the committed-but-unspent work would last at the current pace of outlays. A high figure means funded work is accumulating faster than it is being delivered. It is a structural ratio (a stock over a flow), not a delivery schedule or a forecast.</div>
+      <div class="tnote">The ten agencies with the most open pipeline. Backlog, years = open pipeline ÷ trailing-year spend, how long the committed-but-unspent work would last at the current pace of outlays. A high figure means funded work is accumulating faster than it is being delivered. It is a structural ratio (a stock over a flow), not a delivery schedule or a forecast. Where an agency's trailing outlay falls below the floor for a meaningful reading, the spend and backlog cells read as an en dash rather than a number: its capital work is built under another managing agency, so its own spend line is not a delivery signal.</div>
     </div>
   </section>
 
@@ -273,16 +306,17 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2>Funnel · Methodology &amp; definitions</h2><span class="cap">SERIES NOTES</span></div>
       <div class="method-body">
       <h3>The measures</h3>
-      <p><strong>Committed, unspent</strong> is the forward pipeline from the “<a href="/pipeline/">Pipeline</a>” page: total project budgets minus spending to date across active capital projects in the City's most recent capital plan snapshot (NYC OMB, dataset <code>fb86-vt7u</code>). <strong>Awarded</strong> is trailing-twelve-month construction award value from the City Record (dataset <code>qyyg-4tf5</code>), as on the “<a href="/awarded/">Awarded</a>” page. This figure is gross: deduplicated to one record per procurement but still inclusive of renewals, extensions, and awards of $500M and above, so it runs larger than the competitive-set total on the “<a href="/competitive/">Contractors</a>” page, which strips renewals and megaprojects to isolate the contested market. <strong>Spent</strong> is trailing-year capital outlays, measured as the growth in each project's cumulative spend-to-date between capital plan snapshots. The underlying ledger is the City's FMS, the same accounting that feeds Checkbook NYC.</p>
-      <p><strong>Paid (Checkbook)</strong> is a separate, fourth reading drawn from the Comptroller's Checkbook NYC: total disbursements on registered construction contracts to named vendors, City scope, fiscal years 2021 to 2025. It is the demand-to-cash payoff at the vendor level, the same figures shown on the “<a href="/competitive/">Contractors</a>” page, summed across all construction vendor groups. It is not the same number as Spent. Spent is capital-plan outlays across all construction measured between plan snapshots; Paid is disbursements on the subset of work that has been registered as a contract to a named vendor. The two sit on different ledgers and different scopes and are never added together.</p>
+      <p><strong>Committed, unspent</strong> is the forward pipeline from the “<a href="/pipeline/">Pipeline</a>” page: total project budgets minus spending to date across active capital projects in the City's most recent capital plan snapshot (NYC OMB, dataset <code>fb86-vt7u</code>). <strong>Awarded</strong> is trailing-twelve-month construction award value from the City Record (dataset <code>qyyg-4tf5</code>), as on the “<a href="/awarded/">Awarded</a>” page. This figure is gross: deduplicated to one record per procurement but still inclusive of renewals, extensions, and awards of $500M and above, so it runs larger than the competitive-set total on the “<a href="/competitive/">Contractors</a>” page, which strips renewals and megaprojects to isolate the contested market. <strong>Spent</strong> is trailing-year capital outlays, measured as the growth in each project's cumulative spend-to-date between capital plan snapshots, across the projects observed in both. The underlying ledger is the City's FMS, the same accounting that feeds Checkbook NYC.</p>
+      <p><strong>Paid (Checkbook)</strong> is a separate reading drawn from the Comptroller's Checkbook NYC: total disbursements on registered construction contracts to named vendors, City scope, fiscal years 2021 to 2025. It is the demand-to-cash payoff at the vendor level, the same figures shown on the “<a href="/competitive/">Contractors</a>” page, summed across all construction vendor groups. It is not the same number as Spent. Spent is capital-plan outlays across all construction measured between plan snapshots; Paid is disbursements on the subset of work that has been registered as a contract to a named vendor. The two sit on different ledgers and different scopes and are never added together.</p>
       <h3>How spending pace is computed</h3>
-      <p>OMB publishes a plan snapshot roughly every four months. For each project, spending in a period is its cumulative spend-to-date in one snapshot minus the prior snapshot, floored at zero; new projects count from zero. Projects are matched across snapshots by agency and FMS ID, with sub-project rows collapsed first so nothing is double-counted. Projects that leave the dataset between snapshots stop contributing, which biases the spend estimate low rather than high.</p>
+      <p>OMB publishes a plan snapshot roughly every four months. For each project, spending in a period is its cumulative spend-to-date in one snapshot minus the prior snapshot, floored at zero. Projects are matched across snapshots by agency and FMS ID, with sub-project rows collapsed first so nothing is double-counted.</p>
+      <p>Spending is measured only across projects observed in both the prior and the current snapshot, a matched panel. The reason is that <code>spend_to_date</code> is a lifetime cumulative figure, not a period figure. A project appearing in the plan for the first time arrives carrying whatever it has already spent, sometimes years of it; counting that from zero would book its entire back-history as spending in the one period it happened to show up. A new entrant therefore contributes nothing until it has been observed twice, and its spending before it entered the plan is not counted. Projects that leave the dataset stop contributing at the same rule. Both edges hold the series to growth that two readings actually support.</p>
       <h3>Backlog coverage</h3>
       <p>Unspent committed dollars divided by trailing-year spending: how many years the current funded pipeline would take to deliver at today's pace. It's the demand-side counterpart to a contractor's backlog ratio. A higher number means more future work stacked behind the same delivery capacity.</p>
       <h3>Scope</h3>
-      <p>Committed and Spent cover the City's full capital plan (buildings, transportation, water, parks) because capital budgets aren't divided by procurement category. Awarded covers the City Record's two construction procurement categories. The three measures answer one question from different ledgers: how demand is moving. They are not a single cohort traced end-to-end, and the methodology keeps each measure on its own source's terms.</p>
+      <p>Committed and Spent cover the City's full capital plan (buildings, transportation, water, parks) because capital budgets aren't divided by procurement category. Awarded covers the City Record's two construction procurement categories. Every gauge answers one question from its own ledger: how demand is moving. They are not a single cohort traced end-to-end, and the methodology keeps each measure on its own source's terms.</p>
       <h3>Agency velocity</h3>
-      <p>Agencies are matched across the two sources (capital plan codes to City Record names) for the agencies that appear in both. Backlog years is each agency's open pipeline divided by its own trailing-year spending.</p>
+      <p>Agencies are matched across the two sources (capital plan codes to City Record names) for the agencies that appear in both. Backlog years is each agency's open pipeline divided by its own trailing-year spending, shown only where that spending clears $10M. Below $1M of trailing outlay the spend figure itself is suppressed to an en dash: an agency whose whole year of self-delivered spending lands in the thousands is not spending slowly, it is not the builder, and its capital work is delivered under another managing agency, chiefly the Department of Design and Construction. Printing the residue would read as a figure rather than as the absence of one.</p>
       </div>
     </div>
   </section>
@@ -300,7 +334,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div style="margin-top:6px;font-size:12px;color:var(--faint);max-width:430px">An independent project built by Salar Jalinous using only public data. Not affiliated with any employer.</div>
     </div>
     <div style="text-align:right" class="f-meta">
-      <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed daily</div>
+      <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load<span id="f-paid-src">; Paid from Checkbook NYC, refreshed nightly</span></div>
       <div style="margin-top:5px"><a href="https://github.com/salarjalinous/concrete-index" target="_blank" rel="noopener">Source on GitHub</a></div>
       <div style="margin-top:5px">© 2026 <a href="/about/">Salar Jalinous</a></div>
     </div>
@@ -320,7 +354,7 @@ const state = {
   spendPeriods: [],     // [{label, total, byAgency:Map}]
   pipeline: { total:0, byAgency:new Map() },
   awards: { ttm:0, count:0, byAgency:new Map(), byQuarter:[] },
-  checkbook: { paid:0, ok:false, meta:null }
+  checkbook: { paid:0, ok:false, meta:null, ageHours:null, stale:false }
 };
 
 async function getJSON(api, params){
@@ -393,14 +427,19 @@ async function fetchPlan(){
   })));
   state.periods.forEach((p,i) => { state.snap[p] = collapseSnapshot(snaps[i]); });
 
-  // 3. spend deltas between consecutive snapshots
+  // 3. spend deltas between consecutive snapshots, on a MATCHED PANEL.
+  //    Only projects present in BOTH snapshots contribute. spend_to_date is a
+  //    lifetime cumulative figure, so a project seen for the first time carries
+  //    its whole back-history; counting it from zero would book years of prior
+  //    spending into the single period it first appears. The matched panel
+  //    measures growth where a prior reading exists and nowhere else.
   for(let i=1; i<state.periods.length; i++){
     const prev = state.snap[state.periods[i-1]], cur = state.snap[state.periods[i]];
     let total = 0; const byAgency = new Map();
     for(const [key, rec] of cur){
-      if(rec.bucket === 'excluded' && !prev.has(key)) continue;
-      const before = prev.has(key) ? prev.get(key).spend : 0;
-      const d = Math.max(rec.spend - before, 0);
+      const was = prev.get(key);
+      if(!was) continue; // new entrant: no prior reading, so no measurable period spend
+      const d = Math.max(rec.spend - was.spend, 0);
       total += d;
       byAgency.set(rec.agency, (byAgency.get(rec.agency)||0) + d);
     }
@@ -446,17 +485,62 @@ async function fetchAwards(){
    (the Comptroller's API blocks browsers). Same-origin, so a plain fetch, no
    app token. Sums the paid figure across every construction vendor group. This
    is a DIFFERENT ledger and scope from the OMB Spent gauge and is never summed
-   with it. Failure is quiet: the Paid figure is simply omitted. */
+   with it. Failure is quiet: the Paid figure is simply omitted.
+
+   FRESHNESS. Every other figure on this page is fetched live on load; Paid is
+   the one number served from a file, so it is the one number that can silently
+   go stale if the nightly job stops committing (it did: the job failed 12 of 13
+   nights on a push race and the file sat four days old behind a live figure).
+   The file therefore declares its own refresh contract in meta -- generated,
+   cadence_hours, stale_after_hours, drop_after_hours -- and the page enforces
+   it rather than trusting the file:
+     age <= stale_after (48h)  -> show the gauge, dated
+     age >  stale_after        -> show the gauge, dated, and DISCLOSE that the
+                                  refresh has not run since that date
+     age >  drop_after (14d)   -> do NOT show the figure at all; the page falls
+                                  back to three gauges. A number that old is not
+                                  "refreshed daily" and will not be presented as
+                                  if it were.
+   A file with no generated stamp is treated as undatable and dropped. */
+const CBK_STALE_H_DEFAULT = 48;
+const CBK_DROP_H_DEFAULT  = 336;   // 14 days
+
 async function fetchCheckbook(){
   const res = await fetch('/data/checkbook-vendors.json');
   if(!res.ok) throw new Error('checkbook ' + res.status);
   const d = await res.json();
+  const meta = d.meta || null;
+  state.checkbook.meta = meta;
+
+  // Age the file against its own declared cadence. No stamp -> undatable -> drop.
+  const gen = meta && meta.generated ? Date.parse(meta.generated) : NaN;
+  if(!isFinite(gen)) throw new Error('checkbook file carries no generated stamp');
+  const ageHours = (Date.now() - gen) / 36e5;
+  const dropAfter = (meta && +meta.drop_after_hours) || CBK_DROP_H_DEFAULT;
+  state.checkbook.ageHours = ageHours;
+  state.checkbook.stale = ageHours > ((meta && +meta.stale_after_hours) || CBK_STALE_H_DEFAULT);
+  if(ageHours > dropAfter){
+    throw new Error('checkbook file is ' + Math.round(ageHours/24) + ' days old (drop threshold '
+      + Math.round(dropAfter/24) + ' days)');
+  }
+
   const vendors = d.vendors || {};
   let paid = 0;
   for(const k in vendors){ paid += (parseFloat(vendors[k].paid) || 0); }
   state.checkbook.paid = paid;
-  state.checkbook.meta = d.meta || null;
   state.checkbook.ok = true;
+}
+
+/* "Jul 9, 2026" from the file's generated stamp, for dating the Paid gauge.
+   Byte-for-byte the same helper /competitive/ already uses to date this same
+   file, so one file is never dated two ways on two pages. */
+function cbkAsOf(){
+  const g = state.checkbook.meta && state.checkbook.meta.generated
+    ? state.checkbook.meta.generated : null;
+  if(!g) return '';
+  const d = new Date(g);
+  if(isNaN(d)) return '';
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
 }
 
 /* Paged pull of construction award rows in the window, only the fields used. */
@@ -607,7 +691,12 @@ function renderStages(){
   // construction contracts to named vendors, City scope, FY2021-2025. Shown
   // only when the static Checkbook file loaded; never summed with Spent.
   if(state.checkbookOk){
-    stages.push({ t:'Paid (Checkbook)', s:'disbursed · registered contracts, '+cbkFY().short,
+    // The Paid gauge is the one figure on this page served from a nightly file
+    // rather than fetched live, so it always carries the date of the file it came
+    // from. Everything else here is as of load.
+    const asOf = cbkAsOf();
+    stages.push({ t:'Paid (Checkbook)',
+      s:'disbursed · registered contracts, '+cbkFY().short + (asOf ? ' · as of '+asOf : ''),
       v: state.checkbook.paid, c: COLOR_B });
   }
   document.getElementById('stages-title').textContent =
@@ -629,7 +718,30 @@ function renderStages(){
       + 'It is not the same number as Spent, which is capital-plan outlays across all construction between plan snapshots, '
       + 'and the two are not added together.'
     : '';
-  document.getElementById('stages-sub').textContent = base + cbkNote;
+  // Checkbook cannot be called from a browser, so Paid is read from a file rebuilt
+  // nightly. When that rebuild has not landed on time, say so on the figure rather
+  // than let it pass as current.
+  const asOf = cbkAsOf();
+  const staleNote = (state.checkbookOk && state.checkbook.stale && asOf)
+    ? ' The Checkbook file behind Paid has not refreshed since ' + asOf
+      + '; that figure is ' + Math.floor(state.checkbook.ageHours / 24)
+      + ' days old, while every other figure on this page is read live on load.'
+    : '';
+  document.getElementById('stages-sub').textContent = base + cbkNote + staleNote;
+
+  /* Footer attribution follows the same rule as the figures. Plan and award are
+     read live from Socrata on load, so they say "on load"; Paid is the one figure
+     served from a nightly file, so it says "refreshed nightly" and carries that
+     file's date. When the Checkbook file is missing or too old to publish, the
+     Paid gauge is not drawn and its clause disappears with it, rather than
+     claiming a nightly refresh behind a figure the page is not showing. */
+  const fsrc = document.getElementById('f-paid-src');
+  if(fsrc){
+    const fAsOf = cbkAsOf();
+    fsrc.textContent = state.checkbookOk
+      ? '; Paid from Checkbook NYC, refreshed nightly' + (fAsOf ? ' (' + fAsOf + ')' : '')
+      : '';
+  }
 }
 
 function vBar(canvasId, labels, data, color){
@@ -663,6 +775,12 @@ function renderVelocity(){
   // work is mostly delivered under another managing agency), so the ratio is a
   // dash rather than a noise figure. Keeps the two pages identical.
   const MIN_SPEND = 10e6;
+  // Floor on what is printable as a trailing-year outlay at all. An agency whose
+  // whole year of self-delivered spending lands in the thousands is not spending
+  // slowly, it is not the builder: the outlay sits under another managing agency.
+  // Printing the residue next to a pipeline in the hundreds of millions reads as
+  // a broken figure, so it is suppressed the same way the ratio is.
+  const MIN_SHOWN_SPEND = 1e6;
   const rows = [...state.pipeline.byAgency.entries()]
     .sort((a,b)=>b[1]-a[1]).slice(0,10)
     .map(([code, pipe]) => {
@@ -677,7 +795,7 @@ function renderVelocity(){
   document.querySelector('#tbl-velocity tbody').innerHTML = rows.map(r=>`<tr>
     <td><span class="t-title">${esc(agencyLabel(r.code))}</span></td>
     <td class="num amt">${fmtMoney(r.pipe)}</td>
-    <td class="num amt">${r.sp>0 ? fmtMoney(r.sp) : '–'}</td>
+    <td class="num amt">${r.sp >= MIN_SHOWN_SPEND ? fmtMoney(r.sp) : '<span class="na">–</span>'}</td>
     <td class="num amt">${r.aw!==undefined ? fmtMoney(r.aw) : '–'}</td>
     <td class="num"><span class="yrs ${r.yrs===null?'':(r.yrs>medianYrs*1.5?'slow':(r.yrs<medianYrs*.67?'fast':''))}">${r.yrs===null?'–':r.yrs.toFixed(1)}</span></td>
   </tr>`).join('');
@@ -727,7 +845,7 @@ function unavailNote(host){
 .pdf-btn{background:none;border:1px solid var(--line);color:var(--muted);font:600 11px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;cursor:pointer;white-space:nowrap;transition:color .12s,border-color .12s}
 .pdf-btn:hover{color:var(--accent);border-color:var(--accent)}
 .series-bar .inner .pdf-btn{margin-left:auto;font-size:10px;padding:4px 9px;align-self:center}
-.pdf-bar{display:flex;justify-content:flex-end;max-width:1180px;margin:0 auto;padding:6px 28px}
+.pdf-bar{display:flex;justify-content:flex-end;max-width:var(--maxw);margin:0 auto;padding:6px var(--gut)}
 @media (max-width:720px){.pdf-bar{padding:6px 18px}}
 @media print{
   @page{margin:14mm}
