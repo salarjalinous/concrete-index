@@ -29,6 +29,7 @@
   --line:#e4d4c5; --rule:#22150e;
   --accent:#b5482a; --accent-soft:#f1d9cd; --steel:#2f5d8f;
   --pos:#2f7d52; --neg:#a3302a; --radius:3px;
+  --maxw:1180px; --gut:28px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -37,7 +38,7 @@ a{color:var(--steel);text-decoration:none}
 a:hover{text-decoration:underline}
 .mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
 .serif{font-family:'Source Serif 4',Georgia,serif}
-.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
 
 /* ---------- header ---------- */
 header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2px solid var(--ink)}
@@ -55,7 +56,7 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 
 /* ---------- release-series bar ---------- */
 .series-bar{background:var(--band);border-bottom:1px solid var(--line)}
-.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px 28px;max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px var(--gut);max-width:var(--maxw);margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .series-bar b{color:var(--ink);font-weight:600}
 .series-bar .sep{color:var(--faint);padding:0 12px}
 @media(max-width:720px){.series-bar .inner{white-space:normal}}
@@ -155,14 +156,13 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   .kpis{grid-template-columns:1fr 1fr}
   .kpi .k-value{font-size:26px}
   .hero{padding-top:34px}
-  .wrap{padding:0 18px}
-  .series-bar .inner{padding-left:18px;padding-right:18px}
+  :root{--maxw:1180px;--gut:18px}
 }
 .menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
 @media(max-width:1180px){
   .menu-btn{display:block}
   .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:61px;left:-28px;right:-28px;background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60}
+  .nav-links{display:none;position:absolute;top:61px;left:calc(-1 * var(--gut));right:calc(-1 * var(--gut));background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px var(--gut);gap:13px;box-shadow:0 10px 24px rgba(34,21,14,.16);z-index:60;max-height:calc(100vh - 62px);overflow-y:auto}
   .nav-links.open{display:flex}
 }
 
@@ -180,6 +180,38 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   .card{background:#fff !important;box-shadow:none}
   footer{background:#fff;border-top:1px solid #000;color:#000}
   footer a,a{color:#000}
+}
+
+/* ---------- display scaling: fill wide / high-resolution screens ---------- */
+@media(min-width:1400px){
+  :root{--maxw:1330px;--gut:34px}
+  body{font-size:15.5px}
+  .kpi .k-value{font-size:33px}
+  .kpi.hl .k-value{font-size:42px}
+  .hero p.sub,.lp-sub{font-size:17.5px;max-width:860px}
+  .hero h1{max-width:960px}
+  .method p{max-width:980px}
+  table{font-size:14px}
+  .chart-box{height:330px}
+  .chart-box.tall{height:376px}
+}
+@media(min-width:1750px){
+  :root{--maxw:1500px;--gut:40px}
+  body{font-size:16px}
+  .kpi .k-value{font-size:35px}
+  .kpi.hl .k-value{font-size:45px}
+  .method p{max-width:1060px}
+  table{font-size:14.5px}
+  .chart-box{height:360px}
+  .chart-box.tall{height:410px}
+}
+@media(min-width:2100px){ :root{--maxw:1620px} }
+/* ---------- narrow: wide tables scroll inside their card, not the page ---------- */
+@media(max-width:900px){
+  .card{overflow-x:auto}
+  .card table{min-width:560px}
+  .sec-head{flex-wrap:wrap}
+  .sec-head .cap{white-space:normal;text-align:left}
 }
 </style>
 </head>
@@ -249,6 +281,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     <div class="kpi"><div class="k-label">Median project budget</div><div class="k-value" id="kpi-median">–</div><div class="k-note">total budget per project</div></div>
     <div class="kpi"><div class="k-label">Plan growth</div><div class="k-value" id="kpi-growth">–</div><div class="k-note" id="kpi-growth-note"></div></div>
   </section>
+  <div class="tnote" id="kpi-recon"></div>
 
   <section class="grid" id="phases">
     <div class="card">
@@ -304,7 +337,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <h3>Funded, unspent</h3>
       <p>For each project, funded, unspent dollars are its total budget (city plus non-city funds) minus spending to date: money the City has funded in the capital plan but not yet spent. This is the page's headline measure of forward demand, the work still ahead on funded projects. It is a planning measure, not encumbered or bondable backlog: budgets shift between plan releases, and a place in the plan is no guarantee of timing.</p>
       <h3>Phases and what counts as active</h3>
-      <p>Projects are grouped into the City's delivery sequence: pending, pre-design, design, construction procurement, construction, and close-out, plus an "other active" group for vehicles like requirements contracts and pass-through funds that don't follow the standard sequence. Projects marked completed, cancelled, on hold, inactive, transferred, or otherwise terminated are excluded from all figures. Close-out projects appear in the phase chart but are excluded from the headline unspent number, since their construction work is substantially done.</p>
+      <p>Projects are grouped into the City's delivery sequence: pending, pre-design, design, construction procurement, construction, and close-out, plus an "other active" group for vehicles like requirements contracts and pass-through funds that don't follow the standard sequence. Projects marked completed, cancelled, on hold, inactive, transferred, or otherwise terminated are excluded from all figures. Close-out projects appear in the phase chart but are excluded from the headline figures, both dollars and counts, since their construction work is substantially done. That is why two project counts appear on this page: the plan's full active set, quoted under the headline above, and the narrower in-scope set the stat cards are computed on. The line beneath the cards reconciles them.</p>
       <h3>Plan growth</h3>
       <p>Plan growth compares the current funded, unspent total to the prior capital plan snapshot's, the change in committed-but-unspent capital between the two most recent plan releases. Close-out projects are excluded from both sides so the comparison tracks active forward demand.</p>
       <h3>Relationship to the Awarded page</h3>
@@ -502,6 +535,33 @@ function fmtPeriod(p){
 }
 function esc(s){ const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 const STAGE_LABEL = { all:'all active phases', pre:'pre-construction phases', con:'construction phase' };
+// Two project counts live on this page and they are not the same number: the
+// plan's full active set (every project not completed, cancelled, or otherwise
+// dead) and the narrower set the KPIs above are computed on, which drops
+// close-out. Both are defensible; leaving the reader to discover the gap is not.
+// So each is labelled for what it is and the gap is reconciled in one line,
+// entirely from live values.
+const COUNT_NOTE = {
+  all: 'active projects, excluding close-out',
+  pre: 'projects in pre-construction phases',
+  con: 'projects in the construction phase'
+};
+function renderReconcile(rows){
+  const el = document.getElementById('kpi-recon');
+  if(!el) return;
+  const active = state.rows.length;   // every active project in the plan snapshot
+  const shown  = rows.length;         // the set the figures above are computed on
+  const gap    = active - shown;
+  if(gap <= 0){
+    el.innerHTML = `All <strong>${fmtInt(active)}</strong> active projects in the ${esc(fmtPeriod(state.period))} plan are counted in the figures above.`;
+    return;
+  }
+  const why = state.stage === 'all'
+    ? `the other <strong>${fmtInt(gap)}</strong> are in close-out, set aside because their construction work is substantially done`
+    : `the other <strong>${fmtInt(gap)}</strong> sit in phases outside this filter`;
+  el.innerHTML = `The ${esc(fmtPeriod(state.period))} plan carries <strong>${fmtInt(active)}</strong> active projects. ` +
+    `The figures above are computed on the <strong>${fmtInt(shown)}</strong> in scope for ${esc(STAGE_LABEL[state.stage] || STAGE_LABEL.all)}, and ${why}.`;
+}
 
 /* ================= rendering ================= */
 const COLOR_A = '#b5482a', COLOR_B = '#243b53', GRID = '#ead9c9';
@@ -586,7 +646,8 @@ function renderKpis(rows){
   document.getElementById('kpi-unspent').textContent = fmtMoney(unspent);
   document.getElementById('kpi-unspent-note').textContent = STAGE_LABEL[state.stage] + ', ' + fmtPeriod(state.period) + ' plan';
   document.getElementById('kpi-count').textContent = fmtInt(rows.length);
-  document.getElementById('kpi-count-note').textContent = 'open capital projects in scope';
+  document.getElementById('kpi-count-note').textContent = COUNT_NOTE[state.stage] || COUNT_NOTE.all;
+  renderReconcile(rows);
   document.getElementById('kpi-median').textContent = fmtMoney(median(rows.map(r=>r.budget)));
   const curAll = sumUnspent(state.rows.filter(r=>r.bucket!=='Close-out'));
   if(state.priorTotal > 0){
@@ -631,7 +692,7 @@ function wireSeg(id, attr, initial, onChange){
     return;
   }
   document.getElementById('asof').innerHTML =
-    `<strong>${fmtPeriod(state.period)}</strong> capital plan snapshot · ${fmtInt(state.rows.length)} active projects · published by OMB three times a year`;
+    `<strong>${fmtPeriod(state.period)}</strong> capital plan snapshot · ${fmtInt(state.rows.length)} projects active in the plan · published by OMB three times a year`;
   document.getElementById('series-asof').textContent = fmtPeriod(state.period).toUpperCase();
   document.getElementById('loader').style.display = 'none';
   document.getElementById('app').style.display = 'block';
@@ -652,7 +713,7 @@ function wireSeg(id, attr, initial, onChange){
 .pdf-btn{background:none;border:1px solid var(--line);color:var(--muted);font:600 11px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;cursor:pointer;white-space:nowrap;transition:color .12s,border-color .12s}
 .pdf-btn:hover{color:var(--accent);border-color:var(--accent)}
 .series-bar .inner .pdf-btn{margin-left:auto;font-size:10px;padding:4px 9px;align-self:center}
-.pdf-bar{display:flex;justify-content:flex-end;max-width:1180px;margin:0 auto;padding:6px 28px}
+.pdf-bar{display:flex;justify-content:flex-end;max-width:var(--maxw);margin:0 auto;padding:6px var(--gut)}
 @media (max-width:720px){.pdf-bar{padding:6px 18px}}
 @media print{
   @page{margin:14mm}
