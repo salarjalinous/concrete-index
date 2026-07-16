@@ -422,13 +422,18 @@ async function fetchPlanData(){
   D.pipe=pipe; D.pipePre=pre; D.pipeCount=count;
   D.topPipeAgency = [...byAg.entries()].sort((a,b)=>b[1]-a[1])[0];
 
-  // spend TTM = 3 deltas across 4 snapshots
+  // spend TTM = 3 deltas across 4 snapshots, on a MATCHED PANEL, the same rule
+  // the Pipeline and Funnel pages use. Only projects present in BOTH snapshots
+  // contribute. spend_to_date is a lifetime cumulative figure, so a project seen
+  // for the first time carries its whole back-history; counting it from zero
+  // would book years of prior spending into the single period it first appears.
+  // The matched panel measures growth where a prior reading exists, nowhere else.
   D.spendTTM = 0;
   for(let i=1;i<maps.length;i++){
     for(const [key,rec] of maps[i]){
-      if(rec.bucket==='excluded' && !maps[i-1].has(key)) continue;
-      const before = maps[i-1].has(key) ? maps[i-1].get(key).spend : 0;
-      D.spendTTM += Math.max(rec.spend-before,0);
+      const was = maps[i-1].get(key);
+      if(!was) continue; // new entrant: no prior reading, so no measurable period spend
+      D.spendTTM += Math.max(rec.spend - was.spend, 0);
     }
   }
   D.coverage = D.spendTTM>0 ? D.pipe/D.spendTTM : null;
