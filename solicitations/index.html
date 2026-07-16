@@ -96,6 +96,11 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .due{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .due.soon{color:var(--neg)}
 .due.ok{color:var(--ink)}
+/* no quotable deadline: present, but not competing with the real countdowns */
+.due.none{color:var(--muted);font-weight:500}
+/* the undated labels are words, not a date, and run longer than one; let them
+   wrap rather than widen the side column and squeeze the title */
+.due.txt{white-space:normal}
 .due-sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);margin-top:3px}
 .pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.03em;border-radius:3px;padding:2px 6px;white-space:nowrap}
 .pill.hard{background:var(--accent-soft);color:var(--accent)}
@@ -269,7 +274,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2>Open solicitations</h2><span class="cap"><a href="#" id="csv-link" class="csv-link">↓ Download CSV</a> · <span id="sort-cap">SORTED BY DUE DATE</span></span></div>
       <div class="s-intro">Open solicitations carry no published contract value in this dataset, so they are listed by agency and due date, tagged by trade and borough where the title allows. These are open opportunities, not results. When each one is decided, the award notice names the winning contractor only, so the “<a href="/awarded/">Awarded</a>” page shows who was awarded work, not who else bid.</div>
       <div id="list"></div>
-      <div class="tnote">Each row is one open City construction solicitation, sorted as selected above (default: soonest due date first). These are opportunities, not results: the dataset publishes no contract value, so each is shown by agency, due date, and the trade and borough tags inferred from its title. When a solicitation is decided, only the winning contractor is named, over on the “Awarded” page.</div>
+      <div class="tnote">Each row is one open City construction solicitation, sorted as selected above (default: soonest due date first). These are opportunities, not results: the dataset publishes no contract value, so each is shown by agency, due date, and the trade and borough tags inferred from its title. Notices without a countdown are standing pre-qualified lists that accept applications year-round. When a solicitation is decided, only the winning contractor is named, over on the “Awarded” page.<span id="dropped-note"></span></div>
     </div>
   </section>
 
@@ -279,6 +284,10 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="method-body">
       <h3>Source</h3>
       <p>Open solicitation notices from <a href="https://data.cityofnewyork.us/City-Government/Current-Solicitations/3khw-qi8f" target="_blank" rel="noopener">Current Solicitations</a> on NYC Open Data (dataset <code>3khw-qi8f</code>), the City Record's notice of procurement opportunities, in the two construction categories, with a due date that hasn't passed. Always confirm requirements and deadlines with the issuing agency; the contact listed on each notice is the authoritative source.</p>
+      <h3>Placeholder due dates</h3>
+      <p>Some notices carry a due date generations out (2040, 2099, 2106, 9999). Any date more than five years ahead is read as a placeholder rather than a deadline, and what it means depends on the notice's selection method.</p>
+      <p>On a Request for Qualifications, or any method naming a pre-qualified list, the placeholder is accurate in substance: the agency accepts applications year-round, and the notice is marked a standing pre-qualified list with no countdown.</p>
+      <p>On a one-time method, a Competitive Sealed Bid above all, it is a data-entry artifact. The bid closed on a date the notice never recorded. Those are marked as having no closing date published, and are dropped from the list once they are more than a year old, since no construction bid stays open that long. The count of dropped notices is shown under the list. Reading the date alone, without the method, listed a Competitive Sealed Bid posted in 2016 as an always-open opportunity.</p>
       <h3>Where this sits in the funnel</h3>
       <p>A solicitation is the moment committed money (the “<a href="/pipeline/">Pipeline</a>”) reaches the market, before it becomes an <a href="/awarded/">award</a>. Watching this page is watching next quarter's award flow form.</p>
       <h3>How notices are tagged</h3>
@@ -310,7 +319,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 'use strict';
 const API = 'https://data.cityofnewyork.us/resource/3khw-qi8f.json';
 const HARD = 'Construction/Construction Services';
-const state = { scope:'all', q:'', sort:'due', rows:[] };
+const state = { scope:'all', q:'', sort:'due', rows:[], dropped:0 };
 
 function stripHtml(s){ const d=document.createElement('div'); d.innerHTML=s||''; return (d.textContent||'').replace(/\s+/g,' ').trim(); }
 function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
@@ -328,16 +337,42 @@ function cleanPhone(v){
   if(!/[1-9]/.test(s.replace(/\D/g,''))) return '';
   return s;
 }
-// Placeholder due dates (year 2040, 2099, 2105, 9999, and the like) mark
-// always-open pre-qualified lists, not real near-term deadlines. Real
-// construction bids close within months, so any due date more than five years
-// out is treated as standing and bucketed out of the chronological sort. A
-// horizon test, not an enumerated set, so no new placeholder year can leak
-// through as a live countdown.
+// Placeholder due dates (year 2040, 2099, 2106, 9999, and the like) are not real
+// deadlines. Real construction bids close within months, so any due date more
+// than five years out is a placeholder. A horizon test, not an enumerated set,
+// so no new placeholder year can leak through as a live countdown.
 const SENTINEL_HORIZON_MS = 5 * 365.25 * 86400000; // ~5 years
 function isSentinelDate(d){
   if(!(d instanceof Date) || isNaN(d)) return false;
   return (d.getTime() - Date.now()) > SENTINEL_HORIZON_MS;
+}
+// A placeholder date is not by itself evidence of a standing list. The City puts
+// one on two different things, and only the selection method tells them apart:
+//
+//   Request for Qualifications / a Pre-Qualified List method: an application
+//   window the agency really does hold open indefinitely. Standing.
+//
+//   Competitive Sealed Bids and every other one-time method: a single bid that
+//   closed on a real date the notice never recorded. The far-future date is a
+//   data-entry artifact, not an invitation.
+//
+// Reading the date alone put a Competitive Sealed Bid posted in 2016 on the list
+// as an always-open opportunity. So the method is the discriminator, and the
+// date only decides whether a deadline is quotable.
+const PQL_METHOD = /request for qualifications|pre-?qualified list/i;
+function isStandingList(method, due){
+  return isSentinelDate(due) && PQL_METHOD.test(method || '');
+}
+// A one-time bid carrying a placeholder date has no usable deadline. Recent ones
+// may still be live and are shown with the deadline called missing rather than
+// invented. Past a year no construction bid is still open, so those are dropped:
+// the page promises notices whose due date hasn't passed, and a bid with no real
+// due date at all cannot meet that promise.
+const STALE_NOTICE_MS = 365 * 86400000;
+function isDeadNotice(posted, standing, due){
+  if(standing || !isSentinelDate(due)) return false;
+  if(!(posted instanceof Date) || isNaN(posted)) return false;
+  return (Date.now() - posted.getTime()) > STALE_NOTICE_MS;
 }
 
 // Work-type lexicon and classifier, reused verbatim from the Awarded page so a
@@ -391,7 +426,7 @@ async function fetchSolicitations(){
   if(!res.ok) throw new Error('API '+res.status);
   const raw = await res.json();
   const seen = new Set();
-  return raw.filter(r => {
+  const mapped = raw.filter(r => {
     const k = r.pin || r.request_id;
     if(seen.has(k)) return false;
     seen.add(k); return true;
@@ -399,15 +434,21 @@ async function fetchSolicitations(){
     const title = r.short_title || '(untitled)';
     const fullDesc = stripHtml(r.additional_description_1);
     const due = new Date(r.due_date);
+    const method = r.selection_method_description || '';
+    const posted = new Date(r.start_date);
+    const standing = isStandingList(method, due);
     return {
       title: title,
       agency: r.agency_name || '–',
       cat: r.category_description === HARD ? 'hard' : 'rel',
-      method: r.selection_method_description || '',
+      method: method,
       pin: cleanField(r.pin),
       due: due,
-      standing: isSentinelDate(due),
-      posted: new Date(r.start_date),
+      standing: standing,
+      // a one-time bid whose only deadline is a placeholder: no date to quote
+      noDeadline: !standing && isSentinelDate(due),
+      dead: isDeadNotice(posted, standing, due),
+      posted: posted,
       contact: cleanField(r.contact_name),
       phone: cleanPhone(r.contact_phone),
       email: cleanField(r.email),
@@ -416,6 +457,10 @@ async function fetchSolicitations(){
       desc: fullDesc.slice(0, 280)
     };
   });
+  // Dropped, not hidden: the count is reported under the list so the total
+  // reconciles against the raw dataset.
+  state.dropped = mapped.filter(r => r.dead).length;
+  return mapped.filter(r => !r.dead);
 }
 
 // Countdown in CALENDAR days, not elapsed hours. Due timestamps carry a clock
@@ -446,7 +491,8 @@ function exportCSV(){
   const lines = [['Due date','Posted','Agency','Title','Borough','Work types','Category','Selection method','PIN','Contact','Phone','Email'].map(csvCell).join(',')];
   rows.forEach(r => {
     lines.push([
-      r.standing ? 'Standing PQL, always open' : isoDay(r.due), isoDay(r.posted), r.agency, r.title, r.borough,
+      r.standing ? 'Standing pre-qualified list' : r.noDeadline ? 'No closing date published' : isoDay(r.due),
+      isoDay(r.posted), r.agency, r.title, r.borough,
       r.tags.map(t=>WT_LEXICON[t].label).join('; '),
       r.cat==='hard'?'Construction':'Related services',
       r.method, r.pin, r.contact, r.phone, r.email
@@ -469,9 +515,12 @@ function filtered(){
   );
   // Sort by due date (rows already arrive due-ordered), agency, or first work-type
   // label; ties and untagged rows fall back to due date so ordering stays stable.
-  // Standing pre-qualified-list rows (sentinel due dates) always sink to the
-  // bottom, so they never pose as the next real deadline.
-  const byStanding = (a,b)=> (a.standing?1:0) - (b.standing?1:0);
+  // Any row without a quotable deadline, whether a standing list or a bid whose
+  // date is a placeholder, sinks to the bottom so it never poses as the next real
+  // deadline. Both carry sentinel dates, so this cannot be left to the date sort:
+  // it would rank a placeholder 2106 date as the furthest-off real deadline.
+  const undated = r => (r.standing || r.noDeadline) ? 1 : 0;
+  const byStanding = (a,b)=> undated(a) - undated(b);
   const byDue = (a,b)=> byStanding(a,b) || (a.due - b.due);
   if(state.sort==='agency'){
     rows.sort((a,b)=> byStanding(a,b) || a.agency.localeCompare(b.agency) || (a.due - b.due));
@@ -505,7 +554,10 @@ function render(){
     const pinTxt = r.pin ? esc(r.pin) : DASH;
     const contactTxt = r.contact ? esc(r.contact) : DASH;
     const sideHtml = r.standing
-      ? `<div class="due ok">Standing PQL, always open</div>
+      ? `<div class="due ok txt">Standing pre-qualified list</div>
+        <div class="due-sub">open year-round · posted ${fmtDate(r.posted)}</div>`
+      : r.noDeadline
+      ? `<div class="due none txt">No closing date published</div>
         <div class="due-sub">posted ${fmtDate(r.posted)}</div>`
       : `<div class="due ${days<=7?'soon':'ok'}">Due ${fmtDate(r.due)}</div>
         <div class="due-sub">${countdown(days)} · posted ${fmtDate(r.posted)}</div>`;
@@ -541,6 +593,11 @@ function wireSeg(id, attr, initial, onChange){
   document.getElementById('asof').innerHTML =
     `<strong>${state.rows.length}</strong> open construction solicitations · sorted by due date · source updated daily`;
   document.getElementById('series-asof').textContent = state.rows.length + ' NOTICES';
+  if(state.dropped){
+    const n = state.dropped;
+    document.getElementById('dropped-note').textContent =
+      ` ${n} one-time ${n===1?'bid':'bids'} carrying a placeholder due date and posted over a year ago ${n===1?'is':'are'} excluded; see the note on placeholder due dates above.`;
+  }
   document.getElementById('loader').style.display='none';
   document.getElementById('app').style.display='block';
   let ready=false;
