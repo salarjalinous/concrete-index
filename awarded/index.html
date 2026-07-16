@@ -439,11 +439,20 @@ function wtClassify(title){const t=title||'';const tags=[];for(const k in WT_LEX
 const MEGA = 500e6;
 function isContinuation(method){ return /renewal|extension/i.test(method || ''); }
 
-function isoDaysAgo(years){
+/* First of the month n complete months back. completeMonthBoundary(0) is the
+   first of the current, incomplete month, so [completeMonthBoundary(n),
+   completeMonthBoundary(0)) is n fully-elapsed months. This is the same rule as
+   the isoBoundary helper on the Home page and isoCompleteMonthBoundary on the
+   Funnel; Home compares ISO strings inside the SoQL query, this page compares
+   Date objects against rows it has already parsed, so the one rule is expressed
+   here as a Date. isoBoundaryStr formats it for the query. */
+function completeMonthBoundary(n){
   const d = new Date();
-  d.setFullYear(d.getFullYear() - years);
-  return d.toISOString().slice(0,10);
+  const b = new Date(d.getFullYear(), d.getMonth(), 1);
+  b.setMonth(b.getMonth() - n);
+  return b;
 }
+function isoBoundaryStr(n){ return completeMonthBoundary(n).toISOString().slice(0,10); }
 
 /* Canonical construction-awards dedupe: one row per procurement (pin), keeping
    the maximum contract_amount seen for that pin. The same award can be published
@@ -463,10 +472,13 @@ function dedupeByPin(raw){
 }
 
 const AWARD_LIMIT = 20000;
+/* The widest window the control offers, in complete months. The pull must reach
+   back at least this far or the 5-year view would silently understate. */
+const MAX_WINDOW = 60;
 async function fetchAwards(){
   const params = new URLSearchParams({
     '$select': 'pin,request_id,start_date,agency_name,category_description,short_title,selection_method_description,vendor_name,contract_amount,additional_description_1',
-    '$where': `starts_with(category_description,'Construction') AND start_date>'${isoDaysAgo(5)}' AND contract_amount>0`,
+    '$where': `starts_with(category_description,'Construction') AND start_date>='${isoBoundaryStr(MAX_WINDOW)}' AND contract_amount>0`,
     '$order': 'start_date DESC',
     '$limit': String(AWARD_LIMIT)
   });
@@ -520,13 +532,14 @@ function normalize(r){
 }
 
 /* ================= aggregation ================= */
-function monthKey(d){ return d.toISOString().slice(0,7); }
-
-function windowStart(months){
-  const d = new Date();
-  d.setMonth(d.getMonth() - months);
-  return d;
+/* Local-time month key. The boundaries are built as local first-of-month dates
+   and the rows carry local-parsed dates, so keying via toISOString would shift a
+   boundary into the previous month for anyone east of UTC and misalign the bars.
+   Format from the local fields instead. */
+function monthKey(d){
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
 }
+
 
 function inScope(row){
   if(state.scope !== 'all' && row.cat !== state.scope) return false;
@@ -538,14 +551,19 @@ function inScope(row){
   return true;
 }
 
+/* Every window on this page is twelve (or 36, or 60) FULLY-ELAPSED months, the
+   sitewide rule: the current partial month is excluded so a few days of the
+   month in progress cannot understate a total or put this page at odds with
+   Home, the Funnel, the Briefing, and Analysis. */
 function filtered(){
-  const start = windowStart(state.windowMonths);
-  return state.rows.filter(r => r.date >= start && inScope(r));
+  const start = completeMonthBoundary(state.windowMonths);
+  const end = completeMonthBoundary(0);
+  return state.rows.filter(r => r.date >= start && r.date < end && inScope(r));
 }
 
 function priorPeriod(){
-  const start = windowStart(state.windowMonths * 2);
-  const end = windowStart(state.windowMonths);
+  const start = completeMonthBoundary(state.windowMonths * 2);
+  const end = completeMonthBoundary(state.windowMonths);
   return state.rows.filter(r => r.date >= start && r.date < end && inScope(r));
 }
 
@@ -571,11 +589,13 @@ function groupSum(rows, keyFn){
 
 function monthSeries(rows){
   // ordered list of months in window with hard/rel sums
+  // One bar per complete month in the window. The bounds are already
+  // first-of-month, so the series runs [boundary(n) .. boundary(0)) and yields
+  // exactly n bars, with no partial current month trailing off the end.
   const months = [];
-  const start = windowStart(state.windowMonths);
-  const cur = new Date(start.getFullYear(), start.getMonth()+1, 1);
-  const now = new Date();
-  while(cur <= now){
+  const cur = completeMonthBoundary(state.windowMonths);
+  const end = completeMonthBoundary(0);
+  while(cur < end){
     months.push(monthKey(cur));
     cur.setMonth(cur.getMonth()+1);
   }
@@ -783,8 +803,13 @@ function wireSeg(id, attr, initial, onChange){
    pulls here, so first paint stays fast and the two pages cannot drift. The four
    figures are different ledgers and scopes and are never summed. */
 function renderSpanStrip(){
-  const start = windowStart(12);
-  const ttmRows = state.rows.filter(r => r.date >= start);
+  // Same definition as the Home page's awarded stat: twelve fully-elapsed
+  // months, every construction award, renewals and megaprojects included, pin
+  // deduped. Deliberately ignores the control filters below so the strip reads
+  // the same on this page as it does on Home.
+  const start = completeMonthBoundary(12);
+  const end = completeMonthBoundary(0);
+  const ttmRows = state.rows.filter(r => r.date >= start && r.date < end);
   const awarded = sum(ttmRows);
   const aEl = document.getElementById('ss-awarded');
   if(aEl){
