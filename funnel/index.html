@@ -543,14 +543,18 @@ function cbkAsOf(){
   return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
 }
 
-/* Paged pull of construction award rows in the window, only the fields used. */
+/* Paged pull of construction award rows in the window, only the fields used.
+   The lower bound is inclusive (>=), matching the Home page: `since` is a
+   first-of-month midnight, and awards stamped exactly on that midnight belong
+   to the window. A strict > silently dropped them and put the funnel below the
+   Home total. The caller applies the exclusive upper bound. */
 async function fetchAwardRows(since){
   const PAGE = 50000;
   let offset = 0; const out = [];
   for(;;){
     const batch = await getJSON(AWARD_API, {
       '$select':'pin,contract_amount,start_date,agency_name',
-      '$where':`starts_with(category_description,'Construction') AND start_date>'${since}' AND contract_amount>0`,
+      '$where':`starts_with(category_description,'Construction') AND start_date>='${since}' AND contract_amount>0`,
       '$order':'pin','$limit':String(PAGE),'$offset':String(offset)
     });
     out.push(...batch);
