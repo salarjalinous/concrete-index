@@ -310,7 +310,13 @@ jobs:
               q = (raw or '').replace('(','').replace(')','').strip().lower()
               if q in EXCLUDED: return 'excluded'
               return PHASE_MAP.get(q, 'Other active')
-          def _rank(b): return ORDER.index(b) if b in ORDER else -1
+          # Matches the Pipeline page's _rank: 'Other active' is a catch-all for phases
+          # the map doesn't know, not a stage of the sequence, so it ranks below every
+          # real phase (-1). Otherwise a project emitting both an unmapped phase and a
+          # real one would collapse to the catch-all and lose the real phase.
+          def _rank(b):
+              if b == 'Other active': return -1
+              return ORDER.index(b) if b in ORDER else -1
           committed = None
           try:
               plan = json.load(open('data/plan-latest.json'))
