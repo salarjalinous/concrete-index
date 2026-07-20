@@ -989,14 +989,14 @@ function renderReadStrip(rows, agSorted, all){
     <div class="rd-value">${(top1*100).toFixed(0)}% · ${(top3*100).toFixed(0)}%</div>
     <div class="rd-note">Top agency and top-3 share of awarded value. Concentrated demand sits behind one payment cycle and one funding stream, a structural feature of the agency, not a judgment about the vendor.</div></div>`);
 
-  const t12 = rows.filter(r=>r.date>=new Date(Date.now()-365*864e5)).length;
-  const t24 = rows.filter(r=>r.date>=new Date(Date.now()-730*864e5)).length;
+  const t12 = newRows.filter(r=>r.date>=new Date(Date.now()-365*864e5)).length;
+  const t24 = newRows.filter(r=>r.date>=new Date(Date.now()-730*864e5)).length;
   const last = rows.reduce((a,r)=> r.date>a?r.date:a, rows[0].date);
   const ms = monthsSince(last);
   const stale = ms >= 18;
   cells.push(`<div class="rd ${stale?'flag':''}"><div class="rd-label">Award cadence</div>
     <div class="rd-value">${t12} · ${t24}</div>
-    <div class="rd-note">New award notices in the trailing 12 and 24 months. Last appeared in the City Record as a winner ${ms===0?'this month':ms+' month'+(ms===1?'':'s')+' ago'}. Tracks award notices, not work in progress or firm status.</div></div>`);
+    <div class="rd-note">New award notices in the trailing 12 and 24 months, renewals and extensions excluded. Last appeared in the City Record as a winner, on either basis, ${ms===0?'this month':ms+' month'+(ms===1?'':'s')+' ago'}. Tracks award notices, not work in progress or firm status.</div></div>`);
 
   el.innerHTML = cells.join('');
 }
