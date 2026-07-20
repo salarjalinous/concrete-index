@@ -8,7 +8,13 @@ name: Checkbook NYC vendor data
 on:
   workflow_dispatch: {}
   schedule:
-    - cron: '40 6 * * *'   # 06:40 UTC daily (~1:40am New York), after the archive job
+    - cron: '45 7 * * *'   # 07:45 UTC daily (02:45 EST / 03:45 EDT), 90 min after the archive job.
+                           # The four data jobs share one concurrency group, so a short nominal
+                           # gap does not buy a short real-time gap: a queued job starts the
+                           # instant the one ahead of it finishes. When two pushes land seconds
+                           # apart, GitHub Pages cancels the older build and the earlier commit
+                           # shows a red check even though its workflow was green. 90 minutes
+                           # gives each job room to finish and its Pages build to complete.
 
 permissions:
   contents: write

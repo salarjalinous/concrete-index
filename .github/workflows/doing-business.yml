@@ -11,7 +11,10 @@ name: Doing Business corroboration
 on:
   workflow_dispatch: {}
   schedule:
-    - cron: '50 6 * * *'   # 06:50 UTC daily (~1:50am New York), after the checkbook job
+    - cron: '15 9 * * *'   # 09:15 UTC daily (04:15 EST / 05:15 EDT), 90 min after the checkbook
+                           # job. See the scheduling note in checkbook.yml: the gap is sized to
+                           # keep consecutive pushes far enough apart that Pages does not cancel
+                           # the previous build.
 
 permissions:
   contents: write

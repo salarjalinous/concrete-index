@@ -66,10 +66,10 @@ name: Checkbook NYC dated payments
 on:
   workflow_dispatch: {}
   schedule:
-    - cron: '20 7 * * *'   # 07:20 UTC daily (~2:20am New York). Moved off 06:50 to clear
-                           # the doing-business job that also ran at 06:50 (both push to main,
-                           # so they raced). Runs after the 06:15 archive and 06:40 checkbook
-                           # jobs, so awards.json and contract data are fresh.
+    - cron: '45 10 * * *'  # 10:45 UTC daily (05:45 EST / 06:45 EDT), 90 min after the
+                           # doing-business job and last in the nightly chain, so awards.json
+                           # and contract data are already fresh when it runs. See the
+                           # scheduling note in checkbook.yml for why the gaps are this wide.
 
 permissions:
   contents: write
