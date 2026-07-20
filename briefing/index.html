@@ -74,6 +74,7 @@ header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2p
 .kpi .k-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
 .kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--navy);line-height:1}
 .kpi.hl .k-value{font-size:clamp(30px,4.5vw,38px);color:var(--ink)}.kpi:not(.hl) .k-value{color:var(--navy)}
+.kpi .k-note{font-size:11px;line-height:1.45;color:var(--muted);margin-top:9px}
 
 /* ---------- briefing body ---------- */
 .brief{padding:30px 0 0}
@@ -211,7 +212,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 <main id="app" class="wrap">
 
   <section class="kpis" id="stats"></section>
-  <div class="tnote">The figures above are the briefing's headline readings, computed live from the City Record and the OMB capital plan. The trailing-twelve-month award figure keeps one record per procurement and, like the Analysis index, sets aside awards of $500M and up along with renewals and extensions, so a single megaproject or a continuation of existing work does not distort the trend. That trend-clean basis is why it reads below the gross Awarded total on the “Funnel” page, which counts every construction award. The open-pipeline and pace measures come from the capital plan on the same basis as the “Pipeline” and “Funnel” pages. The narrative below reads these figures in plain language, and the note at its end cites the sources and their update cadence.</div>
+  <div class="tnote">The figures above are the briefing's headline readings, computed live from the City Record and the OMB capital plan. The trailing-twelve-month award figure keeps one record per procurement and, like the index on the “Analysis” page, sets aside awards of $500M and up along with renewals and extensions, so a single megaproject or a continuation of existing work does not distort the trend. That new-work basis is why it reads below the two gross figures on the site: the “Awarded, 12 mo” tile on the home page and the headline total on the “<a href="/awarded/">Awarded</a>” page, both of which count every construction award, renewals and megaprojects included. The open-pipeline and pace measures come from the capital plan on the same basis as the “Pipeline” and “Funnel” pages. The narrative below reads these figures in plain language, and the note at its end cites the sources and their update cadence.</div>
 
   <section class="brief">
     <div class="card">
@@ -480,11 +481,12 @@ function compose(){
     (latestPlan ? ` · ${latestPlan} capital plan` : '');
 
   document.getElementById('stats').innerHTML = [
-    ['Awarded, TTM', D.awardsOk ? fmtMoney(D.awardTTM) : '–'],
-    ['vs prior year', D.awardsOk && D.awardDelta!==null ? (D.awardDelta>=0?'+':'−') + fmtPct(D.awardDelta) : '–'],
-    ['Open pipeline', D.planOk ? fmtMoney(D.pipe) : '–'],
-    ['Backlog coverage', D.planOk && D.coverage ? D.coverage.toFixed(1)+' yrs' : '–']
-  ].map(([l,v],i)=>`<div class="kpi${i===0?' hl':''}"><div class="k-label">${l}</div><div class="k-value">${v}</div></div>`).join('');
+    ['Awarded, TTM · new work', D.awardsOk ? fmtMoney(D.awardTTM) : '–', ''],
+    ['New work vs prior year', D.awardsOk && D.awardDelta!==null ? (D.awardDelta>=0?'+':'−') + fmtPct(D.awardDelta) : '–',
+      'Dollars awarded, both years on the same new-work basis; the year-over-year on the “Analysis” page is a composite of value and count.'],
+    ['Open pipeline', D.planOk ? fmtMoney(D.pipe) : '–', ''],
+    ['Backlog coverage', D.planOk && D.coverage ? D.coverage.toFixed(1)+' yrs' : '–', '']
+  ].map(([l,v,n],i)=>`<div class="kpi${i===0?' hl':''}"><div class="k-label">${l}</div><div class="k-value">${v}</div>${n?`<div class="k-note">${n}</div>`:''}</div>`).join('');
 
   const market = D.awardDelta!==null && D.awardDelta<=-15 ?
     `For contractors, the near-term market is thinner: fewer and smaller opportunities are reaching bid. For the City, the same numbers read as a widening gap between what is funded and what is getting built.` :
@@ -494,7 +496,7 @@ function compose(){
 
   const blocks = [];
   if(D.awardsOk){
-    blocks.push(`<h2>The award market</h2><p>New York City agencies awarded ${num(fmtMoney(D.awardTTM))} of construction and construction-services work over the trailing twelve months, across ${num(fmtInt(D.awardCount))} contract awards. Award volume has ${trendWord(D.awardDelta)}, ${D.awardDelta!==null ? num((D.awardDelta>=0?'+':'−')+fmtPct(D.awardDelta)) + ' versus the preceding twelve months' : 'with no prior-year comparison available'}. Hard construction makes up ${num(fmtPct(D.hardShare))} of awarded value; design, engineering, and construction management make up the rest. ${D.topAwardAgency.agency_name ? esc(capFirst(AWARD_AGENCY_SHORT[D.topAwardAgency.agency_name]||D.topAwardAgency.agency_name))+' is the busiest buyer, accounting for '+num(fmtPct(D.topAwardShare))+' of trailing-year award value.' : ''}</p>`);
+    blocks.push(`<h2>The award market</h2><p>New York City agencies awarded ${num(fmtMoney(D.awardTTM))} of new construction and construction-services work over the trailing twelve months, across ${num(fmtInt(D.awardCount))} contract awards. That is a new-work total: renewals and extensions of existing contracts are held out, as are single awards of $500M and up. Award volume has ${trendWord(D.awardDelta)}, ${D.awardDelta!==null ? num((D.awardDelta>=0?'+':'−')+fmtPct(D.awardDelta)) + ' versus the preceding twelve months' : 'with no prior-year comparison available'}. Hard construction makes up ${num(fmtPct(D.hardShare))} of awarded value; design, engineering, and construction management make up the rest. ${D.topAwardAgency.agency_name ? esc(capFirst(AWARD_AGENCY_SHORT[D.topAwardAgency.agency_name]||D.topAwardAgency.agency_name))+' is the busiest buyer, accounting for '+num(fmtPct(D.topAwardShare))+' of trailing-year award value.' : ''}</p>`);
   } else {
     blocks.push(`<h2>The award market</h2>${unavailNote('City Record awards')}`);
   }
