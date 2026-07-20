@@ -331,7 +331,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 </style>
   <section class="lp-hero">
     <div class="kicker">The demand side of NYC public construction</div>
-    <h1>The Concrete Index reads every construction dollar the City awards.</h1>
+    <h1>Every construction award notice in the City Record, totaled on the spot.</h1>
     <p class="lp-sub">It tracks New York City public construction from the budget that funds a project to the payments that settle it, drawn from the public record and refreshed daily.</p>
     <div class="lp-hero-num">
       <div class="lp-num-label">The Concrete Index &middot; 2019 = 100</div>
@@ -356,11 +356,11 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 
   <section class="lp-stats" aria-label="A look across the site">
     <a class="lp-stat" href="/pipeline/"><div class="ls-v" id="st-committed">&ndash;</div><div class="ls-k">Committed</div><div class="ls-d">Funded, not yet spent &middot; Pipeline</div></a>
-    <a class="lp-stat" href="/awarded/"><div class="ls-v" id="st-awarded">&ndash;</div><div class="ls-k">Awarded, 12 mo</div><div class="ls-d">Let to contractors &middot; Awarded</div></a>
+    <a class="lp-stat" href="/awarded/"><div class="ls-v" id="st-awarded">&ndash;</div><div class="ls-k">Awarded, 12 mo</div><div class="ls-d">Gross, all award types &middot; Awarded</div></a>
     <a class="lp-stat" href="/solicitations/"><div class="ls-v" id="st-sol">&ndash;</div><div class="ls-k">Open bids</div><div class="ls-d">Out to bid now &middot; Bidding</div></a>
     <a class="lp-stat" href="/competitive/"><div class="ls-v" id="st-vendors">&ndash;</div><div class="ls-k">Contractors</div><div class="ls-d">In the award record &middot; Contractors</div></a>
   </section>
-  <p class="lp-funnel-cap">Awarded is a gross figure over the last twelve complete months: it counts renewals and extensions of existing contracts, and it counts single awards of $500M or more. The Concrete Index above and the Briefing both hold those out to read fresh demand, so their figures run lower than this one.</p>
+  <p class="lp-funnel-cap">Awarded is a gross figure over the last twelve complete months: it counts renewals and extensions of existing contracts, and it counts single awards of $500M or more. The Concrete Index above and the “<a href="/briefing/">Briefing</a>” both hold those out to read fresh demand, so their figures run lower than this one.</p>
 
   <section class="lp-adjust" aria-label="Adjusting for construction cost">
     <div class="lp-adjust-inner">
@@ -468,7 +468,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     throw new Error('no index_level');
   }).catch(function(){
     var gl=document.getElementById('adj-gap-line');
-    if(gl) gl.textContent='Cost-adjusted Concrete Index, 2019 = 100. See the full comparison on Analysis.';
+    if(gl) gl.textContent='Cost-adjusted Concrete Index, 2019 = 100. See the full comparison on the “Analysis” page.';
     computeLive().then(function(o){ showIndex(o.value, fmtMonth(o.month)); }).catch(indexNeutral);
   });
 
