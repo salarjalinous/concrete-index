@@ -351,9 +351,21 @@ jobs:
               # were posted over a year ago. Standing pre-qualified lists (an RFQ/PQL
               # method carrying a placeholder) are real open opportunities and are kept.
               PQL = re.compile(r'request for qualifications|pre-?qualified list', re.I)
+              # Parse the FULL timestamp (not just the date), matching the Bidding
+              # page's new Date(...), and compare in seconds against the same
+              # millisecond horizons the page uses, so the two counts agree to the
+              # notice rather than differing by up to a day at a rule boundary.
               def _dt(s):
-                  try: return datetime.strptime((s or '')[:10], '%Y-%m-%d').replace(tzinfo=timezone.utc)
-                  except Exception: return None
+                  s = (s or '').strip().replace('Z', '+00:00')
+                  if not s: return None
+                  try: dt = datetime.fromisoformat(s)
+                  except Exception:
+                      try: dt = datetime.strptime(s[:10], '%Y-%m-%d')
+                      except Exception: return None
+                  if dt.tzinfo is None: dt = dt.replace(tzinfo=timezone.utc)
+                  return dt.astimezone(timezone.utc)
+              SENTINEL_S = 5 * 365.25 * 86400   # page: 5 * 365.25 days, in seconds
+              STALE_S = 365 * 86400             # page: 365 days, in seconds
               seen = set(); cnt = 0
               # sort by due date so dedupe keeps the earliest-due record, as the page does
               for sdoc in sorted(sols, key=lambda s: (s.get('due_date') or '')):
@@ -365,10 +377,10 @@ jobs:
                   due = _dt(sdoc.get('due_date'))
                   posted = _dt(sdoc.get('start_date'))
                   method = sdoc.get('selection_method_description') or ''
-                  is_sentinel = due is not None and (due - now).days > 5 * 365.25
+                  is_sentinel = due is not None and (due - now).total_seconds() > SENTINEL_S
                   is_standing = is_sentinel and bool(PQL.search(method))
                   is_dead = (is_sentinel and not is_standing and posted is not None
-                             and (now - posted).days > 365)
+                             and (now - posted).total_seconds() > STALE_S)
                   if is_dead: continue
                   cnt += 1
               open_sol = cnt
