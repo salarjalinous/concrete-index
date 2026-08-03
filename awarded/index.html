@@ -750,20 +750,26 @@ function renderKpis(rows){
   document.getElementById('kpi-total').textContent = fmtMoney(total);
   document.getElementById('kpi-total-note').innerHTML = delta === null ? WINDOW_LABEL[state.windowMonths] :
     `<span class="${delta>=0?'up':'down'}">${delta>=0?'+':'−'}${Math.abs(delta).toFixed(0)}%</span> in dollars vs prior period, same filters`;
-  // Megaproject lumpiness caveat: when a $500M-plus award sits in either
-  // comparison window, the gross change can swing on a single contract, so the
-  // headline delta is not a read on the underlying market. Point to the index,
-  // which excludes megaprojects and renewals. Only shown when megaprojects are
-  // in scope and one actually sits in a compared window.
+  // Gross-swing caveat. The headline total is gross: it counts renewals and
+  // one-off large awards, so a period-over-period change can move on a single
+  // lumpy contract and is not by itself a read on the underlying market. This
+  // note therefore rides with any change figure shown, not only when a $500M-plus
+  // megaproject happens to sit in a compared window; when one does, the note
+  // sharpens to name it. Either way it points to the index, which sets renewals
+  // and megaprojects aside to track the cycle.
   const megaNote = document.getElementById('kpi-mega-note');
   if(megaNote){
     const megaIn = state.size !== 'exmega' &&
       (rows.some(r => r.amount >= MEGA) || priorRows.some(r => r.amount >= MEGA));
-    const show = delta !== null && megaIn;
-    megaNote.innerHTML = show
-      ? `A single award of $500M or more can move this period-over-period change on its own, so read it as the gross swing, not a market trend. The <a href="/analysis/">Concrete Index</a> sets megaprojects and renewals aside to track the underlying cycle.`
-      : '';
-    megaNote.style.display = show ? '' : 'none';
+    if(delta === null){
+      megaNote.innerHTML = '';
+      megaNote.style.display = 'none';
+    } else {
+      megaNote.innerHTML = megaIn
+        ? `A single award of $500M or more sits in one of the compared periods, so this change can swing on one contract: read it as the gross swing, not a market trend. The <a href="/analysis/">Concrete Index</a> sets megaprojects and renewals aside to track the underlying cycle.`
+        : `This is a gross change: it counts renewals and one-off large awards, so a single lumpy contract can move it on its own. The <a href="/analysis/">Concrete Index</a> sets renewals and awards of $500M or more aside to track the underlying cycle.`;
+      megaNote.style.display = '';
+    }
   }
   document.getElementById('kpi-count').textContent = fmtInt(rows.length);
   document.getElementById('kpi-count-note').textContent = 'award notices, ' + WINDOW_LABEL[state.windowMonths];
