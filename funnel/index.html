@@ -716,7 +716,7 @@ function renderStages(){
   const base = 'Each stage is a separate reading drawn from a different ledger. '
     + 'Committed is a stock from the full capital plan; Awarded covers two City Record procurement categories; '
     + 'Spent is full-plan outlays measured between plan snapshots. The scopes differ, so the bars do not net against each other. '
-    + 'The bar lengths share a scale only to make the magnitudes comparable.';
+    + 'Each bar is scaled against the largest only to size it on screen; the gauges sit on different ledgers and time windows, so their lengths are not a like-for-like comparison.';
   const cbkNote = state.checkbookOk
     ? ' Paid (Checkbook) is a different ledger again: disbursements on registered construction contracts to named vendors, '
       + 'NYC City scope, ' + cbkFY().long + ', from the Comptroller’s Checkbook NYC. '
