@@ -36,12 +36,18 @@ header{background:var(--paper);border-bottom:2px solid var(--ink)}
 .nav-links a{color:var(--muted)}
 .nav-links a:hover{color:var(--ink);text-decoration:none}
 .nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px}
-.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
+/* This page allows no inline script, so the menu is a hidden checkbox the CSS reads.
+   The checkbox carries the accessible name and the keyboard focus; the label is the
+   visible control. */
+.menu-toggle{display:none;position:absolute;top:20px;left:0;width:1px;height:1px;margin:0;opacity:0;pointer-events:none}
+.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer;user-select:none}
+.menu-toggle:focus-visible ~ .menu-btn{outline:2px solid var(--accent);outline-offset:2px}
 @media(max-width:1180px){
+  .menu-toggle{display:block}
   .menu-btn{display:block}
   .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:61px;left:-28px;right:-28px;background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(32,22,17,.16);z-index:60}
-  .nav-links.open{display:flex}
+  .nav-links{display:none;position:absolute;top:61px;left:-28px;right:-28px;background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px 28px;gap:13px;box-shadow:0 10px 24px rgba(32,22,17,.16);z-index:60;max-height:calc(100vh - 62px);overflow-y:auto}
+  .menu-toggle:checked ~ .nav-links{display:flex}
 }
 .moved{padding:90px 0 60px;text-align:center}
 .kicker{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:14px}
@@ -63,13 +69,14 @@ footer .brand{font-size:17px;color:var(--ink)}
       <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
       <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
     </div>
-    <button class="menu-btn" aria-label="Menu" aria-expanded="false" onclick="const o=this.nextElementSibling.classList.toggle('open');this.setAttribute('aria-expanded',o)">&#9776;</button>
+    <input type="checkbox" class="menu-toggle" id="menu-toggle" aria-label="Menu">
+    <label class="menu-btn" for="menu-toggle" aria-hidden="true">&#9776;</label>
     <nav class="nav-links">
       <a href="/pipeline/">Pipeline</a>
       <a href="/solicitations/">Bidding</a>
       <a href="/awarded/">Awarded</a>
       <a href="/funnel/">Funnel</a>
-      <a href="/agency/" class="active">Agencies</a>
+      <a href="/agency/">Agencies</a>
       <a href="/regional/">SCA &amp; MTA</a>
       <a href="/competitive/">Contractors</a>
       <a href="/contracts/">Contracts</a>

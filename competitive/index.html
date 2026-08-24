@@ -630,13 +630,16 @@ function fmtMoney(v){
   if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
   return '$' + Math.round(v);
 }
-function fmtInt(v){ return v.toLocaleString('en-US'); }
+/* Null-guarded, matching the market block's own copy of this helper. Every
+   current caller passes a count, so the guard changes nothing today; it exists
+   so a future caller with a missing count renders 0 instead of throwing and
+   taking the whole profile render down with it. */
+function fmtInt(v){ return (v||0).toLocaleString('en-US'); }
 function fmtDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
 function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 function cleanName(s){ return String(s==null?'':s).replace(/\s*[\?�]\s*/g,' / ').replace(/\s{2,}/g,' ').trim(); }
 function escName(s){ return esc(cleanName(s)); }
 function csvCell(v){ const s=(v==null?'':String(v)); return '"'+s.replace(/"/g,'""')+'"'; }
-function isoDay(d){ return d instanceof Date && !isNaN(d) ? d.toISOString().slice(0,10) : ''; }
 function slugify(s){ return (s||'vendor').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60) || 'vendor'; }
 function downloadCSV(text, filename){
   const blob = new Blob([text], { type:'text/csv;charset=utf-8;' });
@@ -663,26 +666,63 @@ function exportVendorCSV(){
   lines.push(['Date','Award','Agency','Vendor (as published)','Category','Selection method','Amount (USD)'].map(csvCell).join(','));
   rows.forEach(r => {
     lines.push([
-      isoDay(r.date), r.title, r.agency, r.vendor,
+      r.day, r.title, r.agency, r.vendor,
       r.cat==='hard'?'Construction':'Related services',
       r.method, Math.round(r.amount)
     ].map(csvCell).join(','));
   });
   downloadCSV(lines.join('\r\n'), 'concrete-index-' + slugify(grp.key) + '.csv');
 }
-function isoMonthsAgo(n){ const d=new Date(); d.setMonth(d.getMonth()-n); return d.toISOString().slice(0,10); }
+/* Same calendar day n months back, UTC-anchored, with the day clamped to the
+   length of the target month so the end of a long month does not roll forward
+   into the next one. Used only as a widened fetch margin, never as a window. */
+function isoMonthsAgo(n){
+  const now = new Date();
+  const y = now.getUTCFullYear(), m = now.getUTCMonth();
+  const lastDay = new Date(Date.UTC(y, m - n + 1, 0)).getUTCDate();
+  return new Date(Date.UTC(y, m - n, Math.min(now.getUTCDate(), lastDay)))
+    .toISOString().slice(0,10);
+}
+/* Lower bound of a rolling window of n calendar days ending on, and including,
+   the current UTC day: isoWindowStart(365) is today plus the 364 days before it.
+   It replaces a threshold instant of Date.now() - n*864e5, which landed mid-day
+   on the oldest day and so admitted exactly this same set of day-stamped rows,
+   but landed at a different instant for every reader. */
+function isoWindowStart(days){
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - (days - 1)))
+    .toISOString().slice(0,10);
+}
 /* Canonical trailing twelve months for the whole site: twelve FULLY-ELAPSED
-   months. completeMonthStart(0) is the first day of the current, incomplete
-   month, so the window [completeMonthStart(12), completeMonthStart(0)) never
-   reads the partial month in progress. Same rule the funnel, the Briefing, and
-   the Analysis index use, so the pages cannot disagree on one window. */
-function completeMonthStart(n){ const d=new Date(); return new Date(d.getFullYear(), d.getMonth()-n, 1); }
-function isoCompleteMonthBoundary(n){ return completeMonthStart(n).toISOString().slice(0,10); }
+   months. isoCompleteMonthBoundary(0) is the first day of the current,
+   incomplete month, so [isoCompleteMonthBoundary(12), isoCompleteMonthBoundary(0))
+   never reads the partial month in progress. Same rule the funnel, the Briefing,
+   and the Analysis index use, so the pages cannot disagree on one window.
+
+   Anchored in UTC end to end. A local midnight formatted through toISOString
+   reads back a day early for anyone east of UTC, which moved the whole trailing
+   window and made the same page report different totals in Berlin than in New
+   York. Date.UTC in, toISOString out, so every reader gets one window.
+
+   It returns a day STRING, and the row side of every comparison is the raw
+   start_date prefix, so the window is decided string-on-string and never by
+   comparing a UTC-anchored boundary against a locally-parsed row date. */
+function isoCompleteMonthBoundary(n){
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - n, 1))
+    .toISOString().slice(0,10);
+}
 /* Same $500M megaproject floor the market-structure section below uses. */
 const MEGA_FLOOR = 500000000;
 function isContinuation(m){ return /renewal|extension/i.test(m||''); }
 function median(a){ if(!a.length) return 0; const s=[...a].sort((x,y)=>x-y); const m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; }
-function monthsSince(d){ const n=new Date(); return (n.getFullYear()-d.getFullYear())*12 + (n.getMonth()-d.getMonth()); }
+/* Whole months between a published day ('YYYY-MM-DD') and the current month,
+   both read in UTC so the answer does not depend on the reader's location. */
+function monthsSince(day){
+  const n = new Date();
+  return (n.getUTCFullYear() - +String(day).slice(0,4)) * 12
+       + (n.getUTCMonth() + 1 - +String(day).slice(5,7));
+}
 
 function normName(s){
   return (s||'')
@@ -821,7 +861,11 @@ async function runSearch(q){
   }catch(e){ rows = []; }
 
   state.rows = rows.map(r => ({
+    // date is for display only, through fmtDate. Every window decision and the
+    // CSV export read `day`, the raw published prefix, so neither depends on how
+    // the browser chose to parse the timestamp or on where the reader is.
     date: new Date(r.start_date),
+    day: (r.start_date || '').slice(0,10),
     year: r.start_date.slice(0,4),
     agency: r.agency_name || '(unspecified)',
     cat: r.category_description === HARD ? 'hard' : 'rel',
@@ -961,12 +1005,14 @@ function renderReadStrip(rows, agSorted, all){
   const cells = [];
 
   const newRows = rows.filter(r => !isContinuation(r.method));
-  const thisYear = String(new Date().getFullYear());
-  const since3 = new Date(); since3.setFullYear(since3.getFullYear()-3);
+  // UTC year against the raw start_date prefix, so "this year" does not flip a
+  // day early or a day late depending on where the page is open.
+  const thisYear = String(new Date().getUTCFullYear());
+  const since3 = isoMonthsAgo(36);
   const amtsAll = newRows.map(r=>r.amount);
   const largestAll = amtsAll.length ? Math.max(...amtsAll) : 0;
   const largestYr = Math.max(0, ...newRows.filter(r=>r.year===thisYear).map(r=>r.amount));
-  const med3arr = newRows.filter(r=>r.date>=since3).map(r=>r.amount);
+  const med3arr = newRows.filter(r=>r.day>=since3).map(r=>r.amount);
   let creepCell;
   if(med3arr.length >= 5 && largestYr > 0){
     const med3 = median(med3arr);
@@ -989,9 +1035,10 @@ function renderReadStrip(rows, agSorted, all){
     <div class="rd-value">${(top1*100).toFixed(0)}% · ${(top3*100).toFixed(0)}%</div>
     <div class="rd-note">Top agency and top-3 share of awarded value. Concentrated demand sits behind one payment cycle and one funding stream, a structural feature of the agency, not a judgment about the vendor.</div></div>`);
 
-  const t12 = newRows.filter(r=>r.date>=new Date(Date.now()-365*864e5)).length;
-  const t24 = newRows.filter(r=>r.date>=new Date(Date.now()-730*864e5)).length;
-  const last = rows.reduce((a,r)=> r.date>a?r.date:a, rows[0].date);
+  const w12 = isoWindowStart(365), w24 = isoWindowStart(730);
+  const t12 = newRows.filter(r=>r.day>=w12).length;
+  const t24 = newRows.filter(r=>r.day>=w24).length;
+  const last = rows.reduce((a,r)=> r.day>a?r.day:a, rows[0].day);
   const ms = monthsSince(last);
   const stale = ms >= 18;
   cells.push(`<div class="rd ${stale?'flag':''}"><div class="rd-label">Award cadence</div>
@@ -1031,10 +1078,12 @@ function renderProfile(){
   }
 
   if(hasCity){
-    // Canonical trailing twelve: twelve fully-elapsed months, partial month excluded.
-    const ttmStart = completeMonthStart(12), ttmEnd = completeMonthStart(0);
+    // Canonical trailing twelve: twelve fully-elapsed months, partial month
+    // excluded. Decided on day strings, the same bounds the starter query sends
+    // to Socrata, so the browser filter and the server filter cannot diverge.
+    const ttmStart = isoCompleteMonthBoundary(12), ttmEnd = isoCompleteMonthBoundary(0);
     const all = rows.reduce((a,r)=>a+r.amount,0);
-    const ttm = rows.filter(r=>r.date>=ttmStart && r.date<ttmEnd).reduce((a,r)=>a+r.amount,0);
+    const ttm = rows.filter(r=>r.day>=ttmStart && r.day<ttmEnd).reduce((a,r)=>a+r.amount,0);
     document.getElementById('kpi-all').textContent = fmtMoney(all);
     document.getElementById('kpi-ttm').textContent = fmtMoney(ttm);
     document.getElementById('kpi-n').textContent = fmtInt(rows.length);
@@ -1173,6 +1222,13 @@ window.selectGroup = selectGroup;
 })();
 </script>
 
+<!-- ===== Market-structure module. This is the only script block on the page that
+     declares at global scope; the contractor-lookup block above and the export
+     block below are each wrapped in an IIFE, so their identically named helpers
+     (normName, fmtMoney, fmtInt, esc, isContinuation, state, MEGA_FLOOR,
+     COLOR_A) are function-scoped and cannot collide with the names below.
+     A column-0 grep across the three blocks makes those look like top-level
+     consts; they are not. Verify scope, not indentation, before renaming. ===== -->
 <script>
 'use strict';
 /* ===== build marker: competitive-set-wins-v1 ===== */
@@ -1188,7 +1244,7 @@ const BANDS = [
 ];
 
 const state = {
-  rows: [],              // deduped per pin: {amt, date(Date|null), renewal(bool), norm(string)}
+  rows: [],              // deduped per pin: {amt, day('YYYY-MM-DD'|null), renewal(bool), norm(string)}
   charts: {},
   window: 'ttm',         // 'ttm' | 'all'
   renew: 'excl'          // 'excl' | 'incl'
@@ -1212,10 +1268,12 @@ function normName(raw){
     .trim();
 }
 
-function parseDate(s){
-  if(!s) return null;
-  const d = new Date(s);
-  return isNaN(d.getTime()) ? null : d;
+/* Published day of a City Record timestamp, kept as the raw 'YYYY-MM-DD' prefix
+   rather than a Date. Nothing in this section renders the value, it only decides
+   windows, and a string keeps that decision independent of the reader's zone. */
+function dayOf(s){
+  const t = String(s == null ? '' : s).slice(0,10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(t) ? t : null;
 }
 
 /* Renewal/continuation flag, shared definition with the Awarded and Analysis
@@ -1266,7 +1324,7 @@ async function fetchAll(){
       // (no merge) and the run is byte-reproducible.
       const pin = r.pin || ('_np_' + offset + '_' + i);
       const renewal = isContinuation(r.selection_method_description);
-      const rec = { amt, date: parseDate(r.start_date), renewal, norm: normName(r.vendor_name) };
+      const rec = { amt, day: dayOf(r.start_date), renewal, norm: normName(r.vendor_name) };
       const prev = byPin.get(pin);
       // dedupe to one record per pin keeping the MAX contract_amount
       if(!prev || rec.amt > prev.amt) byPin.set(pin, rec);
@@ -1282,13 +1340,26 @@ async function fetchAll(){
 /* Canonical trailing twelve months: twelve FULLY-ELAPSED months, so the partial
    current month is never read. Matches the funnel, the Briefing, the Analysis
    index, and the contractor lookup above, which previously ran a rolling
-   365-day window here and disagreed with those pages. */
-function completeMonthStart(n){ const d = new Date(); return new Date(d.getFullYear(), d.getMonth()-n, 1); }
-function inTtm(d){ return !!d && d >= completeMonthStart(12) && d < completeMonthStart(0); }
+   365-day window here and disagreed with those pages.
+
+   Anchored in UTC and decided on day strings. A local first-of-month formatted
+   through toISOString read back a day early east of UTC, and comparing a
+   UTC-anchored boundary against a locally-parsed row Date would have gone wrong
+   by the reader's offset in the other direction. Raw start_date prefix on one
+   side, UTC boundary string on the other, so every reader gets one window. */
+function completeMonthBoundary(n){
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - n, 1))
+    .toISOString().slice(0,10);
+}
+/* Hoisted once per filter pass rather than rebuilt per row: this list runs to
+   hundreds of thousands of records. */
+function ttmBounds(){ return { lo: completeMonthBoundary(12), hi: completeMonthBoundary(0) }; }
+function inTtm(day, b){ return !!day && day >= b.lo && day < b.hi; }
 
 function activeRows(){
   let rows = state.rows;
-  if(state.window === 'ttm') rows = rows.filter(r => inTtm(r.date));
+  if(state.window === 'ttm'){ const b = ttmBounds(); rows = rows.filter(r => inTtm(r.day, b)); }
   if(state.renew === 'excl') rows = rows.filter(r => !r.renewal);
   return rows;
 }
@@ -1328,7 +1399,7 @@ function aggregate(){
 
   // renewal count within the active WINDOW (ignoring the renewal toggle), for the KPI
   let winRows = state.rows;
-  if(state.window === 'ttm') winRows = winRows.filter(r => inTtm(r.date));
+  if(state.window === 'ttm'){ const wb = ttmBounds(); winRows = winRows.filter(r => inTtm(r.day, wb)); }
   for(const r of winRows) if(r.renewal) renewalCount++;
 
   // per-band concentration

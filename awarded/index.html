@@ -439,20 +439,27 @@ function wtClassify(title){const t=title||'';const tags=[];for(const k in WT_LEX
 const MEGA = 500e6;
 function isContinuation(method){ return /renewal|extension/i.test(method || ''); }
 
-/* First of the month n complete months back. completeMonthBoundary(0) is the
-   first of the current, incomplete month, so [completeMonthBoundary(n),
-   completeMonthBoundary(0)) is n fully-elapsed months. This is the same rule as
-   the isoBoundary helper on the Home page and isoCompleteMonthBoundary on the
-   Funnel; Home compares ISO strings inside the SoQL query, this page compares
-   Date objects against rows it has already parsed, so the one rule is expressed
-   here as a Date. isoBoundaryStr formats it for the query. */
-function completeMonthBoundary(n){
-  const d = new Date();
-  const b = new Date(d.getFullYear(), d.getMonth(), 1);
-  b.setMonth(b.getMonth() - n);
-  return b;
+/* First of the month n complete months back, as a 'YYYY-MM-DD' string.
+   monthBoundary(0) is the first of the current, incomplete month, so
+   [monthBoundary(n), monthBoundary(0)) is n fully-elapsed months. This is the
+   same rule as isoBoundary on the Home page and isoCompleteMonthBoundary on the
+   Funnel, the Briefing and the Agencies page.
+
+   Anchored in UTC end to end. The window used to be built as local midnight
+   Date objects, which made the boundary an absolute instant that moved with the
+   reader: formatted through toISOString it named the previous day for anyone
+   east of UTC, and at the turn of a month it advanced the whole window hours
+   before New York got there. Date.UTC in, toISOString out.
+
+   The boundary is a string because the rows are strings. Socrata returns
+   start_date as a floating timestamp with no zone, and a lexicographic compare
+   on ISO-8601 is a chronological compare, so string-against-string needs no
+   parsing and cannot pick up a local offset on either side. */
+function monthBoundary(n){
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - n, 1))
+    .toISOString().slice(0,10);
 }
-function isoBoundaryStr(n){ return completeMonthBoundary(n).toISOString().slice(0,10); }
 
 /* Canonical construction-awards dedupe: one row per procurement (pin), keeping
    the maximum contract_amount seen for that pin. The same award can be published
@@ -478,7 +485,7 @@ const MAX_WINDOW = 60;
 async function fetchAwards(){
   const params = new URLSearchParams({
     '$select': 'pin,request_id,start_date,agency_name,category_description,short_title,selection_method_description,vendor_name,contract_amount,additional_description_1',
-    '$where': `starts_with(category_description,'Construction') AND start_date>='${isoBoundaryStr(MAX_WINDOW)}' AND contract_amount>0`,
+    '$where': `starts_with(category_description,'Construction') AND start_date>='${monthBoundary(MAX_WINDOW)}' AND contract_amount>0`,
     '$order': 'start_date DESC',
     '$limit': String(AWARD_LIMIT)
   });
@@ -517,7 +524,10 @@ function deriveBorough(title, desc){
 function normalize(r){
   return {
     id: r.request_id,
+    // `date` is for display only, parsed and formatted locally so the two sides
+    // agree. `day` is the raw ISO date and is what every window test compares.
     date: new Date(r.start_date),
+    day: r.start_date.slice(0,10),
     month: r.start_date.slice(0,7),
     agency: r.agency_name || 'Unspecified',
     cat: r.category_description === HARD ? 'hard' : 'rel',
@@ -532,15 +542,6 @@ function normalize(r){
 }
 
 /* ================= aggregation ================= */
-/* Local-time month key. The boundaries are built as local first-of-month dates
-   and the rows carry local-parsed dates, so keying via toISOString would shift a
-   boundary into the previous month for anyone east of UTC and misalign the bars.
-   Format from the local fields instead. */
-function monthKey(d){
-  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
-}
-
-
 function inScope(row){
   if(state.scope !== 'all' && row.cat !== state.scope) return false;
   if(state.type === 'new' && row.kind !== 'new') return false;
@@ -556,15 +557,15 @@ function inScope(row){
    month in progress cannot understate a total or put this page at odds with
    Home, the Funnel, the Briefing, and Analysis. */
 function filtered(){
-  const start = completeMonthBoundary(state.windowMonths);
-  const end = completeMonthBoundary(0);
-  return state.rows.filter(r => r.date >= start && r.date < end && inScope(r));
+  const start = monthBoundary(state.windowMonths);
+  const end = monthBoundary(0);
+  return state.rows.filter(r => r.day >= start && r.day < end && inScope(r));
 }
 
 function priorPeriod(){
-  const start = completeMonthBoundary(state.windowMonths * 2);
-  const end = completeMonthBoundary(state.windowMonths);
-  return state.rows.filter(r => r.date >= start && r.date < end && inScope(r));
+  const start = monthBoundary(state.windowMonths * 2);
+  const end = monthBoundary(state.windowMonths);
+  return state.rows.filter(r => r.day >= start && r.day < end && inScope(r));
 }
 
 function sum(rows){ return rows.reduce((a,r) => a + r.amount, 0); }
@@ -588,17 +589,13 @@ function groupSum(rows, keyFn){
 }
 
 function monthSeries(rows){
-  // ordered list of months in window with hard/rel sums
-  // One bar per complete month in the window. The bounds are already
-  // first-of-month, so the series runs [boundary(n) .. boundary(0)) and yields
-  // exactly n bars, with no partial current month trailing off the end.
+  // Ordered list of months in the window with hard/rel sums. The bounds are
+  // already first-of-month, so the series runs [boundary(n) .. boundary(0)) and
+  // yields exactly n bars, with no partial current month trailing off the end.
+  // Keys are sliced from the same UTC boundary the window uses, so they line up
+  // with r.month, which is sliced from the raw start_date.
   const months = [];
-  const cur = completeMonthBoundary(state.windowMonths);
-  const end = completeMonthBoundary(0);
-  while(cur < end){
-    months.push(monthKey(cur));
-    cur.setMonth(cur.getMonth()+1);
-  }
+  for(let i = state.windowMonths; i > 0; i--) months.push(monthBoundary(i).slice(0,7));
   const hard = Object.fromEntries(months.map(m => [m,0]));
   const rel  = Object.fromEntries(months.map(m => [m,0]));
   for(const r of rows){
@@ -819,53 +816,21 @@ function wireSeg(id, attr, initial, onChange){
   set(initial);
 }
 
-/* ---- commitment-to-cash span strip (hero) ----
-   Awarded reuses the rows already pulled (trailing 12 months, all construction,
-   independent of the control filters below). Paid sums the nightly Checkbook
-   static file, same-origin, no token. Committed and Spent stay as labeled links
-   to the Funnel, the canonical source, rather than re-running the OMB snapshot
-   pulls here, so first paint stays fast and the two pages cannot drift. The four
-   figures are different ledgers and scopes and are never summed. */
-function renderSpanStrip(){
-  // Same definition as the Home page's awarded stat: twelve fully-elapsed
-  // months, every construction award, renewals and megaprojects included, pin
-  // deduped. Deliberately ignores the control filters below so the strip reads
-  // the same on this page as it does on Home.
-  const start = completeMonthBoundary(12);
-  const end = completeMonthBoundary(0);
-  const ttmRows = state.rows.filter(r => r.date >= start && r.date < end);
-  const awarded = sum(ttmRows);
-  const aEl = document.getElementById('ss-awarded');
-  if(aEl){
-    aEl.textContent = fmtMoney(awarded);
-    document.getElementById('ss-awarded-d').textContent =
-      fmtInt(ttmRows.length) + ' construction awards, trailing 12 months.';
-  }
-}
-async function loadCheckbookPaid(){
-  try{
-    const res = await fetch('/data/checkbook-vendors.json');
-    if(!res.ok) throw new Error('checkbook ' + res.status);
-    const d = await res.json();
-    const vendors = d.vendors || {};
-    let paid = 0;
-    for(const k in vendors){ paid += (parseFloat(vendors[k].paid) || 0); }
-    const pEl = document.getElementById('ss-paid');
-    if(pEl){
-      pEl.textContent = fmtMoney(paid);
-      const fy = (d.meta && Array.isArray(d.meta.fiscal_years) && d.meta.fiscal_years.length)
-        ? ('FY' + d.meta.fiscal_years[0] + '–' + d.meta.fiscal_years[d.meta.fiscal_years.length-1].toString().slice(2))
-        : '';
-      document.getElementById('ss-paid-d').textContent =
-        'Disbursed on registered contracts' + (fy ? ', ' + fy : '') + '. Checkbook NYC.';
-    }
-  }catch(e){ /* leave the Paid cell as a dash; strip still works */ }
-}
+/* The commitment-to-cash span strip that used to live here was removed. Its
+   markup (#ss-awarded, #ss-paid and their detail cells) is not in this page, so
+   both writers were null-guarded no-ops while the Paid half still downloaded the
+   whole nightly Checkbook vendor file on every visit. The awarded-to-paid bridge
+   is the "Funnel" page's job, where committed, awarded and spent sit side by
+   side against their own sources; this page's scope is the award notice itself.
+   Rebuilding the strip here would duplicate the Funnel and give the two pages a
+   way to drift, so the fetch went rather than the markup coming back. */
 
 /* Resilience fallback: when the live City API can't be reached, show the last
    archived Awarded figure (nightly data/precomputed.json, computed with the same
-   pin-dedup rule) in the hero instead of a bare error. Live path is untouched;
-   this runs only in the init catch. Returns true if it rendered a fallback. */
+   pin-dedup rule) in the error panel instead of a bare failure message. Live path
+   is untouched; this runs only in the init catch. Returns true if it rendered a
+   fallback. It writes only into #error, the one element on the page that
+   actually shows it. */
 async function showArchivedFallback(){
   try{
     const res = await fetch('/data/precomputed.json');
@@ -873,12 +838,6 @@ async function showArchivedFallback(){
     const d = await res.json();
     const a = (d && d.awarded_ttm) || {};
     if(typeof a.total !== 'number') return false;
-    const aEl = document.getElementById('ss-awarded');
-    if(aEl){
-      aEl.textContent = fmtMoney(a.total);
-      document.getElementById('ss-awarded-d').textContent =
-        fmtInt(a.count) + ' construction awards, trailing 12 months.';
-    }
     const when = d.meta && d.meta.generated ? new Date(d.meta.generated) : null;
     const asof = (when && !isNaN(when)) ? fmtDate(when) : 'recently';
     const err = document.getElementById('error');
@@ -892,7 +851,6 @@ async function showArchivedFallback(){
 
 /* ================= init ================= */
 (async function init(){
-  loadCheckbookPaid();
   try{
     state.rows = await fetchAwards();
   }catch(e){
@@ -901,7 +859,6 @@ async function showArchivedFallback(){
     if(!shown) document.getElementById('error').style.display = 'block';
     return;
   }
-  renderSpanStrip();
   const latest = state.rows.length ? state.rows[0].date : null;
   document.getElementById('asof').innerHTML = latest ?
     `Latest award published <strong>${fmtDate(latest)}</strong> · ${fmtInt(state.rows.length)} construction awards in the trailing five years · source refreshed daily` : '';

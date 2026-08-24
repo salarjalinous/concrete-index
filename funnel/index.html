@@ -583,18 +583,28 @@ function dedupeAwardsByPin(rows){
   return [...byPin.values()];
 }
 
+/* Same calendar day n months back, UTC-anchored, with the day clamped to the
+   length of the target month so the end of a long month does not roll forward
+   into the next one. Used only as a widened fetch margin, never as a window. */
 function isoMonthsAgo(n){
-  const d = new Date(); d.setMonth(d.getMonth()-n);
-  return d.toISOString().slice(0,10);
+  const now = new Date();
+  const y = now.getUTCFullYear(), m = now.getUTCMonth();
+  const lastDay = new Date(Date.UTC(y, m - n + 1, 0)).getUTCDate();
+  return new Date(Date.UTC(y, m - n, Math.min(now.getUTCDate(), lastDay)))
+    .toISOString().slice(0,10);
 }
 /* First-of-month boundary n complete months before the current (incomplete)
    month, so the award window aligns to fully-elapsed months. Mirrors the
-   Analysis index and the Briefing, keeping the three pages on one window. */
+   Analysis index and the Briefing, keeping the three pages on one window.
+
+   Anchored in UTC end to end. A local midnight formatted through toISOString
+   reads back a day early for anyone east of UTC, which moved the whole trailing
+   window and made the same page report different totals in Berlin than in New
+   York. Date.UTC in, toISOString out, so every reader gets one window. */
 function isoCompleteMonthBoundary(n){
-  const d = new Date();
-  const b = new Date(d.getFullYear(), d.getMonth(), 1);
-  b.setMonth(b.getMonth()-n);
-  return b.toISOString().slice(0,10);
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - n, 1))
+    .toISOString().slice(0,10);
 }
 function toQuarters(byMonth){
   const qs = new Map();

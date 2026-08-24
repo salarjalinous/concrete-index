@@ -12,18 +12,39 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
-:root{--paper:#f7f3ef;--surface:#fefbf8;--ink:#201611;--navy:#243b53;--muted:#6b5e56;--accent:#ae4e34;--line:#ded5ce}
+:root{
+  --paper:#f7f3ef; --surface:#fefbf8; --band:#f2ede8;
+  --ink:#201611; --navy:#243b53; --muted:#6b5e56; --faint:#968a7f;
+  --line:#ded5ce; --rule:#201611;
+  --accent:#ae4e34; --accent-soft:#eadbd4; --steel:#2f5d8f;
+  --pos:#2f7d52; --neg:#9e362f; --radius:3px;
+  --maxw:1180px; --gut:28px;
+}
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:'Public Sans',system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--steel);text-decoration:none}
 header{background:var(--paper);border-bottom:2px solid var(--ink)}
-.nav{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:62px;padding:0 28px}
+.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
+.nav{width:100%;max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:62px;padding:0 var(--gut)}
 .brand{display:flex;align-items:center;gap:10px;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:20px;letter-spacing:-.01em;color:var(--ink);text-decoration:none}
 .brand svg{color:var(--navy);flex-shrink:0}
 .brand .tick{color:var(--accent)}
 .nav-links{display:flex;gap:17px;align-items:center;font-size:13.5px;font-weight:500}
 .nav-links a{color:var(--muted);text-decoration:none}
 .nav-links a:hover{color:var(--ink)}
-@media(max-width:620px){.nav-links{display:none}}
+/* This page allows no inline script, so the menu is a hidden checkbox the CSS reads.
+   The checkbox carries the accessible name and the keyboard focus; the label is the
+   visible control. */
+.menu-toggle{display:none;position:absolute;top:20px;left:0;width:1px;height:1px;margin:0;opacity:0;pointer-events:none}
+.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer;user-select:none}
+.menu-toggle:focus-visible ~ .menu-btn{outline:2px solid var(--accent);outline-offset:2px}
+@media(max-width:1180px){
+  .menu-toggle{display:block}
+  .menu-btn{display:block}
+  .nav{position:relative}
+  .nav-links{display:none;position:absolute;top:61px;left:calc(-1 * var(--gut));right:calc(-1 * var(--gut));background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px var(--gut);gap:13px;box-shadow:0 10px 24px rgba(32,22,17,.16);z-index:60;max-height:calc(100vh - 62px);overflow-y:auto}
+  .menu-toggle:checked ~ .nav-links{display:flex}
+}
 .fill{flex:1;display:flex;align-items:center;justify-content:center;padding:32px}
 .box{max-width:560px}
 .mark{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
@@ -34,6 +55,23 @@ p{font-size:16px;line-height:1.55;color:var(--muted);margin:0 0 22px;max-width:4
 .links a:hover{border-color:var(--accent);color:var(--accent)}
 .links a.primary{background:var(--navy);color:#fefbf8;border-color:var(--navy)}
 .links a.primary:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+footer{background:var(--band);border-top:2px solid var(--ink);padding:30px 0 40px;font-size:13px;color:var(--muted)}
+footer a{color:var(--steel)}
+footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer .brand{font-size:17px;color:var(--ink)}
+@media(max-width:560px){
+  :root{--maxw:1180px;--gut:18px}
+}
+/* ---------- display scaling: fill wide / high-resolution screens ---------- */
+@media(min-width:1400px){
+  :root{--maxw:1330px;--gut:34px}
+  body{font-size:15.5px}
+}
+@media(min-width:1750px){
+  :root{--maxw:1500px;--gut:40px}
+  body{font-size:16px}
+}
+@media(min-width:2100px){ :root{--maxw:1620px} }
 </style>
 </head>
 <body>
@@ -43,10 +81,18 @@ p{font-size:16px;line-height:1.55;color:var(--muted);margin:0 0 22px;max-width:4
         <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
         <span>The Concrete Index<span class="tick">.</span></span>
       </a>
+      <input type="checkbox" class="menu-toggle" id="menu-toggle" aria-label="Menu">
+      <label class="menu-btn" for="menu-toggle" aria-hidden="true">&#9776;</label>
       <nav class="nav-links">
+        <a href="/pipeline/">Pipeline</a>
+        <a href="/solicitations/">Bidding</a>
         <a href="/awarded/">Awarded</a>
+        <a href="/funnel/">Funnel</a>
+        <a href="/agency/">Agencies</a>
+        <a href="/regional/">SCA &amp; MTA</a>
         <a href="/competitive/">Contractors</a>
         <a href="/contracts/">Contracts</a>
+        <a href="/analysis/">Analysis</a>
         <a href="/briefing/">Briefing</a>
         <a href="/about/">About</a>
       </nav>
@@ -66,5 +112,17 @@ p{font-size:16px;line-height:1.55;color:var(--muted);margin:0 0 22px;max-width:4
       </div>
     </div>
   </div>
+  <footer>
+    <div class="wrap f-row">
+      <div>
+        <div class="brand">The Concrete Index<span class="tick">.</span></div>
+        <div style="margin-top:8px">NYC public construction capital, tracked end to end.</div>
+        <div style="margin-top:6px;font-size:12px;color:var(--faint);max-width:430px">An independent project built by Salar Jalinous using only public data. Not affiliated with any employer.</div>
+      </div>
+      <div style="text-align:right;font-family:'IBM Plex Mono',monospace;font-size:11.5px">
+        <div>&copy; 2026 <a href="/about/">Salar Jalinous</a></div>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>

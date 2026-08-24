@@ -552,14 +552,17 @@ function buildIndex(){
     cur.v += parseFloat(r.s)||0; cur.c += parseInt(r.n)||0;
     byMonth.set(m, cur);
   }
-  // continuous month list from 2003-01 through last complete month
+  /* Continuous month list from 2003-01 through the last COMPLETE month.
+     The keys have to match the raw start_date prefixes the rows are bucketed
+     under above, so they are built in UTC. A local first-of-month put through
+     toISOString names the PREVIOUS month for any reader east of UTC, which slid
+     the whole series one month off its own data and gave the index a different
+     value abroad than at home. Date.UTC in, toISOString out. */
   const now = new Date();
-  const lastComplete = new Date(now.getFullYear(), now.getMonth(), 1); // exclude current month
+  const lastComplete = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1); // exclude current month
   const months = [];
-  const cur = new Date(2003, 0, 1);
-  while(cur < lastComplete){
-    months.push(cur.toISOString().slice(0,7));
-    cur.setMonth(cur.getMonth()+1);
+  for(let mi = 0, t = Date.UTC(2003, 0, 1); t < lastComplete; t = Date.UTC(2003, ++mi, 1)){
+    months.push(new Date(t).toISOString().slice(0,7));
   }
   const v = months.map(m => (byMonth.get(m)||{v:0}).v);
   const c = months.map(m => (byMonth.get(m)||{c:0}).c);
@@ -644,7 +647,9 @@ function buildSeasonality(){
     const y = m.slice(0,4);
     (years[y] = years[y] || Array(12).fill(0))[+m.slice(5,7)-1] += v[i];
   });
-  const lastFullYear = new Date().getFullYear()-1;
+  // UTC year, so the seasonal panel does not gain or lose a year over New Year
+  // depending on which side of the date line the reader is sitting on.
+  const lastFullYear = new Date().getUTCFullYear()-1;
   const shares = Array.from({length:12}, ()=>[]);
   for(const y of Object.keys(years)){
     if(+y < 2004 || +y > lastFullYear) continue;
@@ -1095,14 +1100,24 @@ function unavailNote(host){
     return { citywide: citywide, overlays: overlays, sweptTotal: swept.length };
   }
   function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+  /* Day-granular dates read in UTC. A bare 'YYYY-MM-DDTHH:MM:SS.000' is parsed
+     as LOCAL time, so measuring elapsed schedule against an absolute now shifted
+     the numerator by the reader's UTC offset and moved the scatter slightly
+     between New York and Tokyo. Contract start and end are day-granular anyway. */
+  function utcDayMs(s){
+    var t = String(s||'');
+    if(t.length < 10) return NaN;
+    return Date.UTC(+t.slice(0,4), +t.slice(5,7)-1, +t.slice(8,10));
+  }
   function scheduleElapsedPct(c, today){
     if(!c.start_date || !c.end_date) return null;
-    var s = new Date(c.start_date).getTime(), e = new Date(c.end_date).getTime();
+    var s = utcDayMs(c.start_date), e = utcDayMs(c.end_date);
     if(isNaN(s) || isNaN(e) || e <= s) return null;
     return clamp((today - s) / (e - s) * 100, 0, 150);
   }
   function scatterAgencyMeans(cs){
-    var today = Date.now();
+    var n = new Date();
+    var today = Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate());
     var swept = sweptContracts(cs);
     var rows = [];
     groupBy(swept, function(c){ return c.agency || '–'; }).forEach(function(list, agency){

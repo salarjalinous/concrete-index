@@ -415,6 +415,10 @@ function deriveBorough(title, desc){
 }
 
 async function fetchSolicitations(){
+  // Already UTC-anchored, and deliberately so: this formats the current INSTANT,
+  // not a constructed local midnight, so every reader loading the page at the
+  // same moment sends the same lower bound and gets the same list back. Do not
+  // rewrite it against local date fields.
   const today = new Date().toISOString().slice(0,10);
   const params = new URLSearchParams({
     '$select':'request_id,start_date,agency_name,category_description,selection_method_description,short_title,pin,due_date,contact_name,contact_phone,email,additional_description_1',
@@ -443,7 +447,13 @@ async function fetchSolicitations(){
       cat: r.category_description === HARD ? 'hard' : 'rel',
       method: method,
       pin: cleanField(r.pin),
+      // due/posted are Dates, used for the countdown and for display. dueDay and
+      // postedDay are the raw published prefixes and are what the CSV exports, so
+      // an exported date never depends on how the browser parsed the timestamp
+      // or on which side of UTC the reader is sitting.
       due: due,
+      dueDay: (r.due_date || '').slice(0,10),
+      postedDay: (r.start_date || '').slice(0,10),
       standing: standing,
       // a one-time bid whose only deadline is a placeholder: no date to quote
       noDeadline: !standing && isSentinelDate(due),
@@ -481,7 +491,6 @@ function countdown(days){
   return days + ' day' + (days === 1 ? '' : 's') + ' left';
 }
 function fmtDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
-function isoDay(d){ return d instanceof Date && !isNaN(d) ? d.toISOString().slice(0,10) : ''; }
 
 // CSV export of the currently shown open-solicitations list. Client-side Blob
 // only, no library, no network. Cells are quote-wrapped and quote-doubled.
@@ -491,8 +500,8 @@ function exportCSV(){
   const lines = [['Due date','Posted','Agency','Title','Borough','Work types','Category','Selection method','PIN','Contact','Phone','Email'].map(csvCell).join(',')];
   rows.forEach(r => {
     lines.push([
-      r.standing ? 'Standing pre-qualified list' : r.noDeadline ? 'No closing date published' : isoDay(r.due),
-      isoDay(r.posted), r.agency, r.title, r.borough,
+      r.standing ? 'Standing pre-qualified list' : r.noDeadline ? 'No closing date published' : r.dueDay,
+      r.postedDay, r.agency, r.title, r.borough,
       r.tags.map(t=>WT_LEXICON[t].label).join('; '),
       r.cat==='hard'?'Construction':'Related services',
       r.method, r.pin, r.contact, r.phone, r.email

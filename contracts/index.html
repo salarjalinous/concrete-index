@@ -729,7 +729,7 @@ function init(payload){
   setText('series-updated', gen);
   setText('series-asof', fys);
   setText('search-cap', fys);
-  document.getElementById('asof').innerHTML = 'Indexed <strong>' + fmtInt(state.all.length) + '</strong> registered construction contracts &middot; ' + esc(fys) + ' &middot; rebuilt ' + esc(gen) + (state.meta.fixture ? ' &middot; <strong>development fixture</strong>' : '');
+  document.getElementById('asof').innerHTML = 'Indexed <strong>' + fmtInt(state.all.length) + '</strong> registered construction contracts &middot; ' + esc(fys) + ' &middot; rebuilt ' + esc(gen);
 
   // filter selects
   fillSelect(document.getElementById('f-agency'), distinctSorted(state.all, 'agency'), 'agencies');
@@ -768,17 +768,30 @@ function init(payload){
   document.getElementById('app').style.display = 'block';
 }
 
-/* ================= load (live, fall back to sample) ================= */
+/* ================= load (live, fall back to sample on a local checkout only) ================= */
 function loadJSON(url){
   return fetch(url, { cache: 'no-store' }).then(function(res){
     if(!res.ok) throw new Error('HTTP ' + res.status);
     return res.json();
   });
 }
+/* The sample file carries synthetic contracts for local work. It must never paint
+   as if it were the record, so a fixture payload renders the unavailable state
+   anywhere other than a local checkout. */
+function isLocalCheckout(){
+  var h = location.hostname;
+  return h === 'localhost' || h === '127.0.0.1' || h === '::1' || h === '';
+}
 function boot(){
   loadJSON(LIVE_URL)
     .catch(function(){ return loadJSON(SAMPLE_URL); })
-    .then(function(payload){ init(payload); })
+    .then(function(payload){
+      if(payload && payload.meta && payload.meta.fixture){
+        if(!isLocalCheckout()) throw new Error('fixture payload refused outside a local checkout');
+        if(window.console) console.warn('contract-search: rendering the synthetic sample fixture, not the nightly file');
+      }
+      init(payload);
+    })
     .catch(function(err){
       document.getElementById('loader').style.display = 'none';
       document.getElementById('error').style.display = 'block';

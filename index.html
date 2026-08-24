@@ -355,10 +355,10 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <p class="lp-funnel-cap">Each stage comes from a different public source and a different scope, so the Index never sums them into one number.</p>
 
   <section class="lp-stats" aria-label="A look across the site">
-    <a class="lp-stat" href="/pipeline/"><div class="ls-v" id="st-committed">&ndash;</div><div class="ls-k">Committed</div><div class="ls-d">Funded, not yet spent &middot; Pipeline</div></a>
-    <a class="lp-stat" href="/awarded/"><div class="ls-v" id="st-awarded">&ndash;</div><div class="ls-k">Awarded, 12 mo</div><div class="ls-d">Gross, all award types &middot; Awarded</div></a>
-    <a class="lp-stat" href="/solicitations/"><div class="ls-v" id="st-sol">&ndash;</div><div class="ls-k">Open bids</div><div class="ls-d">Out to bid now &middot; Bidding</div></a>
-    <a class="lp-stat" href="/competitive/"><div class="ls-v" id="st-vendors">&ndash;</div><div class="ls-k">Contractors</div><div class="ls-d">In the award record &middot; Contractors</div></a>
+    <a class="lp-stat" href="/pipeline/"><div class="ls-v" id="st-committed">&ndash;</div><div class="ls-k">Committed</div><div class="ls-d">Current plan, not yet spent &middot; Pipeline</div></a>
+    <a class="lp-stat" href="/awarded/"><div class="ls-v" id="st-awarded">&ndash;</div><div class="ls-k">Awarded, 12 mo</div><div class="ls-d">Last 12 complete months, gross &middot; Awarded</div></a>
+    <a class="lp-stat" href="/solicitations/"><div class="ls-v" id="st-sol">&ndash;</div><div class="ls-k">Open bids</div><div class="ls-d">Out to bid now, no value published &middot; Bidding</div></a>
+    <a class="lp-stat" href="/competitive/"><div class="ls-v" id="st-vendors">&ndash;</div><div class="ls-k">Contractors</div><div class="ls-d">All years of the award record &middot; Contractors</div></a>
   </section>
   <p class="lp-funnel-cap">Awarded is a gross figure over the last twelve complete months: it counts renewals and extensions of existing contracts, and it counts single awards of $500M or more. The Concrete Index above and the “<a href="/briefing/">Briefing</a>” both hold those out to read fresh demand, so their figures run lower than this one.</p>
 
@@ -484,11 +484,16 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   /* First day of the month n complete months back. isoBoundary(0) is the first
      of the current, incomplete month, so [isoBoundary(12), isoBoundary(0)) is
      twelve fully-elapsed months. Same helper the funnel, Briefing, Analysis, and
-     Contractors pages use. */
+     Contractors pages use.
+
+     Anchored in UTC end to end. A local midnight formatted through toISOString
+     reads back a day early for anyone east of UTC, which moved the whole window
+     and made the headline figure depend on where the reader was sitting.
+     Date.UTC in, toISOString out, so every reader gets one window. */
   function isoBoundary(n){
-    var d=new Date(), b=new Date(d.getFullYear(), d.getMonth(), 1);
-    b.setMonth(b.getMonth()-n);
-    return b.toISOString().slice(0,10);
+    var now=new Date();
+    return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()-n, 1))
+      .toISOString().slice(0,10);
   }
 
   /* Gross awarded value over the canonical trailing twelve months: every
@@ -539,8 +544,13 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     return page().then(function(){
       var byMonth=new Map();
       byPin.forEach(function(rec){ if(rec.cont||!rec.m) return; var c=byMonth.get(rec.m)||{v:0,c:0}; c.v+=rec.amt; c.c+=1; byMonth.set(rec.m,c); });
-      var now=new Date(), lastC=new Date(now.getFullYear(),now.getMonth(),1), months=[], cur=new Date(2003,0,1);
-      while(cur<lastC){ months.push(cur.toISOString().slice(0,7)); cur.setMonth(cur.getMonth()+1); }
+      /* The month keys have to match the raw start_date prefixes the rows are
+         bucketed under, so they are built in UTC. A local first-of-month put
+         through toISOString names the PREVIOUS month for any reader east of UTC,
+         which slid the whole series one month off its own data and produced a
+         different index value abroad than at home. */
+      var now=new Date(), lastC=Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),1), months=[], mi=0;
+      for(var t=Date.UTC(2003,0,1); t<lastC; t=Date.UTC(2003,++mi,1)){ months.push(new Date(t).toISOString().slice(0,7)); }
       var v=months.map(function(m){return (byMonth.get(m)||{v:0}).v;}), c=months.map(function(m){return (byMonth.get(m)||{c:0}).c;});
       var tM=[],tV=[],tC=[],sv=0,sc=0;
       for(var i=0;i<months.length;i++){ sv+=v[i]; sc+=c[i]; if(i>=12){sv-=v[i-12];sc-=c[i-12];} if(i>=11){tM.push(months[i]);tV.push(sv);tC.push(sc);} }

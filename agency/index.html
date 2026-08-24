@@ -742,12 +742,17 @@ function esc(s){ const d = document.createElement('div'); d.textContent = s; ret
    month. Every award window on the site is twelve FULLY-ELAPSED months: the
    current partial month is excluded so a few days of the month in progress do
    not understate the total. Same rule as the "Funnel" page, the Analysis index
-   and the Briefing, which keeps the pages on one window and one number. */
+   and the Briefing, which keeps the pages on one window and one number.
+
+   Anchored in UTC end to end. Building the boundary as a local midnight and
+   then formatting it with toISOString shifted the date back a full day for any
+   reader east of UTC, so the same page served the same instant returned a
+   different twelve-month window in Berlin than in New York. Date.UTC in,
+   toISOString out, no local field ever touched: every reader gets one window. */
 function isoCompleteMonthBoundary(n){
-  const d = new Date();
-  const b = new Date(d.getFullYear(), d.getMonth(), 1);
-  b.setMonth(b.getMonth()-n);
-  return b.toISOString().slice(0,10);
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - n, 1))
+    .toISOString().slice(0,10);
 }
 const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 function fmtPeriodLong(p){ return MN[+p.slice(4,6)-1] + ' ' + p.slice(0,4); }
@@ -790,13 +795,18 @@ async function fetchAwardsFor(code){
   if(state.awardCache.has(code)) return state.awardCache.get(code);
   const name = CODE_TO_AWARD[code];
   if(!name){ const r = {ok:false, agg:null}; state.awardCache.set(code, r); return r; }
+  // Half-open window [since, until): the lower bound is inclusive and the upper
+  // bound exclusive, matching Home and the "Funnel" page. `since` is a
+  // first-of-month midnight and awards stamped exactly on it belong inside the
+  // window; a strict > dropped every notice landing on the window's first day
+  // and put this page below the Funnel on the same agency.
   const since = isoCompleteMonthBoundary(12); // first day, twelve complete months back
   const until = isoCompleteMonthBoundary(0);  // first day of the current (incomplete) month
   const PAGE = 50000; let offset = 0; const out = [];
   for(;;){
     const batch = await getJSON(AWARD_API, {
       '$select':'pin,contract_amount,vendor_name,short_title,additional_description_1,category_description',
-      '$where':`agency_name='${name.replace(/'/g,"''")}' AND starts_with(category_description,'Construction') AND start_date>'${since}' AND start_date<'${until}' AND contract_amount>0`,
+      '$where':`agency_name='${name.replace(/'/g,"''")}' AND starts_with(category_description,'Construction') AND start_date>='${since}' AND start_date<'${until}' AND contract_amount>0`,
       '$order':'pin','$limit':String(PAGE),'$offset':String(offset)
     });
     out.push(...batch);
@@ -910,13 +920,15 @@ async function fetchVelocityPlan(){
 /* Velocity awards: TTM total by agency, deduped to one row per pin (max amount),
    exactly as the Velocity page computed its Awarded column. */
 async function fetchVelocityAwards(){
+  // Same half-open [since, until) window as the per-agency pull above: inclusive
+  // lower bound, exclusive upper bound, one convention across the site.
   const since = isoCompleteMonthBoundary(12);
   const until = isoCompleteMonthBoundary(0);
   const PAGE = 50000; let offset = 0; const out = [];
   for(;;){
     const batch = await getJSON(AWARD_API, {
       '$select':'pin,contract_amount,start_date,agency_name',
-      '$where':`starts_with(category_description,'Construction') AND start_date>'${since}' AND start_date<'${until}' AND contract_amount>0`,
+      '$where':`starts_with(category_description,'Construction') AND start_date>='${since}' AND start_date<'${until}' AND contract_amount>0`,
       '$order':'pin','$limit':String(PAGE),'$offset':String(offset)
     });
     out.push(...batch);

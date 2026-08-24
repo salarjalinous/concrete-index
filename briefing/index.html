@@ -252,23 +252,44 @@ async function getJSON(api, params){
   if(!res.ok) throw new Error('API ' + res.status);
   return res.json();
 }
-function isoMonthsAgo(n){ const d=new Date(); d.setMonth(d.getMonth()-n); return d.toISOString().slice(0,10); }
+/* Same calendar day n months back, UTC-anchored, with the day clamped to the
+   length of the target month so the end of a long month does not roll forward
+   into the next one. Used only as a widened fetch margin, never as a window. */
+function isoMonthsAgo(n){
+  const now = new Date();
+  const y = now.getUTCFullYear(), m = now.getUTCMonth();
+  const lastDay = new Date(Date.UTC(y, m - n + 1, 0)).getUTCDate();
+  return new Date(Date.UTC(y, m - n, Math.min(now.getUTCDate(), lastDay)))
+    .toISOString().slice(0,10);
+}
 /* First-of-month boundary n months before the current (incomplete) month, so the
    trend windows align to fully-elapsed months. Mirrors the Analysis index, which
-   ends on the last complete month and never reads the partial current month. */
-function isoCompleteMonthBoundary(n){ const d=new Date(); const b=new Date(d.getFullYear(), d.getMonth(), 1); b.setMonth(b.getMonth()-n); return b.toISOString().slice(0,10); }
+   ends on the last complete month and never reads the partial current month.
+
+   Anchored in UTC end to end. A local midnight formatted through toISOString
+   reads back a day early for anyone east of UTC, which moved both the trailing
+   and the prior window and made the briefing report different figures depending
+   on where it was opened. Date.UTC in, toISOString out, one window per reader. */
+function isoCompleteMonthBoundary(n){
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - n, 1))
+    .toISOString().slice(0,10);
+}
 /* A renewal or extension is a continuation of existing work, not new demand. The
    selection method carries 'Renewal'/'Extension'; same test the Analysis index uses. */
 function isContinuation(m){ return /renewal|extension/i.test(m||''); }
 
-/* Paged pull of construction award rows since a date, only the fields used. */
+/* Paged pull of construction award rows since a date, only the fields used.
+   The lower bound is inclusive (>=), the one convention across the site. Here it
+   is only the fetch margin, several months wider than either reported window, so
+   the caller's own [c12, c0) and [c24, c12) tests still decide what counts. */
 async function fetchAwardRows(since){
   const PAGE = 50000;
   let offset = 0; const out = [];
   for(;;){
     const batch = await getJSON(AWARD_API, {
       '$select':'pin,contract_amount,start_date,agency_name,category_description,selection_method_description',
-      '$where':`starts_with(category_description,'Construction') AND start_date>'${since}' AND contract_amount>0`,
+      '$where':`starts_with(category_description,'Construction') AND start_date>='${since}' AND contract_amount>0`,
       '$order':'pin','$limit':String(PAGE),'$offset':String(offset)
     });
     out.push(...batch);
