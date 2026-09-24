@@ -259,7 +259,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 
 <div id="error" class="wrap">
   <p><strong>Couldn't reach NYC Open Data.</strong></p>
-  <p style="margin-top:6px">The City's API may be momentarily unavailable. Please refresh the page to try again.</p>
+  <p style="margin-top:6px">The City's API may be momentarily unavailable.</p>
+  <button type="button" onclick="location.reload()" style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--paper);background:var(--navy);border:none;border-radius:var(--radius);padding:9px 16px;cursor:pointer">Retry</button>
 </div>
 
 <main id="app" class="wrap">
@@ -1042,7 +1043,7 @@ function unavailNote(host){
   var PC_A = '#ae4e34', PC_B = '#243b53', PC_C = '#2f5d8f', PC_GRID = '#e3dbd3';
   var pcCharts = {};
   function pcDestroy(k){ if(pcCharts[k]){ pcCharts[k].destroy(); delete pcCharts[k]; } }
-  function escp(s){ var d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
+  function escp(s){ var d = document.createElement('div'); d.textContent = String(s == null ? '' : s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
 
   /* ----- pure aggregations (mirror site/test/payment-tiles.test.js) ----- */
   function sweptContracts(cs){ return (cs || []).filter(function(c){ return c && c.payments_swept === true; }); }
@@ -1243,10 +1244,16 @@ function unavailNote(host){
             return [p.agency + ' (n ' + p.n + ')', 'schedule elapsed: ' + p.x.toFixed(0) + '%', 'paid to date: ' + p.y.toFixed(0) + '%']; } } }
         },
         scales: {
-          x: { min: 0, max: 150, grid: { color: PC_GRID }, border: { display: false },
+          x: { min: 0, suggestedMax: 150, grid: { color: PC_GRID }, border: { display: false },
                title: { display: true, text: 'schedule elapsed (%)', color: '#968a7f', font: { family: "'IBM Plex Mono',monospace", size: 10 } },
                ticks: { maxTicksLimit: 7, callback: function(v){ return v + '%'; } } },
-          y: { min: 0, max: 120, grid: { color: PC_GRID }, border: { display: false },
+          // suggestedMax, not a hard max: a fixed ceiling silently clipped a real
+          // point (Small Business Services, paid 132.95%) off the top of the
+          // chart while the caption still counted it as "above the line," so the
+          // one point the reader could not see was the one the prose promised.
+          // suggestedMax keeps the same look for the common case and lets the
+          // axis grow when a real value runs past it.
+          y: { min: 0, suggestedMax: 120, grid: { color: PC_GRID }, border: { display: false },
                title: { display: true, text: 'paid to date (%)', color: '#968a7f', font: { family: "'IBM Plex Mono',monospace", size: 10 } },
                ticks: { maxTicksLimit: 7, callback: function(v){ return v + '%'; } } }
         }
