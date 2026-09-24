@@ -242,7 +242,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 
 <div id="error" class="wrap">
   <p><strong>Couldn't reach the open data APIs.</strong></p>
-  <p style="margin-top:6px">NYC Open Data or data.ny.gov may be momentarily unavailable. Please refresh to try again.</p>
+  <p style="margin-top:6px">NYC Open Data or data.ny.gov may be momentarily unavailable.</p>
+  <button type="button" onclick="location.reload()" style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--paper);background:var(--navy);border:none;border-radius:var(--radius);padding:9px 16px;cursor:pointer">Retry</button>
 </div>
 
 <main id="app" class="wrap">
@@ -342,7 +343,7 @@ function fmtMoney(v){
   return '$' + Math.round(v);
 }
 function fmtInt(v){ return v.toLocaleString('en-US'); }
-function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function esc(s){ const d=document.createElement('div'); d.textContent=String(s==null?'':s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
 function titleCase(s){ return (s||'').toLowerCase().replace(/\b[a-z]/g,c=>c.toUpperCase()); }
 function fmtDay(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
 
@@ -539,7 +540,7 @@ function renderMTA(){
   });
   if(plan29 && plan24 && plan24.s > 0){
     document.getElementById('mta-reading').innerHTML =
-      `<strong>Reading:</strong> the MTA's plan has grown every cycle. The 2025–29 program, at <strong>${fmtMoney(plan29.s)}</strong>, runs ${(plan29.s/plan24.s).toFixed(1)}× the current allocation of the 2020–24 plan. For the region's contractors, the MTA is the single largest pool of public work in New York.`;
+      `<strong>Reading:</strong> the MTA's plan has grown every cycle in nominal dollars. The 2025–29 program, at <strong>${fmtMoney(plan29.s)}</strong>, runs ${(plan29.s/plan24.s).toFixed(1)}× the current allocation of the 2020–24 plan. That comparison is not adjusted for construction cost; see the “<a href="/analysis/">Analysis</a>” page's cost-adjusted index for how much of any nominal gain over the same span is price rather than added work. For the region's contractors, the MTA is the single largest pool of public work in New York.`;
   } else {
     document.getElementById('mta-reading').innerHTML =
       `<strong>Reading:</strong> for the region's contractors, the MTA is the single largest pool of public work in New York.`;
