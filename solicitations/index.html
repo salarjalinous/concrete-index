@@ -248,7 +248,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 
 <div id="error" class="wrap">
   <p><strong>Couldn't reach NYC Open Data.</strong></p>
-  <p style="margin-top:6px">The City's API may be momentarily unavailable. Please refresh the page to try again.</p>
+  <p style="margin-top:6px">The City's API may be momentarily unavailable.</p>
+  <button type="button" onclick="location.reload()" style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--paper);background:var(--navy);border:none;border-radius:var(--radius);padding:9px 16px;cursor:pointer">Retry</button>
 </div>
 
 <main id="app" class="wrap">
@@ -322,7 +323,7 @@ const HARD = 'Construction/Construction Services';
 const state = { scope:'all', q:'', sort:'due', rows:[], dropped:0 };
 
 function stripHtml(s){ const d=document.createElement('div'); d.innerHTML=s||''; return (d.textContent||'').replace(/\s+/g,' ').trim(); }
-function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function esc(s){ const d=document.createElement('div'); d.textContent=String(s==null?'':s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
 const DASH = '–';
 // Trim a raw field; treat blanks and literal null/undefined strings as empty.
 function cleanField(v){
