@@ -263,7 +263,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 
 <div id="error" class="wrap">
   <p><strong>Couldn't reach NYC Open Data.</strong></p>
-  <p style="margin-top:6px">The City's API may be momentarily unavailable. Please refresh the page to try again.</p>
+  <p style="margin-top:6px">The City's API may be momentarily unavailable.</p>
+  <button type="button" onclick="location.reload()" style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--paper);background:var(--navy);border:none;border-radius:var(--radius);padding:9px 16px;cursor:pointer">Retry</button>
 </div>
 
 <main id="app" class="wrap">
@@ -439,7 +440,7 @@ const EXCLUDED = new Set([
   // dead phases: the project is gone, not waiting to be built
   'defunded','funding withdrawn','rescinded','fmsid changed','project renamed','n/a',
   // not construction work: these do not belong in the construction-demand pipeline
-  'land acquisition','property acquisition','real estate transaction','fundraising',
+  'land acquisition','property acquisition','land purchase','real estate transaction','fundraising',
   'it project','non capital fund','equipment','consultant services']);
 const PHASE_ORDER = ['Pending','Pre-Design','Design','Procurement','Construction','Close-out','Other active'];
 const PRE_CON = new Set(['Pending','Pre-Design','Design','Procurement']);
@@ -535,7 +536,7 @@ function fmtPeriod(p){
   const names = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   return names[+p.slice(4,6)-1] + ' ' + p.slice(0,4);
 }
-function esc(s){ const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function esc(s){ const d = document.createElement('div'); d.textContent = String(s==null?'':s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
 const STAGE_LABEL = { all:'all active phases', pre:'pre-construction phases', con:'construction phase' };
 // Two project counts live on this page and they are not the same number: the
 // plan's full active set (every project not completed, cancelled, or otherwise
