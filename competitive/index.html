@@ -426,7 +426,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 
 <div id="error" class="wrap">
   <p><strong>Couldn't reach NYC Open Data.</strong></p>
-  <p style="margin-top:6px">The City's API may be momentarily unavailable. Please refresh the page to try again.</p>
+  <p style="margin-top:6px">The City's API may be momentarily unavailable.</p>
+  <button type="button" onclick="location.reload()" style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--paper);background:var(--navy);border:none;border-radius:var(--radius);padding:9px 16px;cursor:pointer">Retry</button>
 </div>
 
 <main id="app" class="wrap">
@@ -636,7 +637,7 @@ function fmtMoney(v){
    taking the whole profile render down with it. */
 function fmtInt(v){ return (v||0).toLocaleString('en-US'); }
 function fmtDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
-function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function esc(s){ const d=document.createElement('div'); d.textContent=String(s==null?'':s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
 function cleanName(s){ return String(s==null?'':s).replace(/\s*[\?�]\s*/g,' / ').replace(/\s{2,}/g,' ').trim(); }
 function escName(s){ return esc(cleanName(s)); }
 function csvCell(v){ const s=(v==null?'':String(v)); return '"'+s.replace(/"/g,'""')+'"'; }
@@ -729,8 +730,10 @@ function normName(s){
     .trim()
     .replace(/\s+/g,' ')
     .toUpperCase()
-    .replace(/[.,;:&/\\'"`\-\s]+$/,'')
-    .trim();
+    .replace(/[.,]/g,'')
+    .replace(/[;:&/\\'"`\-\s]+$/,'')
+    .trim()
+    .replace(/\s+/g,' ');
 }
 
 const alias = {
@@ -905,8 +908,13 @@ async function runSearch(q){
   state.active = sorted[0].key;
 
   renderGroupPicker();
-  renderProfile();
+  // Unhide #profile BEFORE building its charts. Chart.js measures the canvas
+  // at construction time; building the charts while the container is still
+  // display:none gives them a 0x0 box that a later .resize() does not
+  // recover from, so the profile's two charts rendered permanently blank on
+  // every cold deep link and in-page search. Reveal first, then draw.
   document.getElementById('profile').style.display = 'block';
+  renderProfile();
 }
 function groupRank(g){
   if(g.total > 0) return g.total;
@@ -1257,15 +1265,19 @@ async function getJSON(params){
 }
 
 /* deterministic normalization, mirrors the alias-build reference exactly:
-   trim, collapse internal whitespace, uppercase, strip trailing punctuation
-   (incl. backslash and whitespace). */
+   trim, collapse internal whitespace, uppercase, strip periods/commas
+   anywhere (so "Co." and "Co", "Inc." and "Inc" fold together, not only at
+   the end of the string), then strip trailing punctuation (incl. backslash
+   and whitespace). */
 function normName(raw){
   return (raw || '')
     .trim()
     .replace(/\s+/g, ' ')
     .toUpperCase()
-    .replace(/[.,;:&/\\'"`\-\s]+$/, '')
-    .trim();
+    .replace(/[.,]/g, '')
+    .replace(/[;:&/\\'"`\-\s]+$/, '')
+    .trim()
+    .replace(/\s+/g, ' ');
 }
 
 /* Published day of a City Record timestamp, kept as the raw 'YYYY-MM-DD' prefix
@@ -1451,7 +1463,7 @@ function fmtMoney(v){
 }
 function fmtInt(v){ return (v||0).toLocaleString('en-US'); }
 function fmtPct(v){ return v === null ? '&ndash;' : (v*100).toFixed(1) + '%'; }
-function esc(s){ const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function esc(s){ const d = document.createElement('div'); d.textContent = String(s==null?'':s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
 
 /* ===== chart defaults ===== */
 const COLOR_A = '#ae4e34', COLOR_B = '#243b53', GRID = '#e3dbd3';
