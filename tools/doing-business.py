@@ -32,15 +32,23 @@ PAGE = 50000
 # non-distinctive (common name or serial board member) and ignored as a signal.
 MAX_ORGS_PER_PRINCIPAL = 6
 
-_TRAIL = re.compile(r"[.,;:&/\\'\"`\-\s]+$")
+_TRAIL = re.compile(r"[;:&/\\'\"`\-\s]+$")
+_PERIOD_COMMA = re.compile(r"[.,]")
 
 def norm_name(s):
+    # Mirrors site/competitive/index.html's normName() exactly: periods and
+    # commas are stripped ANYWHERE in the string, not only at the end, so
+    # "Co." / "Co" and "Inc." / "Inc" fold to the same key. Stripping only
+    # the trailing punctuation let "Iannelli Construction Co Inc" and
+    # "Iannelli Construction Co. Inc." land as two different groups.
     if s is None:
         s = ""
     s = s.strip()
     s = re.sub(r"\s+", " ", s)
     s = s.upper()
+    s = _PERIOD_COMMA.sub("", s)
     s = _TRAIL.sub("", s)
+    s = re.sub(r"\s+", " ", s)
     return s.strip()
 
 def log(*a):
