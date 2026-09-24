@@ -320,7 +320,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 
 <div id="error" class="wrap">
   <p><strong>Couldn't reach NYC Open Data.</strong></p>
-  <p style="margin-top:6px">The City's API may be momentarily unavailable. Please refresh the page to try again.</p>
+  <p style="margin-top:6px">The City's API may be momentarily unavailable.</p>
+  <button type="button" onclick="location.reload()" style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--paper);background:var(--navy);border:none;border-radius:var(--radius);padding:9px 16px;cursor:pointer">Retry</button>
 </div>
 
 <main id="app" class="wrap">
@@ -499,7 +500,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <h3>The two scopes</h3>
       <p><strong>Committed</strong> is the unspent budget the agency holds across active projects in the City's most recent capital plan snapshot (NYC OMB, dataset <code>fb86-vt7u</code>): total project budget minus spend to date, across projects in an active phase, with close-out and dead states removed. The plan repeats a project's budget on every sub-project row, so rows are collapsed on managing agency and <code>fms_id</code> and the most advanced phase is kept before anything is summed. <strong>Awarded</strong> is the value of this agency's construction award notices in the City Record (dataset <code>qyyg-4tf5</code>) over the trailing twelve months, filtered to the two construction procurement categories and deduped to one row per <code>pin</code> at the largest amount. The two scopes measure different things and stay in separate columns.</p>
       <h3>What the trailing year means</h3>
-      <p>Every award window on this page is the twelve fully-elapsed calendar months: the current partial month is excluded, so a few days of the month in progress cannot pull the total down. This is the same window the “<a href="/funnel/">Funnel</a>” page, the index on the “<a href="/analysis/">Analysis</a>” page, and the “<a href="/briefing/">Briefing</a>” use, so an agency's awarded figure reads the same wherever it appears on the site.</p>
+      <p>Every award window on this page is the twelve fully-elapsed calendar months: the current partial month is excluded, so a few days of the month in progress cannot pull the total down. This is the same window the “<a href="/funnel/">Funnel</a>” page, the index on the “<a href="/analysis/">Analysis</a>” page, and the “<a href="/briefing/">Briefing</a>” use. The figure itself is not: this page's Awarded column is gross, deduplicated to one record per <code>pin</code> but still inclusive of renewals, extensions, and awards of $500M and above. “Funnel,” “Analysis,” and “Briefing” all strip renewals and megaprojects to isolate contested new demand, so their per-agency and citywide totals run lower than this page's, sometimes by a wide margin for an agency with one large renewal or megaproject in the window. Read this page's Awarded figure as the agency's gross award activity, not as the number that will reconcile against those three pages.</p>
       <h3>Spending is archive only</h3>
       <p>Actual outlays live in Checkbook NYC, which serves no cross-origin access, so a browser cannot read it. The nightly archive snapshots it instead. This page shows committed and awarded live and marks spending as archive only rather than estimating a figure it cannot fetch here.</p>
       <h3>Matching an agency across the two sources</h3>
@@ -737,7 +738,7 @@ function fmtMoney(v){
 }
 function fmtInt(v){ return v.toLocaleString('en-US'); }
 function fmtPct(v){ return (v*100).toFixed(v*100 >= 10 ? 0 : 1) + '%'; }
-function esc(s){ const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function esc(s){ const d = document.createElement('div'); d.textContent = String(s==null?'':s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
 /* First-of-month boundary n complete months before the current (incomplete)
    month. Every award window on the site is twelve FULLY-ELAPSED months: the
    current partial month is excluded so a few days of the month in progress do
