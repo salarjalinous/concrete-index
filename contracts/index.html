@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="canonical" href="https://concreteindex.co/contracts/">
 <meta property="og:type" content="website">
@@ -276,7 +276,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 </header>
 
 <div class="series-bar">
-  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-CONTRACTS</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CITY RECORD REGISTRATIONS (qyyg-4tf5) · CHECKBOOK NYC SPENDING, NIGHTLY</b><span class="sep">·</span>UPDATED&nbsp;·&nbsp;<b id="series-updated">&ndash;</b><span class="sep">·</span>AS OF&nbsp;·&nbsp;<b id="series-asof">&ndash;</b></div>
+  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-CONTRACTS</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CHECKBOOK NYC REGISTERED CONTRACTS · CHECKBOOK NYC SPENDING, NIGHTLY</b><span class="sep">·</span>UPDATED&nbsp;·&nbsp;<b id="series-updated">&ndash;</b><span class="sep">·</span>AS OF&nbsp;·&nbsp;<b id="series-asof">&ndash;</b></div>
 </div>
 
 <div class="wrap">
@@ -315,7 +315,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   </section>
 
   <section class="search-row">
-    <div class="sec-head"><h2>Search the contract record</h2><span class="cap" id="search-cap">FY2021&ndash;2025</span></div>
+    <div class="sec-head"><h2>Search the contract record</h2><span class="cap" id="search-cap">&ndash;</span></div>
     <div style="padding-top:18px">
       <div class="search-box">
         <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Search contract ID, vendor, agency, category, scope, or PIN&hellip;" aria-label="Search contracts">
@@ -373,7 +373,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
           <strong>What this is.</strong> A searchable index of registered New York City construction contracts. Every contract carries its paid to date and percent paid from the City's contract record; contracts of $500,000 or more registered since 2019 that are open or closed within the past year also carry a dated spend curve and payment velocity from their individual checks. Every figure comes from public records and is rebuilt nightly. The page reads one contract at a time and does not rate a vendor or predict whether a contract will finish. The dated disbursement total is a floor: it confirms what the ledger reports was paid, not what is still owed, and the totals shown describe the contracts in view rather than a market aggregate.
         </div>
         <h3>The universe</h3>
-        <p>The index covers construction contracts registered with the City, drawn from the City Record registration notices (dataset <code>qyyg-4tf5</code>) for fiscal years 2021 through 2025. A contract enters the index when it is registered; the date row leads with registration because that is the point at which the obligation becomes a public record.</p>
+        <p>The index covers construction contracts registered with the City, drawn from the Comptroller's Checkbook NYC registered-contract record (expense contracts in registered status) that Checkbook lists under <span id="universe-fy">the fiscal years in the current build</span>. A contract counts as construction when its Checkbook industry names construction, engineering, architecture, paving, excavation or infrastructure work, and each contract appears once, keyed on its contract ID. City Record award notices (dataset <code>qyyg-4tf5</code>) supply only the bid due date described below. A contract enters the index when it is registered; the date row leads with registration because that is the point at which the obligation becomes a public record.</p>
         <h3>Scope and identifiers</h3>
         <p>Each contract carries the City's free-text <strong>scope</strong> description (the work the contract registers) and its <strong>PIN</strong>, the procurement identification number that the City uses to track the award. Both come straight from the registered-contract record and read blank where the record carries no value. The scope line and PIN are searchable alongside the contract number, vendor, and agency, so a query like a street name or a treatment plant can surface the contracts that name it.</p>
         <h3>Dates and what they mean</h3>
@@ -719,14 +719,33 @@ function fillSelect(sel, values, label){
   sel.innerHTML = html;
 }
 
+/* Fiscal-year window label, read only from the file's meta. fiscal_years is the
+   ascending list the build covers; fiscal_year_ytd, when present, names the
+   in-progress year inside it (NYC FY N = Jul 1 N-1 to Jun 30 N) and is labeled
+   year to date. Same rule as the Funnel page's Paid label; no years hardcoded. */
+function fyWindowLabel(meta){
+  var ys = (meta && Array.isArray(meta.fiscal_years)) ? meta.fiscal_years.filter(function(y){ return isFinite(+y); }).map(Number) : [];
+  if(!ys.length) return { short: '', long: '' };
+  var ytd = (meta.fiscal_year_ytd != null && ys.indexOf(+meta.fiscal_year_ytd) !== -1) ? +meta.fiscal_year_ytd : null;
+  var closed = ys.filter(function(y){ return y !== ytd; });
+  var cs = '', cl = '';
+  if(closed.length === 1){ cs = 'FY' + closed[0]; cl = 'fiscal year ' + closed[0]; }
+  else if(closed.length > 1){ cs = 'FY' + closed[0] + '–' + closed[closed.length-1]; cl = 'fiscal years ' + closed[0] + ' to ' + closed[closed.length-1]; }
+  if(ytd === null) return { short: cs, long: cl };
+  var ysh = 'FY' + ytd + ' YTD', yl = 'fiscal year ' + ytd + ' to date';
+  if(!closed.length) return { short: ysh, long: yl };
+  return { short: cs + ' + ' + ysh, long: cl + ' plus ' + yl };
+}
+
 function init(payload){
   state.all = Array.isArray(payload.contracts) ? payload.contracts : [];
   state.meta = payload.meta || {};
 
   // hero + series bar
   var gen = state.meta.generated ? fmtDate(state.meta.generated.slice(0,10)) : EN;
-  var fys = Array.isArray(state.meta.fiscal_years) && state.meta.fiscal_years.length
-    ? ('FY' + state.meta.fiscal_years[0] + '–' + state.meta.fiscal_years[state.meta.fiscal_years.length-1]) : 'FY2021–2025';
+  var fyl = fyWindowLabel(state.meta);
+  var fys = fyl.short || EN;
+  if(fyl.long) setText('universe-fy', fyl.long);
   setText('series-updated', gen);
   setText('series-asof', fys);
   setText('search-cap', fys);
