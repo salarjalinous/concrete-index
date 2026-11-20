@@ -14,7 +14,7 @@
 //   node tools/stamp.mjs          stamp every page
 //   node tools/stamp.mjs --check  exit 1 if any page is out of date
 
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -25,11 +25,11 @@ const FIRST_PUBLISH_YEAR = 2026;
 const BUILD_YEAR = new Date().getUTCFullYear();
 
 // ---------------------------------------------------------------- routes
-// Current routes. Phase 5 renames (/bidding/, /contractors/, /agencies/) are
-// approved but not promoted yet: change the href here when they are.
+// Final routes (Phase 5 renames promoted Nov 20, 2026). Old routes are stub
+// pages generated below (STUBS) that forward to these.
 const R = {
-  pipeline: '/pipeline/', bidding: '/solicitations/', awarded: '/awarded/', contracts: '/contracts/', funnel: '/funnel/',
-  agencies: '/agency/', contractors: '/competitive/', regional: '/regional/',
+  pipeline: '/pipeline/', bidding: '/bidding/', awarded: '/awarded/', contracts: '/contracts/', funnel: '/funnel/',
+  agencies: '/agencies/', contractors: '/contractors/', regional: '/regional/',
   analysis: '/analysis/', briefing: '/briefing/',
   methodology: '/methodology/', about: '/about/', sources: '/sources/', privacy: '/privacy/', terms: '/terms/',
 };
@@ -55,23 +55,39 @@ export const csp = (type) => CSP_BASE.replace('CONNECT', CONNECT[type]);
 // file: path from the repo root. title: the nav label. type: CSP connect set.
 // chart: loads Chart.js and the chart grammar. js: page modules in order.
 // export: the PNG/CSV/PDF export controls the page had before Phase 5.
+// Old routes forward straight to the final route (no chains). Each stub is
+// noindex, canonical to its target, carries a visible link, loads only
+// /assets/redirect.js (keeps ?query and #hash), and falls back to a meta
+// refresh. to: target; name: the page label for the visible link.
+const STUBS = [
+  ['solicitations', R.bidding, 'Bidding'],
+  ['competitive', R.contractors, 'Contractors'],
+  ['agency', R.agencies, 'Agencies'],
+  ['vendors', R.contractors, 'Contractors'],
+  ['velocity', `${R.agencies}#velocity`, 'Agencies'],
+].map(([dir, to, name]) => ({
+  file: `${dir}/index.html`, route: `/${dir}/`, current: null, stub: true, title: `Moved to ${name}`, robots: 'noindex,follow',
+  refresh: to, canonical: to.split('#')[0], name,
+  desc: `This address has moved. The same view now lives on the ${name} page of The Concrete Index.`, type: 'editorial', css: null, js: [],
+}));
+
 export const PAGES = [
   { file: 'index.html', route: '/', current: null, title: "The Concrete Index · NYC Public Construction Demand",
     desc: "Where New York City's public construction money stands: capital committed, work awarded and registered, cash paid, each read from its own public ledger.", ogDesc: "NYC public construction capital, from commitment to cash.", type: 'nyc', css: 'home', js: ['home'], export: true },
   { file: 'pipeline/index.html', route: R.pipeline, current: R.pipeline, title: "Pipeline",
     desc: "NYC capital work funded but not yet spent, from the OMB Capital Projects Dashboard: unspent budget by phase, agency, borough, and ten-year plan category.", type: 'nyc', chart: true, css: 'pipeline', js: ['pipeline'], export: true },
-  { file: 'solicitations/index.html', route: R.bidding, current: R.bidding, title: "Bidding",
-    desc: "Open City construction solicitations from the City Record, sorted by due date, with procurement method, PIN, agency contact, and trade and borough tags.", type: 'nyc', css: 'solicitations', js: ['solicitations'], export: true },
+  { file: 'bidding/index.html', route: R.bidding, current: R.bidding, title: "Bidding",
+    desc: "Open City construction solicitations from the City Record, sorted by due date, with procurement method, PIN, agency contact, and trade and borough tags.", type: 'nyc', css: 'bidding', js: ['bidding'], export: true },
   { file: 'awarded/index.html', route: R.awarded, current: R.awarded, title: "Awarded",
     desc: "Construction contracts the City has awarded, from City Record award notices deduplicated to one record per PIN, by month, agency, borough, and recipient.", ogDesc: "Construction contracts the City has awarded, totaled from the City Record.", type: 'nyc', chart: true, css: 'awarded', js: ['awarded'], export: true },
   { file: 'contracts/index.html', route: R.contracts, current: R.contracts, title: "Contracts",
     desc: "Search registered NYC construction contracts from Checkbook NYC by number, vendor, agency, scope, or PIN, then read one contract's payments and spend curve.", type: 'self', chart: true, css: 'contracts', js: ['contracts'], export: false },
   { file: 'funnel/index.html', route: R.funnel, current: R.funnel, title: "Funnel",
     desc: "Committed, awarded, spent, and paid NYC construction dollars read as separate gauges, with spending pace, award pace, backlog coverage, and agency velocity.", type: 'nyc', chart: true, css: 'funnel', js: ['funnel'], export: true },
-  { file: 'agency/index.html', route: R.agencies, current: R.agencies, title: "Agencies",
-    desc: "One NYC agency at a time: committed capital against awarded contracts, spending velocity, the trades it buys, the firms it pays, and its borough footprint.", type: 'nyc', chart: true, css: 'agency', js: ['agency'], export: true },
-  { file: 'competitive/index.html', route: R.contractors, current: R.contractors, title: "Contractors",
-    desc: "A contractor's public award record from the City Record, Checkbook NYC, and MTA and State data, plus how award dollars spread across the market by size band.", type: 'nyc+ny', chart: true, css: 'competitive', js: ['competitive', 'competitive.2'], export: true },
+  { file: 'agencies/index.html', route: R.agencies, current: R.agencies, title: "Agencies",
+    desc: "One NYC agency at a time: committed capital against awarded contracts, spending velocity, the trades it buys, the firms it pays, and its borough footprint.", type: 'nyc', chart: true, css: 'agencies', js: ['agencies'], export: true },
+  { file: 'contractors/index.html', route: R.contractors, current: R.contractors, title: "Contractors",
+    desc: "A contractor's public award record from the City Record, Checkbook NYC, and MTA and State data, plus how award dollars spread across the market by size band.", type: 'nyc+ny', chart: true, css: 'contractors', js: ['contractors', 'contractors.2'], export: true },
   { file: 'regional/index.html', route: R.regional, current: R.regional, title: "Regional",
     desc: "School Construction Authority projects under construction and the MTA capital program by plan and agency, kept on their own ledgers apart from City totals.", ogDesc: "School Construction Authority and MTA capital, on their own ledgers.", type: 'nyc+ny', chart: true, css: 'regional', js: ['regional'], export: true },
   { file: 'analysis/index.html', route: R.analysis, current: R.analysis, title: "Analysis",
@@ -94,10 +110,8 @@ export const PAGES = [
     type: 'editorial', css: 'editorial', js: [] },
   { file: '404.html', route: null, current: null, title: "Page not found", robots: 'noindex',
     desc: "This address does not match a page on The Concrete Index. The section list below links to every data page, the methodology, and the site policies.", type: 'editorial', css: '404', js: [] },
-  { file: 'vendors/index.html', route: '/vendors/', current: null, title: 'Vendor Lookup has moved', robots: 'noindex,follow', refresh: R.contractors, canonical: R.contractors,
-    desc: 'The contractor lookup now lives on the Contractors page of The Concrete Index.', type: 'editorial', css: 'vendors', js: [] },
-  { file: 'velocity/index.html', route: '/velocity/', current: null, title: 'Agency Velocity has moved', robots: 'noindex,follow', refresh: R.agencies, canonical: R.agencies,
-    desc: 'Agency velocity now lives on the Agencies page of The Concrete Index.', type: 'editorial', css: 'velocity', js: [] },
+  // Old routes: stubs, generated whole by stubPage() below.
+  ...STUBS,
 ];
 
 // ---------------------------------------------------------------- markup
@@ -141,7 +155,13 @@ function head(p) {
   L.push(`<meta http-equiv="Content-Security-Policy" content="${csp(p.type)}">`);
   L.push('<meta name="referrer" content="same-origin">');
   L.push('<meta name="color-scheme" content="light">');
-  if (p.refresh) L.push(`<meta http-equiv="refresh" content="0; url=${p.refresh}">`);
+  if (p.refresh) {
+    // redirect.js runs first (synchronously) and keeps ?query and #hash; the
+    // meta refresh is the fallback when scripts do not run.
+    L.push(`<meta name="ci:redirect" content="${p.refresh}">`);
+    L.push('<script src="/assets/redirect.js"></script>');
+    L.push(`<meta http-equiv="refresh" content="0; url=${p.refresh}">`);
+  }
   L.push(`<title>${esc(fullTitle(p))}</title>`);
   L.push(`<meta name="description" content="${esc(p.desc)}">`);
   if (p.robots) L.push(`<meta name="robots" content="${p.robots}">`);
@@ -162,8 +182,10 @@ function head(p) {
   L.push('<link rel="icon" href="/favicon.svg" type="image/svg+xml">');
   L.push('<link rel="apple-touch-icon" href="/apple-touch-icon.png">');
   L.push('<link rel="manifest" href="/site.webmanifest">');
-  L.push('<link rel="preload" href="/assets/fonts/public-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>');
-  L.push('<link rel="preload" href="/assets/fonts/source-serif-4-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>');
+  if (!p.stub) {
+    L.push('<link rel="preload" href="/assets/fonts/public-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>');
+    L.push('<link rel="preload" href="/assets/fonts/source-serif-4-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>');
+  }
   L.push('<link rel="stylesheet" href="/assets/tokens.css">');
   L.push('<link rel="stylesheet" href="/assets/ci.css">');
   if (p.css) L.push(`<link rel="stylesheet" href="/assets/pages/${p.css}.css">`);
@@ -230,20 +252,46 @@ function replaceBlock(html, name, content, file) {
   return html.replace(re, () => `<!-- ci:${name} -->\n${content}\n<!-- /ci:${name} -->`);
 }
 
+function stubPage(p) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- ci:head -->
+<!-- /ci:head -->
+</head>
+<body>
+<!-- ci:header -->
+<!-- /ci:header -->
+
+<main id="content" tabindex="-1">
+<div class="wrap ci-moved">
+  <h1>This page has moved.</h1>
+  <p>It is now the “${p.name}” page. You are being sent there now.</p>
+  <p><a class="ci-moved__go" href="${p.refresh}">Go to the “${p.name}” page</a></p>
+</div>
+</main>
+
+<!-- ci:footer -->
+<!-- /ci:footer -->
+</body>
+</html>
+`;
+}
+
 const checkOnly = process.argv.includes('--check');
 let stale = 0;
 for (const p of PAGES) {
   const path = join(ROOT, p.file);
-  if (!existsSync(path)) throw new Error(`missing page ${p.file}`);
-  const before = readFileSync(path, 'utf8');
-  let html = before;
+  if (!p.stub && !existsSync(path)) throw new Error(`missing page ${p.file}`);
+  const before = existsSync(path) ? readFileSync(path, 'utf8') : '';
+  let html = p.stub ? stubPage(p) : before;
   html = replaceBlock(html, 'head', head(p), p.file);
   html = replaceBlock(html, 'header', header(p), p.file);
   html = replaceBlock(html, 'footer', footer(), p.file);
   html = stampArt(html);
   if (html !== before) {
     stale++;
-    if (!checkOnly) writeFileSync(path, html);
+    if (!checkOnly) { mkdirSync(dirname(path), { recursive: true }); writeFileSync(path, html); }
   }
 }
 if (checkOnly && stale) { console.error(`stamp: ${stale} page(s) out of date; run node tools/stamp.mjs`); process.exit(1); }

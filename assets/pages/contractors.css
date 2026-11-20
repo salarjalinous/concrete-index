@@ -1,4 +1,4 @@
-/* competitive: rules used only on this page. Shared components live in /assets/ci.css. */
+/* contractors: rules used only on this page. Shared components live in /assets/ci.css. */
 .hero p.sub{margin-top:var(--s-4);font-size:var(--fs-16);color:var(--muted);max-width:700px}
 .controls{display:flex;flex-wrap:wrap;gap:var(--s-3) var(--s-4);align-items:flex-end;padding:var(--s-8) 0 var(--s-1)}
 .ctl-group{display:flex;flex-direction:column;gap:var(--s-2)}

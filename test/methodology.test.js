@@ -162,7 +162,7 @@ test('6. phase normalization: one canonical exclusion set', async t => {
     assert.deepEqual([...pageExcluded(H.readPage('pipeline/index.html'))].sort(), [...P.EXCLUDED].sort());
   });
   await t.test('Funnel, Agency, Analysis, Briefing: canonical, or the legacy set pending the page patch', () => {
-    for(const p of ['funnel', 'agency', 'analysis', 'briefing']){
+    for(const p of ['funnel', 'agencies', 'analysis', 'briefing']){
       const f = p + '/index.html';
       if(!H.pageExists(f)) continue;
       const set = [...pageExcluded(H.readPage(f))].sort();
@@ -324,7 +324,7 @@ test('13. an award on the window first day is counted; no strict start_date> any
   const first = { ...clone(base), pin: 'FIRSTDAY', start_date: '2025-11-01T00:00:00.000', agency_name: 'Design and Construction' };
   assert.equal(A.grossTtmFromArchive([first], T0).count, 1);
   // the Agency page's own where clause uses >= on the first day
-  const ag = H.readPage('agency/index.html');
+  const ag = H.readPage('agencies/index.html');
   assert.match(ag, /start_date>='\$\{since\}' AND start_date<'\$\{until\}'/);
   const hits = [];
   for(const f of H.sourceFiles()){

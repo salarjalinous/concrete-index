@@ -4,41 +4,26 @@
 <!-- ci:head -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' https://data.cityofnewyork.us https://data.ny.gov; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="same-origin">
 <meta name="color-scheme" content="light">
-<title>Contractors · The Concrete Index</title>
-<meta name="description" content="A contractor's public award record from the City Record, Checkbook NYC, and MTA and State data, plus how award dollars spread across the market by size band.">
-<link rel="canonical" href="https://concreteindex.co/competitive/">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="The Concrete Index">
-<meta property="og:title" content="Contractors · The Concrete Index">
-<meta property="og:description" content="A contractor's public award record from the City Record, Checkbook NYC, and MTA and State data, plus how award dollars spread across the market by size band.">
-<meta property="og:url" content="https://concreteindex.co/competitive/">
-<meta property="og:image" content="https://concreteindex.co/og-image.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://concreteindex.co/og-image.png">
+<meta name="ci:redirect" content="/contractors/">
+<script src="/assets/redirect.js"></script>
+<meta http-equiv="refresh" content="0; url=/contractors/">
+<title>Moved to Contractors · The Concrete Index</title>
+<meta name="description" content="This address has moved. The same view now lives on the Contractors page of The Concrete Index.">
+<meta name="robots" content="noindex,follow">
+<link rel="canonical" href="https://concreteindex.co/contractors/">
 <link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-<link rel="preload" href="/assets/fonts/public-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/assets/fonts/source-serif-4-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/tokens.css">
 <link rel="stylesheet" href="/assets/ci.css">
-<link rel="stylesheet" href="/assets/pages/competitive.css">
-<meta name="ci:export" content="on">
 <script src="/assets/ci.js" defer></script>
-<script src="/assets/vendor/chart.umd.min.js" defer></script>
-<script src="/assets/ci-chart.js" defer></script>
-<script src="/assets/pages/competitive.js" defer></script>
-<script src="/assets/pages/competitive.2.js" defer></script>
 <!-- /ci:head -->
 </head>
 <body>
-
 <!-- ci:header -->
 <a class="ci-skip" href="#content">Skip to content</a>
 <header class="ci-masthead">
@@ -49,8 +34,8 @@
   </div>
   <nav class="ci-rail" id="ci-menu" aria-label="Sections">
     <div class="wrap ci-rail__inner">
-      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-stages">Stages</p><ul class="ci-rail__list" aria-labelledby="ci-g-stages"><li><a href="/pipeline/">Pipeline</a></li><li><a href="/solicitations/">Bidding</a></li><li><a href="/awarded/">Awarded</a></li><li><a href="/contracts/">Contracts</a></li><li><a href="/funnel/">Funnel</a></li></ul></div>
-      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-entities">Entities</p><ul class="ci-rail__list" aria-labelledby="ci-g-entities"><li><a href="/agency/">Agencies</a></li><li><a href="/competitive/" aria-current="page">Contractors</a></li><li><a href="/regional/">Regional</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-stages">Stages</p><ul class="ci-rail__list" aria-labelledby="ci-g-stages"><li><a href="/pipeline/">Pipeline</a></li><li><a href="/bidding/">Bidding</a></li><li><a href="/awarded/">Awarded</a></li><li><a href="/contracts/">Contracts</a></li><li><a href="/funnel/">Funnel</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-entities">Entities</p><ul class="ci-rail__list" aria-labelledby="ci-g-entities"><li><a href="/agencies/">Agencies</a></li><li><a href="/contractors/">Contractors</a></li><li><a href="/regional/">Regional</a></li></ul></div>
       <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-synthesis">Synthesis</p><ul class="ci-rail__list" aria-labelledby="ci-g-synthesis"><li><a href="/analysis/">Analysis</a></li><li><a href="/briefing/">Briefing</a></li></ul></div>
       <div class="ci-rail__group ci-rail__group--utility"><p class="ci-rail__label" id="ci-g-site">Site</p><ul class="ci-rail__list" aria-labelledby="ci-g-site"><li><a href="/methodology/">Methodology</a></li><li><a href="/about/">About</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></li></ul></div>
     </div>
@@ -58,225 +43,11 @@
 </header>
 <!-- /ci:header -->
 
-<div class="series-bar">
-  <div class="inner">SERIES&nbsp;·&nbsp;<b>CI-CONTRACTORS</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CITY RECORD (qyyg-4tf5), DAILY · CHECKBOOK, NIGHTLY · DATA.NY.GOV, ON LOOKUP</b><span class="sep">·</span>DEDUPE&nbsp;·&nbsp;<b>ONE PER PIN</b></div>
-</div>
-
 <main id="content" tabindex="-1">
-
-<div class="wrap hero">
-  <h1>One contractor's record, and the market around it.</h1>
-  <p class="sub">Look up a contractor's public award record across City and State construction, then read how award dollars and counts spread across the market by award-size band. The contractor lookup comes first; the market view follows. Awardee names in the market section are a grouping key only and are never published, ranked, or scored.</p>
-  <div class="searchbar">
-    <input id="q" type="search" placeholder="Try a contractor name" autocomplete="off">
-    <button id="go">Search</button>
-  </div>
-  <p class="hint">Matches the vendor name as published in the City Record. Where we can confirm by hand that several names belong to the same firm, they roll up under one parent total; every underlying name is listed below the profile.</p>
-</div>
-
-<!-- ===== Contractor lookup (lead section). Independent of the market data load
-     below, so it is usable immediately on page open. ===== -->
-<div data-ci-main class="wrap" id="lookup">
-
-  <section id="starter" class="grid">
-    <div class="card">
-      <div class="sec-head"><h2>Contractor lookup &middot; most awarded, trailing twelve months</h2><span class="cap">TOP 12 &middot; USD</span></div>
-      <div class="h-sub">A starting point: tap any name for its full award record. Same set of awards the market-structure section below reads.</div>
-      <div class="starter" id="starter-list"></div>
-      <div class="tnote">The twelve vendors with the most City Record construction award value over the trailing twelve fully-elapsed months, by the name as published (not yet grouped across spellings). This list reads the same universe as the market-structure section below: one record per procurement, renewal and extension notices held out, and single awards of $500M or more excluded, so no firm can lead a list the analysis underneath it never counts. Tap one to open its full profile, where the firm's name variants, Checkbook figures, and MTA/State work are rolled together.</div>
-    </div>
-  </section>
-
-  <div id="vloader"><div class="spinner"></div>Pulling the award record&hellip;</div>
-
-  <section id="profile">
-    <div class="chips" id="chips"></div>
-    <div class="grouphead" id="grouphead"></div>
-    <div id="city-empty" class="h-sub u-mb-4" data-ci-hide></div>
-    <section class="kpis" id="city-kpis">
-      <div class="kpi hl"><div class="k-label">Awarded, all-time</div><div class="k-value" id="kpi-all">&ndash;</div><div class="k-note">in the record since 2003</div></div>
-      <div class="kpi"><div class="k-label">Awarded, TTM</div><div class="k-value" id="kpi-ttm">&ndash;</div><div class="k-note">trailing twelve months</div></div>
-      <div class="kpi"><div class="k-label">Awards</div><div class="k-value" id="kpi-n">&ndash;</div><div class="k-note" id="kpi-n-note"></div></div>
-      <div class="kpi"><div class="k-label">Top agency</div><div class="k-value" id="kpi-ag">&ndash;</div><div class="k-note" id="kpi-ag-note"></div></div>
-    </section>
-    <section class="grid" id="city-readcard">
-      <div class="card">
-        <div class="sec-head"><h2>What the award record shows</h2><span class="cap">PUBLIC RECORD &middot; DEMAND SIGNALS</span></div>
-        <div class="h-sub">Three readings drawn straight from the public award record: how this contractor's largest jobs compare to its recent norm, how concentrated its work is by agency, and how often it has appeared as a winner. They describe what the City has hired the firm to do. They are not a credit opinion, a bonding judgment, or a prequalification, and nothing here scores or ranks the contractor.</div>
-        <div class="readstrip" id="readstrip"></div>
-      </div>
-    </section>
-    <section class="grid" id="cbk-section">
-      <div class="card">
-        <div class="sec-head"><h2>Registered and paid</h2><span class="cap">CHECKBOOK NYC &middot; USD</span></div>
-        <div class="h-sub">Three different measures of this firm's City work, shown side by side and never added together. The award-notice value is the amount stated when a contract is awarded. Registered is the contract value the Comptroller has registered. Paid to date is how much the City has actually disbursed against those registered contracts. Each answers a different question, and the gaps between them are normal.</div>
-        <div class="readstrip" id="cbk-strip"></div>
-        <div class="cbk-asof mono" id="cbk-asof" data-ci-hide></div>
-        <div class="h-sub u-mt-3 u-mb-0" id="cbk-note"></div>
-      </div>
-    </section>
-    <section class="grid" id="ny-section" data-ci-hide>
-      <div class="card">
-        <div class="sec-head"><h2>MTA &amp; State public work</h2><span class="cap">DATA.NY.GOV &middot; USD</span></div>
-        <div class="h-sub">Public construction work this firm has done for the MTA and New York State, named in the State's open-data record. This is a separate ledger from the City figures above and is never added to them. Heavy-civil firms whose New York work runs through the authorities can read low or empty in the City and Checkbook views precisely because their work shows up here instead.</div>
-        <div class="readstrip" id="ny-strip"></div>
-        <div class="h-sub u-mt-3 u-mb-0" id="ny-note"></div>
-        <details class="members u-mt-3" id="ny-members" data-ci-hide>
-          <summary><span>Contracts included, by source</span><span class="u-flex-center u-gap-2"><span class="mcap" id="ny-members-cap"></span><span class="caret">&#9656;</span></span></summary>
-          <div class="mbody">
-            <table>
-              <thead><tr><th>Source</th><th class="num">Contracts</th><th class="num">Registered</th><th class="num">Paid to date</th></tr></thead>
-              <tbody id="ny-members-body"></tbody>
-            </table>
-          </div>
-        </details>
-      </div>
-    </section>
-    <section class="grid two" id="city-charts">
-      <div class="card">
-        <div class="sec-head"><h2>Awarded value by year</h2><span class="cap">BY YEAR &middot; USD</span></div>
-        <div class="h-sub">Job-size trend matters as much as the total: a book stepping up in size is taking on different risk</div>
-        <div class="chart-box"><canvas id="chart-year"></canvas></div>
-        <div class="tnote">Each bar is the group's awarded value for one year, on the deduplicated City Record set (one record per procurement). The trend in job size matters as much as the total: a book stepping up in scale is taking on work of a different size. These are award-notice values, not paid amounts.</div>
-      </div>
-      <div class="card">
-        <div class="sec-head"><h2>Agency mix</h2><span class="cap">TOP 6 &middot; USD</span></div>
-        <div class="h-sub">Who this vendor works for, by awarded value. <a href="/awarded/">See the full award flow on the &ldquo;Awarded&rdquo; page</a>.</div>
-        <div class="chart-box"><canvas id="chart-agency"></canvas></div>
-        <div class="tnote">The group's awarded value split across the agencies it has won City work from, the top six by value. Bars are awarded value, not contract counts, and agencies outside the top six are not shown.</div>
-      </div>
-    </section>
-    <section class="grid" id="city-recent">
-      <div class="card">
-        <div class="sec-head"><h2>Recent awards</h2><span class="cap"><a href="#" id="csv-link" class="csv-link">&darr; Download CSV</a> &middot; MOST RECENT</span></div>
-        <div class="h-sub" id="recent-sub"></div>
-        <table id="tbl-recent">
-          <thead><tr><th>Date</th><th>Award</th><th>Agency</th><th class="num">Value</th></tr></thead>
-          <tbody></tbody>
-        </table>
-        <details class="members" id="members">
-          <summary><span id="members-label">Names included in this total</span><span class="u-flex-center u-gap-2"><span class="mcap" id="members-cap"></span><span class="caret">&#9656;</span></span></summary>
-          <div class="mbody">
-            <table>
-              <thead><tr><th>Name as published</th><th class="num">Awards</th><th class="num">Awarded value</th></tr></thead>
-              <tbody id="members-body"></tbody>
-            </table>
-          </div>
-        </details>
-        <div class="tnote">The most recent award notices for this group, newest first; Value is the amount stated at the notice, a floor that later change orders can grow. &ldquo;Names included in this total&rdquo; expands every underlying name spelling rolled into the group and its summed value, so the grouping is auditable and nothing is hidden or double-counted.</div>
-      </div>
-    </section>
-  </section>
-
-  <div id="noresults" class="card empty" data-ci-hide>No construction awards found for that name. Try a shorter fragment of the company name.</div>
-
-</div>
-
-<div class="wrap u-pt-2">
-  <div class="sec-head"><h2>Market structure</h2><span class="cap">COMPETITIVE SET BY WINS</span></div>
-  <p class="asof u-mt-3 u-pt-0 u-bt-0" id="asof">Assembling the market set from City Record data&hellip;</p>
-</div>
-
-<div id="loader" class="wrap">
-  <div class="spinner"></div>
-  Pulling construction award notices from NYC Open Data&hellip;
-</div>
-
-<div id="error" class="wrap">
-  <p><strong>Couldn't reach NYC Open Data.</strong></p>
-  <p class="u-mt-2">The City's API may be momentarily unavailable.</p>
-  <button type="button" class="ci-btn" data-action="reload">Retry</button>
-</div>
-
-<div data-ci-main id="app" class="wrap">
-
-  <section class="controls">
-    <div class="ctl-group">
-      <span class="ctl-label">Window</span>
-      <div class="seg" id="seg-window">
-        <button data-w="ttm" class="on">Trailing 12 months</button>
-        <button data-w="all">All time</button>
-      </div>
-    </div>
-    <div class="ctl-group">
-      <span class="ctl-label">Renewals</span>
-      <div class="seg" id="seg-renew">
-        <button data-r="excl" class="on">Exclude</button>
-        <button data-r="incl">Include</button>
-      </div>
-    </div>
-  </section>
-
-  <section class="kpis">
-    <div class="kpi"><div class="k-label">Awards in set</div><div class="k-value" id="kpi-count">&ndash;</div><div class="k-note" id="kpi-count-note"></div></div>
-    <div class="kpi"><div class="k-label">Award dollars</div><div class="k-value" id="kpi-dollars">&ndash;</div><div class="k-note">winners only, $500M+ excluded</div></div>
-    <div class="kpi"><div class="k-label">Distinct awardees</div><div class="k-value" id="kpi-awardees">&ndash;</div><div class="k-note">exact normalized grouping key</div></div>
-    <div class="kpi hl"><div class="k-label">Renewals flagged</div><div class="k-value" id="kpi-renewals">&ndash;</div><div class="k-note" id="kpi-renewals-note"></div></div>
-  </section>
-
-  <section class="grid">
-    <div class="reading ci-note" id="ms-reading-wrap">
-      <h2>Structural read</h2>
-      <p id="ms-reading"></p>
-    </div>
-  </section>
-
-  <section class="grid">
-    <div class="card">
-      <div class="sec-head"><h2>Count share versus dollar share, by band</h2><span class="cap">SHARE OF SET</span></div>
-      <div class="h-sub">Each band's share of all awards by count, set against its share of all award dollars. The gap between the two bars is the small-awards / mega-dollars inversion.</div>
-      <div class="chart-box"><canvas id="chart-bands"></canvas></div>
-      <div class="tnote">For each award-size band, two bars: its share of all awards by count (count share = awards in band ÷ total awards) and its share of all award dollars (dollar share = band dollars ÷ total dollars), on the deduplicated set. The gap is the inversion where many small awards hold a thin slice of dollars while a few large ones hold most.</div>
-    </div>
-  </section>
-
-  <section class="grid">
-    <div class="card">
-      <div class="sec-head"><h2>Band detail</h2><span class="cap">BY AWARD VALUE</span></div>
-      <div class="h-sub">Counts, dollars, and their shares of the set. Bands are fixed by award value.</div>
-      <table id="tbl-bands">
-        <thead><tr>
-          <th>Band</th><th class="num">Awards</th><th class="num">Count share</th>
-          <th class="num">Dollars</th><th class="num">Dollar share</th><th class="num">Distinct awardees</th>
-        </tr></thead>
-        <tbody></tbody>
-      </table>
-      <div class="tnote">Award-size bands fixed by published contract value. For each band: the number of awards, its count share and dollar share of the deduplicated set, and the count of distinct awardees by published name (not grouped across spellings). No contractor is named in this market-structure section; named firms appear only in the contractor lookup above.</div>
-    </div>
-  </section>
-
-  <section class="grid">
-    <div class="card">
-      <div class="sec-head"><h2>Concentration within each band</h2><span class="cap">TOP-N BY COUNT · DOLLAR SHARE · HHI</span></div>
-      <div class="h-sub">For the 3, 5, and 10 awardees that won the most awards by count, their combined share of the band's dollars, plus an HHI concentration index. The awardees are selected by award count; the figure shown is their share of dollars.</div>
-      <div class="conc-grid" id="conc-grid"></div>
-      <div class="tnote">For each band, the combined dollar share of the top 3, 5, and 10 awardees ranked by award count, plus a Herfindahl-Hirschman index. HHI = the sum of each awardee's squared dollar share within the band, on a 0 to 10,000 scale; a higher value means the band's dollars sit with fewer firms. Awardees are ranked by count, so the dollar share shown is what those count-leaders hold.</div>
-    </div>
-  </section>
-
-  <section class="method" id="methodology">
-    <div class="card">
-      <div class="sec-head"><h2>Contractors · Methodology &amp; definitions</h2><span class="m-cap">SERIES NOTES</span></div>
-      <h3>Contractor lookup &middot; how vendor totals are grouped</h3>
-      <p>The contractor lookup at the top of the page comes from the New York City Record Recent Contract Awards dataset (NYC Open Data <code>qyyg-4tf5</code>), limited to awards in Construction categories. Many firms appear under several spellings of their name, and a single firm group can file under more than one legal entity. Where we can confirm by hand that several names belong to the same firm, they roll up under one parent total and every underlying name and its amount is listed, so nothing is hidden. Grouping is a fixed, verified list of name variants, not automated name-matching or any statistical guess; we group only on a distinctive shared identifier or an unmistakable spelling variation of the same company, and when a connection is uncertain we leave the names separate. Each amount is the value stated in the award notice, a floor rather than a running total of work performed or paid, so a group's total is a lower bound. The School Construction Authority and the Port Authority remain out of scope for naming a contractor, because those datasets carry no vendor field.</p>
-      <h3>Contractor lookup &middot; registered and paid</h3>
-      <p>The award-notice figure is queried live from the City Record on each load. The registered and paid figures come from Checkbook NYC, the Comptroller's public ledger of registered and paid amounts, which a browser cannot call directly: it allows no cross-origin request and returns a paged XML feed. An automated job fetches and normalizes it server-side every night and writes a compact static file the lookup reads. That job reconciles each Checkbook vendor name to the same parent groups used here through the same <code>normName()</code> normalization the award record uses, so the three measures line up against one contractor. A group with no exact name match after normalization shows no Checkbook figure rather than a guess.</p>
-      <h3>Contractor lookup &middot; MTA &amp; State public work</h3>
-      <p>The MTA and State figures come from New York State open data on <code>data.ny.gov</code>: MTA Procurements (<code>twsw-2mqa</code>) and the State University Construction Fund contracts (<code>cfjm-ii27</code>), both limited to the Design and Construction/Maintenance procurement type. These datasets name the awarded contractor, so they close the contractor-naming gap that City sources leave on authority work. They are reported through the Public Authorities Reporting Information System, which re-reports every active contract each fiscal year with a growing cumulative spend, so figures here are deduplicated to one record per contract at its latest fiscal-year report; summing the raw rows would multi-count. They are a separate ledger from the City and Checkbook figures and are never added to them, because they sit on different books. A firm with no exact name match after normalization shows nothing here rather than a guess. The three measures, award-notice value, registered, and paid to date, are never summed; this is the public demand-side view of a contractor and says nothing about costs, margins, bonding capacity, or performance.</p>
-      <p>The Concrete Index is an independent personal project built on public data. It is not affiliated with, endorsed by, or speaking for any employer, and nothing here is any employer's assessment of any named company.</p>
-      <h3>Market structure &middot; what this section measures</h3>
-      <p>Competitive set by wins groups NYC City Record construction award notices (winners only; no co-bidders) by award value into four bands and reports market-structure statistics, count share, dollar share, top-N share and an HHI concentration index, computed over exact normalized awardee names. In this section awardee names are used only as a deterministic grouping key and are never published, ranked, scored, or presented as a measure of any contractor's standing or creditworthiness. Award notices are deduped to one record per procurement (pin), renewals are flagged, and awards of $500M or more are excluded to match the index.</p>
-      <h3>Universe and window</h3>
-      <p>Source is the City Record award feed (dataset <code>qyyg-4tf5</code>), which is award notices by nature, filtered to <code>category_description</code> beginning "Construction" with <code>contract_amount</code> above zero and below $500M. The default window is the trailing twelve months by <code>start_date</code>, read as twelve fully-elapsed months: the window ends with the last complete month and never reads the partial month in progress, the same trailing-twelve the “Analysis” and “Briefing” pages use. The all-time toggle drops the date filter. The contractor lookup at the top of the page reads that same window, dedupe, renewal rule, and $500M ceiling, so the list and the analysis below it describe one set of awards. Renewals are identified by matching <code>selection_method_description</code> against renewal or extension, the same continuation rule the “Awarded” and “Analysis” pages use, and excluded from the set by default, with the include toggle adding them back.</p>
-      <h3>Deduplication and grouping key</h3>
-      <p>Award notices can repeat across a single procurement, so records are deduped to one per <code>pin</code>, keeping the maximum <code>contract_amount</code> seen for that pin. The grouping key for concentration is the awardee name normalized deterministically: trim, collapse internal whitespace, uppercase, strip trailing punctuation. This is exact normalized matching, not probabilistic. The normalized string is a key only and is never displayed.</p>
-      <h3>Size bands</h3>
-      <p>Small is under $1M. Mid is $1M to $10M. Large is $10M to $100M. Mega is $100M to $500M. Awards of $500M or more are excluded, the same megaproject exclusion the index uses, so a handful of outsized procurements do not swamp the dollar shares.</p>
-      <h3>Concentration statistics</h3>
-      <p>Within each band, awardees are aggregated by dollars on the normalized key. The top-N figure selects the N awardees with the most awards by count, then reports their combined share of the band's dollars. It is labeled "top N by count, dollar share" so the count-based selection and the dollar-based measure are not confused. HHI is the sum of squared dollar shares, scaled to a 0 to 10,000 index: below 1,500 is labeled fragmented, 1,500 to 2,500 moderate, above 2,500 concentrated. These describe the shape of demand in a band. They are not a ranking of contractors.</p>
-    </div>
-  </section>
-
+<div class="wrap ci-moved">
+  <h1>This page has moved.</h1>
+  <p>It is now the “Contractors” page. You are being sent there now.</p>
+  <p><a class="ci-moved__go" href="/contractors/">Go to the “Contractors” page</a></p>
 </div>
 </main>
 
@@ -298,17 +69,5 @@
   </div>
 </footer>
 <!-- /ci:footer -->
-
-<!-- ===== Contractor lookup module (ported verbatim from the retired Vendors page,
-     wrapped in an IIFE so its globals do not collide with the market script below).
-     Exposes runSearch and selectGroup on window for the inline onclick handlers. ===== -->
-
-<!-- ===== Market-structure module. This is the only script block on the page that
-     declares at global scope; the contractor-lookup block above and the export
-     block below are each wrapped in an IIFE, so their identically named helpers
-     (normName, fmtMoney, fmtInt, esc, isContinuation, state, MEGA_FLOOR,
-     COLOR_A) are function-scoped and cannot collide with the names below.
-     A column-0 grep across the three blocks makes those look like top-level
-     consts; they are not. Verify scope, not indentation, before renaming. ===== -->
 </body>
 </html>

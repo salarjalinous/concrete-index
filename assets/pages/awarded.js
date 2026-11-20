@@ -309,7 +309,7 @@ function renderVendors(rows){
   const tb = document.querySelector('#tbl-vendors tbody');
   tb.innerHTML = entries.map((e,i)=>`<tr>
     <td class="rank">${i+1}</td>
-    <td><a class="t-title" href="/competitive/?q=${encodeURIComponent(e[0])}" title="See this contractor's full award history">${esc(e[0])}</a></td>
+    <td><a class="t-title" href="/contractors/?q=${encodeURIComponent(e[0])}" title="See this contractor's full award history">${esc(e[0])}</a></td>
     <td class="num">${fmtInt(e[1].count)}</td>
     <td class="num amt">${fmtMoney(e[1].total)}</td>
   </tr>`).join('');

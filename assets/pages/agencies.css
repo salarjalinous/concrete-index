@@ -1,4 +1,4 @@
-/* agency: rules used only on this page. Shared components live in /assets/ci.css. */
+/* agencies: rules used only on this page. Shared components live in /assets/ci.css. */
 .hero p.sub{margin-top:var(--s-4);font-size:var(--fs-16);color:var(--muted);max-width:720px}
 .controls{display:flex;align-items:flex-end;gap:var(--s-5);flex-wrap:wrap;padding:var(--s-6) 0 var(--s-1)}
 .agency-select{font-family:var(--font-serif);font-weight:600;font-size:var(--fs-22);color:var(--ink);background:var(--surface);border:1px solid var(--control-line);border-bottom:2px solid var(--ink);border-radius:var(--radius);padding:var(--s-2) var(--s-10) var(--s-2) var(--s-3);cursor:pointer;min-width:330px;appearance:none;-webkit-appearance:none;background-image:url(/assets/img/select-caret.svg);background-repeat:no-repeat;background-position:right 13px center}

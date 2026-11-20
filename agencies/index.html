@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- ci:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' https://data.cityofnewyork.us; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="same-origin">
+<meta name="color-scheme" content="light">
+<title>Agencies · The Concrete Index</title>
+<meta name="description" content="One NYC agency at a time: committed capital against awarded contracts, spending velocity, the trades it buys, the firms it pays, and its borough footprint.">
+<link rel="canonical" href="https://concreteindex.co/agencies/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Concrete Index">
+<meta property="og:title" content="Agencies · The Concrete Index">
+<meta property="og:description" content="One NYC agency at a time: committed capital against awarded contracts, spending velocity, the trades it buys, the firms it pays, and its borough footprint.">
+<meta property="og:url" content="https://concreteindex.co/agencies/">
+<meta property="og:image" content="https://concreteindex.co/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://concreteindex.co/og-image.png">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/public-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/ci.css">
+<link rel="stylesheet" href="/assets/pages/agencies.css">
+<meta name="ci:export" content="on">
+<script src="/assets/ci.js" defer></script>
+<script src="/assets/vendor/chart.umd.min.js" defer></script>
+<script src="/assets/ci-chart.js" defer></script>
+<script src="/assets/pages/agencies.js" defer></script>
+<!-- /ci:head -->
+</head>
+<body>
+
+<!-- ci:header -->
+<a class="ci-skip" href="#content">Skip to content</a>
+<header class="ci-masthead">
+  <div class="wrap ci-masthead__bar">
+    <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="26" height="26" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+    <nav class="ci-utility" aria-label="Site"><a href="/methodology/">Methodology</a><a href="/about/">About</a><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></nav>
+    <button class="ci-menu-btn" type="button" aria-expanded="false" aria-controls="ci-menu"><svg class="ci-i-menu" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#menu"/></svg><svg class="ci-i-close" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#close"/></svg><span class="ci-menu-btn__label">Menu</span></button>
+  </div>
+  <nav class="ci-rail" id="ci-menu" aria-label="Sections">
+    <div class="wrap ci-rail__inner">
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-stages">Stages</p><ul class="ci-rail__list" aria-labelledby="ci-g-stages"><li><a href="/pipeline/">Pipeline</a></li><li><a href="/bidding/">Bidding</a></li><li><a href="/awarded/">Awarded</a></li><li><a href="/contracts/">Contracts</a></li><li><a href="/funnel/">Funnel</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-entities">Entities</p><ul class="ci-rail__list" aria-labelledby="ci-g-entities"><li><a href="/agencies/" aria-current="page">Agencies</a></li><li><a href="/contractors/">Contractors</a></li><li><a href="/regional/">Regional</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-synthesis">Synthesis</p><ul class="ci-rail__list" aria-labelledby="ci-g-synthesis"><li><a href="/analysis/">Analysis</a></li><li><a href="/briefing/">Briefing</a></li></ul></div>
+      <div class="ci-rail__group ci-rail__group--utility"><p class="ci-rail__label" id="ci-g-site">Site</p><ul class="ci-rail__list" aria-labelledby="ci-g-site"><li><a href="/methodology/">Methodology</a></li><li><a href="/about/">About</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></li></ul></div>
+    </div>
+  </nav>
+</header>
+<!-- /ci:header -->
+
+<div class="series-bar">
+  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-AGENCY</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CAPITAL PLAN (fb86-vt7u), 3× YEARLY · CITY RECORD (qyyg-4tf5), DAILY</b><span class="sep">·</span>PLAN&nbsp;·&nbsp;<b id="series-asof">–</b></div>
+</div>
+
+<main id="content" tabindex="-1">
+
+<div class="wrap">
+  <div class="hero">
+    <h1>One agency at a time.</h1>
+    <p class="sub">Citywide totals are a starting point; the working unit is the single agency. Pick an agency below and the page repaints to that agency's own book: what it has committed in the capital plan, what it has awarded in the City Record, the trades it buys, the firms it pays, and where the work lands across the five boroughs.</p>
+    <p class="asof" id="asof">Loading the capital plan and the award record…</p>
+  </div>
+</div>
+
+<div id="loader" class="wrap">
+  <div class="spinner"></div>
+  Pulling the capital plan and award record from NYC Open Data…
+</div>
+
+<div id="error" class="wrap">
+  <p><strong>Couldn't reach NYC Open Data.</strong></p>
+  <p class="u-mt-2">The City's API may be momentarily unavailable.</p>
+  <button type="button" class="ci-btn" data-action="reload">Retry</button>
+</div>
+
+<div data-ci-main id="app" class="wrap">
+
+  <section class="controls">
+    <div class="ctrl">
+      <label for="agency">Agency</label>
+      <select id="agency" class="agency-select" aria-label="Select an agency"></select>
+    </div>
+    <div class="ctrl">
+      <span class="ctrl-note" id="match-note"></span>
+    </div>
+  </section>
+
+  <section class="agency-banner" id="agency-banner" aria-live="polite">
+    <div class="ab-name">
+      <span class="ab-full serif" id="ab-full">–</span>
+      <span class="ab-code mono" id="ab-code">–</span>
+    </div>
+    <div class="ab-asof mono" id="ab-asof">–</div>
+  </section>
+
+  <section class="kpis">
+    <div class="kpi hl"><div class="k-label">Committed, unspent</div><div class="k-value" id="kpi-committed">–</div><div class="k-note" id="kpi-committed-note"></div></div>
+    <div class="kpi"><div class="k-label">Awarded, trailing year</div><div class="k-value" id="kpi-awarded">–</div><div class="k-note" id="kpi-awarded-note"></div></div>
+    <div class="kpi"><div class="k-label">Construction awards</div><div class="k-value" id="kpi-count">–</div><div class="k-note">notices in the trailing twelve months</div></div>
+    <div class="kpi"><div class="k-label">Top recipient share</div><div class="k-value" id="kpi-share">–</div><div class="k-note" id="kpi-share-note"></div></div>
+  </section>
+
+  <section class="grid" id="funnel-sec">
+    <div class="card">
+      <div class="sec-head"><h2>Demand funnel</h2><span class="cap" id="funnel-cap">SELECTED AGENCY</span></div>
+      <div class="h-sub">Two scopes from two ledgers, kept side by side and never summed. Committed is forward budget the agency holds in the capital plan; Awarded is contracts it has put on the street in the City Record. They count different things, so they sit in separate columns.</div>
+      <div class="funnel">
+        <div class="leg committed">
+          <div class="scope">Committed <b>· capital plan</b></div>
+          <div class="big" id="f-committed">–</div>
+          <div class="src">Unspent budget across active projects, deduped on managing agency and <code>fms_id</code>, most-advanced phase. Source <code>fb86-vt7u</code>.</div>
+        </div>
+        <div class="leg awarded">
+          <div class="scope">Awarded <b>· City Record</b></div>
+          <div class="big" id="f-awarded">–</div>
+          <div class="src">Construction award notices over the twelve fully-elapsed months, deduped to one row per <code>pin</code>. Source <code>qyyg-4tf5</code>.</div>
+        </div>
+      </div>
+      <div class="scope-rule">Spent · Checkbook NYC&nbsp;<span class="u-faint">·</span>&nbsp;archive only, the City's payment ledger blocks browser access; tracked nightly, not shown live here.</div>
+      <div class="reading ci-note ci-note--label" id="funnel-reading"></div>
+      <div class="tnote">Committed and Awarded answer different questions on different books. Committed is budget the agency is sitting on; Awarded is contracts it has signed in the last year. A wide gap between them is normal, it is the runway of funded work an agency has yet to put out to bid.</div>
+    </div>
+  </section>
+
+  <section class="grid" id="velocity-sec">
+    <div class="card">
+      <div class="sec-head"><h2>Velocity</h2><span class="cap" id="vel-cap">SELECTED AGENCY</span></div>
+      <div class="h-sub" id="vel-hsub">How fast the selected agency converts funded work to cash. Backlog coverage is its open pipeline divided by its own trailing-year outlays, the demand-side analog of a contractor's backlog-to-revenue ratio. A higher number means more funded work stacked behind the same delivery capacity.</div>
+      <div class="vel-tape" id="vel-tape">
+        <div class="vt"><div class="vt-label">Committed, unspent</div><div class="vt-value" id="vel-committed">&ndash;</div><div class="vt-note">open pipeline under this code</div></div>
+        <div class="vt"><div class="vt-label">Spent, trailing year</div><div class="vt-value" id="vel-spent">&ndash;</div><div class="vt-note">capital outlays across plan snapshots</div></div>
+        <div class="vt"><div class="vt-label">Awarded, trailing year</div><div class="vt-value" id="vel-awarded">&ndash;</div><div class="vt-note">City Record construction awards</div></div>
+        <div class="vt hl"><div class="vt-label">Backlog coverage</div><div class="vt-value" id="vel-coverage">&ndash;</div><div class="vt-note">stock-over-flow ratio, not a delivery schedule</div></div>
+      </div>
+      <div class="reading ci-note ci-note--label" id="vel-reading-agency"></div>
+      <div class="tnote">Committed, unspent is the agency's open pipeline in the latest capital plan snapshot. Spent is its trailing-year capital outlay, measured as the growth in cumulative spend-to-date across plan snapshots, counted only on projects observed in both of any two consecutive snapshots so a project's back-history does not land in the period it first appears. Where that outlay falls below the floor for a meaningful reading, the spend cell reads as an en dash rather than a number. Backlog coverage = open pipeline &divide; trailing-year spend, in years. It is a structural ratio, a stock measured now over a flow measured over the trailing year, not a delivery schedule, and it is shown only where the agency's own trailing self-delivered outlay clears the floor below which its work is mostly built by another managing agency.</div>
+    </div>
+  </section>
+
+  <section class="grid two" id="cuts">
+    <div class="card">
+      <div class="sec-head"><h2>Top trades</h2><span class="cap" id="trades-cap">CAPITAL PLAN · DOLLAR-WEIGHTED</span></div>
+      <div class="h-sub">The agency's committed budget split by capital-plan program category. This is the structured field on the plan, the firmest read of what the agency is buying.</div>
+      <div class="chart-box"><canvas id="chart-trades"></canvas></div>
+      <div class="tnote">Each bar is the agency's unspent committed budget in one ten-year-plan program category, dollar-weighted. Categories come from the capital plan's own classification, not from award text.</div>
+    </div>
+    <div class="card">
+      <div class="sec-head"><h2>Top recipients</h2><span class="cap" id="recipients-cap">CITY RECORD · TRAILING YEAR</span></div>
+      <div class="h-sub">The firms winning this agency's work over the trailing twelve months, split into hard construction and design/CM professional services, each ordered by its own award dollars.</div>
+      <table id="tbl-vendors">
+        <thead><tr><th></th><th>Recipient</th><th class="num">Awarded</th><th class="num">Share</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="tnote">The firms with the most City Record award dollars from this agency over the trailing twelve months, deduped to one row per award and split by the City's own award category: hard construction (bondable work) and design or construction-management professional services. Share is each firm's portion of its own group. Joint ventures appear under the name on the notice; a parent firm bidding through several entities is not consolidated.</div>
+      <p class="vendor-note">Ordered by published award dollars, not a ranking of quality or credit. These are public award records, not credit information, and say nothing about a firm's costs, margins, bonding capacity, financial condition, or performance.</p>
+    </div>
+  </section>
+
+  <section class="grid" id="boro-sec">
+    <div class="card">
+      <div class="sec-head"><h2>Borough footprint</h2><span class="cap" id="boro-cap">DOLLAR-WEIGHTED · 5 BOROUGHS</span></div>
+      <div class="h-sub" id="boro-hsub">Where the selected agency's work lands across the five boroughs, weighted by dollars rather than project count. The citywide and multi-borough share is its own slice, never spread across the map. Click a borough to read its detail.</div>
+      <div class="controls u-pt-1 u-pb-4">
+        <div class="ctrl">
+          <label>Scope</label>
+          <div class="seg" id="boro-seg">
+            <button type="button" data-scope="committed" class="seg-btn">Committed</button>
+            <button type="button" data-scope="awarded" class="seg-btn">Awarded</button>
+          </div>
+        </div>
+      </div>
+      <div class="boro-wrap">
+        <div>
+          <svg id="boro-map" class="boro-svg" viewBox="0 0 418.5 416" role="img" aria-label="Dollar-weighted borough footprint of the selected agency">
+            <!-- Borough silhouettes from real NYC borough-boundary geometry (NYC borough boundary
+                 feature service), one largest landmass per borough, Douglas-Peucker simplified and
+                 projected equirectangular with a cos(lat) longitude correction at NYC's latitude,
+                 fit to this viewBox at true bounding-box aspect. Baked static, no runtime fetch. -->
+            <path id="b-Bronx" data-boro="Bronx" d="M281.9 27.1 L291.6 29.8 L297.1 21.6 L304.0 27.1 L306.1 36.2 L337.1 46.2 L330.2 58.9 L326.0 57.1 L330.2 61.6 L337.1 48.9 L343.3 50.7 L341.2 55.3 L344.0 57.1 L337.8 60.7 L332.2 78.0 L328.8 65.3 L326.7 68.0 L321.9 64.4 L323.3 81.6 L319.8 81.6 L325.3 96.2 L322.6 99.8 L327.4 98.9 L334.3 107.1 L330.2 110.7 L327.4 106.2 L328.8 110.7 L338.4 117.1 L321.2 108.9 L306.7 116.2 L304.7 85.3 L304.7 103.5 L300.5 111.6 L294.3 108.9 L298.5 110.7 L299.2 117.1 L291.6 116.2 L291.6 112.5 L279.2 107.1 L285.4 115.3 L281.2 120.7 L266.8 115.3 L255.1 124.4 L244.0 118.9 L240.6 112.5 L240.6 89.8 L258.5 52.5 L246.1 49.8 L255.1 18.0 L281.9 27.1 Z"/>
+            <path id="b-Manhattan" data-boro="Manhattan" d="M245.4 50.7 L248.2 51.6 L248.9 55.3 L256.4 57.1 L250.2 68.0 L248.2 67.1 L239.2 89.8 L239.9 112.5 L243.3 120.7 L243.3 125.3 L233.7 137.1 L233.7 144.4 L214.4 172.5 L211.6 179.8 L214.4 188.0 L210.3 201.6 L195.8 204.4 L188.9 211.6 L184.1 212.5 L181.3 207.1 L182.7 195.3 L185.5 192.5 L186.1 188.9 L186.8 182.5 L185.5 175.3 L188.2 172.5 L186.8 168.9 L187.5 164.4 L195.8 152.5 L195.1 148.9 L197.9 148.0 L197.2 145.3 L199.9 144.4 L202.0 139.8 L199.9 139.8 L223.4 101.6 L231.6 81.6 L230.9 76.2 L234.4 72.5 L245.4 50.7 Z"/>
+            <path id="b-Queens" data-boro="Queens" d="M317.8 120.7 L337.1 131.6 L348.1 125.3 L370.1 160.7 L363.2 150.7 L366.0 137.1 L400.5 166.2 L395.6 187.1 L380.5 192.5 L383.9 256.2 L372.9 260.7 L372.2 271.6 L363.2 259.8 L367.4 271.6 L352.9 285.3 L346.7 278.9 L338.4 296.2 L331.5 292.5 L344.0 276.2 L333.6 275.3 L337.8 270.7 L317.8 258.9 L317.1 248.9 L324.7 248.0 L316.4 248.9 L316.4 259.8 L311.6 248.9 L308.1 259.8 L304.7 247.1 L307.4 261.6 L297.8 263.5 L288.8 250.7 L293.6 245.3 L285.4 217.1 L266.1 228.9 L248.2 204.4 L249.5 190.7 L231.6 178.0 L236.5 173.5 L219.9 177.1 L238.5 142.5 L256.4 129.8 L270.9 145.3 L285.4 133.5 L281.9 138.9 L294.3 147.1 L288.8 151.6 L297.1 158.9 L305.4 152.5 L291.6 135.3 L295.0 127.1 L306.1 122.5 L309.5 131.6 L317.8 120.7 Z"/>
+            <path id="b-Brooklyn" data-boro="Brooklyn" d="M226.1 177.1 L243.3 188.0 L246.1 195.3 L240.6 202.5 L246.8 197.1 L266.1 228.9 L285.4 217.1 L293.6 245.3 L288.8 251.6 L293.0 263.5 L266.1 284.4 L268.1 297.1 L263.3 298.0 L262.6 292.5 L261.9 298.0 L253.7 299.8 L249.5 296.2 L257.1 301.6 L274.4 298.0 L277.1 321.6 L266.1 324.4 L264.0 314.4 L255.1 316.2 L252.3 304.4 L242.0 299.8 L246.1 316.2 L240.6 308.0 L241.3 325.3 L193.0 330.7 L186.1 326.2 L186.8 321.6 L201.3 317.1 L194.4 318.9 L198.5 313.5 L194.4 316.2 L195.8 308.9 L169.6 295.3 L165.5 284.4 L167.5 267.1 L175.1 263.5 L183.4 248.0 L194.4 245.3 L195.1 238.0 L181.3 238.0 L181.3 230.7 L193.7 221.6 L197.9 208.9 L215.1 202.5 L220.6 181.6 L226.1 177.1 Z"/>
+            <path id="b-StatenIsland" data-boro="Staten Island" d="M137.9 259.8 L146.2 264.4 L144.1 276.2 L147.6 277.1 L144.1 276.2 L143.4 278.9 L158.6 303.5 L144.1 323.5 L131.7 333.5 L122.1 346.2 L109.7 353.5 L100.0 368.0 L97.9 362.5 L106.9 356.2 L104.1 352.5 L99.3 352.5 L97.2 360.7 L71.8 377.1 L66.9 377.1 L60.0 385.3 L57.3 382.5 L51.1 383.5 L44.2 391.6 L24.2 398.0 L18.0 387.1 L22.8 378.9 L29.0 376.2 L23.5 355.3 L35.2 343.5 L43.5 344.4 L48.3 341.6 L53.1 313.5 L58.0 306.2 L54.5 296.2 L55.9 276.2 L60.0 269.8 L70.4 262.5 L70.4 265.3 L74.5 262.5 L76.6 264.4 L75.2 267.1 L80.0 265.3 L91.7 269.8 L102.1 265.3 L106.9 268.0 L118.6 262.5 L137.9 259.8 Z"/>
+            <g class="boro-lbl" aria-hidden="true">
+              <text x="286" y="73">BX</text>
+              <text x="216" y="142">MN</text>
+              <text x="320" y="194">QN</text>
+              <text x="229" y="262">BK</text>
+              <text x="89" y="321">SI</text>
+            </g>
+          </svg>
+          <div class="boro-legend"><span>LOW</span><span class="ramp"></span><span>HIGH</span><span class="u-ml-2 u-faint">· by dollars</span></div>
+          <div class="provenance" id="boro-provenance"></div>
+        </div>
+        <div>
+          <div class="boro-readout" id="boro-readout"></div>
+          <div class="boro-bars">
+            <table id="tbl-boro">
+              <thead><tr><th>Borough</th><th class="num">Dollars</th><th class="num">Largest proj.</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="tnote">Each borough is shaded by the dollars the selected agency commits or awards there, never by the number of projects, so one large job is not outweighed by many small ones. The citywide / multi-borough / unspecified slice is reported on its own and never folded into a borough. Largest-project share is the biggest single project as a fraction of that borough's total, so a megaproject that lights up a borough is visible rather than hidden.</div>
+    </div>
+  </section>
+
+  <section class="grid" id="vel-rank-sec">
+    <div class="card">
+      <div class="sec-head"><h2 id="velocity">Backlog coverage across agencies</h2><span class="cap">YEARS · TOP 10</span></div>
+      <div class="h-sub">Years of funded work at each agency's current spending pace, so the selected agency reads against its peers. Longer bars are agencies sitting on more committed work relative to how fast they pay it out.</div>
+      <div class="chart-box tall"><canvas id="chart-vel-rank"></canvas></div>
+      <div class="reading ci-note ci-note--label" id="vel-rank-reading"></div>
+      <div class="tnote">Each bar is one agency's backlog coverage = open pipeline &divide; trailing-year spend, in years. A longer bar means more committed-but-unspent work relative to how fast the agency pays it out. Only the ten agencies with the deepest coverage among those with a computable ratio are shown.</div>
+    </div>
+  </section>
+
+  <section class="grid" id="vel-table-sec">
+    <div class="card">
+      <div class="sec-head"><h2>The full velocity table</h2><span class="cap">RANKED BY PIPELINE</span></div>
+      <div class="h-sub">Every managing agency with an open construction pipeline, ranked by pipeline size. Awarded is trailing-twelve City Record awards where the agency name maps across sources.</div>
+      <table id="tbl-velocity">
+        <thead><tr><th>Agency</th><th class="num">Open pipeline</th><th class="num">Spent (TTM)</th><th class="num">Awarded (TTM)</th><th class="num">Backlog, years</th><th class="num">Days to 50% paid</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="tnote">Every managing agency with an open construction pipeline, ranked by pipeline size. Open pipeline is committed-but-unspent construction capital; Spent and Awarded are trailing-twelve-month totals over the twelve fully-elapsed months; Backlog, years = open pipeline &divide; Spent (TTM). The Spent column reads as an en dash below the floor for a meaningful outlay figure, where the agency's construction is built under another managing agency. The Awarded column is blank where an agency's name does not map cleanly between the capital plan and the City Record. Days to 50% paid is the median, from registration, over the agency's dated construction contracts (those with confirmed Checkbook NYC disbursements; a floor built on confirmed payments, not a full accounting), shown only where the agency has at least 8 such contracts, an en dash otherwise.</div>
+    </div>
+  </section>
+
+  <section class="grid" id="payvel-sec">
+    <div class="card">
+      <div class="sec-head"><h2>Payment velocity across agencies</h2><span class="cap" id="payvel-cap">DATED SET · DAYS</span></div>
+      <div class="h-sub">How fast each agency turns a registered award into cash, read from confirmed Checkbook NYC disbursements. Two clocks per agency: the median wait for the first payment after registration, and the median days to reach half the contract paid. Fastest to half-paid sits at the top.</div>
+      <div id="payvel-unavail"></div>
+      <div class="chart-box tall" id="payvel-chartbox"><canvas id="chart-payvel"></canvas></div>
+      <table id="tbl-payvel">
+        <thead><tr><th>Agency</th><th class="num">Dated contracts</th><th class="num">First payment, days</th><th class="num">Days to 50% paid</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="reading ci-note ci-note--label" id="payvel-reading"></div>
+      <div class="tnote">Computed from the dated set, the construction contracts with confirmed Checkbook NYC disbursements. For each agency, the first-payment figure is the median first-payment lag after registration and the days-to-50% figure is the median days from registration to half the contract value paid, both over its dated contracts, ignoring contracts that never reached the mark. Days to 50% is measured from registration. Agencies with fewer than 8 dated contracts are omitted; the bar shows median days to 50% paid, fastest first.</div>
+    </div>
+  </section>
+
+  <section class="method" id="methodology">
+    <div class="card">
+      <div class="sec-head"><h2>Agency profile · Methodology &amp; definitions</h2><span class="cap">SERIES NOTES</span></div>
+      <div class="method-body">
+      <h3>The two scopes</h3>
+      <p><strong>Committed</strong> is the unspent budget the agency holds across active projects in the City's most recent capital plan snapshot (NYC OMB, dataset <code>fb86-vt7u</code>): total project budget minus spend to date, across projects in an active phase, with close-out and dead states removed. The plan repeats a project's budget on every sub-project row, so rows are collapsed on managing agency and <code>fms_id</code> and the most advanced phase is kept before anything is summed. <strong>Awarded</strong> is the value of this agency's construction award notices in the City Record (dataset <code>qyyg-4tf5</code>) over the trailing twelve months, filtered to the two construction procurement categories and deduped to one row per <code>pin</code> at the largest amount. The two scopes measure different things and stay in separate columns.</p>
+      <h3>What the trailing year means</h3>
+      <p>Every award window on this page is the twelve fully-elapsed calendar months: the current partial month is excluded, so a few days of the month in progress cannot pull the total down. This is the same window the “<a href="/funnel/">Funnel</a>” page, the index on the “<a href="/analysis/">Analysis</a>” page, and the “<a href="/briefing/">Briefing</a>” use. The figure itself is not: this page's Awarded column is gross, deduplicated to one record per <code>pin</code> but still inclusive of renewals, extensions, and awards of $500M and above. “Funnel,” “Analysis,” and “Briefing” all strip renewals and megaprojects to isolate contested new demand, so their per-agency and citywide totals run lower than this page's, sometimes by a wide margin for an agency with one large renewal or megaproject in the window. Read this page's Awarded figure as the agency's gross award activity, not as the number that will reconcile against those three pages.</p>
+      <h3>Spending is archive only</h3>
+      <p>Actual outlays live in Checkbook NYC, which serves no cross-origin access, so a browser cannot read it. The nightly archive snapshots it instead. This page shows committed and awarded live and marks spending as archive only rather than estimating a figure it cannot fetch here.</p>
+      <h3>Matching an agency across the two sources</h3>
+      <p>The capital plan names the agency by short code and the City Record names it in full, so a lookup maps one to the other. Some agencies do not reconcile cleanly. The Department of Design and Construction builds for many client agencies, so it carries a large award book of its own while client agencies such as Housing Preservation and Development show heavy awards in the City Record but little capital plan budget under their own code, because the plan files that work under the building agency. Where a selected agency has a scope that does not map, that side reads as unavailable rather than borrowing another agency's number, and the selector notes the mismatch.</p>
+      <h3>Borough derivation and provenance</h3>
+      <p>The two scopes carry borough on different footings, and the page keeps them apart. In the capital plan, borough is a structured field on each project, the harder source; Citywide and blank values route to an explicit citywide bucket rather than a borough. In the City Record there is no address or coordinate, so borough is read from the notice text: a community board cue in the project description first, then an explicit borough name in the title, and a notice that names more than one borough or reads as citywide goes to the citywide bucket whole. Award borough is therefore the softest figure on the page and is labeled as such wherever it appears.</p>
+      <h3>Dollar-weighting and the citywide bucket</h3>
+      <p>Every borough figure is weighted by dollars, not by the count of projects, so a single large job registers at its true weight. The citywide, multi-borough, and unspecified share is reported as its own slice and never spread across the five boroughs, which would manufacture a geography the data does not contain. Each borough also carries its largest single project as a share of that borough's total, so concentration in one job is visible.</p>
+      <h3>Velocity and backlog coverage</h3>
+      <p><strong>Spent</strong> is trailing-year capital outlay, measured as the growth in each project's cumulative spend-to-date between capital plan snapshots. OMB publishes a plan snapshot roughly every four months; for each project, spending in a period is its cumulative spend-to-date in one snapshot minus the prior snapshot, floored at zero. Projects are matched across snapshots by agency and <code>fms_id</code>, with sub-project rows collapsed first so nothing is double-counted. The trailing year of spend is the last three plan-to-plan periods. <strong>Backlog coverage</strong> is unspent committed dollars divided by trailing-year spending: how many years the funded pipeline would take to deliver at today's pace. It is the demand-side counterpart to a contractor's backlog ratio.</p>
+      <p>Spending is measured only across projects observed in both the prior and the current snapshot, a matched panel. <code>spend_to_date</code> is a lifetime cumulative figure, not a period figure, so a project appearing in the plan for the first time arrives carrying whatever it has already spent, sometimes years of it; counting that from zero would book its whole back-history as spending in the one period it happened to show up. A new entrant therefore contributes nothing until it has been observed twice, and its spending before it entered the plan is not counted. Projects that leave the dataset stop contributing under the same rule. Both edges hold the series to growth that two readings actually support, on this page and on the “<a href="/funnel/">Funnel</a>” page alike.</p>
+      <p>The per-agency backlog ratio is shown only where an agency's trailing self-delivered outlay clears $10M. Below that, the agency's capital work is mostly delivered under another managing agency, chiefly the Department of Design and Construction, so its own spend line understates delivery and the ratio would be a noise figure rather than a velocity signal. Those agencies still appear in the velocity table with their pipeline and a blank backlog column. Below $1M of trailing outlay the spend figure itself is suppressed to an en dash: a year of self-delivered spending that lands in the thousands does not describe a slow builder; it describes an agency that is not building its own work at all, and printing the residue beside a pipeline in the hundreds of millions would read as a figure rather than as the absence of one. The cross-agency ranking charts the ten agencies with the deepest coverage among those with a computable ratio.</p>
+      <h3>Payment velocity from the dated contracts</h3>
+      <p>The cross-agency payment-velocity figures, median first-payment lag and median days to fifty percent paid, are computed from a separate same-origin dataset, <code>/data/contract-search.json</code>, the file the “<a href="/contracts/">Contracts</a>” page reads. It holds registered construction contracts, each carrying its scope description and the City's procurement identification number; only those of $500,000 or more registered since 2019 that are open or closed within the past year, and that carry confirmed Checkbook NYC disbursements, contribute dated timing. For each such contract the nightly job orders its checks in time and measures days from registration to the first disbursement and to the day cumulative payment crosses half the contract value. An agency's figure is the median across its dated contracts, shown only where it has at least eight; the per-contract detail behind each one, including the dated spend curve, lives on the “Contracts” page. These medians are a floor built on confirmed payments, not a full accounting.</p>
+      <h3>Scope and what this is not</h3>
+      <p>Committed covers the City's capital plan; awarded covers the City Record's construction categories; spent covers the capital plan's full scope because capital budgets are not divided by procurement category. All are public records, read on each page load or from the nightly archive, and never hardcoded. The page reads one agency at a time and does not trace a single project from plan to award to payment; it places public ledgers next to each other on their own terms. Backlog coverage is a structural ratio, a stock measured now over a flow measured over the trailing year, not a delivery schedule.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<!-- ci:footer -->
+<footer class="ci-footer">
+  <div class="wrap ci-footer__inner">
+    <div class="ci-footer__brand">
+      <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="22" height="22" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+      <p class="ci-footer__tag">NYC public construction capital, from commitment to cash.</p>
+    </div>
+    <nav class="ci-footer__links" aria-label="Site information">
+      <ul><li><a href="/methodology/">Methodology</a></li><li><a href="/sources/">Sources</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">Corrections</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source on GitHub</a></li></ul>
+    </nav>
+    <div class="ci-footer__meta">
+      <p>An independent project built by Salar Jalinous using only public data. Not affiliated with the City or State of New York or any employer.</p>
+      <p><a href="/sources/">Data: NYC Open Data · Open NY · Checkbook NYC · BLS</a></p>
+      <p><a href="/about/">© <span data-ci-year="2026">2026</span> The Concrete Index</a></p>
+    </div>
+  </div>
+</footer>
+<!-- /ci:footer -->
+</body>
+</html>

@@ -195,7 +195,7 @@ async function fetchCheckbook(){
 }
 
 /* "Jul 9, 2026" from the file's generated stamp, for dating the Paid gauge.
-   Byte-for-byte the same helper /competitive/ already uses to date this same
+   Byte-for-byte the same helper /contractors/ already uses to date this same
    file, so one file is never dated two ways on two pages. */
 function cbkAsOf(){
   const g = state.checkbook.meta && state.checkbook.meta.generated

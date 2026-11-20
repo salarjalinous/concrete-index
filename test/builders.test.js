@@ -52,7 +52,7 @@ test('A1. Funnel fetchPlan (page code) equals lib/plan-core on the fixtures', as
 });
 
 test('A2. Agency fetchVelocityPlan (page code): legacy loop until Patch 2, Funnel rule after', async () => {
-  const src = H.readPage('agency/index.html');
+  const src = H.readPage('agencies/index.html');
   const code = [pageConsts(src, ['PLAN_API', 'VEL_SNAPSHOTS', 'PHASE_MAP', 'EXCLUDED', 'PHASE_ORDER']),
     ...['normPhase', 'phaseRank', 'collapseSnapVel', 'fetchVelocityPlan'].map(f => H.extractFunction(src, f)),
     'var __run = fetchVelocityPlan;'].join('\n');

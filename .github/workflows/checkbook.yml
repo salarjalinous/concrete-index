@@ -66,7 +66,7 @@ jobs:
           MAX_RECORDS = 1000
           CONSTR_RE = re.compile(r"constr|engineer|architect|paving|excavat|infrastructure", re.I)
 
-          # ---- normalizer: byte-for-byte equivalent of the /vendors/ page normName() ----
+          # ---- normalizer: byte-for-byte equivalent of the Contractors page (/contractors/) normName() ----
           # JS: (s||'').trim().replace(/\s+/g,' ').toUpperCase().replace(/[.,;:&/\\'"`\-\s]+$/,'').trim()
           _TRAIL = re.compile(r"[.,;:&/\\'\"`\-\s]+$")
           def norm_name(s):

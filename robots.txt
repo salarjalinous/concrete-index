@@ -1,6 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /test/
-Disallow: /tools/
+Disallow: /_stage/
 
 Sitemap: https://concreteindex.co/sitemap.xml
