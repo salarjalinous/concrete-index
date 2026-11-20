@@ -9,37 +9,14 @@ var COLOR_A = '#a8462c', COLOR_B = '#243b53', GRID = '#e6ddd5';
 function esc(s){ var d = document.createElement('div'); d.textContent = ((s === null || s === undefined) ? '' : String(s)).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
 var EN = '–'; // en dash for empty cells
 
-function fmtMoney(v){
-  if(v === null || v === undefined || isNaN(v)) return EN;
-  if(v >= 1e9) return '$' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2) + 'B';
-  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
-  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
-  return '$' + Math.round(v);
-}
-function fmtMoneyFull(v){
-  if(v === null || v === undefined || isNaN(v)) return EN;
-  return '$' + Math.round(v).toLocaleString('en-US');
-}
-function fmtInt(v){ return (v === null || v === undefined || isNaN(v)) ? EN : Math.round(v).toLocaleString('en-US'); }
-function fmtPct(v){
-  if(v === null || v === undefined || isNaN(v)) return EN;
-  var p = v * 100;
-  return p.toFixed(p >= 10 ? 0 : 1) + '%';
-}
-function fmtDays(v){ return (v === null || v === undefined || isNaN(v)) ? EN : Math.round(v).toLocaleString('en-US') + ' days'; }
-function fmtDate(s){
-  if(!s) return EN;
-  var d = new Date(s + (s.length === 10 ? 'T00:00:00Z' : ''));
-  if(isNaN(d.getTime())) return esc(s);
-  var MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return MN[d.getUTCMonth()] + ' ' + d.getUTCDate() + ', ' + d.getUTCFullYear();
-}
+function fmtMoney(v){ return ci.fmt(v, 'money?'); }
+function fmtMoneyFull(v){ return ci.fmt(v, 'money-full?'); }
+function fmtInt(v){ return ci.fmt(v, 'int?'); }
+function fmtPct(v){ return ci.fmt(v, 'pct?'); }
+function fmtDays(v){ return ci.fmt(v, 'days?'); }
+function fmtDate(s){ return ci.fmt(s, 'date-utc?'); }
 /* "2021-06" -> "Jun '21" for compact chart ticks */
-function fmtMonthTick(p){
-  if(!p || p.length < 7) return p || '';
-  var MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return MN[(+p.slice(5,7)) - 1] + " '" + p.slice(2,4);
-}
+function fmtMonthTick(p){ return ci.fmt(p, 'month-tick'); }
 function median(nums){
   var a = nums.filter(function(n){ return n !== null && n !== undefined && !isNaN(n); }).sort(function(x,y){ return x - y; });
   if(!a.length) return null;

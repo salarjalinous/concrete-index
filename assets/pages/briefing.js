@@ -226,18 +226,10 @@ async function fetchPlanData(){
 }
 
 /* ================= language ================= */
-function fmtMoney(v){
-  if(v >= 1e9) return '$' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2) + 'B';
-  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
-  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
-  return '$' + Math.round(v);
-}
+function fmtMoney(v){ return ci.fmt(v, 'money'); }
 function fmtInt(v){ return v.toLocaleString('en-US'); }
-function fmtPct(v){ return Math.abs(v).toFixed(0) + '%'; }
-function fmtPeriodLong(p){
-  const n=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  return n[+p.slice(4,6)-1] + ' ' + p.slice(0,4);
-}
+function fmtPct(v){ return ci.fmt(v, 'pct-abs'); }
+function fmtPeriodLong(p){ return ci.fmt(p, 'period-long'); }
 function trendWord(d){
   if(d===null) return 'shifted';
   if(d<=-15) return 'contracted';

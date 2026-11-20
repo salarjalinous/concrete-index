@@ -10,16 +10,11 @@ async function getJSON(api, params){
   if(!res.ok) throw new Error('API ' + res.status);
   return res.json();
 }
-function fmtMoney(v){
-  if(v >= 1e9) return '$' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2) + 'B';
-  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
-  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
-  return '$' + Math.round(v);
-}
+function fmtMoney(v){ return ci.fmt(v, 'money'); }
 function fmtInt(v){ return v.toLocaleString('en-US'); }
 function esc(s){ const d=document.createElement('div'); d.textContent=String(s==null?'':s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
 function titleCase(s){ return (s||'').toLowerCase().replace(/\b[a-z]/g,c=>c.toUpperCase()); }
-function fmtDay(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function fmtDay(d){ return ci.fmt(d, 'date'); }
 
 // The SCA borough breakdown is keyed on the structured single-letter borough
 // code, not the free-text `borough` column. The text column is blank on a small
@@ -236,8 +231,8 @@ function render(){ renderSCA(); renderMTA(); }
   const asOf = D.scaAsOf ? `SCA snapshot as of <strong>${esc(fmtDay(D.scaAsOf))}</strong> · ` : '';
   document.getElementById('series-asof').textContent = D.scaAsOf ? fmtDay(D.scaAsOf).toUpperCase() : '–';
   document.getElementById('asof').innerHTML = D.scaOk
-    ? `${asOf}SCA active construction and MTA capital dashboard · <strong>${fmtInt(D.scaCount)}</strong> school projects · five MTA plans · refreshed on load`
-    : `MTA capital dashboard · SCA data temporarily unavailable · refreshed on load`;
+    ? `${asOf}SCA active construction and MTA capital dashboard · <strong>${fmtInt(D.scaCount)}</strong> school projects · five MTA plans`
+    : `MTA capital dashboard · SCA data temporarily unavailable`;
   document.getElementById('loader').style.display='none';
   document.getElementById('app').style.display='block';
   render();

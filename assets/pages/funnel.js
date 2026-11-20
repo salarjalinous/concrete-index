@@ -280,10 +280,7 @@ function toQuarters(byMonth){
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function shortPeriod(p){ return MONTHS[+p.slice(4,6)-1] + ' ’' + p.slice(2,4); }
 function periodLabel(a,b){ return shortPeriod(a) + ' → ' + shortPeriod(b); }
-function fmtPeriodLong(p){
-  const names=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  return names[+p.slice(4,6)-1] + ' ' + p.slice(0,4);
-}
+function fmtPeriodLong(p){ return ci.fmt(p, 'period-long'); }
 
 /* TTM spend = last 3 inter-snapshot periods (≈12 months) */
 function ttmSpend(){ return state.spendPeriods.slice(-3).reduce((a,p)=>a+p.total,0); }
@@ -315,12 +312,7 @@ const AGENCY_NAMES = {
 function agencyLabel(code){ return AGENCY_NAMES[code] ? `${AGENCY_NAMES[code]} (${code})` : code; }
 
 /* ================= formatting ================= */
-function fmtMoney(v){
-  if(v >= 1e9) return '$' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2) + 'B';
-  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
-  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
-  return '$' + Math.round(v);
-}
+function fmtMoney(v){ return ci.fmt(v, 'money'); }
 function fmtInt(v){ return v.toLocaleString('en-US'); }
 function esc(s){ const d = document.createElement('div'); d.textContent = String(s==null?'':s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
 
@@ -428,7 +420,7 @@ function renderStages(){
 
   /* Footer attribution follows the same rule as the figures. Plan and award are
      read live from Socrata on load, so they say "on load"; Paid is the one figure
-     served from a nightly file, so it says "refreshed nightly" and carries that
+     served from a nightly file, so it names Checkbook NYC and carries that
      file's date. When the Checkbook file is missing or too old to publish, the
      Paid gauge is not drawn and its clause disappears with it, rather than
      claiming a nightly refresh behind a figure the page is not showing. */
@@ -436,7 +428,7 @@ function renderStages(){
   if(fsrc){
     const fAsOf = cbkAsOf();
     fsrc.textContent = state.checkbookOk
-      ? '; Paid from Checkbook NYC, refreshed nightly' + (fAsOf ? ' (' + fAsOf + ')' : '')
+      ? '; Paid from Checkbook NYC' + (fAsOf ? ', as of ' + fAsOf : '')
       : '';
   }
 }

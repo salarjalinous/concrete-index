@@ -810,8 +810,21 @@
     });
   }
 
+  /* ---- subheads: captions carry only unit, scope, and as-of (4.6 #12) ----
+   * The explanatory line under a card's heading moves down to lead the
+   * card's reading note, word for word; ids stay, so pages still write it. */
+  function moveSubheads() {
+    document.querySelectorAll('main .card > .h-sub').forEach(function (sub) {
+      var card = sub.parentElement, note = null;
+      for (var c = card.lastElementChild; c; c = c.previousElementSibling) if (c.classList.contains('tnote')) { note = c; break; }
+      sub.classList.add('ci-sub-note');
+      if (note) card.insertBefore(sub, note); else card.appendChild(sub);
+    });
+  }
+
   function chrome() {
     if (!document.querySelector('meta[name="ci:chrome"]')) return;
+    moveSubheads();
     enhanceSegs(document);
     ci.frameCharts();
     ci.wrapTables();

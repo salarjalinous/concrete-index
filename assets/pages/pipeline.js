@@ -152,18 +152,9 @@ function groupUnspent(rows, keyFn){
 }
 
 /* ================= formatting ================= */
-function fmtMoney(v){
-  if(v >= 1e9) return '$' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2) + 'B';
-  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
-  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
-  return '$' + Math.round(v);
-}
-function fmtInt(v){ return v.toLocaleString('en-US'); }
-function fmtPeriod(p){
-  if(!p) return '';
-  const names = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  return names[+p.slice(4,6)-1] + ' ' + p.slice(0,4);
-}
+function fmtMoney(v){ return ci.fmt(v, 'money'); }
+function fmtInt(v){ return ci.fmt(v, 'int'); }
+function fmtPeriod(p){ return ci.fmt(p, 'period-long?'); }
 function esc(s){ const d = document.createElement('div'); d.textContent = String(s==null?'':s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
 const STAGE_LABEL = { all:'all active phases', pre:'pre-construction phases', con:'construction phase' };
 // Two project counts live on this page and they are not the same number: the
@@ -323,7 +314,7 @@ function wireSeg(id, attr, initial, onChange){
     return;
   }
   document.getElementById('asof').innerHTML =
-    `<strong>${fmtPeriod(state.period)}</strong> capital plan snapshot · ${fmtInt(state.rows.length)} projects active in the plan · published by OMB three times a year`;
+    `<strong>${fmtPeriod(state.period)}</strong> capital plan snapshot · ${fmtInt(state.rows.length)} projects active in the plan`;
   document.getElementById('series-asof').textContent = fmtPeriod(state.period).toUpperCase();
   document.getElementById('loader').style.display = 'none';
   document.getElementById('app').style.display = 'block';

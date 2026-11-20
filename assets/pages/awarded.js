@@ -196,19 +196,10 @@ function monthSeries(rows){
 }
 
 /* ================= formatting ================= */
-function fmtMoney(v){
-  if(v >= 1e9) return '$' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2) + 'B';
-  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
-  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
-  return '$' + Math.round(v);
-}
+function fmtMoney(v){ return ci.fmt(v, 'money'); }
 function fmtInt(v){ return v.toLocaleString('en-US'); }
-function fmtDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
-function fmtMonthLabel(m){
-  const [y,mo] = m.split('-');
-  const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return names[+mo-1] + ' ’' + y.slice(2);
-}
+function fmtDate(d){ return ci.fmt(d, 'date'); }
+function fmtMonthLabel(m){ return ci.fmt(m, 'month-label'); }
 function esc(s){ const d = document.createElement('div'); d.textContent = String(s==null?'':s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
 const WINDOW_LABEL = { 12:'trailing 12 months', 36:'trailing 3 years', 60:'trailing 5 years' };
 
@@ -451,7 +442,7 @@ async function showArchivedFallback(){
   }
   const latest = state.rows.length ? state.rows[0].date : null;
   document.getElementById('asof').innerHTML = latest ?
-    `Latest award published <strong>${fmtDate(latest)}</strong> · ${fmtInt(state.rows.length)} construction awards in the trailing five years · source refreshed daily` : '';
+    `Latest award published <strong>${fmtDate(latest)}</strong> · ${fmtInt(state.rows.length)} construction awards in the trailing five years` : '';
   if(latest){
     document.getElementById('series-asof').textContent = fmtDate(latest).toUpperCase();
   }

@@ -172,7 +172,7 @@ function countdown(days){
   if(days === 0) return 'due today';
   return days + ' day' + (days === 1 ? '' : 's') + ' left';
 }
-function fmtDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function fmtDate(d){ return ci.fmt(d, 'date'); }
 
 // CSV export of the currently shown open-solicitations list. Client-side Blob
 // only, no library, no network. Cells are quote-wrapped and quote-doubled.
@@ -282,7 +282,7 @@ function wireSeg(id, attr, initial, onChange){
     return;
   }
   document.getElementById('asof').innerHTML =
-    `<strong>${state.rows.length}</strong> open construction solicitations · sorted by due date · source updated daily`;
+    `<strong>${state.rows.length}</strong> open construction solicitations · sorted by due date`;
   document.getElementById('series-asof').textContent = state.rows.length + ' NOTICES';
   if(state.dropped){
     const n = state.dropped;

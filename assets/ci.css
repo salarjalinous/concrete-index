@@ -387,6 +387,11 @@ th[aria-sort="ascending"] .ci-sort::after{border-top:0;border-bottom:5px solid v
 th .ci-sort:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 @media print{.ci-table-wrap{max-height:none !important;overflow:visible !important}}
 
+/* ---- moved subheads lead the card's reading note ---- */
+.card > .h-sub.ci-sub-note{margin:var(--s-3) 0 0;padding-top:var(--s-2);border-top:1px solid var(--line);font-size:var(--t-body-sm-size);line-height:var(--t-body-sm-line);color:var(--ink)}
+.card > .h-sub.ci-sub-note:empty{display:none}
+.card > .h-sub.ci-sub-note + .tnote{margin-top:var(--s-1);padding-top:0;border-top:0}
+
 /* ---- loading: sized skeletons and a polite status line ---- */
 #loader.ci-loading,#vloader.ci-loading{padding:var(--s-6) 0 var(--s-8);text-align:left}
 .ci-loading__status{font-family:var(--font-mono);font-size:var(--t-meta-size);line-height:var(--t-meta-line);color:var(--muted);margin-bottom:var(--s-4)}

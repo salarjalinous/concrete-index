@@ -187,14 +187,9 @@ function agencyLabel(code){ return AGENCY_NAMES[code] ? AGENCY_NAMES[code] + ' (
 function agencyName(code){ return AGENCY_NAMES[code] || code; }
 
 /* ================= formatting ================= */
-function fmtMoney(v){
-  if(v >= 1e9) return '$' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2) + 'B';
-  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
-  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
-  return '$' + Math.round(v);
-}
+function fmtMoney(v){ return ci.fmt(v, 'money'); }
 function fmtInt(v){ return v.toLocaleString('en-US'); }
-function fmtPct(v){ return (v*100).toFixed(v*100 >= 10 ? 0 : 1) + '%'; }
+function fmtPct(v){ return ci.fmt(v, 'pct'); }
 function esc(s){ const d = document.createElement('div'); d.textContent = String(s==null?'':s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
 /* First-of-month boundary n complete months before the current (incomplete)
    month. Every award window on the site is twelve FULLY-ELAPSED months: the
@@ -213,7 +208,7 @@ function isoCompleteMonthBoundary(n){
     .toISOString().slice(0,10);
 }
 const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
-function fmtPeriodLong(p){ return MN[+p.slice(4,6)-1] + ' ' + p.slice(0,4); }
+function fmtPeriodLong(p){ return ci.fmt(p, 'period-long'); }
 
 /* ================= app state ================= */
 const state = {

@@ -43,6 +43,12 @@ function normName(raw){
 /* Published day of a City Record timestamp, kept as the raw 'YYYY-MM-DD' prefix
    rather than a Date. Nothing in this section renders the value, it only decides
    windows, and a string keeps that decision independent of the reader's zone. */
+// As-of from the data: the latest award day in the market set.
+function latestAward(){
+  let max = null;
+  for(const r of state.rows) if(r.day && (!max || r.day > max)) max = r.day;
+  return max ? ' &middot; latest award ' + ci.fmt(max, 'date-utc?') : '';
+}
 function dayOf(s){
   const t = String(s == null ? '' : s).slice(0,10);
   return /^\d{4}-\d{2}-\d{2}$/.test(t) ? t : null;
@@ -215,14 +221,9 @@ function aggregate(){
 }
 
 /* ===== formatting ===== */
-function fmtMoney(v){
-  if(v >= 1e9) return '$' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2) + 'B';
-  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
-  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
-  return '$' + Math.round(v);
-}
+function fmtMoney(v){ return ci.fmt(v, 'money'); }
 function fmtInt(v){ return (v||0).toLocaleString('en-US'); }
-function fmtPct(v){ return v === null ? '&ndash;' : (v*100).toFixed(1) + '%'; }
+function fmtPct(v){ return ci.fmt(v, 'pct1-html?'); }
 function esc(s){ const d = document.createElement('div'); d.textContent = String(s==null?'':s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
 
 /* ===== chart defaults ===== */
@@ -365,7 +366,7 @@ function wireControls(){
     return;
   }
   document.getElementById('asof').innerHTML =
-    'City Record construction award notices &middot; deduped per procurement &middot; refreshed on load';
+    'City Record construction award notices &middot; deduped per procurement' + latestAward();
   document.getElementById('loader').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   wireControls();

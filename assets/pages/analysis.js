@@ -304,17 +304,13 @@ const AGENCY_NAMES = {
   DFTA:'Aging', ACS:'Children’s Services', HPD:'Housing Preservation & Dev'
 };
 function agencyLabel(c){ return AGENCY_NAMES[c] ? `${AGENCY_NAMES[c]} (${c})` : c; }
-function fmtMoney(v){
-  if(v >= 1e9) return '$' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2) + 'B';
-  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
-  return '$' + Math.round(v/1e3) + 'K';
-}
+function fmtMoney(v){ return ci.fmt(v, 'money-k'); }
 function fmtInt(v){ return v.toLocaleString('en-US'); }
-function fmtPct(v){ return (v*100).toFixed(0) + '%'; }
+function fmtPct(v){ return ci.fmt(v, 'pct0'); }
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-function fmtYM(m){ return MONTH_SHORT[+m.slice(5,7)-1] + ' ' + m.slice(0,4); }
-function fmtPeriodLong(p){ return MONTH_NAMES[+p.slice(4,6)-1] + ' ' + p.slice(0,4); }
+function fmtYM(m){ return ci.fmt(m, 'ym-short'); }
+function fmtPeriodLong(p){ return ci.fmt(p, 'period-long'); }
 
 /* ================= rendering ================= */
 const COLOR_A = '#a8462c', COLOR_B = '#243b53', COLOR_C = '#276b45', GRID = '#e6ddd5';
@@ -387,7 +383,7 @@ function renderIndexChart(){
 
 /* ================= cost-adjusted rendering ================= */
 const COLOR_MAT = '#a8462c', COLOR_LAB = '#243b53';
-function fmtSignedPct(v){ return (v>=0?'+':'−') + Math.abs(v).toFixed(0) + '%'; }
+function fmtSignedPct(v){ return ci.fmt(v, 'pct-signed'); }
 
 function renderAdjKpis(){
   const a = D.adj;
@@ -532,6 +528,12 @@ function renderEscalation(){
     `<strong>Reading:</strong> across <strong>${fmtInt(D.esc.n)}</strong> projects tracked over the span, the median budget grew <strong>+${fmtPct(D.esc.median)}</strong> and ${fmtPct(D.esc.grewShare)} of projects grew more than 5%. In aggregate the City added <strong>${fmtMoney(Math.abs(D.esc.added))}</strong> ${D.esc.added>=0?'to':'(net reduction) from'} the budgets of already-planned projects, demand growth that never appears as a new project announcement.`;
 }
 
+// As-of from the data: the last month the cost series carries.
+function costThrough(){
+  const ser = D.costOk && D.cost && Array.isArray(D.cost.series) ? D.cost.series : [];
+  const last = ser.length ? ser[ser.length - 1].month : null;
+  return last ? ' · cost series through ' + ci.fmt(last, 'ym-short') : '';
+}
 function unavailNote(host){
   return `<div class="unavail"><span>This dataset (${host}) is temporarily unavailable. The rest of the page reflects what loaded.</span><button type="button" class="ci-btn" data-action="reload">Retry</button></div>`;
 }
@@ -559,7 +561,7 @@ function unavailNote(host){
 
   const planSpan = D.planOk ? `capital plan snapshots ${fmtPeriodLong(D.periods[0])} → ${fmtPeriodLong(D.periods[3])}` : 'capital plan temporarily unavailable';
   document.getElementById('asof').innerHTML =
-    `Award history since 2003 · ${planSpan} · awards refreshed on load, cost series nightly`;
+    `Award history since 2003 · ${planSpan}` + costThrough();
   document.getElementById('loader').style.display='none';
   document.getElementById('app').style.display='block';
 

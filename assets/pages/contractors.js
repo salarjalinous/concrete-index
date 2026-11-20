@@ -81,17 +81,12 @@ async function buildNYWork(vendorClause){
   }
   return out;
 }
-function fmtMoney(v){
-  if(v >= 1e9) return '$' + (v/1e9).toFixed(2) + 'B';
-  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
-  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
-  return '$' + Math.round(v);
-}
+function fmtMoney(v){ return ci.fmt(v, 'money-b2'); }
 /* Null-guarded, matching the market block's own copy of this helper. Every
    current caller passes a count, so the guard changes nothing today; it exists
    so a future caller with a missing count renders 0 instead of throwing and
    taking the whole profile render down with it. */
-function fmtInt(v){ return (v||0).toLocaleString('en-US'); }
+function fmtInt(v){ return ci.fmt(v, 'int0'); }
 function fmtDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
 function esc(s){ const d=document.createElement('div'); d.textContent=String(s==null?'':s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
 function cleanName(s){ return String(s==null?'':s).replace(/\s*[\?�]\s*/g,' / ').replace(/\s{2,}/g,' ').trim(); }

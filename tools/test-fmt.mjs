@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 // Proves ci.fmt reproduces every number and date format the pages print.
+// Pages whose formatter now delegates to ci.fmt are proved against the frozen
+// original (tools/fmt-legacy.json).
 // Each page formatter is read straight out of its module in assets/pages/,
 // run in a sandbox, and compared with ci.fmt(value, kind) over a fixture set:
 // boundary values for every rounding step, a few thousand log-spaced values,
@@ -36,8 +38,19 @@ const PRELUDE = `
   var MONTH_NAMES = MONTHS, MN = MONTHS;
   var MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   function esc(s){ return String(s==null?'':s).replace(/[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]/g,'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }`;
-function pageFn(file, name, prelude = PRELUDE) {
-  return vm.runInNewContext(`${prelude}\n${extract(file, name)}\n${name}`, {});
+// Once a page delegates to ci.fmt, the proof runs against the page's
+// original implementation, frozen in tools/fmt-legacy.json when the page was
+// switched; the page itself must name the same kind as the pairing.
+const LEGACY = JSON.parse(readFileSync(join(ROOT, 'tools', 'fmt-legacy.json'), 'utf8'));
+function pageFn(file, name, prelude = PRELUDE, kind = null) {
+  let body = extract(file, name);
+  const m = body.match(/ci\.fmt\(\s*[A-Za-z_$][\w$]*\s*,\s*'([^']+)'\s*\)/);
+  if (m) {
+    if (kind && m[1] !== kind) throw new Error(`${file} ${name} delegates to ci.fmt kind '${m[1]}', pairing says '${kind}'`);
+    body = LEGACY[`${file}:${name}`];
+    if (!body) throw new Error(`${file} ${name} delegates to ci.fmt but has no frozen original in tools/fmt-legacy.json`);
+  }
+  return vm.runInNewContext(`${prelude}\n${body}\n${name}`, {});
 }
 
 // ---------------------------------------------------------------- fixtures
@@ -101,7 +114,7 @@ const P = [
 const run = (f, v) => { try { return f(v); } catch (e) { return 'THROW ' + e.constructor.name; } };
 let fail = 0, n = 0;
 for (const [file, name, kind, values] of P) {
-  const ref = name.startsWith('<inline>') ? (v) => Number(v).toFixed(1) : pageFn(file, name);
+  const ref = name.startsWith('<inline>') ? (v) => Number(v).toFixed(1) : pageFn(file, name, PRELUDE, kind);
   if (name.startsWith('<inline>') && !readFileSync(join(ROOT, 'assets', 'pages', file), 'utf8').includes('Number(val).toFixed(1)')) throw new Error('home.js no longer formats the index inline');
   let bad = null;
   for (const v of values) {
