@@ -1,312 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://data.cityofnewyork.us; upgrade-insecure-requests">
-<meta name="referrer" content="strict-origin-when-cross-origin">
+<!-- ci:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' https://data.cityofnewyork.us; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="same-origin">
+<meta name="color-scheme" content="light">
+<title>Agencies · The Concrete Index</title>
+<meta name="description" content="Pick a New York City agency and read its construction demand: committed capital plan against awarded contracts, the trades it buys, the firms it pays, and a dollar-weighted borough footprint.">
 <link rel="canonical" href="https://concreteindex.co/agency/">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="The Concrete Index">
+<meta property="og:title" content="Agencies · The Concrete Index">
+<meta property="og:description" content="One agency at a time: committed versus awarded, top trades, top recipients, and where the work lands across the five boroughs.">
 <meta property="og:url" content="https://concreteindex.co/agency/">
 <meta property="og:image" content="https://concreteindex.co/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://concreteindex.co/og-image.png">
-<title>Agency Profile · The Concrete Index</title>
-<meta name="description" content="Pick a New York City agency and read its construction demand: committed capital plan against awarded contracts, the trades it buys, the firms it pays, and a dollar-weighted borough footprint.">
-<meta property="og:title" content="The Concrete Index · Agency Profile">
-<meta property="og:description" content="One agency at a time: committed versus awarded, top trades, top recipients, and where the work lands across the five boroughs.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23ae4e34%22/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha384-bs/nf9FbdNouRbMiFcrcZfLXYPKiPaGVGplVbv7dLGECccEXDW+S3zjqSKR5ZEaD" crossorigin="anonymous"></script>
-<style>
-:root{
-  --paper:#f7f3ef; --surface:#fefbf8; --band:#f2ede8;
-  --ink:#201611; --navy:#243b53; --muted:#6b5e56; --faint:#968a7f;
-  --line:#ded5ce; --rule:#201611;
-  --accent:#ae4e34; --accent-soft:#eadbd4; --steel:#2f5d8f;
-  --pos:#2f7d52; --neg:#9e362f; --radius:3px;
-  --maxw:1180px; --gut:28px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'Public Sans',-apple-system,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
-a{color:var(--steel);text-decoration:none}
-a:hover{text-decoration:underline}
-.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
-.serif{font-family:'Source Serif 4',Georgia,serif}
-.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
-
-/* ---------- header ---------- */
-header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2px solid var(--ink)}
-.nav{display:flex;align-items:center;justify-content:space-between;height:62px}
-.brand{display:flex;align-items:center;gap:10px;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:20px;letter-spacing:-.01em;color:var(--ink)}
-.brand svg{color:var(--navy);flex-shrink:0}
-.brand .tick{color:var(--accent)}
-.nav-links{display:flex;gap:17px;align-items:center;font-size:13.5px;font-weight:500}
-.nav-links a{color:var(--muted)}
-.nav-links a:hover{color:var(--ink);text-decoration:none}
-.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px}
-.badge-live{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--pos);background:rgba(47,125,82,.1);border:1px solid rgba(47,125,82,.34);border-radius:3px;padding:3px 9px}
-.badge-live .dot{width:6px;height:6px;border-radius:50%;background:var(--pos);animation:pulse 2.4s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* ---------- release-series bar ---------- */
-.series-bar{background:var(--band);border-bottom:1px solid var(--line)}
-.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px var(--gut);max-width:var(--maxw);margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.series-bar b{color:var(--ink);font-weight:600}
-.series-bar .sep{color:var(--faint);padding:0 12px}
-@media(max-width:720px){.series-bar .inner{white-space:normal}}
-
-/* ---------- hero ---------- */
-.hero{padding:46px 0 14px}
-.kicker{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:14px}
-.hero h1{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(32px,4.6vw,46px);line-height:1.06;letter-spacing:-.012em;max-width:840px;color:var(--ink)}
-.hero p.sub{margin-top:17px;font-size:16px;color:var(--muted);max-width:720px}
-.hero .asof{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--faint)}
-.hero .asof strong{color:var(--muted);font-weight:600}
-
-/* ---------- agency selector / controls ---------- */
-.controls{display:flex;align-items:flex-end;gap:22px;flex-wrap:wrap;padding:24px 0 4px}
-.ctrl{display:flex;flex-direction:column;gap:7px}
-.ctrl label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
-.agency-select{font-family:'Source Serif 4',Georgia,serif;font-weight:600;font-size:21px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-bottom:2px solid var(--ink);border-radius:var(--radius);padding:9px 38px 9px 13px;cursor:pointer;min-width:330px;
-  appearance:none;-webkit-appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ae4e34' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center}
-.agency-select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.ctrl .ctrl-note{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint)}
-
-/* ---------- selected-agency banner ---------- */
-.agency-banner{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:14px;padding:11px 0 12px;border-top:2px solid var(--ink);border-bottom:1px solid var(--line)}
-.agency-banner .ab-name{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;min-width:0}
-.agency-banner .ab-full{font-weight:700;font-size:clamp(22px,3vw,28px);letter-spacing:-.01em;line-height:1.05;color:var(--ink)}
-.agency-banner .ab-code{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--paper);background:var(--accent);border-radius:3px;padding:3px 8px;white-space:nowrap}
-.agency-banner .ab-asof{font-size:11.5px;letter-spacing:.04em;color:var(--faint);text-align:right;white-space:nowrap}
-.agency-banner .ab-asof b{color:var(--muted);font-weight:600}
-@media(max-width:560px){.agency-banner .ab-asof{text-align:left}}
-
-/* ---------- KPI tape ---------- */
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:24px 0 8px;border-left:1px solid var(--line)}
-.kpi{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px 18px}
-.kpi.hl{border-top-color:var(--accent)}
-.kpi .k-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
-.kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--navy);line-height:1}
-.kpi.hl .k-value{font-size:clamp(30px,4.5vw,38px);color:var(--ink)}.kpi:not(.hl) .k-value{color:var(--navy)}
-.kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:8px}
-
-/* ---------- velocity tape (per-agency) ---------- */
-.vel-tape{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-left:1px solid var(--line);margin-top:2px}
-.vt{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:15px 16px 16px}
-.vt.hl{border-top-color:var(--accent)}
-.vt-label{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.09em;color:var(--faint)}
-.vt-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:24px;font-weight:600;margin-top:9px;letter-spacing:-.01em;color:var(--navy);line-height:1}
-.vt.hl .vt-value{color:var(--ink)}
-.vt-note{font-size:12px;color:var(--muted);margin-top:7px}
-@media(max-width:880px){.vel-tape{grid-template-columns:repeat(2,1fr)}.vt:nth-child(2){border-right:0}}
-@media(max-width:560px){.vel-tape{grid-template-columns:1fr 1fr}.vt-value{font-size:21px}}
-
-/* ---------- section heads ---------- */
-.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:0}
-.sec-head h2{font-family:'Source Serif 4',Georgia,serif;font-size:21px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
-.sec-head .cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em;text-align:right;white-space:nowrap}
-
-.grid{display:grid;gap:22px;padding:30px 0 0}
-.grid.two{grid-template-columns:1fr 1fr}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 22px;box-shadow:0 1px 0 rgba(32,22,17,.04)}
-.card .h-sub{font-size:12.5px;color:var(--muted);margin-top:9px;margin-bottom:18px;max-width:760px}
-.chart-box{position:relative;height:300px}
-.chart-box.tall{height:380px}
-.tnote{font-size:11.5px;line-height:1.55;color:var(--muted);margin-top:13px;padding-top:9px;border-top:1px solid var(--line)}
-
-/* ---------- funnel (committed vs awarded, side by side, never blended) ---------- */
-.funnel{display:grid;grid-template-columns:1fr 1fr;gap:0}
-.funnel .leg{padding:18px 22px;border-top:2px solid var(--ink)}
-.funnel .leg.committed{border-top-color:var(--navy);border-right:1px solid var(--line)}
-.funnel .leg.awarded{border-top-color:var(--accent)}
-.funnel .leg .scope{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
-.funnel .leg .scope b{color:var(--ink);font-weight:600}
-.funnel .leg .big{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:34px;font-weight:600;margin-top:9px;color:var(--ink);line-height:1}
-.funnel .leg .src{font-size:12.5px;color:var(--muted);margin-top:9px}
-.funnel .leg .src code{font-family:'IBM Plex Mono',monospace;font-size:11.5px;background:var(--band);padding:1px 5px;border-radius:3px;border:1px solid var(--line)}
-.scope-rule{display:flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--faint);text-transform:uppercase;margin:14px 0 0;padding:9px 0 0;border-top:1px dashed var(--line)}
-@media(max-width:720px){.funnel{grid-template-columns:1fr}.funnel .leg.committed{border-right:0;border-bottom:1px solid var(--line)}}
-
-/* ---------- borough map ---------- */
-.boro-wrap{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:26px;align-items:start}
-@media(max-width:820px){.boro-wrap{grid-template-columns:1fr}}
-.boro-svg{width:100%;height:auto;display:block}
-.boro-svg path{stroke:var(--surface);stroke-width:1.4;cursor:pointer;transition:opacity .12s}
-.boro-svg path:hover,.boro-svg path.on{opacity:.82}
-.boro-svg .boro-lbl{pointer-events:none}
-.boro-svg .boro-lbl text{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.06em;fill:var(--surface);text-anchor:middle;paint-order:stroke;stroke:rgba(32,22,17,.28);stroke-width:.6px}
-.boro-legend{display:flex;align-items:center;gap:10px;margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--faint);letter-spacing:.03em}
-.boro-legend .ramp{flex:1;height:9px;border-radius:2px;background:linear-gradient(90deg,#eadbd4,#ae4e34)}
-.boro-readout{background:var(--band);border-left:3px solid var(--accent);border-radius:0;padding:15px 18px}
-.boro-readout .ro-head{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:17px;color:var(--ink)}
-.boro-readout .ro-grid{margin-top:12px;display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:13px}
-.boro-readout .ro-grid dt{color:var(--muted)}
-.boro-readout .ro-grid dd{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink);text-align:right}
-.boro-bars{margin-top:8px}
-.boro-bars table{width:100%}
-.bg-cell{position:relative}
-.bg-bar{position:absolute;left:0;top:50%;transform:translateY(-50%);height:60%;background:var(--accent-soft);border-radius:0;z-index:0}
-.bg-cell span{position:relative;z-index:1}
-.boro-row.multi td{color:var(--muted)}
-.boro-row.multi .t-title{color:var(--muted);font-style:italic}
-
-/* ---------- reading box ---------- */
-.reading{background:var(--band);border-left:3px solid var(--accent);border-radius:0;padding:16px 20px;margin-top:22px;font-size:14px;color:var(--muted);max-width:900px}
-.reading strong{color:var(--ink);font-weight:600}
-.provenance{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);background:var(--band);border-left:3px solid var(--faint);border-radius:0;padding:11px 16px;margin-top:14px;line-height:1.55}
-.provenance b{color:var(--ink);font-weight:600}
-.unavail{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);background:var(--band);border-left:3px solid var(--faint);border-radius:0;padding:12px 16px;margin-top:14px}
-
-/* ---------- tables ---------- */
-table{width:100%;border-collapse:collapse;font-size:13.5px}
-th{text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);padding:0 10px 8px;border-bottom:1px solid var(--ink)}
-td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-tr:last-child td{border-bottom:0}
-td.num,th.num{text-align:right}
-td.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
-td .t-title{font-weight:500;color:var(--ink)}
-td .t-sub{font-size:12px;color:var(--muted);margin-top:3px}
-.amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
-.rank{color:var(--faint);font-weight:600;width:28px;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
-tr.grp-row td{padding:13px 10px 6px;border-bottom:1px solid var(--ink);font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--faint)}
-tr.grp-row.second td{padding-top:20px}
-.yrs{font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
-.yrs.slow{color:var(--neg)}
-.yrs.fast{color:var(--pos)}
-
-/* ---------- methodology ---------- */
-.method{padding:44px 0 10px}
-.method h2{font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:700;letter-spacing:-.012em;color:var(--ink)}
-.method-body{margin-top:24px}
-.method h3{font-family:'Public Sans',sans-serif;font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin:24px 0 6px;color:var(--ink)}
-.method p{font-size:14px;color:var(--muted);max-width:820px}
-.method p+p{margin-top:8px}
-.method code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:var(--band);padding:1px 5px;border-radius:3px;border:1px solid var(--line)}
-
-/* ---------- footer ---------- */
-footer{margin-top:54px;background:var(--band);border-top:2px solid var(--ink);padding:30px 0 40px;font-size:13px;color:var(--muted)}
-footer a{color:var(--steel)}
-footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-footer .brand{font-size:17px;color:var(--ink)}
-footer .brand svg{color:var(--navy)}
-footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em}
-
-#loader{padding:80px 0;text-align:center;color:var(--muted)}
-.spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-#error{display:none;padding:60px 24px;text-align:center;color:var(--muted)}
-#app{display:none}
-@media(max-width:880px){
-  .kpis{grid-template-columns:repeat(2,1fr)}
-  .kpi:nth-child(2){border-right:0}
-  .grid.two{grid-template-columns:1fr}
-}
-@media(max-width:560px){
-  .kpis{grid-template-columns:1fr 1fr}
-  .kpi .k-value{font-size:24px}
-  .hero{padding-top:34px}
-  :root{--maxw:1180px;--gut:18px}
-  .agency-select{min-width:0;width:100%;font-size:18px}
-}
-.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
-@media(max-width:1180px){
-  .menu-btn{display:block}
-  .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:61px;left:calc(-1 * var(--gut));right:calc(-1 * var(--gut));background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px var(--gut);gap:13px;box-shadow:0 10px 24px rgba(32,22,17,.16);z-index:60;max-height:calc(100vh - 62px);overflow-y:auto}
-  .nav-links.open{display:flex}
-}
-
-/* ---------- reduced motion ---------- */
-@media (prefers-reduced-motion: reduce){
-  .badge-live .dot{animation:none}
-  .spinner{animation:none}
-  *{scroll-behavior:auto}
-}
-
-/* ---------- print ---------- */
-@media print{
-  header,.series-bar,.badge-live,.controls,.menu-btn{display:none !important}
-  body{background:#fff;color:#000}
-  .card{background:#fff !important;box-shadow:none}
-  footer{background:#fff;border-top:1px solid #000;color:#000}
-  footer a,a{color:#000}
-}
-
-/* ---------- display scaling: fill wide / high-resolution screens ---------- */
-@media(min-width:1400px){
-  :root{--maxw:1330px;--gut:34px}
-  body{font-size:15.5px}
-  .kpi .k-value{font-size:33px}
-  .kpi.hl .k-value{font-size:42px}
-  .hero p.sub,.lp-sub{font-size:17.5px;max-width:860px}
-  .hero h1{max-width:960px}
-  .method p{max-width:980px}
-  table{font-size:14px}
-  .chart-box{height:330px}
-  .chart-box.tall{height:376px}
-}
-@media(min-width:1750px){
-  :root{--maxw:1500px;--gut:40px}
-  body{font-size:16px}
-  .kpi .k-value{font-size:35px}
-  .kpi.hl .k-value{font-size:45px}
-  .method p{max-width:1060px}
-  table{font-size:14.5px}
-  .chart-box{height:360px}
-  .chart-box.tall{height:410px}
-}
-@media(min-width:2100px){ :root{--maxw:1620px} }
-/* ---------- narrow: wide tables scroll inside their card, not the page ---------- */
-@media(max-width:900px){
-  .card{overflow-x:auto}
-  .card table{min-width:560px}
-  .sec-head{flex-wrap:wrap}
-  .sec-head .cap{white-space:normal;text-align:left}
-}
-/* suppressed cell: a figure below the floor for a meaningful reading, not a zero */
-.na{font-family:'IBM Plex Mono',monospace;font-weight:500;color:var(--faint)}
-</style>
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/public-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/ci.css">
+<link rel="stylesheet" href="/assets/pages/agency.css">
+<meta name="ci:export" content="on">
+<script src="/assets/ci.js" defer></script>
+<script src="/assets/vendor/chart.umd.min.js" defer></script>
+<script src="/assets/ci-chart.js" defer></script>
+<script src="/assets/pages/agency.js" defer></script>
+<!-- /ci:head -->
 </head>
 <body>
 
-<header>
-  <div class="wrap nav">
-    <div class="brand">
-      <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
-      <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
-    </div>
-    <button class="menu-btn" aria-label="Menu" aria-expanded="false" onclick="const o=this.nextElementSibling.classList.toggle('open');this.setAttribute('aria-expanded',o)">☰</button>
-    <nav class="nav-links">
-      <a href="/pipeline/">Pipeline</a>
-      <a href="/solicitations/">Bidding</a>
-      <a href="/awarded/">Awarded</a>
-      <a href="/funnel/">Funnel</a>
-      <a href="/agency/" class="active">Agencies</a>
-      <a href="/regional/">SCA &amp; MTA</a>
-      <a href="/competitive/">Contractors</a>
-      <a href="/contracts/">Contracts</a>
-      <a href="/analysis/">Analysis</a>
-      <a href="/briefing/">Briefing</a>
-      <a href="/about/">About</a>
-      <span class="badge-live"><span class="dot"></span>Live data</span>
-    </nav>
+<!-- ci:header -->
+<a class="ci-skip" href="#content">Skip to content</a>
+<header class="ci-masthead">
+  <div class="wrap ci-masthead__bar">
+    <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="26" height="26" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+    <nav class="ci-utility" aria-label="Site"><a href="/methodology/">Methodology</a><a href="/about/">About</a><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></nav>
+    <button class="ci-menu-btn" type="button" aria-expanded="false" aria-controls="ci-menu"><svg class="ci-i-menu" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="ci-i-close" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="ci-menu-btn__label">Menu</span></button>
   </div>
+  <nav class="ci-rail" id="ci-menu" aria-label="Sections">
+    <div class="wrap ci-rail__inner">
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-stages">Stages</p><ul class="ci-rail__list" aria-labelledby="ci-g-stages"><li><a href="/pipeline/">Pipeline</a></li><li><a href="/solicitations/">Bidding</a></li><li><a href="/awarded/">Awarded</a></li><li><a href="/contracts/">Contracts</a></li><li><a href="/funnel/">Funnel</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-entities">Entities</p><ul class="ci-rail__list" aria-labelledby="ci-g-entities"><li><a href="/agency/" aria-current="page">Agencies</a></li><li><a href="/competitive/">Contractors</a></li><li><a href="/regional/">Regional</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-synthesis">Synthesis</p><ul class="ci-rail__list" aria-labelledby="ci-g-synthesis"><li><a href="/analysis/">Analysis</a></li><li><a href="/briefing/">Briefing</a></li></ul></div>
+      <div class="ci-rail__group ci-rail__group--utility"><p class="ci-rail__label" id="ci-g-site">Site</p><ul class="ci-rail__list" aria-labelledby="ci-g-site"><li><a href="/methodology/">Methodology</a></li><li><a href="/about/">About</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></li></ul></div>
+    </div>
+  </nav>
 </header>
+<!-- /ci:header -->
 
 <div class="series-bar">
   <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-AGENCY</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CAPITAL PLAN (fb86-vt7u), 3× YEARLY · CITY RECORD (qyyg-4tf5), DAILY</b><span class="sep">·</span>PLAN&nbsp;·&nbsp;<b id="series-asof">–</b></div>
 </div>
 
+<main id="content" tabindex="-1">
+
 <div class="wrap">
   <div class="hero">
-    <div class="kicker">Agency Profile</div>
     <h1>One agency at a time.</h1>
     <p class="sub">Citywide totals are a starting point; the working unit is the single agency. Pick an agency below and the page repaints to that agency's own book: what it has committed in the capital plan, what it has awarded in the City Record, the trades it buys, the firms it pays, and where the work lands across the five boroughs.</p>
     <p class="asof" id="asof">Loading the capital plan and the award record…</p>
@@ -320,11 +78,11 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 
 <div id="error" class="wrap">
   <p><strong>Couldn't reach NYC Open Data.</strong></p>
-  <p style="margin-top:6px">The City's API may be momentarily unavailable.</p>
-  <button type="button" onclick="location.reload()" style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--paper);background:var(--navy);border:none;border-radius:var(--radius);padding:9px 16px;cursor:pointer">Retry</button>
+  <p class="u-mt-2">The City's API may be momentarily unavailable.</p>
+  <button type="button" class="ci-btn" data-action="reload">Retry</button>
 </div>
 
-<main id="app" class="wrap">
+<div data-ci-main id="app" class="wrap">
 
   <section class="controls">
     <div class="ctrl">
@@ -367,8 +125,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
           <div class="src">Construction award notices over the twelve fully-elapsed months, deduped to one row per <code>pin</code>. Source <code>qyyg-4tf5</code>.</div>
         </div>
       </div>
-      <div class="scope-rule">Spent · Checkbook NYC&nbsp;<span style="color:var(--faint)">·</span>&nbsp;archive only, the City's payment ledger blocks browser access; tracked nightly, not shown live here.</div>
-      <div class="reading" id="funnel-reading"></div>
+      <div class="scope-rule">Spent · Checkbook NYC&nbsp;<span class="u-faint">·</span>&nbsp;archive only, the City's payment ledger blocks browser access; tracked nightly, not shown live here.</div>
+      <div class="reading ci-note ci-note--label" id="funnel-reading"></div>
       <div class="tnote">Committed and Awarded answer different questions on different books. Committed is budget the agency is sitting on; Awarded is contracts it has signed in the last year. A wide gap between them is normal, it is the runway of funded work an agency has yet to put out to bid.</div>
     </div>
   </section>
@@ -383,7 +141,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <div class="vt"><div class="vt-label">Awarded, trailing year</div><div class="vt-value" id="vel-awarded">&ndash;</div><div class="vt-note">City Record construction awards</div></div>
         <div class="vt hl"><div class="vt-label">Backlog coverage</div><div class="vt-value" id="vel-coverage">&ndash;</div><div class="vt-note">stock-over-flow ratio, not a delivery schedule</div></div>
       </div>
-      <div class="reading" id="vel-reading-agency"></div>
+      <div class="reading ci-note ci-note--label" id="vel-reading-agency"></div>
       <div class="tnote">Committed, unspent is the agency's open pipeline in the latest capital plan snapshot. Spent is its trailing-year capital outlay, measured as the growth in cumulative spend-to-date across plan snapshots, counted only on projects observed in both of any two consecutive snapshots so a project's back-history does not land in the period it first appears. Where that outlay falls below the floor for a meaningful reading, the spend cell reads as an en dash rather than a number. Backlog coverage = open pipeline &divide; trailing-year spend, in years. It is a structural ratio, a stock measured now over a flow measured over the trailing year, not a delivery schedule, and it is shown only where the agency's own trailing self-delivered outlay clears the floor below which its work is mostly built by another managing agency.</div>
     </div>
   </section>
@@ -410,10 +168,10 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     <div class="card">
       <div class="sec-head"><h2>Borough footprint</h2><span class="cap" id="boro-cap">DOLLAR-WEIGHTED · 5 BOROUGHS</span></div>
       <div class="h-sub" id="boro-hsub">Where the selected agency's work lands across the five boroughs, weighted by dollars rather than project count. The citywide and multi-borough share is its own slice, never spread across the map. Click a borough to read its detail.</div>
-      <div class="controls" style="padding:4px 0 18px">
+      <div class="controls u-pt-1 u-pb-4">
         <div class="ctrl">
           <label>Scope</label>
-          <div class="seg" id="boro-seg" style="display:inline-flex;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden">
+          <div class="seg" id="boro-seg">
             <button type="button" data-scope="committed" class="seg-btn">Committed</button>
             <button type="button" data-scope="awarded" class="seg-btn">Awarded</button>
           </div>
@@ -439,7 +197,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
               <text x="89" y="321">SI</text>
             </g>
           </svg>
-          <div class="boro-legend"><span>LOW</span><span class="ramp"></span><span>HIGH</span><span style="margin-left:8px;color:var(--faint)">· by dollars</span></div>
+          <div class="boro-legend"><span>LOW</span><span class="ramp"></span><span>HIGH</span><span class="u-ml-2 u-faint">· by dollars</span></div>
           <div class="provenance" id="boro-provenance"></div>
         </div>
         <div>
@@ -461,7 +219,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2>Backlog coverage across agencies</h2><span class="cap">YEARS · TOP 10</span></div>
       <div class="h-sub">Years of funded work at each agency's current spending pace, so the selected agency reads against its peers. Longer bars are agencies sitting on more committed work relative to how fast they pay it out.</div>
       <div class="chart-box tall"><canvas id="chart-vel-rank"></canvas></div>
-      <div class="reading" id="vel-rank-reading"></div>
+      <div class="reading ci-note ci-note--label" id="vel-rank-reading"></div>
       <div class="tnote">Each bar is one agency's backlog coverage = open pipeline &divide; trailing-year spend, in years. A longer bar means more committed-but-unspent work relative to how fast the agency pays it out. Only the ten agencies with the deepest coverage among those with a computable ratio are shown.</div>
     </div>
   </section>
@@ -488,7 +246,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <thead><tr><th>Agency</th><th class="num">Dated contracts</th><th class="num">First payment, days</th><th class="num">Days to 50% paid</th></tr></thead>
         <tbody></tbody>
       </table>
-      <div class="reading" id="payvel-reading"></div>
+      <div class="reading ci-note ci-note--label" id="payvel-reading"></div>
       <div class="tnote">Computed from the dated set, the construction contracts with confirmed Checkbook NYC disbursements. For each agency, the first-payment figure is the median first-payment lag after registration and the days-to-50% figure is the median days from registration to half the contract value paid, both over its dated contracts, ignoring contracts that never reached the mark. Days to 50% is measured from registration. Agencies with fewer than 8 dated contracts are omitted; the bar shows median days to 50% paid, fastest first.</div>
     </div>
   </section>
@@ -521,1157 +279,25 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     </div>
   </section>
 
+</div>
 </main>
 
-<footer>
-  <div class="wrap f-row">
-    <div>
-      <div class="brand">
-        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
-        <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.01em">The Concrete Index<span class="tick" style="color:var(--accent)">.</span></span>
-      </div>
-      <div style="margin-top:8px">NYC public construction capital, tracked end to end.</div>
-      <div style="margin-top:6px;font-size:12px;color:var(--faint);max-width:430px">An independent project built by Salar Jalinous using only public data. Not affiliated with any employer.</div>
+<!-- ci:footer -->
+<footer class="ci-footer">
+  <div class="wrap ci-footer__inner">
+    <div class="ci-footer__brand">
+      <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="22" height="22" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+      <p class="ci-footer__tag">NYC public construction capital, tracked end to end.</p>
     </div>
-    <div style="text-align:right" class="f-meta">
-      <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
-      <div style="margin-top:5px">© 2026 <a href="/about/">Salar Jalinous</a></div>
+    <nav class="ci-footer__links" aria-label="Site information">
+      <ul><li><a href="/methodology/">Methodology</a></li><li><a href="/sources/">Sources</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source on GitHub</a></li><li><a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">Report a correction</a></li></ul>
+    </nav>
+    <div class="ci-footer__meta">
+      <p>Not affiliated with the City or State of New York or any employer.</p>
+      <p><a href="/about/">© <span data-ci-year="2026">2026</span> The Concrete Index</a></p>
     </div>
   </div>
 </footer>
-
-<script>
-'use strict';
-/* ================= data layer ================= */
-const TOKEN = '3TAzQQPiSG2T4WGWfYYUxxqfJ';
-const PLAN_API  = 'https://data.cityofnewyork.us/resource/fb86-vt7u.json';
-const AWARD_API = 'https://data.cityofnewyork.us/resource/qyyg-4tf5.json';
-// City Record award category that means hard construction (bondable work); the
-// other Construction-prefixed category is design/CM professional services. Same
-// split the Briefing uses, so recipients read the same across the site.
-const HARD_CAT = 'Construction/Construction Services';
-const COLOR_A = '#ae4e34', COLOR_B = '#243b53', GRID = '#e3dbd3';
-
-async function getJSON(api, params){
-  const res = await fetch(api + '?' + new URLSearchParams(params), { headers: { 'X-App-Token': '3TAzQQPiSG2T4WGWfYYUxxqfJ' } });
-  if(!res.ok) throw new Error('API ' + res.status);
-  return res.json();
-}
-
-/* ---------- phase normalization (same rules as Pipeline/Velocity) ---------- */
-const PHASE_MAP = {
-  'pending':'Pending','initiation':'Pending','pre-design':'Pre-Design','predesign':'Pre-Design',
-  'design':'Design','construction procurement':'Procurement','construction':'Construction',
-  'design build':'Construction','design built':'Construction','close-out':'Close-out','closeout':'Close-out'
-};
-const EXCLUDED = new Set([
-  'completed','cancelled','inactive','on-hold','on hold','transferred',
-  'withdrawn','terminated','defaulted','capitally ineligible','expense',
-  'defunded','funding withdrawn','rescinded','fmsid changed','project renamed','n/a',
-  'land acquisition','property acquisition','real estate transaction','fundraising',
-  'it project','non capital fund','equipment','consultant services']);
-const PHASE_ORDER = ['Pending','Pre-Design','Design','Procurement','Construction','Close-out','Other active'];
-function normPhase(raw){
-  const p = (raw||'').replace(/[()]/g,'').trim().toLowerCase();
-  if(EXCLUDED.has(p)) return 'excluded';
-  return PHASE_MAP[p] || 'Other active';
-}
-function phaseRank(b){
-  const i = PHASE_ORDER.indexOf(b);
-  return i === -1 ? -1 : (b === 'Other active' ? -1 : i);
-}
-
-/* ---------- borough buckets ---------- */
-const BOROS = ['Manhattan','Brooklyn','Queens','Bronx','Staten Island'];
-const MULTI = 'Citywide / multi-borough / unspecified';
-
-/* Capital-plan borough is a structured field: map onto the five canonical
-   boroughs, route Citywide / blank / unrecognized to the explicit bucket. */
-function normBorough(raw){
-  const s = (raw||'').trim();
-  if(BOROS.includes(s)) return s;
-  return MULTI;
-}
-
-/* Award borough is DERIVED FROM NOTICE TEXT (softest figure). Prefer a CB cue
-   in the description, then an explicit borough word in the title; zero, several,
-   or a citywide marker route to the explicit bucket. Never splits one award. */
-const CB_ABBR = { mn:'Manhattan', man:'Manhattan', bk:'Brooklyn', bklyn:'Brooklyn',
-  bx:'Bronx', brx:'Bronx', q:'Queens', qns:'Queens', si:'Staten Island', r:'Staten Island' };
-function boroughsInText(t){
-  const found = new Set(); const low = (t||'').toLowerCase();
-  if(/\bmanhattan\b/.test(low)) found.add('Manhattan');
-  if(/\bbrooklyn\b/.test(low)) found.add('Brooklyn');
-  if(/\bqueens\b/.test(low)) found.add('Queens');
-  if(/\bbronx\b/.test(low)) found.add('Bronx');
-  if(/\bstaten island\b/.test(low)) found.add('Staten Island');
-  return found;
-}
-function deriveAwardBorough(shortTitle, descHtml){
-  const desc = (descHtml||'').replace(/<[^>]+>/g,' ');
-  const both = (shortTitle||'') + ' ' + desc;
-  if(/\b(citywide|various locations|all (?:cbs|boroughs|locations)|multiple (?:boroughs|locations))\b/i.test(both)) return MULTI;
-  const cbFound = new Set();
-  const cbCtx = desc.toLowerCase();
-  if(/community board[^a-z]*#?:?\s*|(?:^|[^a-z])cb[^a-z]*:?\s*/.test(cbCtx)){
-    boroughsInText(desc).forEach(b=>cbFound.add(b));
-    let m; const re = /\bcb[^a-z]*:?\s*([a-z]{1,5})\s*\d/gi;
-    while((m = re.exec(desc))){ const ab = CB_ABBR[m[1].toLowerCase()]; if(ab) cbFound.add(ab); }
-  }
-  if(cbFound.size === 1) return [...cbFound][0];
-  if(cbFound.size > 1) return MULTI;
-  const titleFound = boroughsInText(shortTitle);
-  if(titleFound.size === 1) return [...titleFound][0];
-  return MULTI;
-}
-
-/* ---------- capital-plan: collapse + per-agency committed ---------- */
-function collapsePlan(rows){
-  const m = new Map();
-  for(const r of rows){
-    const key = (r.managing_agency||'') + '|' + (r.fms_id||r.fms_project_name||'');
-    const bucket = normPhase(r.current_phase);
-    const rec = {
-      agency: r.managing_agency || '–',
-      spend: Math.max(parseFloat(r.spend_to_date)||0, 0),
-      budget: Math.max(parseFloat(r.total_budget)||0, 0),
-      borough: normBorough(r.borough),
-      category: (r.ten_year_plan_category||'').trim() || 'Uncategorized',
-      bucket
-    };
-    const prev = m.get(key);
-    if(!prev || phaseRank(bucket) > phaseRank(prev.bucket)) m.set(key, rec);
-  }
-  return m;
-}
-function committedForAgency(planMap, code){
-  let total = 0, largest = 0; const byBorough = new Map(), byCategory = new Map(), largestBoro = new Map();
-  for(const rec of planMap.values()){
-    if(rec.agency !== code) continue;
-    if(rec.bucket === 'excluded' || rec.bucket === 'Close-out') continue;
-    const unspent = Math.max(rec.budget - rec.spend, 0);
-    if(unspent <= 0) continue;
-    total += unspent;
-    byBorough.set(rec.borough, (byBorough.get(rec.borough)||0) + unspent);
-    byCategory.set(rec.category, (byCategory.get(rec.category)||0) + unspent);
-    if(unspent > (largestBoro.get(rec.borough)||0)) largestBoro.set(rec.borough, unspent);
-    if(unspent > largest) largest = unspent;
-  }
-  return { total, byBorough, byCategory, largestBoro, largest };
-}
-
-/* ---------- award: dedupe + per-agency awarded ---------- */
-function dedupeAwards(rows){
-  const byPin = new Map();
-  for(let i=0;i<rows.length;i++){
-    const r = rows[i];
-    const amt = parseFloat(r.contract_amount);
-    if(!(amt > 0)) continue;
-    const pin = r.pin || ('_np_'+i);
-    const rec = { amt, vendor: (r.vendor_name||'').trim() || '–',
-      hard: (r.category_description||'') === HARD_CAT,
-      borough: deriveAwardBorough(r.short_title, r.additional_description_1) };
-    const prev = byPin.get(pin);
-    if(!prev || rec.amt > prev.amt) byPin.set(pin, rec);
-  }
-  return [...byPin.values()];
-}
-function awardedAgg(awards){
-  let total = 0, hardTotal = 0, softTotal = 0;
-  const byBorough = new Map(), byVendor = new Map(), largestBoro = new Map();
-  const byVendorHard = new Map(), byVendorSoft = new Map();
-  for(const a of awards){
-    total += a.amt;
-    byBorough.set(a.borough, (byBorough.get(a.borough)||0) + a.amt);
-    byVendor.set(a.vendor, (byVendor.get(a.vendor)||0) + a.amt);
-    if(a.hard){ hardTotal += a.amt; byVendorHard.set(a.vendor, (byVendorHard.get(a.vendor)||0) + a.amt); }
-    else { softTotal += a.amt; byVendorSoft.set(a.vendor, (byVendorSoft.get(a.vendor)||0) + a.amt); }
-    if(a.amt > (largestBoro.get(a.borough)||0)) largestBoro.set(a.borough, a.amt);
-  }
-  return { total, count: awards.length, byBorough, byVendor, largestBoro,
-    byVendorHard, byVendorSoft, hardTotal, softTotal };
-}
-
-/* order a byBorough map into five boroughs + explicit bucket last */
-function boroughRows(byBorough, largestBoro){
-  return BOROS.concat([MULTI]).map(b=>{
-    const dollars = byBorough.get(b) || 0;
-    const largest = largestBoro ? (largestBoro.get(b)||0) : 0;
-    return { borough:b, dollars, concentration: dollars>0 ? largest/dollars : 0 };
-  });
-}
-
-/* ---------- agency-name reconciliation ---------- */
-/* capital-plan code -> City Record agency_name (verified against live distinct
-   values on both datasets). Codes absent here have no clean award-side name. */
-const CODE_TO_AWARD = {
-  DDC:'Design and Construction', DOT:'Transportation', DEP:'Environmental Protection',
-  DPR:'Parks and Recreation', DCAS:'Citywide Administrative Services', DSNY:'Sanitation',
-  NYPD:'Police Department', HPD:'Housing Preservation and Development', FDNY:'Fire Department',
-  DOC:'Correction', DOHMH:'Health and Mental Hygiene', DHS:'Homeless Services',
-  ACS:"Administration for Children's Services"
-};
-const AGENCY_NAMES = {
-  DPR:'Parks & Recreation', DDC:'Design & Construction', DOT:'Transportation',
-  EDC:'Economic Development', DEP:'Environmental Protection', HHC:'NYC Health + Hospitals',
-  DCAS:'Citywide Admin Services', CUNY:'CUNY', NYPD:'Police', FDNY:'Fire',
-  DCLA:'Cultural Affairs', DHS:'Homeless Services', DSNY:'Sanitation',
-  QPL:'Queens Public Library', DOC:'Correction', DOHMH:'Health & Mental Hygiene',
-  BPL:'Brooklyn Public Library', NYPL:'New York Public Library', HRA:'Human Resources Admin',
-  DFTA:'Aging', ACS:"Children's Services", DOE:'Education',
-  HPD:'Housing Preservation & Dev', OTI:'Technology & Innovation', NYRL:'NY Research Library'
-};
-/* Agencies whose code carries a small or absent capital-plan footprint because
-   another managing agency (chiefly DDC) builds for them: their committed side is
-   noted as delivered elsewhere rather than read as a true zero. */
-const DELIVERED_VIA_DDC = new Set(['HPD','ACS','DFTA','DOHMH']);
-function agencyLabel(code){ return AGENCY_NAMES[code] ? AGENCY_NAMES[code] + ' (' + code + ')' : code; }
-/* Display name only (no code), for the selected-agency banner. */
-function agencyName(code){ return AGENCY_NAMES[code] || code; }
-
-/* ================= formatting ================= */
-function fmtMoney(v){
-  if(v >= 1e9) return '$' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2) + 'B';
-  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
-  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
-  return '$' + Math.round(v);
-}
-function fmtInt(v){ return v.toLocaleString('en-US'); }
-function fmtPct(v){ return (v*100).toFixed(v*100 >= 10 ? 0 : 1) + '%'; }
-function esc(s){ const d = document.createElement('div'); d.textContent = String(s==null?'':s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
-/* First-of-month boundary n complete months before the current (incomplete)
-   month. Every award window on the site is twelve FULLY-ELAPSED months: the
-   current partial month is excluded so a few days of the month in progress do
-   not understate the total. Same rule as the "Funnel" page, the Analysis index
-   and the Briefing, which keeps the pages on one window and one number.
-
-   Anchored in UTC end to end. Building the boundary as a local midnight and
-   then formatting it with toISOString shifted the date back a full day for any
-   reader east of UTC, so the same page served the same instant returned a
-   different twelve-month window in Berlin than in New York. Date.UTC in,
-   toISOString out, no local field ever touched: every reader gets one window. */
-function isoCompleteMonthBoundary(n){
-  const now = new Date();
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - n, 1))
-    .toISOString().slice(0,10);
-}
-const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
-function fmtPeriodLong(p){ return MN[+p.slice(4,6)-1] + ' ' + p.slice(0,4); }
-
-/* ================= app state ================= */
-const state = {
-  latestPeriod: null,
-  planMap: null,             // collapsed latest-snapshot plan
-  agencyCodes: [],           // capital-plan codes present, ranked by committed
-  committedCache: new Map(), // code -> committed agg
-  awardCache: new Map(),     // code -> {ok, agg} for awarded side (lazy)
-  boroScope: 'committed',
-  selected: null
-};
-
-/* ================= data fetch ================= */
-async function fetchPlan(){
-  const ps = await getJSON(PLAN_API, {
-    '$select':'reporting_period','$group':'reporting_period','$order':'reporting_period DESC','$limit':'1'
-  });
-  state.latestPeriod = ps[0].reporting_period;
-  const rows = await getJSON(PLAN_API, {
-    '$select':'managing_agency,fms_id,fms_project_name,spend_to_date,total_budget,current_phase,borough,ten_year_plan_category',
-    '$where':`reporting_period='${state.latestPeriod}'`, '$limit':'40000'
-  });
-  state.planMap = collapsePlan(rows);
-  // rank agency codes by committed size so the default lands on a high-volume one
-  const totals = new Map();
-  for(const rec of state.planMap.values()){
-    if(rec.bucket === 'excluded' || rec.bucket === 'Close-out') continue;
-    const u = Math.max(rec.budget - rec.spend, 0);
-    if(u > 0) totals.set(rec.agency, (totals.get(rec.agency)||0) + u);
-  }
-  state.agencyCodes = [...totals.entries()].sort((a,b)=>b[1]-a[1]).map(e=>e[0]);
-}
-
-/* Awarded side is fetched lazily per agency on selection and cached. Returns
-   {ok, agg}. ok=false where the agency has no City Record name to query. */
-async function fetchAwardsFor(code){
-  if(state.awardCache.has(code)) return state.awardCache.get(code);
-  const name = CODE_TO_AWARD[code];
-  if(!name){ const r = {ok:false, agg:null}; state.awardCache.set(code, r); return r; }
-  // Half-open window [since, until): the lower bound is inclusive and the upper
-  // bound exclusive, matching Home and the "Funnel" page. `since` is a
-  // first-of-month midnight and awards stamped exactly on it belong inside the
-  // window; a strict > dropped every notice landing on the window's first day
-  // and put this page below the Funnel on the same agency.
-  const since = isoCompleteMonthBoundary(12); // first day, twelve complete months back
-  const until = isoCompleteMonthBoundary(0);  // first day of the current (incomplete) month
-  const PAGE = 50000; let offset = 0; const out = [];
-  for(;;){
-    const batch = await getJSON(AWARD_API, {
-      '$select':'pin,contract_amount,vendor_name,short_title,additional_description_1,category_description',
-      '$where':`agency_name='${name.replace(/'/g,"''")}' AND starts_with(category_description,'Construction') AND start_date>='${since}' AND start_date<'${until}' AND contract_amount>0`,
-      '$order':'pin','$limit':String(PAGE),'$offset':String(offset)
-    });
-    out.push(...batch);
-    if(batch.length < PAGE) break;
-    offset += PAGE;
-    if(offset > 200000) break;
-  }
-  const agg = awardedAgg(dedupeAwards(out));
-  const r = {ok:true, agg};
-  state.awardCache.set(code, r);
-  return r;
-}
-
-/* ================= velocity data layer =================
-   Ported verbatim from the retired Velocity page so the per-agency velocity
-   tape and the cross-agency backlog ranking reproduce the same numbers. The
-   capital plan (OMB) and the award record (City Record) are settled separately
-   so one being unavailable does not blank the other. */
-const VEL_SNAPSHOTS = 5; // latest 5 plan snapshots -> 4 spend periods; last 3 = TTM
-const VEL_MIN_SPEND = 10e6; // floor on trailing self-delivered spend for a ratio
-/* Floor on what is printable as a trailing-year outlay at all. An agency whose
-   whole year of self-delivered spending lands in the thousands is not spending
-   slowly, it is not the builder: the outlay sits under another managing agency.
-   Printing the residue beside a pipeline in the hundreds of millions reads as a
-   broken figure, so the cell is suppressed the way the ratio already is. */
-const VEL_MIN_SHOWN_SPEND = 1e6;
-function fmtSpendCell(sp){ return sp >= VEL_MIN_SHOWN_SPEND ? fmtMoney(sp) : '<span class="na">–</span>'; }
-/* capital-plan code -> City Record agency_name, the Velocity page's own map,
-   kept verbatim so its award-by-agency join matches the old page exactly. */
-const VEL_CODE_TO_AWARD = {
-  DDC:'Design and Construction', DOT:'Transportation', DEP:'Environmental Protection',
-  DPR:'Parks and Recreation', DCAS:'Citywide Administrative Services', DSNY:'Sanitation',
-  NYPD:'Police Department', HPD:'Housing Preservation and Development', FDNY:'Fire Department',
-  DOC:'Correction', DOHMH:'Health and Mental Hygiene', DHS:'Homeless Services',
-  ACS:'Children’s Services', DFTA:'Aging'
-};
-const velState = {
-  periods: [],           // ascending plan reporting periods
-  snap: {},              // period -> Map(key -> {spend,budget,bucket,agency})
-  spendPeriods: [],      // [{total, byAgency:Map}]
-  pipeline: { total:0, byAgency:new Map() },
-  awards: { byAgency:new Map() },
-  ok: false, awardsOk: false,
-  rows: [],              // computed velocity rows, ranked by pipeline
-  byCode: new Map(),     // code -> {pipe, sp, aw, yrs}
-  medianYrs: 0
-};
-
-/* one record per project per snapshot; keep most advanced phase. Identical to the
-   Velocity page's collapseSnapshot (and to collapsePlan minus borough/category). */
-function collapseSnapVel(rows){
-  const m = new Map();
-  for(const r of rows){
-    const key = (r.managing_agency||'') + '|' + (r.fms_id||r.fms_project_name||'');
-    const bucket = normPhase(r.current_phase);
-    const rec = {
-      agency: r.managing_agency || '–',
-      spend: Math.max(parseFloat(r.spend_to_date)||0, 0),
-      budget: Math.max(parseFloat(r.total_budget)||0, 0),
-      bucket
-    };
-    const prev = m.get(key);
-    if(!prev || phaseRank(bucket) > phaseRank(prev.bucket)) m.set(key, rec);
-  }
-  return m;
-}
-
-async function fetchVelocityPlan(){
-  // 1. snapshot periods (latest N)
-  const ps = await getJSON(PLAN_API, {
-    '$select':'reporting_period','$group':'reporting_period',
-    '$order':'reporting_period DESC','$limit': String(VEL_SNAPSHOTS)
-  });
-  velState.periods = ps.map(p=>p.reporting_period).sort();
-  // 2. rows per snapshot in parallel
-  const snaps = await Promise.all(velState.periods.map(p => getJSON(PLAN_API, {
-    '$select':'fms_id,fms_project_name,managing_agency,spend_to_date,total_budget,current_phase',
-    '$where': `reporting_period='${p}'`, '$limit':'20000'
-  })));
-  velState.periods.forEach((p,i) => { velState.snap[p] = collapseSnapVel(snaps[i]); });
-  // 3. spend deltas between consecutive snapshots, on a MATCHED PANEL.
-  //    Only projects present in BOTH snapshots contribute. spend_to_date is a
-  //    lifetime cumulative figure, so a project seen for the first time carries
-  //    its whole back-history; counting it from zero would book years of prior
-  //    spending into the single period it first appears. Same rule as the
-  //    "Funnel" page, so the two read the same number.
-  velState.spendPeriods = [];
-  for(let i=1; i<velState.periods.length; i++){
-    const prev = velState.snap[velState.periods[i-1]], cur = velState.snap[velState.periods[i]];
-    let total = 0; const byAgency = new Map();
-    for(const [key, rec] of cur){
-      const was = prev.get(key);
-      if(!was) continue; // new entrant: no prior reading, so no measurable period spend
-      const d = Math.max(rec.spend - was.spend, 0);
-      total += d;
-      byAgency.set(rec.agency, (byAgency.get(rec.agency)||0) + d);
-    }
-    velState.spendPeriods.push({ total, byAgency });
-  }
-  // 4. pipeline from latest snapshot (active, excluding Close-out)
-  velState.pipeline = { total:0, byAgency:new Map() };
-  const latest = velState.snap[velState.periods[velState.periods.length-1]];
-  for(const rec of latest.values()){
-    if(rec.bucket === 'excluded' || rec.bucket === 'Close-out') continue;
-    const unspent = Math.max(rec.budget - rec.spend, 0);
-    velState.pipeline.total += unspent;
-    velState.pipeline.byAgency.set(rec.agency, (velState.pipeline.byAgency.get(rec.agency)||0) + unspent);
-  }
-}
-
-/* Velocity awards: TTM total by agency, deduped to one row per pin (max amount),
-   exactly as the Velocity page computed its Awarded column. */
-async function fetchVelocityAwards(){
-  // Same half-open [since, until) window as the per-agency pull above: inclusive
-  // lower bound, exclusive upper bound, one convention across the site.
-  const since = isoCompleteMonthBoundary(12);
-  const until = isoCompleteMonthBoundary(0);
-  const PAGE = 50000; let offset = 0; const out = [];
-  for(;;){
-    const batch = await getJSON(AWARD_API, {
-      '$select':'pin,contract_amount,start_date,agency_name',
-      '$where':`starts_with(category_description,'Construction') AND start_date>='${since}' AND start_date<'${until}' AND contract_amount>0`,
-      '$order':'pin','$limit':String(PAGE),'$offset':String(offset)
-    });
-    out.push(...batch);
-    if(batch.length < PAGE) break;
-    offset += PAGE;
-    if(offset > 400000) break;
-  }
-  const byPin = new Map();
-  for(let i=0;i<out.length;i++){
-    const r = out[i];
-    const amt = parseFloat(r.contract_amount);
-    if(!(amt>0)) continue;
-    const pin = r.pin || ('_np_'+i);
-    const rec = { amt, agency: r.agency_name || null };
-    const prev = byPin.get(pin);
-    if(!prev || rec.amt > prev.amt) byPin.set(pin, rec);
-  }
-  const byAgency = new Map();
-  for(const r of byPin.values()){ if(r.agency) byAgency.set(r.agency, (byAgency.get(r.agency)||0) + r.amt); }
-  velState.awards.byAgency = byAgency;
-}
-
-/* TTM spend by agency = last 3 inter-snapshot periods (~12 months). */
-function velTtmSpendByAgency(){
-  const m = new Map();
-  for(const p of velState.spendPeriods.slice(-3))
-    for(const [a,v] of p.byAgency) m.set(a, (m.get(a)||0)+v);
-  return m;
-}
-
-/* Build the ranked velocity rows + per-code lookup, the Velocity page's renderVelocity
-   logic without the DOM. Median is over codes with a computable ratio. */
-function computeVelocity(){
-  const spend = velTtmSpendByAgency();
-  const rows = [...velState.pipeline.byAgency.entries()]
-    .sort((a,b)=>b[1]-a[1])
-    .map(([code, pipe]) => {
-      const sp = spend.get(code) || 0;
-      const awardName = VEL_CODE_TO_AWARD[code];
-      const aw = (velState.awardsOk && awardName) ? velState.awards.byAgency.get(awardName) : undefined;
-      const yrs = sp >= VEL_MIN_SPEND ? pipe/sp : null;
-      return { code, pipe, sp, aw, yrs };
-    })
-    .filter(r => r.pipe > 0);
-  const v = rows.filter(r=>r.yrs!==null).map(r=>r.yrs).sort((a,b)=>a-b);
-  velState.medianYrs = v.length ? v[Math.floor(v.length/2)] : 0;
-  velState.rows = rows;
-  velState.byCode = new Map(rows.map(r=>[r.code, r]));
-}
-
-/* ================= Chart.js defaults ================= */
-Chart.defaults.font.family = "'IBM Plex Mono',monospace";
-Chart.defaults.font.size = 10;
-Chart.defaults.color = '#6b5e56';
-Object.assign(Chart.defaults.plugins.tooltip, {
-  backgroundColor:'#fefbf8', titleColor:'#201611', bodyColor:'#6b5e56',
-  borderColor:'#ae4e34', borderWidth:1, cornerRadius:2, padding:10, displayColors:false,
-  titleFont:{family:"'Public Sans',sans-serif",weight:'600',size:12}, bodyFont:{family:"'IBM Plex Mono',monospace",size:12},
-  caretSize:5
-});
-const charts = {};
-function destroy(k){ if(charts[k]){ charts[k].destroy(); delete charts[k]; } }
-
-/* ================= rendering ================= */
-function shortCat(s){
-  return (s||'').toLowerCase().replace(/\b[a-z]/g,c=>c.toUpperCase());
-}
-/* Capital-plan category names run long ("Replacement Or Augmentation Of Existing
-   Systems"). The y axis clips them mid-word, which reads as broken data. Truncate
-   the tick with an ellipsis and keep the full string in the tooltip. */
-const CAT_TICK_MAX = 34;
-function truncTick(s){
-  s = String(s || '');
-  return s.length > CAT_TICK_MAX ? s.slice(0, CAT_TICK_MAX - 1).trimEnd() + '…' : s;
-}
-
-function renderTrades(committed){
-  const cats = [...committed.byCategory.entries()].sort((a,b)=>b[1]-a[1]).slice(0,8);
-  destroy('trades');
-  if(!cats.length){ return; }
-  const labels = cats.map(c=>shortCat(c[0]));
-  charts.trades = new Chart(document.getElementById('chart-trades'), {
-    type:'bar',
-    data:{ labels, datasets:[{ data: cats.map(c=>c[1]),
-      backgroundColor: COLOR_A, borderRadius:1, barThickness:16 }]},
-    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false}, tooltip:{callbacks:{
-        title: items => (items.length ? labels[items[0].dataIndex] : ''),
-        label: c => fmtMoney(c.parsed.x)+' committed' }} },
-      scales:{ x:{grid:{color:GRID}, border:{display:false}, ticks:{callback:v=>fmtMoney(v), maxTicksLimit:5}},
-               y:{grid:{display:false}, ticks:{autoSkip:false, font:{family:"'Public Sans',sans-serif",size:11},
-                    callback: function(v){ return truncTick(this.getLabelForValue(v)); }}} } }
-  });
-}
-
-function renderVendors(award){
-  const tb = document.querySelector('#tbl-vendors tbody');
-  if(!award || !award.ok){
-    tb.innerHTML = '<tr><td colspan="4" style="color:var(--muted);padding:16px 10px">No City Record award name maps to this agency, so its recipients cannot be read from the award ledger. See the methodology note on agency matching.</td></tr>';
-    return;
-  }
-  const agg = award.agg;
-  if(!agg.byVendor.size){ tb.innerHTML = '<tr><td colspan="4" style="color:var(--muted);padding:16px 10px">No construction awards from this agency in the trailing twelve months.</td></tr>'; return; }
-  // Split recipients the way the Briefing does: hard construction (bondable work)
-  // versus design and construction-management (soft professional services), each
-  // ranked on its own dollars so a CM firm is not read as a construction winner.
-  function groupRows(map, groupTotal){
-    const vs = [...map.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10);
-    return vs.map((v,i)=>`<tr>
-      <td class="rank">${i+1}</td>
-      <td><span class="t-title">${esc(v[0])}</span></td>
-      <td class="num amt">${fmtMoney(v[1])}</td>
-      <td class="num">${groupTotal>0 ? fmtPct(v[1]/groupTotal) : '–'}</td></tr>`).join('');
-  }
-  const sections = [];
-  if(agg.byVendorHard.size){
-    sections.push(`<tr class="grp-row"><td colspan="4">Hard construction · ${fmtMoney(agg.hardTotal)}</td></tr>`
-      + groupRows(agg.byVendorHard, agg.hardTotal));
-  }
-  if(agg.byVendorSoft.size){
-    sections.push(`<tr class="grp-row${agg.byVendorHard.size?' second':''}"><td colspan="4">Design &amp; CM (professional services) · ${fmtMoney(agg.softTotal)}</td></tr>`
-      + groupRows(agg.byVendorSoft, agg.softTotal));
-  }
-  tb.innerHTML = sections.join('');
-}
-
-/* per-agency velocity tape for the selected code, off the ported velState. */
-function renderAgencyVelocity(code){
-  const cap = document.getElementById('vel-cap');
-  const sec = document.getElementById('velocity-sec');
-  if(!velState.ok){ if(sec) sec.style.display = 'none'; return; }
-  if(sec) sec.style.display = '';
-  cap.textContent = code + ' · PACE';
-  const hsub = document.getElementById('vel-hsub');
-  if(hsub) hsub.innerHTML = 'How fast ' + esc(agencyName(code)) + ' converts funded work to cash. Backlog coverage is its open pipeline divided by its own trailing-year outlays, the demand-side analog of a contractor’s backlog-to-revenue ratio. A higher number means more funded work stacked behind the same delivery capacity.';
-  const row = velState.byCode.get(code) || { pipe:0, sp:0, aw:undefined, yrs:null };
-  document.getElementById('vel-committed').textContent = row.pipe>0 ? fmtMoney(row.pipe) : '–';
-  document.getElementById('vel-spent').innerHTML       = fmtSpendCell(row.sp);
-  document.getElementById('vel-awarded').textContent  = (velState.awardsOk && row.aw!==undefined) ? fmtMoney(row.aw) : '–';
-  document.getElementById('vel-coverage').textContent = row.yrs!==null ? row.yrs.toFixed(1) + ' yrs' : '–';
-
-  const label = agencyLabel(code);
-  const rd = document.getElementById('vel-reading-agency');
-  if(row.yrs!==null){
-    const med = velState.medianYrs;
-    const rel = med>0 ? (row.yrs > med*1.5 ? 'a deeper backlog than the typical agency' : (row.yrs < med*0.67 ? 'a shallower backlog than the typical agency' : 'a backlog close to the typical agency')) : 'a measurable backlog';
-    rd.innerHTML = `<strong>Reading:</strong> ${esc(label)} carries <strong>${row.yrs.toFixed(1)} years</strong> of funded work at its current pace of spending, ${rel} (median <strong>${med.toFixed(1)} years</strong> across agencies with a computable ratio). A deep backlog is funded work waiting on delivery capacity, not a problem in itself; it is where future awards and bonding demand are most concentrated.`;
-  } else if(row.pipe>0){
-    rd.innerHTML = `<strong>Reading:</strong> ${esc(label)} holds <strong>${fmtMoney(row.pipe)}</strong> of open pipeline, but its own trailing self-delivered outlay is below the floor for a stable ratio. Its capital work is largely built under another managing agency, chiefly the Department of Design and Construction, so a backlog-coverage figure under this code would be noise rather than a velocity signal.`;
-  } else {
-    rd.innerHTML = `<strong>Reading:</strong> ${esc(label)} shows little open construction pipeline under its own code in the latest plan snapshot.`;
-  }
-}
-
-/* cross-agency backlog ranking chart + the full velocity table (rendered once). */
-function renderVelocityRanking(){
-  const sec = document.getElementById('vel-rank-sec');
-  const tsec = document.getElementById('vel-table-sec');
-  if(!velState.ok){ if(sec) sec.style.display='none'; if(tsec) tsec.style.display='none'; return; }
-  const rows = velState.rows, med = velState.medianYrs;
-
-  // full table
-  document.querySelector('#tbl-velocity tbody').innerHTML = rows.map(r=>`<tr>
-    <td><span class="t-title">${esc(agencyLabel(r.code))}</span></td>
-    <td class="num amt">${fmtMoney(r.pipe)}</td>
-    <td class="num amt">${fmtSpendCell(r.sp)}</td>
-    <td class="num amt">${(velState.awardsOk && r.aw!==undefined) ? fmtMoney(r.aw) : '–'}</td>
-    <td class="num"><span class="yrs ${r.yrs===null?'':(r.yrs>med*1.5?'slow':(r.yrs<med*.67?'fast':''))}">${r.yrs===null?'–':r.yrs.toFixed(1)}</span></td>
-    <td class="num payvel-cell" data-code="${esc(r.code)}">–</td>
-  </tr>`).join('');
-  // The dated-payment column is filled asynchronously by the payment module once
-  // the contract file loads; default to an en dash so the row reads cleanly meanwhile.
-
-  // backlog-coverage chart: agencies with a computable ratio, top 10 by pipeline
-  const charted = rows.filter(r=>r.yrs!==null).slice(0,10);
-  destroy('velrank');
-  charts.velrank = new Chart(document.getElementById('chart-vel-rank'), {
-    type:'bar',
-    data:{ labels: charted.map(r=>agencyLabel(r.code)),
-      datasets:[{ data: charted.map(r=>r.yrs), borderRadius:1, barThickness:18,
-        backgroundColor: charted.map(r=> r.yrs>med*1.5 ? '#9e362f' : (r.yrs<med*0.67 ? '#2f7d52' : '#ae4e34')) }]},
-    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>c.parsed.x.toFixed(1)+' years of funded work'}} },
-      scales:{ x:{grid:{color:GRID}, border:{display:false}, ticks:{callback:v=>v+' yr', maxTicksLimit:6}},
-               y:{grid:{display:false}, ticks:{autoSkip:false, font:{family:"'Public Sans',sans-serif",size:11.5}}} } }
-  });
-
-  const fast = rows.filter(r=>r.yrs!==null).reduce((a,r)=> r.yrs<a.yrs?r:a, {yrs:Infinity});
-  const slow = charted.reduce((a,r)=> r.yrs>a.yrs?r:a, {yrs:0});
-  document.getElementById('vel-rank-reading').innerHTML =
-    `<strong>Reading:</strong> across agencies with a computable ratio, the median is <strong>${med.toFixed(1)} years</strong> of funded work at the current pace. ${slow.code ? esc(agencyLabel(slow.code))+' carries the deepest backlog at '+slow.yrs.toFixed(1)+' years, ' : ''}${fast.code ? esc(agencyLabel(fast.code))+' the shallowest at '+fast.yrs.toFixed(1)+'.' : ''} A deep backlog is funded work waiting on delivery capacity, not a problem in itself; it is where future awards and bonding demand are most concentrated.`;
-}
-
-/* paint the borough map + table for the active scope */
-function activeBoroData(){
-  const committed = state.committedCache.get(state.selected);
-  const award = state.awardCache.get(state.selected);
-  if(state.boroScope === 'committed'){
-    return { rows: boroughRows(committed.byBorough, committed.largestBoro),
-             total: committed.total,
-             provenance: 'STRUCTURED', ok: committed.total > 0 };
-  }
-  if(!award || !award.ok || !award.agg){ return { rows: [], total: 0, provenance:'DERIVED', ok:false }; }
-  return { rows: boroughRows(award.agg.byBorough, award.agg.largestBoro),
-           total: award.agg.total, provenance:'DERIVED', ok: award.agg.total > 0 };
-}
-
-function svgId(boro){ return 'b-' + boro.replace(/\s+/g,''); }
-
-function renderBorough(focusBoro){
-  const data = activeBoroData();
-  const map = document.getElementById('boro-map');
-  const prov = document.getElementById('boro-provenance');
-  const tb = document.querySelector('#tbl-boro tbody');
-  // five-borough max for the colour ramp (the explicit bucket is not on the map)
-  const fiveMax = Math.max(1, ...data.rows.filter(r=>r.borough!==MULTI).map(r=>r.dollars));
-
-  BOROS.forEach(b=>{
-    const el = document.getElementById(svgId(b));
-    const row = data.rows.find(r=>r.borough===b);
-    const v = row ? row.dollars : 0;
-    const t = data.ok ? Math.min(1, v/fiveMax) : 0;
-    el.setAttribute('fill', rampColor(t));
-    el.setAttribute('aria-label', b + ' ' + fmtMoney(v));
-  });
-
-  // table: five boroughs then the explicit bucket
-  const barMax = Math.max(1, ...data.rows.map(r=>r.dollars));
-  tb.innerHTML = data.rows.map(r=>{
-    const isMulti = r.borough === MULTI;
-    const w = (r.dollars/barMax*100).toFixed(1);
-    return `<tr class="boro-row${isMulti?' multi':''}" data-boro="${esc(r.borough)}">
-      <td><span class="t-title">${esc(r.borough)}</span></td>
-      <td class="num bg-cell"><span class="bg-bar" style="width:${w}%"></span><span class="amt">${r.dollars>0?fmtMoney(r.dollars):'–'}</span></td>
-      <td class="num">${r.dollars>0 ? fmtPct(r.concentration) : '–'}</td></tr>`;
-  }).join('');
-
-  prov.innerHTML = data.provenance === 'STRUCTURED'
-    ? '<b>Provenance:</b> committed borough is a <b>structured field</b> on the capital plan, the harder source. The citywide / multi-borough / unspecified slice is reported on its own and is not on the map.'
-    : '<b>Provenance:</b> awarded borough is <b>derived from notice text</b> (the softest figure): a community board cue in the description, then a borough name in the title. Anything citywide, multi-borough, or unnamed is its own slice and not on the map.';
-
-  // readout: focused borough, else the leading mapped borough
-  let focus = focusBoro;
-  if(!focus){
-    const lead = data.rows.filter(r=>r.borough!==MULTI).sort((a,b)=>b.dollars-a.dollars)[0];
-    focus = lead && lead.dollars>0 ? lead.borough : MULTI;
-  }
-  paintReadout(focus, data);
-
-  // hover/click wiring
-  BOROS.forEach(b=>{
-    const el = document.getElementById(svgId(b));
-    el.onmouseenter = ()=>paintReadout(b, activeBoroData());
-    el.onclick = ()=>{ markActive(b); paintReadout(b, activeBoroData()); };
-  });
-  document.querySelectorAll('#tbl-boro .boro-row').forEach(tr=>{
-    tr.style.cursor = 'pointer';
-    tr.onmouseenter = ()=>{ const b = tr.getAttribute('data-boro'); paintReadout(b, activeBoroData()); markActive(b); };
-  });
-  markActive(focus);
-}
-
-function markActive(boro){
-  BOROS.forEach(b=>{ const el = document.getElementById(svgId(b)); el.classList.toggle('on', b===boro); });
-}
-
-function paintReadout(boro, data){
-  const ro = document.getElementById('boro-readout');
-  const row = data.rows.find(r=>r.borough===boro) || {borough:boro, dollars:0, concentration:0};
-  const share = data.total>0 ? row.dollars/data.total : 0;
-  const scopeWord = state.boroScope === 'committed' ? 'committed' : 'awarded';
-  ro.innerHTML = `<div class="ro-head">${esc(boro)}</div>
-    <dl class="ro-grid">
-      <dt>${scopeWord==='committed'?'Committed here':'Awarded here'}</dt><dd>${row.dollars>0?fmtMoney(row.dollars):'–'}</dd>
-      <dt>Share of agency ${scopeWord}</dt><dd>${row.dollars>0?fmtPct(share):'–'}</dd>
-      <dt>Largest single project</dt><dd>${row.dollars>0?fmtPct(row.concentration):'–'}</dd>
-    </dl>`;
-}
-
-/* warm ramp accent-soft -> accent */
-function rampColor(t){
-  t = Math.max(0, Math.min(1, t));
-  // accent-soft eadbd4 (234,219,212) -> accent ae4e34 (174,78,52)
-  const r = Math.round(234 + (174-234)*t);
-  const g = Math.round(219 + (78-219)*t);
-  const b = Math.round(212 + (52-212)*t);
-  return `rgb(${r},${g},${b})`;
-}
-
-/* ================= per-agency repaint ================= */
-async function selectAgency(code){
-  state.selected = code;
-  const label = agencyLabel(code);
-  const name = agencyName(code);
-
-  // selected-agency banner: full name in serif, code + plan snapshot in mono
-  document.getElementById('ab-full').textContent = name;
-  document.getElementById('ab-code').textContent = code;
-  document.getElementById('ab-asof').innerHTML =
-    'CODE <b>' + esc(code) + '</b> &nbsp;·&nbsp; AS OF <b>' + esc(fmtPeriodLong(state.latestPeriod).toUpperCase()) + '</b> PLAN';
-
-  // per-tile caps, each stamped with the selected agency's short code
-  document.getElementById('funnel-cap').textContent = code + ' · COMMITTED vs AWARDED';
-  document.getElementById('trades-cap').textContent = code + ' · CAPITAL PLAN · DOLLAR-WEIGHTED';
-  document.getElementById('recipients-cap').textContent = code + ' · CITY RECORD · TRAILING YEAR';
-  document.getElementById('boro-cap').textContent = code + ' · DOLLAR-WEIGHTED · 5 BOROUGHS';
-
-  // generic-phrasing swaps: name the live agency where it reads naturally
-  document.getElementById('boro-hsub').innerHTML =
-    'Where ' + esc(name) + "'s work lands across the five boroughs, weighted by dollars rather than project count. The citywide and multi-borough share is its own slice, never spread across the map. Click a borough to read its detail.";
-
-  // committed (already loaded, cache it)
-  let committed = state.committedCache.get(code);
-  if(!committed){ committed = committedForAgency(state.planMap, code); state.committedCache.set(code, committed); }
-
-  // KPI + funnel committed
-  document.getElementById('kpi-committed').textContent = committed.total>0 ? fmtMoney(committed.total) : '–';
-  document.getElementById('kpi-committed-note').textContent = committed.total>0
-    ? 'unspent budget, ' + fmtPeriodLong(state.latestPeriod) + ' plan'
-    : (DELIVERED_VIA_DDC.has(code) ? 'work mostly delivered via DDC in the plan' : 'no committed construction budget under this code');
-  document.getElementById('f-committed').textContent = committed.total>0 ? fmtMoney(committed.total) : '–';
-
-  renderTrades(committed);
-
-  // awarded (lazy, async). show pending state.
-  document.getElementById('kpi-awarded').textContent = '…';
-  document.getElementById('f-awarded').textContent = '…';
-  document.getElementById('match-note').textContent = CODE_TO_AWARD[code]
-    ? 'maps to City Record · ' + CODE_TO_AWARD[code]
-    : 'no City Record award name maps to this code';
-
-  let award;
-  try { award = await fetchAwardsFor(code); }
-  catch(e){ award = {ok:true, agg:{total:0,count:0,byBorough:new Map(),byVendor:new Map(),largestBoro:new Map()}, errored:true}; }
-  // ignore a stale async return if the user moved on
-  if(state.selected !== code) return;
-
-  const awarded = award.ok && award.agg ? award.agg.total : 0;
-  document.getElementById('kpi-awarded').textContent = award.ok ? (awarded>0?fmtMoney(awarded):'$0') : '–';
-  document.getElementById('kpi-awarded-note').textContent = award.ok
-    ? 'construction awards, trailing 12 months'
-    : 'no award-ledger name for this agency';
-  document.getElementById('f-awarded').textContent = award.ok ? (awarded>0?fmtMoney(awarded):'$0') : '–';
-  document.getElementById('kpi-count').textContent = award.ok ? fmtInt(award.agg.count) : '–';
-
-  // top recipient share KPI
-  if(award.ok && award.agg.total>0){
-    const top = [...award.agg.byVendor.entries()].sort((a,b)=>b[1]-a[1])[0];
-    document.getElementById('kpi-share').textContent = fmtPct(top[1]/award.agg.total);
-    document.getElementById('kpi-share-note').textContent = 'won by ' + (top[0].length>26 ? top[0].slice(0,26)+'…' : top[0]);
-  } else {
-    document.getElementById('kpi-share').textContent = '–';
-    document.getElementById('kpi-share-note').textContent = 'no awards to rank';
-  }
-
-  renderVendors(award);
-
-  // funnel reading
-  const fr = document.getElementById('funnel-reading');
-  if(committed.total>0 && award.ok && award.agg.total>0){
-    const ratio = committed.total/award.agg.total;
-    fr.innerHTML = `<strong>Reading:</strong> ${esc(label)} holds <strong>${fmtMoney(committed.total)}</strong> of unspent committed budget against <strong>${fmtMoney(award.agg.total)}</strong> of construction awards in the last year, roughly ${ratio.toFixed(1)}× as much funded work as it has put on the street over twelve months. That gap is the runway of work yet to reach bid.`;
-  } else if(committed.total>0 && (!award.ok || award.agg.total===0)){
-    fr.innerHTML = `<strong>Reading:</strong> ${esc(label)} holds <strong>${fmtMoney(committed.total)}</strong> of unspent committed budget in the plan. ${award.ok ? 'No construction awards landed under this agency in the last twelve months; its construction may be procured through another managing agency.' : 'The City Record carries no award name for this agency, so its awarded side reads as unavailable rather than zero.'}`;
-  } else if(award.ok && award.agg.total>0){
-    fr.innerHTML = `<strong>Reading:</strong> ${esc(label)} awarded <strong>${fmtMoney(award.agg.total)}</strong> of construction in the last year. Its committed line is small under this code because ${DELIVERED_VIA_DDC.has(code)?'its capital work is filed under the building agency in the plan':'most of its budget sits in non-construction categories'}.`;
-  } else {
-    fr.innerHTML = `<strong>Reading:</strong> ${esc(label)} shows little construction activity on either ledger in this window.`;
-  }
-
-  // borough
-  renderBorough(null);
-
-  // velocity (per-agency tape, off the ported velState)
-  renderAgencyVelocity(code);
-}
-
-/* ================= controls ================= */
-function wireControls(){
-  const sel = document.getElementById('agency');
-  sel.innerHTML = state.agencyCodes.map(c=>`<option value="${esc(c)}">${esc(agencyLabel(c))}</option>`).join('');
-  sel.addEventListener('change', ()=>selectAgency(sel.value));
-
-  document.querySelectorAll('#boro-seg .seg-btn').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      state.boroScope = btn.getAttribute('data-scope');
-      document.querySelectorAll('#boro-seg .seg-btn').forEach(b=>b.classList.toggle('on', b===btn));
-      renderBorough(null);
-    });
-  });
-}
-
-/* ================= init ================= */
-(async function init(){
-  // The agency profile anchors on its own latest-snapshot plan; the velocity
-  // layer is a heavier multi-snapshot pull settled in parallel so a slow or
-  // failed velocity fetch never blanks the profile.
-  let planR;
-  const velPlanP = fetchVelocityPlan();
-  const velAwardP = fetchVelocityAwards();
-  try { await fetchPlan(); planR = true; }
-  catch(e){
-    document.getElementById('loader').style.display = 'none';
-    document.getElementById('error').style.display = 'block';
-    return;
-  }
-  // settle velocity before the first paint so the page renders once
-  const [vp, va] = await Promise.allSettled([velPlanP, velAwardP]);
-  velState.ok = vp.status === 'fulfilled';
-  velState.awardsOk = va.status === 'fulfilled';
-  if(velState.ok) computeVelocity();
-
-  // default to a high-volume agency: prefer DEP if present, else the largest committed
-  const def = state.agencyCodes.includes('DEP') ? 'DEP' : state.agencyCodes[0];
-  document.getElementById('asof').innerHTML =
-    `Capital plan through <strong>${fmtPeriodLong(state.latestPeriod)}</strong> · awards through today · select an agency to repaint the page`;
-  document.getElementById('series-asof').textContent = fmtPeriodLong(state.latestPeriod).toUpperCase();
-  document.getElementById('loader').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  wireControls();
-  // seed the segmented control active state
-  document.querySelector('#boro-seg .seg-btn[data-scope="committed"]').classList.add('on');
-  document.getElementById('agency').value = def;
-  renderVelocityRanking();
-  await selectAgency(def);
-})();
-
-/* ===========================================================================
-   Dated-payment tiles on the Agency page:
-   TILE 1  cross-agency payment-velocity section (chart + table)
-   TILE 4  a "days to 50% paid" column on the full velocity table
-   Self-contained: reads the same same-origin file the Contracts page uses
-   (/data/contract-search.json, sample fallback), independent of the plan and
-   award fetches above so it never blocks or blanks the profile.
-   =========================================================================== */
-(function(){
-  'use strict';
-  var LIVE_URL = '/data/contract-search.json';
-  var SAMPLE_URL = '/data/contract-search.sample.json';
-  var MIN_AGENCY_N = 8;
-  var PV_A = '#ae4e34', PV_GRID = '#e3dbd3';
-  var pvCharts = {};
-  function pvDestroy(k){ if(pvCharts[k]){ pvCharts[k].destroy(); delete pvCharts[k]; } }
-  function escv(s){ var d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
-
-  /* capital-plan code -> contract-file agency NAME (the full "Department of ..."
-     form the contract JSON uses), for the TILE 4 column join. Codes absent here
-     have no clean dated-payment name and read as a dash. */
-  var CODE_TO_CONTRACT_NAME = {
-    DDC: 'Department of Design and Construction',
-    DEP: 'Department of Environmental Protection',
-    DOT: 'Department of Transportation',
-    DPR: 'Department of Parks and Recreation',
-    DSNY: 'Department of Sanitation',
-    DCAS: 'Department of Citywide Administrative Services',
-    NYPD: 'Police Department',
-    FDNY: 'Fire Department',
-    DOC: 'Department of Correction',
-    DOHMH: 'Department of Health and Mental Hygiene',
-    HPD: 'Department of Housing Preservation and Development'
-  };
-
-  function sweptContracts(cs){ return (cs || []).filter(function(c){ return c && c.payments_swept === true; }); }
-  function median(arr){
-    var a = (arr || []).filter(function(v){ return v != null && !isNaN(v); }).sort(function(x,y){ return x - y; });
-    if(!a.length) return null;
-    var m = Math.floor(a.length / 2);
-    return a.length % 2 ? a[m] : (a[m-1] + a[m]) / 2;
-  }
-  function groupBy(arr, keyFn){
-    var m = new Map();
-    (arr || []).forEach(function(x){ var k = keyFn(x); if(!m.has(k)) m.set(k, []); m.get(k).push(x); });
-    return m;
-  }
-  /* TILE 1: per-agency median first-payment lag + median days-to-50%, n>=floor */
-  function agencyVelocity(cs){
-    var swept = sweptContracts(cs);
-    var rows = [];
-    groupBy(swept, function(c){ return c.agency || '–'; }).forEach(function(list, agency){
-      if(list.length < MIN_AGENCY_N) return;
-      rows.push({ agency: agency, n: list.length,
-        medLag: median(list.map(function(c){ return c.first_payment_lag_days; })),
-        med50: median(list.map(function(c){ return c.days_to_50pct_paid; })) });
-    });
-    rows.sort(function(a,b){
-      if(a.med50 == null && b.med50 == null) return 0;
-      if(a.med50 == null) return 1;
-      if(b.med50 == null) return -1;
-      return a.med50 - b.med50;
-    });
-    return rows;
-  }
-  /* TILE 4: agency NAME -> median days-to-50% (null below floor) */
-  function med50ByName(cs){
-    var swept = sweptContracts(cs);
-    var out = new Map();
-    groupBy(swept, function(c){ return c.agency || '–'; }).forEach(function(list, agency){
-      out.set(agency, list.length >= MIN_AGENCY_N ? median(list.map(function(c){ return c.days_to_50pct_paid; })) : null);
-    });
-    return out;
-  }
-  function shortAgency(name){ return String(name || '').replace(/^Department of /, '').replace(/^New York City /, ''); }
-
-  /* ----- TILE 1 render ----- */
-  function renderPayVel(cs){
-    var card = document.getElementById('payvel-sec');
-    var rows = agencyVelocity(cs);
-    if(!rows.length){
-      pvDestroy('payvel');
-      var cb = document.getElementById('payvel-chartbox'); if(cb) cb.style.display = 'none';
-      var tbl = document.getElementById('tbl-payvel'); if(tbl) tbl.style.display = 'none';
-      var rd0 = document.getElementById('payvel-reading'); if(rd0) rd0.style.display = 'none';
-      var un = document.getElementById('payvel-unavail');
-      if(un) un.innerHTML = '<div class="unavail">No agency has at least ' + MIN_AGENCY_N
-        + ' dated contracts (those with confirmed Checkbook NYC disbursements) yet, so the cross-agency payment-velocity view is held until the dated set fills in.</div>';
-      return;
-    }
-    // chart: median days to 50% paid, fastest first, agencies with a value
-    var charted = rows.filter(function(r){ return r.med50 != null; });
-    pvDestroy('payvel');
-    pvCharts.payvel = new Chart(document.getElementById('chart-payvel'), {
-      type: 'bar',
-      data: { labels: charted.map(function(r){ return shortAgency(r.agency); }),
-        datasets: [{ data: charted.map(function(r){ return r.med50; }), backgroundColor: PV_A, borderRadius: 1, barThickness: 18 }] },
-      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false },
-          tooltip: { callbacks: { label: function(c){ return Math.round(c.parsed.x) + ' days to 50% paid'; } } } },
-        scales: { x: { grid: { color: PV_GRID }, border: { display: false },
-            title: { display: true, text: 'median days to 50% paid', color: '#968a7f', font: { family: "'IBM Plex Mono',monospace", size: 10 } },
-            ticks: { maxTicksLimit: 6, callback: function(v){ return v + 'd'; } } },
-          y: { grid: { display: false }, ticks: { autoSkip: false, font: { family: "'Public Sans',sans-serif", size: 11.5 } } } } }
-    });
-    // table
-    document.querySelector('#tbl-payvel tbody').innerHTML = rows.map(function(r){
-      return '<tr><td><span class="t-title">' + escv(r.agency) + '</span></td>'
-        + '<td class="num">' + r.n + '</td>'
-        + '<td class="num">' + (r.medLag != null ? Math.round(r.medLag) : '–') + '</td>'
-        + '<td class="num amt">' + (r.med50 != null ? Math.round(r.med50) : '–') + '</td></tr>';
-    }).join('');
-    document.getElementById('payvel-cap').textContent = 'DATED SET · ' + rows.length + ' AGENCIES';
-    var fastest = charted[0], slowest = charted[charted.length - 1];
-    var rd = document.getElementById('payvel-reading');
-    if(rd && fastest) rd.innerHTML = '<strong>Reading:</strong> among agencies with enough dated contracts, '
-      + '<strong>' + escv(shortAgency(fastest.agency)) + '</strong> reaches half paid fastest at about <strong>'
-      + Math.round(fastest.med50) + ' days</strong>' + (slowest && slowest !== fastest
-        ? ', and <strong>' + escv(shortAgency(slowest.agency)) + '</strong> slowest at about <strong>' + Math.round(slowest.med50) + ' days</strong>'
-        : '') + '. A longer wait to half-paid is working capital a contractor carries on that agency’s jobs; it is a cash-flow read on the agency, not a judgment of the work.';
-  }
-
-  /* ----- TILE 4: fill the velocity table column ----- */
-  function fillVelocityColumn(cs){
-    var byName = med50ByName(cs);
-    document.querySelectorAll('#tbl-velocity .payvel-cell').forEach(function(td){
-      var code = td.getAttribute('data-code');
-      var name = CODE_TO_CONTRACT_NAME[code];
-      var v = name ? byName.get(name) : null;
-      td.textContent = (v != null) ? Math.round(v) : '–';
-    });
-  }
-
-  function loadJSON(url){
-    return fetch(url, { cache: 'no-store' }).then(function(res){
-      if(!res.ok) throw new Error('HTTP ' + res.status); return res.json();
-    });
-  }
-  function paintAll(payload){
-    var cs = (payload && Array.isArray(payload.contracts)) ? payload.contracts : [];
-    try { renderPayVel(cs); } catch(e){ if(window.console) console.error('payvel render', e); var s = document.getElementById('payvel-sec'); if(s) s.style.display = 'none'; }
-    try { fillVelocityColumn(cs); } catch(e){ if(window.console) console.error('payvel column', e); }
-  }
-  function hideTile1(){ var el = document.getElementById('payvel-sec'); if(el) el.style.display = 'none'; }
-  function start(){
-    if(typeof Chart === 'undefined'){ hideTile1(); return; }
-    var payloadP = loadJSON(LIVE_URL).catch(function(){ return loadJSON(SAMPLE_URL); });
-    var tries = 0;
-    (function whenReady(){
-      // wait for #app reveal (charts need layout) AND for the velocity table to
-      // have rendered its rows, so the TILE 4 column has cells to fill.
-      var app = document.getElementById('app');
-      var hasRows = document.querySelector('#tbl-velocity .payvel-cell');
-      if(app && app.offsetParent !== null && hasRows){
-        payloadP.then(paintAll).catch(function(err){
-          if(window.console) console.error('contract-search load failed (agency tiles)', err); hideTile1();
-        });
-        return;
-      }
-      // app revealed but velocity table never rendered (velocity source failed):
-      // still paint TILE 1, which does not depend on the table.
-      if(app && app.offsetParent !== null && tries > 60){
-        payloadP.then(paintAll).catch(function(err){
-          if(window.console) console.error('contract-search load failed (agency tiles)', err); hideTile1();
-        });
-        return;
-      }
-      if(tries++ < 200) setTimeout(whenReady, 80);
-      else hideTile1();
-    })();
-  }
-  if(document.readyState !== 'loading') start(); else document.addEventListener('DOMContentLoaded', start);
-})();
-</script>
-
-<style id="seg-css">
-.seg-btn{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;background:var(--surface);border:none;color:var(--muted);padding:7px 14px;cursor:pointer}
-.seg-btn+.seg-btn{border-left:1px solid var(--line)}
-.seg-btn.on{background:var(--ink);color:var(--paper)}
-.seg-btn:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
-</style>
-
-<!-- ===== Concrete Index export module: page PDF, chart PNG, tile CSV. No external dependencies. ===== -->
-<style id="exp-css">
-.exp{display:flex;justify-content:flex-end;gap:0;margin-top:10px}
-.exp button{background:none;border:1px solid var(--line);color:var(--muted);font:500 10px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.07em;text-transform:uppercase;padding:6px 9px;cursor:pointer;transition:color .12s,border-color .12s}
-.exp button+button{border-left:none}
-.exp button:hover{color:var(--accent);border-color:var(--accent)}
-.exp button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.pdf-btn{background:none;border:1px solid var(--line);color:var(--muted);font:600 11px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;cursor:pointer;white-space:nowrap;transition:color .12s,border-color .12s}
-.pdf-btn:hover{color:var(--accent);border-color:var(--accent)}
-.series-bar .inner .pdf-btn{margin-left:auto;font-size:10px;padding:4px 9px;align-self:center}
-.pdf-bar{display:flex;justify-content:flex-end;max-width:var(--maxw);margin:0 auto;padding:6px var(--gut)}
-@media (max-width:720px){.pdf-bar{padding:6px 18px}}
-@media print{
-  @page{margin:14mm}
-  header .menu-btn,.nav-links,.controls,.series-bar,.photo-band,.exp,.pdf-btn,.pdf-bar,.badge-live,.valstrip,.seg{display:none !important}
-  header{border-bottom:2px solid #201611}
-  body{background:#fff !important}
-  .wrap{max-width:none !important;width:100% !important}
-  .grid,.grid.two,.grid.three{display:block !important}
-  .card{break-inside:avoid;page-break-inside:avoid;box-shadow:none !important;margin:0 0 16px !important}
-  .chart-box,.chart-box.tall{height:300px !important}
-  a{color:inherit;text-decoration:none}
-  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
-}
-</style>
-<script>
-(function(){
-  "use strict";
-  if(window.__ciExport)return; window.__ciExport=1;
-  function slug(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60);}
-  var pageSlug=slug(location.pathname.replace(/\/index\.html?$/i,'').replace(/\/+$/,''))||'agency';
-  function getChart(cv){return (cv&&window.Chart&&Chart.getChart)?(Chart.getChart(cv)||null):null;}
-  function fnameFor(el,ext){
-    var card=el.closest('.card')||el.closest('section')||el.parentElement;
-    var h=card&&card.querySelector('.sec-head h2,h2,h3');
-    if(!h){var s=el.previousElementSibling;while(s){if(s.tagName==='H2'||s.tagName==='H3'){h=s;break;}s=s.previousElementSibling;}}
-    return ('concrete-index-'+pageSlug+'-'+slug(h?h.textContent:'export')).replace(/-+/g,'-')+'.'+ext;
-  }
-  function dl(href,name,revoke){
-    var a=document.createElement('a');a.href=href;a.download=name;a.rel='noopener';
-    document.body.appendChild(a);a.click();a.remove();
-    if(revoke)setTimeout(function(){URL.revokeObjectURL(href);},2000);
-  }
-  function csvCell(v){v=(v==null?'':String(v));return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
-  function csv(rows,name){
-    var t='﻿'+rows.map(function(r){return r.map(csvCell).join(',');}).join('\r\n');
-    dl(URL.createObjectURL(new Blob([t],{type:'text/csv;charset=utf-8'})),name,true);
-  }
-  function pngFromChart(ch,name){
-    var src=ch.canvas,out=document.createElement('canvas');
-    out.width=src.width;out.height=src.height;
-    var x=out.getContext('2d');
-    x.fillStyle='#fefbf8';x.fillRect(0,0,out.width,out.height);
-    x.drawImage(src,0,0);
-    dl(out.toDataURL('image/png'),name,false);
-  }
-  function csvFromChart(ch,name){
-    var labels=ch.data.labels||[],ds=ch.data.datasets||[];
-    var rows=[['Label'].concat(ds.map(function(d,i){return d.label||('Series '+(i+1));}))];
-    var n=labels.length||((ds[0]&&ds[0].data)?ds[0].data.length:0);
-    for(var r=0;r<n;r++){
-      var row=[labels[r]!=null?labels[r]:r];
-      ds.forEach(function(d){
-        var v=d.data?d.data[r]:'';
-        if(v&&typeof v==='object')v=(v.y!=null?v.y:(v.v!=null?v.v:JSON.stringify(v)));
-        row.push(v==null?'':v);
-      });
-      rows.push(row);
-    }
-    csv(rows,name);
-  }
-  function csvFromTable(tbl,name){
-    var rows=[];
-    tbl.querySelectorAll('tr').forEach(function(tr){
-      var cells=[];
-      tr.querySelectorAll('th,td').forEach(function(c){cells.push(c.textContent.replace(/\s+/g,' ').trim());});
-      if(cells.some(function(x){return x!=='';}))rows.push(cells);
-    });
-    if(rows.length)csv(rows,name);
-  }
-  function mkBtn(label,title,fn){
-    var b=document.createElement('button');b.type='button';b.textContent=label;b.title=title;
-    b.addEventListener('click',fn);return b;
-  }
-  function placeAfter(el,bar){
-    var t=el,nx=el.nextElementSibling;
-    if(nx&&nx.classList&&nx.classList.contains('tnote'))t=nx;
-    t.insertAdjacentElement('afterend',bar);
-  }
-  function attachChart(box){
-    if(!box||box.getAttribute('data-exp'))return;
-    var cv=box.querySelector('canvas');if(!cv)return;
-    box.setAttribute('data-exp','1');
-    var bar=document.createElement('div');bar.className='exp';
-    bar.appendChild(mkBtn('PNG','Download this chart as a PNG image',function(){var ch=getChart(cv);if(ch)pngFromChart(ch,fnameFor(box,'png'));}));
-    bar.appendChild(mkBtn('CSV','Download this chart’s data as a CSV file',function(){var ch=getChart(cv);if(ch)csvFromChart(ch,fnameFor(box,'csv'));}));
-    placeAfter(box,bar);
-  }
-  function attachTable(tbl){
-    if(!tbl||tbl.getAttribute('data-exp'))return;
-    if(!tbl.querySelector('th'))return;
-    if(tbl.closest('header')||tbl.closest('footer')||tbl.closest('nav'))return;
-    tbl.setAttribute('data-exp','1');
-    var bar=document.createElement('div');bar.className='exp';
-    bar.appendChild(mkBtn('CSV','Download this table as a CSV file',function(){csvFromTable(tbl,fnameFor(tbl,'csv'));}));
-    placeAfter(tbl,bar);
-  }
-  function scan(){
-    document.querySelectorAll('.chart-box').forEach(attachChart);
-    document.querySelectorAll('main canvas,#app canvas').forEach(function(cv){if(!cv.closest('.chart-box'))attachChart(cv.parentElement);});
-    document.querySelectorAll('main table,#app table,.card table').forEach(attachTable);
-  }
-  function addPdfBtn(){
-    if(document.querySelector('.pdf-btn'))return;
-    var b=mkBtn('Save PDF','Save or print this page as a PDF',function(){window.print();});
-    b.className='pdf-btn';
-    var inner=document.querySelector('.series-bar .inner');
-    if(inner){inner.appendChild(b);return;}
-    var header=document.querySelector('header');
-    if(header){var bar=document.createElement('div');bar.className='pdf-bar';bar.appendChild(b);header.insertAdjacentElement('afterend',bar);return;}
-    var nav=document.querySelector('.nav-links');if(nav)nav.appendChild(b);
-  }
-  var pending=null;
-  function start(){
-    addPdfBtn();scan();
-    try{
-      var mo=new MutationObserver(function(){if(pending)return;pending=setTimeout(function(){pending=null;scan();},300);});
-      mo.observe(document.body,{childList:true,subtree:true});
-    }catch(e){}
-    [400,1200,3000].forEach(function(t){setTimeout(scan,t);});
-  }
-  if(document.readyState!=='loading')start();else document.addEventListener('DOMContentLoaded',start);
-})();
-</script>
+<!-- /ci:footer -->
 </body>
 </html>

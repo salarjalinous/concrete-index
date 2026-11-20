@@ -1,0 +1,23 @@
+/* funnel: rules used only on this page. Shared components live in /assets/ci.css. */
+.hero p.sub{margin-top:var(--s-4);font-size:var(--fs-16);color:var(--muted);max-width:700px}
+.kpi .k-note{font-size:var(--fs-12);color:var(--muted);margin-top:var(--s-2)}
+.grid{display:grid;gap:var(--s-5);padding:var(--s-8) 0 0}
+.grid.two{grid-template-columns:1fr 1fr}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:var(--s-5) var(--s-5) var(--s-5);box-shadow:var(--shadow-hair)}
+.card .h-sub{font-size:var(--fs-12);color:var(--muted);margin-top:var(--s-2);margin-bottom:var(--s-4)}
+.chart-box{position:relative;height:280px}
+.tnote{font-size:var(--fs-12);line-height:1.55;color:var(--muted);margin-top:var(--s-3);padding-top:var(--s-2);border-top:1px solid var(--line)}
+.unavail{font-family:var(--font-mono);font-size:var(--fs-12);color:var(--muted);background:var(--band);border-left:3px solid var(--faint);border-radius:0;padding:var(--s-3) var(--s-4);margin-top:var(--s-3)}
+.stage-row{display:flex;align-items:center;gap:var(--s-3);padding:var(--s-3) 0;border-bottom:1px solid var(--line)}
+.stage-row:last-child{border-bottom:0}
+.stage-name{width:150px;flex-shrink:0}
+.stage-name .s-t{font-weight:700;font-size:var(--fs-14)}
+.stage-name .s-s{font-family:var(--font-mono);font-size:var(--fs-12);color:var(--faint)}
+.stage-bar-track{flex:1;height:26px;background:var(--band);border-radius:var(--radius);overflow:hidden}
+.stage-bar{height:100%;border-radius:var(--radius);min-width:3px}
+.stage-val{width:90px;text-align:right;font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:var(--fs-18);font-weight:600;flex-shrink:0}
+td{padding:var(--s-3) var(--s-2);border-bottom:1px solid var(--line);vertical-align:top}
+td .t-title{font-weight:500;color:var(--ink)}
+@media (max-width:1023px){
+  .stage-name{width:110px}
+}

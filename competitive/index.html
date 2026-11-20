@@ -1,312 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://data.cityofnewyork.us https://data.ny.gov; upgrade-insecure-requests">
-<meta name="referrer" content="strict-origin-when-cross-origin">
+<!-- ci:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' https://data.cityofnewyork.us https://data.ny.gov; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="same-origin">
+<meta name="color-scheme" content="light">
+<title>Contractors · The Concrete Index</title>
+<meta name="description" content="Look up any NYC public-construction contractor's award record across City, Checkbook, and MTA/State data, then read the market structure of those awards by award value: count share, dollar share, top-N share, and an HHI-style concentration reading.">
 <link rel="canonical" href="https://concreteindex.co/competitive/">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="The Concrete Index">
+<meta property="og:title" content="Contractors · The Concrete Index">
+<meta property="og:description" content="Read one contractor's public award record across City and State construction, then see how award dollars and counts distribute across the market by size band.">
 <meta property="og:url" content="https://concreteindex.co/competitive/">
 <meta property="og:image" content="https://concreteindex.co/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://concreteindex.co/og-image.png">
-<title>Contractors · The Concrete Index</title>
-<meta name="description" content="Look up any NYC public-construction contractor's award record across City, Checkbook, and MTA/State data, then read the market structure of those awards by award value: count share, dollar share, top-N share, and an HHI concentration index across four size bands. Awardee names in the market section are a grouping key only, never published or ranked.">
-<meta property="og:title" content="The Concrete Index · Contractors">
-<meta property="og:description" content="Read one contractor's public award record across City and State construction, then see how award dollars and counts distribute across the market by size band.">
-<!-- BROADSHEET-V1 -->
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23ae4e34%22/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha384-bs/nf9FbdNouRbMiFcrcZfLXYPKiPaGVGplVbv7dLGECccEXDW+S3zjqSKR5ZEaD" crossorigin="anonymous"></script>
-<style>
-:root{
-  --paper:#f7f3ef; --surface:#fefbf8; --band:#f2ede8;
-  --ink:#201611; --navy:#243b53; --muted:#6b5e56; --faint:#968a7f;
-  --line:#ded5ce; --rule:#201611;
-  --accent:#ae4e34; --accent-soft:#eadbd4; --steel:#2f5d8f;
-  --pos:#2f7d52; --neg:#9e362f; --red:#9e362f; --radius:3px;
-  --maxw:1180px; --gut:28px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'Public Sans',-apple-system,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
-a{color:var(--steel);text-decoration:none}
-a:hover{text-decoration:underline}
-.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
-.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
-
-/* ---------- header ---------- */
-header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2px solid var(--ink)}
-.nav{display:flex;align-items:center;justify-content:space-between;height:62px}
-.brand{display:flex;align-items:center;gap:10px;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:20px;letter-spacing:-.01em;color:var(--ink)}
-.brand svg{color:var(--navy);flex-shrink:0}
-.brand .tick{color:var(--accent)}
-.nav-links{display:flex;gap:17px;align-items:center;font-size:13.5px;font-weight:500}
-.nav-links a{color:var(--muted)}
-.nav-links a:hover{color:var(--ink);text-decoration:none}
-.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px}
-.badge-live{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--pos);background:rgba(47,125,82,.1);border:1px solid rgba(47,125,82,.34);border-radius:3px;padding:3px 9px}
-.badge-live .dot{width:6px;height:6px;border-radius:50%;background:var(--pos);animation:pulse 2.4s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* ---------- release-series bar ---------- */
-.series-bar{background:var(--band);border-bottom:1px solid var(--line)}
-.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px var(--gut);max-width:var(--maxw);margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.series-bar b{color:var(--ink);font-weight:600}
-.series-bar .sep{color:var(--faint);padding:0 12px}
-@media(max-width:720px){.series-bar .inner{white-space:normal}}
-
-/* ---------- hero ---------- */
-.hero{padding:46px 0 14px}
-.hero .kicker{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:14px}
-.hero h1{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(32px,4.6vw,46px);line-height:1.06;letter-spacing:-.012em;max-width:840px;color:var(--ink)}
-.hero p.sub{margin-top:17px;font-size:16px;color:var(--muted);max-width:700px}
-.hero .asof{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--faint)}
-.hero .asof strong{color:var(--muted);font-weight:600}
-
-/* ---------- controls ---------- */
-.controls{display:flex;flex-wrap:wrap;gap:14px 18px;align-items:flex-end;padding:30px 0 4px}
-.ctl-group{display:flex;flex-direction:column;gap:7px}
-.ctl-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
-.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:2px}
-.seg button{border:0;background:transparent;font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:6px 13px;border-radius:2px;cursor:pointer;transition:all .12s}
-.seg button:hover{color:var(--ink)}
-.seg button.on{background:var(--ink);color:var(--paper)}
-
-/* ---------- KPI tape ---------- */
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:28px 0 8px;border-left:1px solid var(--line)}
-.kpi{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px 18px}
-.kpi.hl{border-top-color:var(--accent)}
-.kpi .k-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
-.kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--navy);line-height:1}
-.kpi.hl .k-value{font-size:clamp(30px,4.5vw,38px);color:var(--ink)}.kpi:not(.hl) .k-value{color:var(--navy)}
-.kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:8px}
-
-/* ---------- section heads ---------- */
-.card .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:0}
-.card h2{font-family:'Source Serif 4',Georgia,serif;font-size:21px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
-.card .cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em;text-align:right;white-space:nowrap}
-
-.grid{display:grid;gap:22px;padding:30px 0 0}
-.grid.two{grid-template-columns:1fr 1fr}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 22px;box-shadow:0 1px 0 rgba(32,22,17,.04)}
-.card .h-sub{font-size:12.5px;color:var(--muted);margin-top:9px;margin-bottom:18px}
-.chart-box{position:relative;height:300px}
-.tnote{font-size:11.5px;line-height:1.55;color:var(--muted);margin-top:13px;padding-top:9px;border-top:1px solid var(--line)}
-
-/* ---------- structural read box ---------- */
-.reading{background:var(--band);border-left:3px solid var(--accent);border-radius:0;padding:18px 22px}
-.reading h2{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-bottom:8px;border:0;padding:0}
-.reading p{font-size:14.5px;color:var(--muted);max-width:880px}
-.reading p+p{margin-top:9px}
-
-table{width:100%;border-collapse:collapse;font-size:13.5px}
-th{text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);padding:0 10px 8px;border-bottom:1px solid var(--ink)}
-td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-tr:last-child td{border-bottom:0}
-td.num,th.num{text-align:right}
-td.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
-td .t-title{font-weight:600;color:var(--ink)}
-td .t-sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint)}
-.amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
-
-/* ---------- concentration panels ---------- */
-.conc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0;border-left:1px solid var(--line)}
-.conc{border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px;background:var(--surface)}
-.conc .c-band{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:16px;letter-spacing:-.01em;color:var(--ink)}
-.conc .c-range{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);margin-bottom:12px;letter-spacing:.02em}
-.conc .c-row{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}
-.conc .c-row:last-child{border-bottom:0}
-.conc .c-row .lab{color:var(--muted)}
-.conc .c-row .val{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:15px;font-variant-numeric:tabular-nums;color:var(--ink)}
-.pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.03em;border-radius:3px;padding:2px 7px}
-.pill.frag{background:var(--band);color:var(--steel)}
-.pill.mod{background:var(--accent-soft);color:var(--accent-deep)}
-.pill.conc{background:#f0d6d2;color:var(--red)}
-
-/* ---------- methodology ---------- */
-.method{padding:44px 0 10px}
-.method .card{padding:20px 22px 22px}
-.method .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:0}
-.method h2{font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:700;letter-spacing:-.012em;color:var(--ink)}
-.method .m-cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em}
-.method h3{font-family:'Public Sans',sans-serif;font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin:24px 0 6px;color:var(--ink)}
-.method p{font-size:14px;color:var(--muted);max-width:820px}
-.method p+p{margin-top:8px}
-.method code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:var(--band);padding:1px 5px;border-radius:3px;border:1px solid var(--line)}
-
-/* ---------- footer ---------- */
-footer{margin-top:54px;background:var(--band);border-top:2px solid var(--ink);padding:30px 0 40px;font-size:13px;color:var(--muted)}
-footer a{color:var(--steel)}
-footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-footer .brand{font-size:17px;color:var(--ink)}
-footer .brand svg{color:var(--navy)}
-footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em}
-#loader{padding:80px 0;text-align:center;color:var(--muted)}
-.spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-#error{display:none;padding:60px 24px;text-align:center;color:var(--muted)}
-#app{display:none}
-@media(max-width:880px){
-  .kpis{grid-template-columns:repeat(2,1fr)}
-  .kpi:nth-child(2){border-right:0}
-  .grid.two{grid-template-columns:1fr}
-  .conc-grid{grid-template-columns:1fr;border-left:0}
-  .conc{border-right:0;border-left:1px solid var(--line)}
-}
-@media(max-width:560px){
-  .kpis{grid-template-columns:1fr 1fr}
-  .kpi .k-value{font-size:26px}
-  .hero{padding-top:34px}
-  :root{--maxw:1180px;--gut:18px}
-}
-.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
-@media(max-width:1180px){
-  .menu-btn{display:block}
-  .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:61px;left:calc(-1 * var(--gut));right:calc(-1 * var(--gut));background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px var(--gut);gap:13px;box-shadow:0 10px 24px rgba(32,22,17,.16);z-index:60;max-height:calc(100vh - 62px);overflow-y:auto}
-  .nav-links.open{display:flex}
-}
-
-/* ---------- reduced motion ---------- */
-@media (prefers-reduced-motion: reduce){
-  .badge-live .dot{animation:none}
-  .spinner{animation:none}
-  *{scroll-behavior:auto}
-}
-
-/* ---------- contractor lookup (ported from the retired Vendors page) ---------- */
-.searchbar{display:flex;gap:10px;margin-top:22px;max-width:560px}
-.searchbar input{flex:1;font:inherit;font-size:15px;padding:11px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink)}
-.searchbar input:focus{outline:2px solid var(--accent)}
-.searchbar button{font:inherit;font-size:14px;font-weight:600;padding:11px 20px;border:0;border-radius:var(--radius);background:var(--navy);color:var(--paper);cursor:pointer}
-.searchbar button:hover{background:#1c2e41}
-.hint{margin-top:10px;font-size:12.5px;color:var(--faint)}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0}
-.chip{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);padding:5px 11px;cursor:pointer;color:var(--muted)}
-.chip:hover{color:var(--ink);border-color:var(--ink)}
-.chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.csv-link{color:var(--accent);font-weight:500}
-.csv-link:hover{text-decoration:underline}
-.starter{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
-.starter button{font:inherit;text-align:left;font-size:13.5px;font-weight:600;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink);cursor:pointer}
-.starter button:hover{border-color:var(--accent)}
-.starter .v-amt{display:block;font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:11.5px;color:var(--muted);margin-top:4px}
-.empty{padding:36px;text-align:center;color:var(--muted)}
-#lookup td .t-title{font-weight:500;color:var(--ink)}
-#lookup td .t-sub{font-family:'Public Sans',sans-serif;font-size:12px;color:var(--muted);margin-top:3px}
-.pill.hard{background:var(--accent-soft);color:var(--accent)}
-.pill.rel{background:var(--band);color:var(--steel)}
-.readstrip{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
-.rd{padding:16px 18px;border-right:1px solid var(--line);border-top:3px solid var(--steel)}
-.rd:last-child{border-right:0}
-.rd.flag{border-top-color:var(--steel);background:var(--band)}
-.rd .rd-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--faint)}
-.rd .rd-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:23px;font-weight:600;margin-top:7px;letter-spacing:-.01em;color:var(--navy)}
-.rd.flag .rd-value{color:var(--steel)}
-.rd .rd-note{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5}
-@media(max-width:720px){.readstrip{grid-template-columns:1fr}.rd{border-right:0;border-bottom:1px solid var(--line)}.rd:last-child{border-bottom:0}.starter{grid-template-columns:1fr}}
-.cbk-asof{margin-top:12px;font-size:11.5px;letter-spacing:.03em;color:var(--faint)}
-.grouphead{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;margin:4px 0 2px}
-.grouphead h2{font-family:'Source Serif 4',Georgia,serif;font-size:25px;font-weight:700;letter-spacing:-.012em;color:var(--ink)}
-.grouphead .gp{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;background:var(--accent-soft);color:var(--accent);border-radius:3px;padding:3px 7px}
-.grouphead .gn{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)}
-.members{margin-top:18px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
-.members summary{list-style:none;cursor:pointer;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;font-weight:600;color:var(--ink);background:var(--band)}
-.members summary::-webkit-details-marker{display:none}
-.members summary .mcap{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.03em}
-.members summary .caret{font-family:'IBM Plex Mono',monospace;color:var(--faint);transition:transform .15s}
-.members[open] summary .caret{transform:rotate(90deg)}
-.members .mbody{padding:4px 18px 8px}
-.members table{font-size:13px}
-.members th{padding:10px 8px 7px}
-.members td{padding:9px 8px}
-.members td.mname{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink)}
-#vloader{display:none;padding:50px 0;text-align:center;color:var(--muted)}
-#profile{display:none}
-@media(max-width:880px){.starter{grid-template-columns:1fr}}
-
-/* ---------- print ---------- */
-@media print{
-  header,.series-bar,.badge-live,.controls,.seg,.menu-btn,.searchbar,.chips,.hint,#starter{display:none !important}
-  body{background:#fff;color:#000}
-  .card{background:#fff !important;box-shadow:none}
-  details.members > .mbody{display:block !important}
-  details.members{page-break-inside:avoid}
-  footer{background:#fff;border-top:1px solid #000;color:#000}
-  footer a,a{color:#000}
-}
-
-/* ---------- display scaling: fill wide / high-resolution screens ---------- */
-@media(min-width:1400px){
-  :root{--maxw:1330px;--gut:34px}
-  body{font-size:15.5px}
-  .kpi .k-value{font-size:33px}
-  .kpi.hl .k-value{font-size:42px}
-  .hero p.sub,.lp-sub{font-size:17.5px;max-width:860px}
-  .hero h1{max-width:960px}
-  .method p{max-width:980px}
-  table{font-size:14px}
-  .chart-box{height:330px}
-  .chart-box.tall{height:376px}
-}
-@media(min-width:1750px){
-  :root{--maxw:1500px;--gut:40px}
-  body{font-size:16px}
-  .kpi .k-value{font-size:35px}
-  .kpi.hl .k-value{font-size:45px}
-  .method p{max-width:1060px}
-  table{font-size:14.5px}
-  .chart-box{height:360px}
-  .chart-box.tall{height:410px}
-}
-@media(min-width:2100px){ :root{--maxw:1620px} }
-/* ---------- narrow: wide tables scroll inside their card, not the page ---------- */
-@media(max-width:900px){
-  .card{overflow-x:auto}
-  .card table{min-width:560px}
-  .sec-head{flex-wrap:wrap}
-  .sec-head .cap{white-space:normal;text-align:left}
-}
-</style>
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/public-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/ci.css">
+<link rel="stylesheet" href="/assets/pages/competitive.css">
+<meta name="ci:export" content="on">
+<script src="/assets/ci.js" defer></script>
+<script src="/assets/vendor/chart.umd.min.js" defer></script>
+<script src="/assets/ci-chart.js" defer></script>
+<script src="/assets/pages/competitive.js" defer></script>
+<script src="/assets/pages/competitive.2.js" defer></script>
+<!-- /ci:head -->
 </head>
 <body>
 
-<header>
-  <div class="wrap nav">
-    <div class="brand">
-      <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
-      <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
-    </div>
-    <button class="menu-btn" aria-label="Menu" aria-expanded="false" onclick="const o=this.nextElementSibling.classList.toggle('open');this.setAttribute('aria-expanded',o)">&#9776;</button>
-    <nav class="nav-links">
-      <a href="/pipeline/">Pipeline</a>
-      <a href="/solicitations/">Bidding</a>
-      <a href="/awarded/">Awarded</a>
-      <a href="/funnel/">Funnel</a>
-      <a href="/agency/">Agencies</a>
-      <a href="/regional/">SCA &amp; MTA</a>
-      <a href="/competitive/" class="active">Contractors</a>
-      <a href="/contracts/">Contracts</a>
-      <a href="/analysis/">Analysis</a>
-      <a href="/briefing/">Briefing</a>
-      <a href="/about/">About</a>
-      <span class="badge-live"><span class="dot"></span>Live data</span>
-    </nav>
+<!-- ci:header -->
+<a class="ci-skip" href="#content">Skip to content</a>
+<header class="ci-masthead">
+  <div class="wrap ci-masthead__bar">
+    <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="26" height="26" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+    <nav class="ci-utility" aria-label="Site"><a href="/methodology/">Methodology</a><a href="/about/">About</a><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></nav>
+    <button class="ci-menu-btn" type="button" aria-expanded="false" aria-controls="ci-menu"><svg class="ci-i-menu" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="ci-i-close" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="ci-menu-btn__label">Menu</span></button>
   </div>
+  <nav class="ci-rail" id="ci-menu" aria-label="Sections">
+    <div class="wrap ci-rail__inner">
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-stages">Stages</p><ul class="ci-rail__list" aria-labelledby="ci-g-stages"><li><a href="/pipeline/">Pipeline</a></li><li><a href="/solicitations/">Bidding</a></li><li><a href="/awarded/">Awarded</a></li><li><a href="/contracts/">Contracts</a></li><li><a href="/funnel/">Funnel</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-entities">Entities</p><ul class="ci-rail__list" aria-labelledby="ci-g-entities"><li><a href="/agency/">Agencies</a></li><li><a href="/competitive/" aria-current="page">Contractors</a></li><li><a href="/regional/">Regional</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-synthesis">Synthesis</p><ul class="ci-rail__list" aria-labelledby="ci-g-synthesis"><li><a href="/analysis/">Analysis</a></li><li><a href="/briefing/">Briefing</a></li></ul></div>
+      <div class="ci-rail__group ci-rail__group--utility"><p class="ci-rail__label" id="ci-g-site">Site</p><ul class="ci-rail__list" aria-labelledby="ci-g-site"><li><a href="/methodology/">Methodology</a></li><li><a href="/about/">About</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></li></ul></div>
+    </div>
+  </nav>
 </header>
+<!-- /ci:header -->
 
 <div class="series-bar">
   <div class="inner">SERIES&nbsp;·&nbsp;<b>CI-CONTRACTORS</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CITY RECORD (qyyg-4tf5), DAILY · CHECKBOOK, NIGHTLY · DATA.NY.GOV, LIVE</b><span class="sep">·</span>DEDUPE&nbsp;·&nbsp;<b>ONE PER PIN</b></div>
 </div>
 
+<main id="content" tabindex="-1">
+
 <div class="wrap hero">
-  <div class="kicker">Contractors &amp; market structure</div>
   <h1>One contractor's record, and the market around it.</h1>
   <p class="sub">Look up any firm's public award record across City and State construction, then read how award dollars and counts spread across the market by award-size band. The contractor lookup leads because it is the view an underwriter opens first. The market-structure read follows below it. Awardee names in the market section are a grouping key only and are never published, ranked, or scored.</p>
   <div class="searchbar">
@@ -318,7 +76,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 
 <!-- ===== Contractor lookup (lead section). Independent of the market data load
      below, so it is usable immediately on page open. ===== -->
-<main class="wrap" id="lookup">
+<div data-ci-main class="wrap" id="lookup">
 
   <section id="starter" class="grid">
     <div class="card">
@@ -334,12 +92,12 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <section id="profile">
     <div class="chips" id="chips"></div>
     <div class="grouphead" id="grouphead"></div>
-    <div id="city-empty" class="h-sub" style="display:none;margin-bottom:18px"></div>
+    <div id="city-empty" class="h-sub u-mb-4" data-ci-hide></div>
     <section class="kpis" id="city-kpis">
       <div class="kpi hl"><div class="k-label">Awarded, all-time</div><div class="k-value" id="kpi-all">&ndash;</div><div class="k-note">in the record since 2003</div></div>
       <div class="kpi"><div class="k-label">Awarded, TTM</div><div class="k-value" id="kpi-ttm">&ndash;</div><div class="k-note">trailing twelve months</div></div>
       <div class="kpi"><div class="k-label">Awards</div><div class="k-value" id="kpi-n">&ndash;</div><div class="k-note" id="kpi-n-note"></div></div>
-      <div class="kpi"><div class="k-label">Top agency</div><div class="k-value" id="kpi-ag" style="font-size:18px;line-height:1.3">&ndash;</div><div class="k-note" id="kpi-ag-note"></div></div>
+      <div class="kpi"><div class="k-label">Top agency</div><div class="k-value" id="kpi-ag">&ndash;</div><div class="k-note" id="kpi-ag-note"></div></div>
     </section>
     <section class="grid" id="city-readcard">
       <div class="card">
@@ -353,18 +111,18 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <div class="sec-head"><h2>Registered and paid</h2><span class="cap">CHECKBOOK NYC &middot; USD</span></div>
         <div class="h-sub">Three different measures of this firm's City work, shown side by side and never added together. The award-notice value is the amount stated when a contract is awarded. Registered is the contract value the Comptroller has registered. Paid to date is how much the City has actually disbursed against those registered contracts. Each answers a different question, and the gaps between them are normal.</div>
         <div class="readstrip" id="cbk-strip"></div>
-        <div class="cbk-asof mono" id="cbk-asof" style="display:none"></div>
-        <div class="h-sub" id="cbk-note" style="margin-top:14px;margin-bottom:0"></div>
+        <div class="cbk-asof mono" id="cbk-asof" data-ci-hide></div>
+        <div class="h-sub u-mt-3 u-mb-0" id="cbk-note"></div>
       </div>
     </section>
-    <section class="grid" id="ny-section" style="display:none">
+    <section class="grid" id="ny-section" data-ci-hide>
       <div class="card">
         <div class="sec-head"><h2>MTA &amp; State public work</h2><span class="cap">DATA.NY.GOV &middot; USD</span></div>
         <div class="h-sub">Public construction work this firm has done for the MTA and New York State, named in the State's open-data record. This is a separate ledger from the City figures above and is never added to them. Heavy-civil firms whose New York work runs through the authorities can read low or empty in the City and Checkbook views precisely because their work shows up here instead.</div>
         <div class="readstrip" id="ny-strip"></div>
-        <div class="h-sub" id="ny-note" style="margin-top:14px;margin-bottom:0"></div>
-        <details class="members" id="ny-members" style="display:none;margin-top:14px">
-          <summary><span>Contracts included, by source</span><span style="display:flex;align-items:center;gap:10px"><span class="mcap" id="ny-members-cap"></span><span class="caret">&#9656;</span></span></summary>
+        <div class="h-sub u-mt-3 u-mb-0" id="ny-note"></div>
+        <details class="members u-mt-3" id="ny-members" data-ci-hide>
+          <summary><span>Contracts included, by source</span><span class="u-flex-center u-gap-2"><span class="mcap" id="ny-members-cap"></span><span class="caret">&#9656;</span></span></summary>
           <div class="mbody">
             <table>
               <thead><tr><th>Source</th><th class="num">Contracts</th><th class="num">Registered</th><th class="num">Paid to date</th></tr></thead>
@@ -397,7 +155,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
           <tbody></tbody>
         </table>
         <details class="members" id="members">
-          <summary><span id="members-label">Names included in this total</span><span style="display:flex;align-items:center;gap:10px"><span class="mcap" id="members-cap"></span><span class="caret">&#9656;</span></span></summary>
+          <summary><span id="members-label">Names included in this total</span><span class="u-flex-center u-gap-2"><span class="mcap" id="members-cap"></span><span class="caret">&#9656;</span></span></summary>
           <div class="mbody">
             <table>
               <thead><tr><th>Name as published</th><th class="num">Awards</th><th class="num">Awarded value</th></tr></thead>
@@ -410,13 +168,13 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     </section>
   </section>
 
-  <div id="noresults" class="card empty" style="display:none">No construction awards found for that name. Try a shorter fragment of the company name.</div>
+  <div id="noresults" class="card empty" data-ci-hide>No construction awards found for that name. Try a shorter fragment of the company name.</div>
 
-</main>
+</div>
 
-<div class="wrap" style="padding-top:8px">
-  <div class="sec-head" style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px"><h2 style="font-family:'Source Serif 4',Georgia,serif;font-size:21px;font-weight:700;letter-spacing:-.01em;color:var(--ink)">Market structure</h2><span class="cap" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em">COMPETITIVE SET BY WINS</span></div>
-  <p class="asof" id="asof" style="margin-top:14px;padding-top:0;border-top:0">Assembling the market set from live City Record data&hellip;</p>
+<div class="wrap u-pt-2">
+  <div class="sec-head"><h2>Market structure</h2><span class="cap">COMPETITIVE SET BY WINS</span></div>
+  <p class="asof u-mt-3 u-pt-0 u-bt-0" id="asof">Assembling the market set from live City Record data&hellip;</p>
 </div>
 
 <div id="loader" class="wrap">
@@ -426,11 +184,11 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
 
 <div id="error" class="wrap">
   <p><strong>Couldn't reach NYC Open Data.</strong></p>
-  <p style="margin-top:6px">The City's API may be momentarily unavailable.</p>
-  <button type="button" onclick="location.reload()" style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--paper);background:var(--navy);border:none;border-radius:var(--radius);padding:9px 16px;cursor:pointer">Retry</button>
+  <p class="u-mt-2">The City's API may be momentarily unavailable.</p>
+  <button type="button" class="ci-btn" data-action="reload">Retry</button>
 </div>
 
-<main id="app" class="wrap">
+<div data-ci-main id="app" class="wrap">
 
   <section class="controls">
     <div class="ctl-group">
@@ -457,7 +215,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   </section>
 
   <section class="grid">
-    <div class="reading" id="ms-reading-wrap">
+    <div class="reading ci-note" id="ms-reading-wrap">
       <h2>Structural read</h2>
       <p id="ms-reading"></p>
     </div>
@@ -519,716 +277,30 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     </div>
   </section>
 
+</div>
 </main>
 
-<footer>
-  <div class="wrap f-row">
-    <div>
-      <div class="brand">
-        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
-        <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.01em">The Concrete Index<span class="tick" style="color:var(--accent)">.</span></span>
-      </div>
-      <div style="margin-top:8px">NYC public construction capital, tracked end to end.</div>
-      <div style="margin-top:6px;font-size:12px;color:var(--faint);max-width:430px">An independent project built by Salar Jalinous using only public data. Not affiliated with any employer.</div>
+<!-- ci:footer -->
+<footer class="ci-footer">
+  <div class="wrap ci-footer__inner">
+    <div class="ci-footer__brand">
+      <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="22" height="22" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+      <p class="ci-footer__tag">NYC public construction capital, tracked end to end.</p>
     </div>
-    <div style="text-align:right" class="f-meta">
-      <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> &middot; refreshed on load</div>
-      <div style="margin-top:5px">&copy; 2026 <a href="/about/">Salar Jalinous</a></div>
+    <nav class="ci-footer__links" aria-label="Site information">
+      <ul><li><a href="/methodology/">Methodology</a></li><li><a href="/sources/">Sources</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source on GitHub</a></li><li><a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">Report a correction</a></li></ul>
+    </nav>
+    <div class="ci-footer__meta">
+      <p>Not affiliated with the City or State of New York or any employer.</p>
+      <p><a href="/about/">© <span data-ci-year="2026">2026</span> The Concrete Index</a></p>
     </div>
   </div>
 </footer>
+<!-- /ci:footer -->
 
 <!-- ===== Contractor lookup module (ported verbatim from the retired Vendors page,
      wrapped in an IIFE so its globals do not collide with the market script below).
      Exposes runSearch and selectGroup on window for the inline onclick handlers. ===== -->
-<script>
-(function(){
-'use strict';
-const API = 'https://data.cityofnewyork.us/resource/qyyg-4tf5.json';
-const TOKEN = '3TAzQQPiSG2T4WGWfYYUxxqfJ';
-const HARD = 'Construction/Construction Services';
-const COLOR_A = '#ae4e34', COLOR_B = '#243b53', GRID = '#e3dbd3';
-// NY State open data (data.ny.gov), already in the page CSP connect-src. These
-// carry the awarded CONTRACTOR NAME on MTA and State construction work, which the
-// City datasets cannot. MTA Procurements (twsw-2mqa) and the SUNY Construction
-// Fund contracts (cfjm-ii27) both filter to the same construction procurement type.
-const NY_API = 'https://data.ny.gov/resource';
-const MTA_DS = 'twsw-2mqa', SUCF_DS = 'cfjm-ii27';
-const NY_CONSTR = 'Design and Construction/Maintenance';
-
-Chart.defaults.font.family = "'IBM Plex Mono',monospace";
-Chart.defaults.font.size = 10;
-Chart.defaults.color = '#6b5e56';
-Object.assign(Chart.defaults.plugins.tooltip, {
-  backgroundColor:'#fefbf8', titleColor:'#201611', bodyColor:'#6b5e56',
-  borderColor:'#ae4e34', borderWidth:1, cornerRadius:2, padding:10, displayColors:false,
-  titleFont:{family:"'Public Sans',sans-serif",weight:'600',size:12}, bodyFont:{family:"'IBM Plex Mono',monospace",size:12},
-  caretSize:5
-});
-let charts = {};
-function destroy(k){ if(charts[k]){ charts[k].destroy(); delete charts[k]; } }
-
-async function getJSON(params){
-  const res = await fetch(API + '?' + new URLSearchParams(params), { headers: { 'X-App-Token': '3TAzQQPiSG2T4WGWfYYUxxqfJ' } });
-  if(!res.ok) throw new Error('API ' + res.status);
-  return res.json();
-}
-// data.ny.gov fetch (same Socrata app token works on both portals).
-async function getNY(ds, params){
-  const res = await fetch(NY_API + '/' + ds + '.json?' + new URLSearchParams(params), { headers: { 'X-App-Token': '3TAzQQPiSG2T4WGWfYYUxxqfJ' } });
-  if(!res.ok) throw new Error('NY ' + res.status);
-  return res.json();
-}
-// PARIS re-reporting dedup: the State data re-reports every active contract each
-// fiscal year (cumulative spend grows) and sometimes duplicates a contract within
-// a year. Collapse to ONE record per contract: keep the latest fiscal year, then
-// tie-break by max paid, then max amount. Summing raw rows would multi-count.
-function dedupContracts(rows, getKey, getFy, getAmt, getPaid){
-  const best = new Map(); let u = 0;
-  for(const r of rows){
-    const ck = (getKey(r) || '').trim() || ('__' + (u++));
-    const fy = getFy(r) || '';
-    const amt = parseFloat(getAmt(r)) || 0;
-    const paid = parseFloat(getPaid(r)) || 0;
-    const cur = best.get(ck);
-    if(!cur || fy > cur.fy ||
-       (fy === cur.fy && (paid > cur.paid || (paid === cur.paid && amt > cur.amt)))){
-      best.set(ck, { fy, amt, paid });
-    }
-  }
-  let registered = 0, paid = 0;
-  for(const e of best.values()){ registered += e.amt; paid += e.paid; }
-  return { contracts: best.size, registered, paid };
-}
-// Fetch MTA + SUNY-CF construction rows matching the same vendor clause as the
-// City search, attribute each row to its parent group exactly via groupKeyFor(),
-// dedupe per contract, and return a Map of groupKey -> {mta, sucf} aggregates.
-async function buildNYWork(vendorClause){
-  const out = new Map();
-  const [mta, sucf] = await Promise.all([
-    getNY(MTA_DS, {
-      '$select':'vendor_name,transaction_number,fiscal_year_end_date,contract_amount,amount_expended_to_date',
-      '$where':`type_of_procurement='${NY_CONSTR}' AND ${vendorClause}`, '$limit':'10000'
-    }).catch(()=>[]),
-    getNY(SUCF_DS, {
-      '$select':'vendor_name,contract_number,contract_amount,expended_amount_ltd',
-      '$where':`procurement_type='${NY_CONSTR}' AND ${vendorClause}`, '$limit':'10000'
-    }).catch(()=>[])
-  ]);
-  const bucket = (rows) => { const m = new Map(); for(const r of rows){ const g = groupKeyFor(r.vendor_name); if(!m.has(g)) m.set(g, []); m.get(g).push(r); } return m; };
-  const mtaByG = bucket(mta), sucfByG = bucket(sucf);
-  const keys = new Set([...mtaByG.keys(), ...sucfByG.keys()]);
-  for(const g of keys){
-    const m = dedupContracts(mtaByG.get(g)||[], r=>r.transaction_number, r=>r.fiscal_year_end_date, r=>r.contract_amount, r=>r.amount_expended_to_date);
-    const s = dedupContracts(sucfByG.get(g)||[], r=>r.contract_number, r=>'', r=>r.contract_amount, r=>r.expended_amount_ltd);
-    out.set(g, { mta:m, sucf:s });
-  }
-  return out;
-}
-function fmtMoney(v){
-  if(v >= 1e9) return '$' + (v/1e9).toFixed(2) + 'B';
-  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
-  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
-  return '$' + Math.round(v);
-}
-/* Null-guarded, matching the market block's own copy of this helper. Every
-   current caller passes a count, so the guard changes nothing today; it exists
-   so a future caller with a missing count renders 0 instead of throwing and
-   taking the whole profile render down with it. */
-function fmtInt(v){ return (v||0).toLocaleString('en-US'); }
-function fmtDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
-function esc(s){ const d=document.createElement('div'); d.textContent=String(s==null?'':s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
-function cleanName(s){ return String(s==null?'':s).replace(/\s*[\?�]\s*/g,' / ').replace(/\s{2,}/g,' ').trim(); }
-function escName(s){ return esc(cleanName(s)); }
-function csvCell(v){ const s=(v==null?'':String(v)); return '"'+s.replace(/"/g,'""')+'"'; }
-function slugify(s){ return (s||'vendor').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60) || 'vendor'; }
-function downloadCSV(text, filename){
-  const blob = new Blob([text], { type:'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a);
-  setTimeout(()=>URL.revokeObjectURL(url), 0);
-}
-function exportVendorCSV(){
-  const grp = state.groups.get(state.active);
-  if(!grp) return;
-  const rows = grp.rows;
-  const all = rows.reduce((a,r)=>a+r.amount,0);
-  const cbk = checkbook.loaded ? checkbook.vendors[normName(grp.key)] : null;
-  const lines = [];
-  lines.push(['Vendor group', grp.key].map(csvCell).join(','));
-  lines.push(['Measure','Value (USD)'].map(csvCell).join(','));
-  lines.push(['Award-notice value (City Record)', Math.round(all)].map(csvCell).join(','));
-  lines.push(['Registered (Checkbook)', cbk ? Math.round(cbk.registered) : 'no match'].map(csvCell).join(','));
-  lines.push(['Paid to date (Checkbook)', cbk ? Math.round(cbk.paid) : 'no match'].map(csvCell).join(','));
-  lines.push('');
-  lines.push(['Date','Award','Agency','Vendor (as published)','Category','Selection method','Amount (USD)'].map(csvCell).join(','));
-  rows.forEach(r => {
-    lines.push([
-      r.day, r.title, r.agency, r.vendor,
-      r.cat==='hard'?'Construction':'Related services',
-      r.method, Math.round(r.amount)
-    ].map(csvCell).join(','));
-  });
-  downloadCSV(lines.join('\r\n'), 'concrete-index-' + slugify(grp.key) + '.csv');
-}
-/* Same calendar day n months back, UTC-anchored, with the day clamped to the
-   length of the target month so the end of a long month does not roll forward
-   into the next one. Used only as a widened fetch margin, never as a window. */
-function isoMonthsAgo(n){
-  const now = new Date();
-  const y = now.getUTCFullYear(), m = now.getUTCMonth();
-  const lastDay = new Date(Date.UTC(y, m - n + 1, 0)).getUTCDate();
-  return new Date(Date.UTC(y, m - n, Math.min(now.getUTCDate(), lastDay)))
-    .toISOString().slice(0,10);
-}
-/* Lower bound of a rolling window of n calendar days ending on, and including,
-   the current UTC day: isoWindowStart(365) is today plus the 364 days before it.
-   It replaces a threshold instant of Date.now() - n*864e5, which landed mid-day
-   on the oldest day and so admitted exactly this same set of day-stamped rows,
-   but landed at a different instant for every reader. */
-function isoWindowStart(days){
-  const now = new Date();
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - (days - 1)))
-    .toISOString().slice(0,10);
-}
-/* Canonical trailing twelve months for the whole site: twelve FULLY-ELAPSED
-   months. isoCompleteMonthBoundary(0) is the first day of the current,
-   incomplete month, so [isoCompleteMonthBoundary(12), isoCompleteMonthBoundary(0))
-   never reads the partial month in progress. Same rule the funnel, the Briefing,
-   and the Analysis index use, so the pages cannot disagree on one window.
-
-   Anchored in UTC end to end. A local midnight formatted through toISOString
-   reads back a day early for anyone east of UTC, which moved the whole trailing
-   window and made the same page report different totals in Berlin than in New
-   York. Date.UTC in, toISOString out, so every reader gets one window.
-
-   It returns a day STRING, and the row side of every comparison is the raw
-   start_date prefix, so the window is decided string-on-string and never by
-   comparing a UTC-anchored boundary against a locally-parsed row date. */
-function isoCompleteMonthBoundary(n){
-  const now = new Date();
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - n, 1))
-    .toISOString().slice(0,10);
-}
-/* Same $500M megaproject floor the market-structure section below uses. */
-const MEGA_FLOOR = 500000000;
-function isContinuation(m){ return /renewal|extension/i.test(m||''); }
-function median(a){ if(!a.length) return 0; const s=[...a].sort((x,y)=>x-y); const m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; }
-/* Whole months between a published day ('YYYY-MM-DD') and the current month,
-   both read in UTC so the answer does not depend on the reader's location. */
-function monthsSince(day){
-  const n = new Date();
-  return (n.getUTCFullYear() - +String(day).slice(0,4)) * 12
-       + (n.getUTCMonth() + 1 - +String(day).slice(5,7));
-}
-
-function normName(s){
-  return (s||'')
-    .trim()
-    .replace(/\s+/g,' ')
-    .toUpperCase()
-    .replace(/[.,]/g,'')
-    .replace(/[;:&/\\'"`\-\s]+$/,'')
-    .trim()
-    .replace(/\s+/g,' ');
-}
-
-const alias = {
-  loaded: false,
-  variantToParent: new Map(),
-  parentVariants: new Map(),
-  groups: []
-};
-
-async function loadAliases(){
-  try{
-    const res = await fetch('/data/vendor-aliases.json');
-    if(!res.ok) throw new Error('aliases ' + res.status);
-    const raw = await res.json();
-    raw.forEach(g => {
-      const seen = new Set();
-      const norm = [];
-      g.variants.forEach(v => {
-        const nv = normName(v);
-        if(!nv || seen.has(nv)) return;
-        seen.add(nv);
-        norm.push(nv);
-        alias.variantToParent.set(nv, g.parent);
-      });
-      alias.parentVariants.set(g.parent, norm);
-      alias.groups.push({ parent: g.parent, variants: norm });
-    });
-    alias.loaded = true;
-  }catch(e){ /* page still works ungrouped if aliases fail to load */ }
-}
-
-const checkbook = { loaded: false, meta: null, vendors: {} };
-async function loadCheckbook(){
-  try{
-    const res = await fetch('/data/checkbook-vendors.json');
-    if(!res.ok) throw new Error('checkbook ' + res.status);
-    const d = await res.json();
-    checkbook.meta = d.meta || null;
-    checkbook.vendors = d.vendors || {};
-    checkbook.loaded = true;
-  }catch(e){ /* page still works without the Checkbook block */ }
-}
-
-function groupKeyFor(vendorName){
-  const p = alias.variantToParent.get(normName(vendorName));
-  return p || (vendorName||'').trim();
-}
-
-const state = { rows: [], groups: new Map(), active: '' };
-
-/* Top twelve awardees, on exactly the universe the market-structure section
-   below reads: twelve fully-elapsed months, one record per pin (max amount),
-   renewal and extension notices held out, and single awards of $500M or more
-   excluded. The old server-side sum did none of that, so the list was led by a
-   megaproject the analysis underneath it never counts, and it double-counted
-   procurements published as several notices. Twelve months of construction
-   awards is a few hundred rows, so the rows come back in one request and are
-   deduped in the browser with the site's canonical rule. */
-async function loadStarter(){
-  const lo = isoCompleteMonthBoundary(12);
-  const hi = isoCompleteMonthBoundary(0);
-  const rows = await getJSON({
-    '$select':'pin,vendor_name,contract_amount,start_date,selection_method_description',
-    '$where':`starts_with(category_description,'Construction') AND contract_amount>0 AND contract_amount<${MEGA_FLOOR} AND start_date>='${lo}' AND start_date<'${hi}'`,
-    '$order':'pin','$limit':'50000'
-  });
-  const byPin = new Map();
-  rows.forEach((r, i) => {
-    const amt = parseFloat(r.contract_amount);
-    if(!(amt > 0) || amt >= MEGA_FLOOR) return;
-    if(isContinuation(r.selection_method_description)) return;
-    const pin = r.pin || ('_np_' + i);   // stable surrogate: an unpinned notice stands alone
-    const prev = byPin.get(pin);
-    if(!prev || amt > prev.amt) byPin.set(pin, { amt, name: (r.vendor_name || '').trim() });
-  });
-  const byVendor = new Map();
-  byPin.forEach(rec => {
-    if(!rec.name) return;
-    const v = byVendor.get(rec.name) || { s: 0, n: 0 };
-    v.s += rec.amt; v.n += 1;
-    byVendor.set(rec.name, v);
-  });
-  const top = [...byVendor.entries()]
-    .sort((a, b) => (b[1].s - a[1].s) || a[0].localeCompare(b[0]))   // deterministic on ties
-    .slice(0, 12);
-  document.getElementById('starter-list').innerHTML = top.map(([name, v]) =>
-    `<button onclick="runSearch(${JSON.stringify(name).replace(/"/g,'&quot;')})">${escName(name)}<span class="v-amt">${fmtMoney(v.s)} · ${fmtInt(v.n)} award${v.n===1?'':'s'}, TTM</span></button>`
-  ).join('');
-}
-
-function soqlLit(s){ return (s||'').replace(/'/g, "''").replace(/[%_]/g, ''); }
-
-async function runSearch(q){
-  q = (q||'').trim();
-  if(q.length < 3) return;
-  document.getElementById('q').value = q;
-  history.replaceState(null,'', '?q=' + encodeURIComponent(q));
-  document.getElementById('starter').style.display = 'none';
-  document.getElementById('profile').style.display = 'none';
-  document.getElementById('noresults').style.display = 'none';
-  document.getElementById('vloader').style.display = 'block';
-
-  const ql = q.toLowerCase();
-  const safe = soqlLit(q);
-
-  const matchedVariants = new Set();
-  alias.groups.forEach(g => {
-    const hit = g.parent.toLowerCase().includes(ql) ||
-                g.variants.some(v => v.toLowerCase().includes(ql));
-    if(hit) g.variants.forEach(v => matchedVariants.add(v));
-  });
-
-  const likeOf = v => v.replace(/'/g,"''").replace(/\s+/g,'%') + '%';
-  const clauses = [`upper(vendor_name) like upper('%${safe}%')`];
-  for(const v of matchedVariants){
-    clauses.push(`upper(vendor_name) like upper('${likeOf(v)}')`);
-  }
-  const vendorClause = `(${clauses.join(' OR ')})`;
-  const where = `starts_with(category_description,'Construction') AND contract_amount>0 AND ${vendorClause}`;
-
-  let rows = [];
-  try{
-    rows = await getJSON({
-      '$select':'start_date,agency_name,category_description,selection_method_description,short_title,vendor_name,contract_amount',
-      '$where':where,
-      '$order':'start_date DESC','$limit':'5000'
-    });
-  }catch(e){ rows = []; }
-
-  state.rows = rows.map(r => ({
-    // date is for display only, through fmtDate. Every window decision and the
-    // CSV export read `day`, the raw published prefix, so neither depends on how
-    // the browser chose to parse the timestamp or on where the reader is.
-    date: new Date(r.start_date),
-    day: (r.start_date || '').slice(0,10),
-    year: r.start_date.slice(0,4),
-    agency: r.agency_name || '(unspecified)',
-    cat: r.category_description === HARD ? 'hard' : 'rel',
-    method: r.selection_method_description || '',
-    title: r.short_title || '(untitled)',
-    vendor: (r.vendor_name || '').trim(),
-    amount: parseFloat(r.contract_amount) || 0,
-    gkey: groupKeyFor(r.vendor_name)
-  }));
-
-  state.groups = new Map();
-  for(const r of state.rows){
-    let g = state.groups.get(r.gkey);
-    if(!g){
-      g = { key:r.gkey, isParent:alias.parentVariants.has(r.gkey), total:0, n:0, rows:[] };
-      state.groups.set(r.gkey, g);
-    }
-    g.total += r.amount; g.n += 1; g.rows.push(r);
-  }
-
-  let nyMap = new Map();
-  try{ nyMap = await buildNYWork(vendorClause); }catch(e){ nyMap = new Map(); }
-  for(const [g, ny] of nyMap){
-    if(!(ny.mta.contracts || ny.sucf.contracts)) continue;
-    let grp = state.groups.get(g);
-    if(!grp){ grp = { key:g, isParent:alias.parentVariants.has(g), total:0, n:0, rows:[], nyOnly:true }; state.groups.set(g, grp); }
-    grp.ny = ny;
-  }
-
-  document.getElementById('vloader').style.display = 'none';
-  if(!state.groups.size){
-    document.getElementById('noresults').style.display = 'block';
-    return;
-  }
-
-  const sorted = [...state.groups.values()].sort((a,b)=>groupRank(b)-groupRank(a));
-  state.active = sorted[0].key;
-
-  renderGroupPicker();
-  // Unhide #profile BEFORE building its charts. Chart.js measures the canvas
-  // at construction time; building the charts while the container is still
-  // display:none gives them a 0x0 box that a later .resize() does not
-  // recover from, so the profile's two charts rendered permanently blank on
-  // every cold deep link and in-page search. Reveal first, then draw.
-  document.getElementById('profile').style.display = 'block';
-  renderProfile();
-}
-function groupRank(g){
-  if(g.total > 0) return g.total;
-  if(g.ny) return (g.ny.mta.registered || 0) + (g.ny.sucf.registered || 0);
-  return 0;
-}
-
-function renderGroupPicker(){
-  const el = document.getElementById('chips');
-  const groups = [...state.groups.values()].sort((a,b)=>groupRank(b)-groupRank(a));
-  if(groups.length <= 1){ el.innerHTML = ''; return; }
-  el.innerHTML = groups.map(g =>
-    `<button class="chip ${g.key===state.active?'on':''}" onclick="selectGroup(${JSON.stringify(g.key).replace(/"/g,'&quot;')})">${escName(g.key)} · ${fmtMoney(groupRank(g))}${g.total<=0&&g.ny?' MTA/State':''}</button>`
-  ).join('');
-}
-function selectGroup(key){
-  if(!state.groups.has(key)) return;
-  state.active = key;
-  renderGroupPicker();
-  renderProfile();
-}
-
-function cbkWindowPhrase(){
-  const m = checkbook.meta || {};
-  const ys = Array.isArray(m.fiscal_years) ? m.fiscal_years.map(Number).filter(isFinite) : [];
-  if(!ys.length) return 'Checkbook’s published coverage window';
-  const ytd = (m.fiscal_year_ytd != null && ys.indexOf(+m.fiscal_year_ytd) !== -1) ? +m.fiscal_year_ytd : null;
-  const closed = ys.filter(y => y !== ytd);
-  let p = closed.length === 1 ? ('fiscal year ' + closed[0])
-        : closed.length > 1 ? ('fiscal years ' + closed[0] + ' to ' + closed[closed.length-1]) : '';
-  if(ytd !== null) p = p ? (p + ' plus fiscal year ' + ytd + ' to date') : ('fiscal year ' + ytd + ' to date');
-  return 'Checkbook’s published coverage window (currently ' + p + ')';
-}
-function cbkAsOf(){
-  const g = checkbook.meta && checkbook.meta.generated ? checkbook.meta.generated : null;
-  if(!g) return '';
-  const d = new Date(g);
-  if(isNaN(d)) return '';
-  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-}
-
-function renderCheckbook(grp, awardNotice){
-  const strip = document.getElementById('cbk-strip');
-  const note = document.getElementById('cbk-note');
-  const asof = document.getElementById('cbk-asof');
-  const cbk = checkbook.loaded ? checkbook.vendors[normName(grp.key)] : null;
-
-  if(asof){
-    const a = cbkAsOf();
-    asof.textContent = a ? ('Checkbook figures as of ' + a) : '';
-    asof.style.display = a ? '' : 'none';
-  }
-
-  const disclosure = 'Registered, paid to date, and the award-notice value are '
-    + 'three different measures and are never added together. Checkbook coverage '
-    + 'is New York City entities only, so work let by the MTA, the Port Authority, '
-    + 'or New York State is out of scope here. Names are matched to the award '
-    + 'record exactly after normalization, so a firm with no exact match shows no '
-    + 'Checkbook figure rather than a guess. Checkbook figures refresh nightly.';
-
-  if(!cbk){
-    strip.innerHTML = `<div class="rd"><div class="rd-label">Award-notice value</div>`
-      + `<div class="rd-value">${fmtMoney(awardNotice)}</div>`
-      + `<div class="rd-note">Total of the amounts stated in this group's award notices in the City Record. This is the award-side measure already shown above.</div></div>`
-      + `<div class="rd"><div class="rd-label">Registered (Checkbook)</div>`
-      + `<div class="rd-value">–</div>`
-      + `<div class="rd-note">No Checkbook match for this group. Either there is no exact name match after normalization, or this firm's City-registered construction work falls outside ${esc(cbkWindowPhrase())}.</div></div>`
-      + `<div class="rd"><div class="rd-label">Paid to date (Checkbook)</div>`
-      + `<div class="rd-value">–</div>`
-      + `<div class="rd-note">Shown only when a Checkbook match exists.</div></div>`;
-    note.textContent = disclosure;
-    return;
-  }
-
-  const span = (cbk.fy_first && cbk.fy_last)
-    ? (cbk.fy_first === cbk.fy_last ? ('FY' + cbk.fy_first) : ('FY' + cbk.fy_first + '–FY' + cbk.fy_last))
-    : '';
-  const agencyTxt = (typeof cbk.agencies === 'number' && cbk.agencies > 0)
-    ? (cbk.agencies + ' City ' + (cbk.agencies === 1 ? 'agency' : 'agencies')) : '';
-
-  strip.innerHTML =
-      `<div class="rd"><div class="rd-label">Award-notice value</div>`
-    + `<div class="rd-value">${fmtMoney(awardNotice)}</div>`
-    + `<div class="rd-note">Total of the amounts stated in this group's award notices in the City Record. The award-side measure shown above.</div></div>`
-    + `<div class="rd flag"><div class="rd-label">Registered (Checkbook)</div>`
-    + `<div class="rd-value">${fmtMoney(cbk.registered)}</div>`
-    + `<div class="rd-note">Value of this group's contracts registered with the Comptroller${span?(', '+span):''}${agencyTxt?(', across '+agencyTxt):''}. A separate measure from the award notice, not a sum of it.</div></div>`
-    + `<div class="rd flag"><div class="rd-label">Paid to date (Checkbook)</div>`
-    + `<div class="rd-value">${fmtMoney(cbk.paid)}</div>`
-    + `<div class="rd-note">Amount the City has disbursed against those registered contracts so far. Lower than registered while work is in progress.</div></div>`;
-  note.textContent = disclosure;
-}
-
-function renderReadStrip(rows, agSorted, all){
-  const el = document.getElementById('readstrip');
-  const cells = [];
-
-  const newRows = rows.filter(r => !isContinuation(r.method));
-  // UTC year against the raw start_date prefix, so "this year" does not flip a
-  // day early or a day late depending on where the page is open.
-  const thisYear = String(new Date().getUTCFullYear());
-  const since3 = isoMonthsAgo(36);
-  const amtsAll = newRows.map(r=>r.amount);
-  const largestAll = amtsAll.length ? Math.max(...amtsAll) : 0;
-  const largestYr = Math.max(0, ...newRows.filter(r=>r.year===thisYear).map(r=>r.amount));
-  const med3arr = newRows.filter(r=>r.day>=since3).map(r=>r.amount);
-  let creepCell;
-  if(med3arr.length >= 5 && largestYr > 0){
-    const med3 = median(med3arr);
-    const ratio = med3 > 0 ? largestYr/med3 : 0;
-    const flag = ratio >= 2;
-    creepCell = `<div class="rd ${flag?'flag':''}"><div class="rd-label">Job-size step-up</div>
-      <div class="rd-value">${ratio.toFixed(1)}×</div>
-      <div class="rd-note">Largest new award this year (${fmtMoney(largestYr)}) versus the trailing-3-year median new award (${fmtMoney(med3)}). A ratio above 2 means this year's largest job is more than double the recent median. That is a change in job size, not a judgment about the firm.</div></div>`;
-  } else {
-    creepCell = `<div class="rd"><div class="rd-label">Job-size step-up</div>
-      <div class="rd-value">${largestAll? fmtMoney(largestAll):'–'}</div>
-      <div class="rd-note">Largest single new award on record. Trailing-3-year sample is under 5 awards, so a step-up ratio is not shown.</div></div>`;
-  }
-  cells.push(creepCell);
-
-  const top1 = all>0 ? agSorted[0][1]/all : 0;
-  const top3 = all>0 ? agSorted.slice(0,3).reduce((a,x)=>a+x[1],0)/all : 0;
-  const conc = top1 > 0.6 || top3 > 0.85;
-  cells.push(`<div class="rd ${conc?'flag':''}"><div class="rd-label">Agency concentration</div>
-    <div class="rd-value">${(top1*100).toFixed(0)}% · ${(top3*100).toFixed(0)}%</div>
-    <div class="rd-note">Top agency and top-3 share of awarded value. Concentrated demand sits behind one payment cycle and one funding stream, a structural feature of the agency, not a judgment about the vendor.</div></div>`);
-
-  const w12 = isoWindowStart(365), w24 = isoWindowStart(730);
-  const t12 = newRows.filter(r=>r.day>=w12).length;
-  const t24 = newRows.filter(r=>r.day>=w24).length;
-  const last = rows.reduce((a,r)=> r.day>a?r.day:a, rows[0].day);
-  const ms = monthsSince(last);
-  const stale = ms >= 18;
-  cells.push(`<div class="rd ${stale?'flag':''}"><div class="rd-label">Award cadence</div>
-    <div class="rd-value">${t12} · ${t24}</div>
-    <div class="rd-note">New award notices in the trailing 12 and 24 months, renewals and extensions excluded. Last appeared in the City Record as a winner, on either basis, ${ms===0?'this month':ms+' month'+(ms===1?'':'s')+' ago'}. Tracks award notices, not work in progress or firm status.</div></div>`);
-
-  el.innerHTML = cells.join('');
-}
-
-function renderProfile(){
-  const grp = state.groups.get(state.active);
-  if(!grp) return;
-  const rows = grp.rows;
-  const hasCity = rows.length > 0;
-
-  const show = (id, on) => { const e = document.getElementById(id); if(e) e.style.display = on ? '' : 'none'; };
-  show('city-kpis', hasCity);
-  show('city-readcard', hasCity);
-  show('cbk-section', hasCity);
-  show('city-charts', hasCity);
-  show('city-recent', hasCity);
-  const cityEmpty = document.getElementById('city-empty');
-  if(cityEmpty){
-    cityEmpty.style.display = hasCity ? 'none' : '';
-    if(!hasCity) cityEmpty.textContent = 'No NYC City Record construction awards under this name. The public construction work below was let by the MTA or New York State, which is reported on a separate ledger.';
-  }
-
-  const gh = document.getElementById('grouphead');
-  if(grp.isParent && hasCity){
-    const distinct = new Set(rows.map(r=>normName(r.vendor))).size;
-    gh.innerHTML = `<h2>${escName(grp.key)}</h2><span class="gp">Grouped</span>`
-      + `<span class="gn">${distinct} name${distinct===1?'':'s'} rolled up</span>`;
-  } else if(!hasCity){
-    gh.innerHTML = `<h2>${escName(grp.key)}</h2><span class="gp">MTA / State</span>`;
-  } else {
-    gh.innerHTML = `<h2>${escName(grp.key)}</h2>`;
-  }
-
-  if(hasCity){
-    // Canonical trailing twelve: twelve fully-elapsed months, partial month
-    // excluded. Decided on day strings, the same bounds the starter query sends
-    // to Socrata, so the browser filter and the server filter cannot diverge.
-    const ttmStart = isoCompleteMonthBoundary(12), ttmEnd = isoCompleteMonthBoundary(0);
-    const all = rows.reduce((a,r)=>a+r.amount,0);
-    const ttm = rows.filter(r=>r.day>=ttmStart && r.day<ttmEnd).reduce((a,r)=>a+r.amount,0);
-    document.getElementById('kpi-all').textContent = fmtMoney(all);
-    document.getElementById('kpi-ttm').textContent = fmtMoney(ttm);
-    document.getElementById('kpi-n').textContent = fmtInt(rows.length);
-    document.getElementById('kpi-n-note').textContent = 'award notices in the record';
-    const byAg = new Map();
-    for(const r of rows) byAg.set(r.agency, (byAg.get(r.agency)||0)+r.amount);
-    const agSorted = [...byAg.entries()].sort((a,b)=>b[1]-a[1]);
-    document.getElementById('kpi-ag').textContent = agSorted[0][0];
-    document.getElementById('kpi-ag-note').textContent = all>0 ? (agSorted[0][1]/all*100).toFixed(0)+'% of awarded value' : '';
-
-    renderReadStrip(rows, agSorted, all);
-    renderCheckbook(grp, all);
-
-    const byYear = new Map();
-    for(const r of rows) byYear.set(r.year, (byYear.get(r.year)||0)+r.amount);
-    const years = [...byYear.keys()].sort();
-    destroy('year');
-    charts.year = new Chart(document.getElementById('chart-year'), {
-      type:'bar',
-      data:{ labels: years, datasets:[{ data: years.map(y=>byYear.get(y)), backgroundColor: COLOR_A, borderRadius:1 }]},
-      options:{ responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>fmtMoney(c.parsed.y)}} },
-        scales:{ x:{grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:10}},
-                 y:{grid:{color:GRID}, border:{display:false}, ticks:{callback:v=>fmtMoney(v), maxTicksLimit:5}} } }
-    });
-    destroy('agency');
-    const agTop = agSorted.slice(0,6);
-    charts.agency = new Chart(document.getElementById('chart-agency'), {
-      type:'bar',
-      data:{ labels: agTop.map(a=>a[0]), datasets:[{ data: agTop.map(a=>a[1]), backgroundColor: COLOR_B, borderRadius:1, barThickness:18 }]},
-      options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>fmtMoney(c.parsed.x)}} },
-        scales:{ x:{grid:{color:GRID}, border:{display:false}, ticks:{callback:v=>fmtMoney(v), maxTicksLimit:5}},
-                 y:{grid:{display:false}, ticks:{autoSkip:false, font:{family:"'Public Sans',sans-serif",size:11.5}}} } }
-    });
-    document.getElementById('recent-sub').textContent = 'Latest ' + Math.min(15, rows.length) + ' of ' + fmtInt(rows.length) + ' award notices';
-    document.querySelector('#tbl-recent tbody').innerHTML = rows.slice(0,15).map(r=>`<tr>
-      <td style="white-space:nowrap" class="mono">${fmtDate(r.date)}</td>
-      <td><div class="t-title">${esc(r.title)}</div>
-          <div class="t-sub">${escName(r.vendor)} · ${esc(r.method)} · <span class="pill ${r.cat}">${r.cat==='hard'?'Construction':'Related services'}</span></div></td>
-      <td>${esc(r.agency)}</td>
-      <td class="num amt">${fmtMoney(r.amount)}</td>
-    </tr>`).join('');
-
-    renderMembers(grp, rows);
-  } else {
-    destroy('year'); destroy('agency');
-  }
-
-  renderNYWork(grp);
-}
-
-function renderNYWork(grp){
-  const sec = document.getElementById('ny-section');
-  const ny = grp.ny;
-  if(!ny || !(ny.mta.contracts || ny.sucf.contracts)){ if(sec) sec.style.display='none'; return; }
-  sec.style.display = '';
-  const m = ny.mta, s = ny.sucf;
-  const cardHTML = (label, val, sub) =>
-    `<div class="rd flag"><div class="rd-label">${label}</div><div class="rd-value">${val}</div><div class="rd-note">${sub}</div></div>`;
-  const cards = [];
-  cards.push(cardHTML('MTA registered',
-    m.contracts ? fmtMoney(m.registered) : '–',
-    m.contracts ? `Across ${fmtInt(m.contracts)} MTA construction contract${m.contracts===1?'':'s'} (data.ny.gov twsw-2mqa), deduped to one record per contract at its latest fiscal-year report.` : 'No MTA construction contracts under this name.'));
-  cards.push(cardHTML('MTA paid to date',
-    m.contracts ? fmtMoney(m.paid) : '–',
-    'Cumulative amount the MTA has expended against those contracts. A separate measure, not summed with the City figures.'));
-  if(s.contracts){
-    cards.push(cardHTML('State (SUNY CF) paid', fmtMoney(s.paid),
-      `Across ${fmtInt(s.contracts)} SUNY Construction Fund contract${s.contracts===1?'':'s'} (cfjm-ii27); registered ${fmtMoney(s.registered)}.`));
-  } else {
-    cards.push(cardHTML('State (SUNY CF)', '–', 'No SUNY Construction Fund construction contracts under this name.'));
-  }
-  document.getElementById('ny-strip').innerHTML = cards.join('');
-  document.getElementById('ny-note').textContent =
-    'MTA and State figures come from New York State open data (data.ny.gov) and are a separate ledger from the City and Checkbook figures above; they are never added to them. Each active contract is re-reported every fiscal year in the State data, so figures are deduped to one record per contract at its latest report. Names are matched to the award record after the same normalization used elsewhere, so a firm with no exact match shows nothing here rather than a guess.';
-  const body = document.getElementById('ny-members-body');
-  body.innerHTML = [
-    m.contracts ? `<tr><td class="mname">MTA Procurements (twsw-2mqa)</td><td class="num">${fmtInt(m.contracts)}</td><td class="num amt">${fmtMoney(m.registered)}</td><td class="num amt">${fmtMoney(m.paid)}</td></tr>` : '',
-    s.contracts ? `<tr><td class="mname">SUNY Construction Fund (cfjm-ii27)</td><td class="num">${fmtInt(s.contracts)}</td><td class="num amt">${fmtMoney(s.registered)}</td><td class="num amt">${fmtMoney(s.paid)}</td></tr>` : ''
-  ].join('');
-  document.getElementById('ny-members-cap').textContent = fmtInt(m.contracts + s.contracts) + ' contract' + ((m.contracts+s.contracts)===1?'':'s');
-  document.getElementById('ny-members').style.display = '';
-}
-
-function renderMembers(grp, rows){
-  const panel = document.getElementById('members');
-  const byNorm = new Map();
-  for(const r of rows){
-    const nk = normName(r.vendor);
-    let e = byNorm.get(nk);
-    if(!e){ e = { n:0, total:0, spellings:new Map() }; byNorm.set(nk, e); }
-    e.n += 1; e.total += r.amount;
-    e.spellings.set(r.vendor, (e.spellings.get(r.vendor)||0)+1);
-  }
-  for(const e of byNorm.values()){
-    e.label = [...e.spellings.entries()].sort((a,b)=>b[1]-a[1])[0][0];
-  }
-  const lines = [...byNorm.values()].sort((a,b)=>b.total-a.total);
-
-  if(!grp.isParent && lines.length <= 1){ panel.style.display='none'; return; }
-  panel.style.display = '';
-  document.getElementById('members-label').textContent =
-    grp.isParent ? 'Names rolled up into this total' : 'Name spellings in this total';
-  document.getElementById('members-cap').textContent =
-    lines.length + ' name' + (lines.length===1?'':'s') + ' · ' + fmtMoney(grp.total) + ' total';
-  document.getElementById('members-body').innerHTML = lines.map(e=>`<tr>
-    <td class="mname">${escName(e.label)}</td>
-    <td class="num">${fmtInt(e.n)}</td>
-    <td class="num amt">${fmtMoney(e.total)}</td>
-  </tr>`).join('');
-}
-
-document.getElementById('go').addEventListener('click', ()=>runSearch(document.getElementById('q').value));
-document.getElementById('q').addEventListener('keydown', e=>{ if(e.key==='Enter') runSearch(e.target.value); });
-document.getElementById('csv-link').addEventListener('click', e=>{ e.preventDefault(); exportVendorCSV(); });
-(function(){
-  let prevOpen = null;
-  function before(){ const m=document.getElementById('members'); if(m){ prevOpen=m.open; m.open=true; } }
-  function after(){ const m=document.getElementById('members'); if(m && prevOpen!==null){ m.open=prevOpen; } }
-  window.addEventListener('beforeprint', before);
-  window.addEventListener('afterprint', after);
-  if(window.matchMedia){ const mq=window.matchMedia('print'); if(mq.addEventListener) mq.addEventListener('change', e=>{ e.matches?before():after(); }); }
-})();
-
-// Expose the two functions the inline onclick handlers call.
-window.runSearch = runSearch;
-window.selectGroup = selectGroup;
-
-(async function init(){
-  loadStarter().catch(()=>{});
-  await Promise.all([ loadAliases(), loadCheckbook() ]);
-  const q = new URLSearchParams(location.search).get('q');
-  if(q) runSearch(q);
-})();
-})();
-</script>
 
 <!-- ===== Market-structure module. This is the only script block on the page that
      declares at global scope; the contractor-lookup block above and the export
@@ -1237,515 +309,5 @@ window.selectGroup = selectGroup;
      COLOR_A) are function-scoped and cannot collide with the names below.
      A column-0 grep across the three blocks makes those look like top-level
      consts; they are not. Verify scope, not indentation, before renaming. ===== -->
-<script>
-'use strict';
-/* ===== build marker: competitive-set-wins-v1 ===== */
-const AWARD_API = 'https://data.cityofnewyork.us/resource/qyyg-4tf5.json';
-const APP_TOKEN = '3TAzQQPiSG2T4WGWfYYUxxqfJ';
-const MEGA_FLOOR = 500000000;
-
-const BANDS = [
-  { key:'small', name:'Small', range:'under $1M', lo:0,        hi:1000000 },
-  { key:'mid',   name:'Mid',   range:'$1M to $10M', lo:1000000, hi:10000000 },
-  { key:'large', name:'Large', range:'$10M to $100M', lo:10000000, hi:100000000 },
-  { key:'mega',  name:'Mega',  range:'$100M to $500M', lo:100000000, hi:MEGA_FLOOR }
-];
-
-const state = {
-  rows: [],              // deduped per pin: {amt, day('YYYY-MM-DD'|null), renewal(bool), norm(string)}
-  charts: {},
-  window: 'ttm',         // 'ttm' | 'all'
-  renew: 'excl'          // 'excl' | 'incl'
-};
-
-async function getJSON(params){
-  const res = await fetch(AWARD_API + '?' + new URLSearchParams(params), {cache:'no-store', headers:{'X-App-Token':'3TAzQQPiSG2T4WGWfYYUxxqfJ'}});
-  if(!res.ok) throw new Error('API ' + res.status);
-  return res.json();
-}
-
-/* deterministic normalization, mirrors the alias-build reference exactly:
-   trim, collapse internal whitespace, uppercase, strip periods/commas
-   anywhere (so "Co." and "Co", "Inc." and "Inc" fold together, not only at
-   the end of the string), then strip trailing punctuation (incl. backslash
-   and whitespace). */
-function normName(raw){
-  return (raw || '')
-    .trim()
-    .replace(/\s+/g, ' ')
-    .toUpperCase()
-    .replace(/[.,]/g, '')
-    .replace(/[;:&/\\'"`\-\s]+$/, '')
-    .trim()
-    .replace(/\s+/g, ' ');
-}
-
-/* Published day of a City Record timestamp, kept as the raw 'YYYY-MM-DD' prefix
-   rather than a Date. Nothing in this section renders the value, it only decides
-   windows, and a string keeps that decision independent of the reader's zone. */
-function dayOf(s){
-  const t = String(s == null ? '' : s).slice(0,10);
-  return /^\d{4}-\d{2}-\d{2}$/.test(t) ? t : null;
-}
-
-/* Renewal/continuation flag, shared definition with the Awarded and Analysis
-   pages: any selection method matching renewal or extension. Today only
-   "Renewal" exists in the construction slice, but matching the regex keeps
-   the Market universe from diverging if the City adds an extension variant. */
-function isContinuation(method){ return /renewal|extension/i.test(method || ''); }
-
-/* per-page fetch with a small bounded retry, so one transient 500/timeout does
-   not abort the whole multi-page pull and discard already-fetched pages. */
-async function getJSONRetry(params){
-  const delays = [400, 900];   // up to 3 attempts total
-  let lastErr;
-  for(let attempt = 0; attempt <= delays.length; attempt++){
-    try{
-      return await getJSON(params);
-    }catch(e){
-      lastErr = e;
-      if(attempt === delays.length) break;
-      await new Promise(res => setTimeout(res, delays[attempt]));
-    }
-  }
-  throw lastErr;
-}
-
-/* paged pull of the full construction-award universe (winners, amount in (0, 500M)).
-   The qyyg-4tf5 feed is award notices by nature, so no type-of-notice filter is
-   applied; every row in the construction slice is an award. */
-async function fetchAll(){
-  const where = "starts_with(category_description,'Construction') AND " +
-                "contract_amount>0 AND contract_amount<" + MEGA_FLOOR;
-  const PAGE = 50000;
-  let offset = 0;
-  const byPin = new Map();   // pin -> {amt, date, renewal, norm}
-  for(;;){
-    const batch = await getJSONRetry({
-      '$select':'pin,vendor_name,contract_amount,start_date,selection_method_description',
-      '$where': where,
-      '$order':'pin',
-      '$limit': String(PAGE),
-      '$offset': String(offset)
-    });
-    for(let i=0; i<batch.length; i++){
-      const r = batch[i];
-      const amt = parseFloat(r.contract_amount);
-      if(!(amt > 0) || amt >= MEGA_FLOOR) continue;
-      // Stable per-row surrogate for missing pin: each such row stands alone
-      // (no merge) and the run is byte-reproducible.
-      const pin = r.pin || ('_np_' + offset + '_' + i);
-      const renewal = isContinuation(r.selection_method_description);
-      const rec = { amt, day: dayOf(r.start_date), renewal, norm: normName(r.vendor_name) };
-      const prev = byPin.get(pin);
-      // dedupe to one record per pin keeping the MAX contract_amount
-      if(!prev || rec.amt > prev.amt) byPin.set(pin, rec);
-    }
-    if(batch.length < PAGE) break;
-    offset += PAGE;
-    if(offset > 400000) break; // safety stop
-  }
-  state.rows = [...byPin.values()];
-}
-
-/* ===== aggregation for the current window + renewal setting ===== */
-/* Canonical trailing twelve months: twelve FULLY-ELAPSED months, so the partial
-   current month is never read. Matches the funnel, the Briefing, the Analysis
-   index, and the contractor lookup above, which previously ran a rolling
-   365-day window here and disagreed with those pages.
-
-   Anchored in UTC and decided on day strings. A local first-of-month formatted
-   through toISOString read back a day early east of UTC, and comparing a
-   UTC-anchored boundary against a locally-parsed row Date would have gone wrong
-   by the reader's offset in the other direction. Raw start_date prefix on one
-   side, UTC boundary string on the other, so every reader gets one window. */
-function completeMonthBoundary(n){
-  const now = new Date();
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - n, 1))
-    .toISOString().slice(0,10);
-}
-/* Hoisted once per filter pass rather than rebuilt per row: this list runs to
-   hundreds of thousands of records. */
-function ttmBounds(){ return { lo: completeMonthBoundary(12), hi: completeMonthBoundary(0) }; }
-function inTtm(day, b){ return !!day && day >= b.lo && day < b.hi; }
-
-function activeRows(){
-  let rows = state.rows;
-  if(state.window === 'ttm'){ const b = ttmBounds(); rows = rows.filter(r => inTtm(r.day, b)); }
-  if(state.renew === 'excl') rows = rows.filter(r => !r.renewal);
-  return rows;
-}
-
-function bandOf(amt){
-  for(const b of BANDS) if(amt >= b.lo && amt < b.hi) return b.key;
-  return null;
-}
-
-function hhiLabel(hhi){
-  if(hhi < 1500) return { txt:'Fragmented', cls:'frag' };
-  if(hhi <= 2500) return { txt:'Moderate', cls:'mod' };
-  return { txt:'Concentrated', cls:'conc' };
-}
-
-function aggregate(){
-  const rows = activeRows();
-  const totalCount = rows.length;
-  let totalDollars = 0;
-  for(const r of rows) totalDollars += r.amt;
-
-  const bandData = {};
-  for(const b of BANDS) bandData[b.key] = { count:0, dollars:0, byVendor:new Map() };
-
-  let renewalCount = 0;
-  const allVendors = new Set();
-
-  for(const r of rows){
-    const k = bandOf(r.amt);
-    if(!k) continue;
-    const bd = bandData[k];
-    bd.count += 1;
-    bd.dollars += r.amt;
-    bd.byVendor.set(r.norm, (bd.byVendor.get(r.norm) || 0) + r.amt);
-    allVendors.add(r.norm);
-  }
-
-  // renewal count within the active WINDOW (ignoring the renewal toggle), for the KPI
-  let winRows = state.rows;
-  if(state.window === 'ttm'){ const wb = ttmBounds(); winRows = winRows.filter(r => inTtm(r.day, wb)); }
-  for(const r of winRows) if(r.renewal) renewalCount++;
-
-  // per-band concentration
-  const bands = BANDS.map(b => {
-    const bd = bandData[b.key];
-    // vendor list with dollars and a per-vendor award count (for top-N-by-count selection)
-    const vcount = new Map();
-    for(const r of rows){
-      if(bandOf(r.amt) !== b.key) continue;
-      vcount.set(r.norm, (vcount.get(r.norm) || 0) + 1);
-    }
-    const vendors = [...bd.byVendor.entries()].map(([norm, dollars]) => ({
-      dollars, count: vcount.get(norm) || 0
-    }));
-    // HHI over dollar shares
-    let hhi = 0;
-    if(bd.dollars > 0){
-      for(const v of vendors){ const sh = v.dollars / bd.dollars; hhi += sh * sh; }
-      hhi *= 10000;
-    }
-    // top-N by COUNT, then their dollar share of the band
-    const byCount = [...vendors].sort((a,b)=> b.count - a.count || b.dollars - a.dollars);
-    const topShare = (n) => {
-      if(bd.dollars <= 0) return null;
-      let s = 0; for(const v of byCount.slice(0, n)) s += v.dollars;
-      return s / bd.dollars;
-    };
-    return {
-      ...b,
-      count: bd.count,
-      dollars: bd.dollars,
-      countShare: totalCount ? bd.count / totalCount : 0,
-      dollarShare: totalDollars ? bd.dollars / totalDollars : 0,
-      distinct: bd.byVendor.size,
-      top3: topShare(3), top5: topShare(5), top10: topShare(10),
-      hhi
-    };
-  });
-
-  return { totalCount, totalDollars, distinct: allVendors.size, renewalCount, bands };
-}
-
-/* ===== formatting ===== */
-function fmtMoney(v){
-  if(v >= 1e9) return '$' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2) + 'B';
-  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
-  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
-  return '$' + Math.round(v);
-}
-function fmtInt(v){ return (v||0).toLocaleString('en-US'); }
-function fmtPct(v){ return v === null ? '&ndash;' : (v*100).toFixed(1) + '%'; }
-function esc(s){ const d = document.createElement('div'); d.textContent = String(s==null?'':s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
-
-/* ===== chart defaults ===== */
-const COLOR_A = '#ae4e34', COLOR_B = '#243b53', GRID = '#e3dbd3';
-Chart.defaults.font.family = "'IBM Plex Mono',monospace";
-Chart.defaults.font.size = 10;
-Chart.defaults.color = '#6b5e56';
-Object.assign(Chart.defaults.plugins.tooltip, {
-  backgroundColor:'#fefbf8', titleColor:'#201611', bodyColor:'#6b5e56',
-  borderColor:'#ae4e34', borderWidth:1, cornerRadius:2, padding:10, displayColors:false,
-  boxWidth:10, boxHeight:10,
-  titleFont:{family:"'Public Sans',sans-serif",weight:'600',size:12}, bodyFont:{family:"'IBM Plex Mono',monospace",size:12},
-  caretSize:5
-});
-
-function destroyChart(id){ if(state.charts[id]){ state.charts[id].destroy(); delete state.charts[id]; } }
-
-/* ===== rendering ===== */
-function renderKpis(a){
-  document.getElementById('kpi-count').textContent = fmtInt(a.totalCount);
-  document.getElementById('kpi-count-note').textContent =
-    (state.window === 'ttm' ? 'trailing 12 months' : 'all time') +
-    (state.renew === 'excl' ? ', renewals excluded' : ', renewals included');
-  document.getElementById('kpi-dollars').textContent = fmtMoney(a.totalDollars);
-  document.getElementById('kpi-awardees').textContent = fmtInt(a.distinct);
-  document.getElementById('kpi-renewals').textContent = fmtInt(a.renewalCount);
-  document.getElementById('kpi-renewals-note').textContent =
-    'renewal notices in window' + (state.renew === 'excl' ? ', held out of the set' : ', folded into the set');
-}
-
-function renderBandsChart(a){
-  destroyChart('chart-bands');
-  const labels = a.bands.map(b => b.name + ' (' + b.range + ')');
-  state.charts['chart-bands'] = new Chart(document.getElementById('chart-bands'), {
-    type:'bar',
-    data:{ labels, datasets:[
-      { label:'Count share', data:a.bands.map(b => +(b.countShare*100).toFixed(2)), backgroundColor:COLOR_B, borderRadius:1 },
-      { label:'Dollar share', data:a.bands.map(b => +(b.dollarShare*100).toFixed(2)), backgroundColor:COLOR_A, borderRadius:1 }
-    ]},
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{position:'top', labels:{boxWidth:12, boxHeight:12, font:{size:12}}},
-        tooltip:{callbacks:{label:(c)=> c.dataset.label + ': ' + c.parsed.y.toFixed(1) + '%'}} },
-      scales:{
-        x:{grid:{display:false}, ticks:{maxRotation:0, autoSkip:false, font:{size:11}}},
-        y:{grid:{color:GRID}, border:{display:false}, ticks:{callback:(v)=>v+'%', maxTicksLimit:6}, title:{display:true, text:'Share of set', color:'#968a7f', font:{size:11}}}
-      }
-    }
-  });
-}
-
-function renderBandsTable(a){
-  document.querySelector('#tbl-bands tbody').innerHTML = a.bands.map(b => `<tr>
-    <td><span class="t-title">${esc(b.name)}</span><div class="t-sub">${esc(b.range)}</div></td>
-    <td class="num">${fmtInt(b.count)}</td>
-    <td class="num">${(b.countShare*100).toFixed(1)}%</td>
-    <td class="num amt">${fmtMoney(b.dollars)}</td>
-    <td class="num">${(b.dollarShare*100).toFixed(1)}%</td>
-    <td class="num">${fmtInt(b.distinct)}</td>
-  </tr>`).join('');
-}
-
-function renderConcentration(a){
-  document.getElementById('conc-grid').innerHTML = a.bands.map(b => {
-    const lab = hhiLabel(b.hhi);
-    return `<div class="conc">
-      <div class="c-band">${esc(b.name)}</div>
-      <div class="c-range">${esc(b.range)} &middot; ${fmtInt(b.distinct)} distinct awardees</div>
-      <div class="c-row"><span class="lab">Top 3 by count · dollar share</span><span class="val">${fmtPct(b.top3)}</span></div>
-      <div class="c-row"><span class="lab">Top 5 by count · dollar share</span><span class="val">${fmtPct(b.top5)}</span></div>
-      <div class="c-row"><span class="lab">Top 10 by count · dollar share</span><span class="val">${fmtPct(b.top10)}</span></div>
-      <div class="c-row"><span class="lab">HHI index</span><span class="val">${b.dollars>0 ? Math.round(b.hhi).toLocaleString('en-US') : '&ndash;'} <span class="pill ${lab.cls}">${lab.txt}</span></span></div>
-    </div>`;
-  }).join('');
-}
-
-function renderReading(a){
-  const win = state.window === 'ttm' ? 'Trailing 12 months' : 'All time';
-  // band holding the most awards by count, and the most dollars
-  const byCount = [...a.bands].sort((x,y)=> y.count - x.count)[0];
-  const byDollars = [...a.bands].sort((x,y)=> y.dollars - x.dollars)[0];
-  // concentration trend across bands (small -> mega)
-  const fragBands = a.bands.filter(b => b.dollars>0 && hhiLabel(b.hhi).txt==='Fragmented').map(b=>b.name);
-  const concBands = a.bands.filter(b => b.dollars>0 && hhiLabel(b.hhi).txt==='Concentrated').map(b=>b.name);
-  const labelList = (arr) => arr.length===0 ? '' : (arr.length===1 ? arr[0] : arr.slice(0,-1).join(', ') + ' and ' + arr[arr.length-1]);
-
-  let concSentence;
-  if(concBands.length && fragBands.length){
-    concSentence = 'The ' + labelList(fragBands).toLowerCase() + ' band' + (fragBands.length>1?'s read':' reads') + ' as fragmented, while the ' + labelList(concBands).toLowerCase() + ' band' + (concBands.length>1?'s read':' reads') + ' as concentrated: fewer awardees account for more of the dollars as award size rises.';
-  } else if(concBands.length){
-    concSentence = 'Concentration is highest in the ' + labelList(concBands).toLowerCase() + ' band' + (concBands.length>1?'s':'') + ', where fewer awardees account for more of the dollars.';
-  } else if(fragBands.length){
-    concSentence = 'No band crosses into concentrated; the ' + labelList(fragBands).toLowerCase() + ' band' + (fragBands.length>1?'s remain':' remains') + ' fragmented across many awardees.';
-  } else {
-    concSentence = 'Concentration sits in the moderate range across the bands in this window.';
-  }
-
-  const renewClause = state.renew === 'excl'
-    ? a.renewalCount.toLocaleString('en-US') + ' renewal notices held out'
-    : a.renewalCount.toLocaleString('en-US') + ' renewal notices folded in';
-
-  const p =
-    `${win}: ${fmtInt(a.totalCount)} construction award notices, ${fmtMoney(a.totalDollars)}, deduped to one record per procurement, ${renewClause}, and $500M+ megaprojects excluded. ` +
-    `The ${byCount.name.toLowerCase()} band holds the most awards by count, while the ${byDollars.name.toLowerCase()} band holds the most dollars: many small awards sit against a few large ones that carry the spend. ` +
-    `${concSentence} ` +
-    `Awardee names are used only as a deterministic grouping key and are never published, ranked, scored, or presented as a measure of any contractor's standing or creditworthiness.`;
-  document.getElementById('ms-reading').textContent = p;
-}
-
-function renderAll(){
-  const a = aggregate();
-  renderKpis(a);
-  renderBandsChart(a);
-  renderBandsTable(a);
-  renderConcentration(a);
-  renderReading(a);
-}
-
-/* ===== controls ===== */
-function wireControls(){
-  document.getElementById('seg-window').addEventListener('click', (e)=>{
-    const btn = e.target.closest('button'); if(!btn) return;
-    document.querySelectorAll('#seg-window button').forEach(b=>b.classList.remove('on'));
-    btn.classList.add('on'); state.window = btn.dataset.w; renderAll();
-  });
-  document.getElementById('seg-renew').addEventListener('click', (e)=>{
-    const btn = e.target.closest('button'); if(!btn) return;
-    document.querySelectorAll('#seg-renew button').forEach(b=>b.classList.remove('on'));
-    btn.classList.add('on'); state.renew = btn.dataset.r; renderAll();
-  });
-}
-
-/* ===== init ===== */
-(async function init(){
-  try{
-    await fetchAll();
-  }catch(e){
-    document.getElementById('loader').style.display = 'none';
-    document.getElementById('error').style.display = 'block';
-    return;
-  }
-  document.getElementById('asof').innerHTML =
-    'City Record construction award notices &middot; deduped per procurement &middot; refreshed on load';
-  document.getElementById('loader').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  wireControls();
-  renderAll();
-})();
-
-</script>
-<!-- ===== Concrete Index export module: page PDF, chart PNG, tile CSV. No external dependencies. ===== -->
-<style id="exp-css">
-.exp{display:flex;justify-content:flex-end;gap:0;margin-top:10px}
-.exp button{background:none;border:1px solid var(--line);color:var(--muted);font:500 10px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.07em;text-transform:uppercase;padding:6px 9px;cursor:pointer;transition:color .12s,border-color .12s}
-.exp button+button{border-left:none}
-.exp button:hover{color:var(--accent);border-color:var(--accent)}
-.exp button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.pdf-btn{background:none;border:1px solid var(--line);color:var(--muted);font:600 11px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;cursor:pointer;white-space:nowrap;transition:color .12s,border-color .12s}
-.pdf-btn:hover{color:var(--accent);border-color:var(--accent)}
-.series-bar .inner .pdf-btn{margin-left:auto;font-size:10px;padding:4px 9px;align-self:center}
-.pdf-bar{display:flex;justify-content:flex-end;max-width:var(--maxw);margin:0 auto;padding:6px var(--gut)}
-@media (max-width:720px){.pdf-bar{padding:6px 18px}}
-@media print{
-  @page{margin:14mm}
-  header .menu-btn,.nav-links,.controls,.series-bar,.photo-band,.exp,.pdf-btn,.pdf-bar,.badge-live,.valstrip{display:none !important}
-  header{border-bottom:2px solid #201611}
-  body{background:#fff !important}
-  .wrap{max-width:none !important;width:100% !important}
-  .grid,.grid.two,.grid.three{display:block !important}
-  .card{break-inside:avoid;page-break-inside:avoid;box-shadow:none !important;margin:0 0 16px !important}
-  .chart-box,.chart-box.tall{height:300px !important}
-  a{color:inherit;text-decoration:none}
-  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
-}
-</style>
-<script>
-(function(){
-  "use strict";
-  if(window.__ciExport)return; window.__ciExport=1;
-  function slug(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60);}
-  var pageSlug=slug(location.pathname.replace(/\/index\.html?$/i,'').replace(/\/+$/,''))||'awarded';
-  function getChart(cv){return (cv&&window.Chart&&Chart.getChart)?(Chart.getChart(cv)||null):null;}
-  function fnameFor(el,ext){
-    var card=el.closest('.card')||el.closest('section')||el.parentElement;
-    var h=card&&card.querySelector('.sec-head h2,h2,h3');
-    if(!h){var s=el.previousElementSibling;while(s){if(s.tagName==='H2'||s.tagName==='H3'){h=s;break;}s=s.previousElementSibling;}}
-    return ('concrete-index-'+pageSlug+'-'+slug(h?h.textContent:'export')).replace(/-+/g,'-')+'.'+ext;
-  }
-  function dl(href,name,revoke){
-    var a=document.createElement('a');a.href=href;a.download=name;a.rel='noopener';
-    document.body.appendChild(a);a.click();a.remove();
-    if(revoke)setTimeout(function(){URL.revokeObjectURL(href);},2000);
-  }
-  function csvCell(v){v=(v==null?'':String(v));return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
-  function csv(rows,name){
-    var t='\ufeff'+rows.map(function(r){return r.map(csvCell).join(',');}).join('\r\n');
-    dl(URL.createObjectURL(new Blob([t],{type:'text/csv;charset=utf-8'})),name,true);
-  }
-  function pngFromChart(ch,name){
-    var src=ch.canvas,out=document.createElement('canvas');
-    out.width=src.width;out.height=src.height;
-    var x=out.getContext('2d');
-    x.fillStyle='#fefbf8';x.fillRect(0,0,out.width,out.height);
-    x.drawImage(src,0,0);
-    dl(out.toDataURL('image/png'),name,false);
-  }
-  function csvFromChart(ch,name){
-    var labels=ch.data.labels||[],ds=ch.data.datasets||[];
-    var rows=[['Label'].concat(ds.map(function(d,i){return d.label||('Series '+(i+1));}))];
-    var n=labels.length||((ds[0]&&ds[0].data)?ds[0].data.length:0);
-    for(var r=0;r<n;r++){
-      var row=[labels[r]!=null?labels[r]:r];
-      ds.forEach(function(d){
-        var v=d.data?d.data[r]:'';
-        if(v&&typeof v==='object')v=(v.y!=null?v.y:(v.v!=null?v.v:JSON.stringify(v)));
-        row.push(v==null?'':v);
-      });
-      rows.push(row);
-    }
-    csv(rows,name);
-  }
-  function csvFromTable(tbl,name){
-    var rows=[];
-    tbl.querySelectorAll('tr').forEach(function(tr){
-      var cells=[];
-      tr.querySelectorAll('th,td').forEach(function(c){cells.push(c.textContent.replace(/\s+/g,' ').trim());});
-      if(cells.some(function(x){return x!=='';}))rows.push(cells);
-    });
-    if(rows.length)csv(rows,name);
-  }
-  function mkBtn(label,title,fn){
-    var b=document.createElement('button');b.type='button';b.textContent=label;b.title=title;
-    b.addEventListener('click',fn);return b;
-  }
-  function placeAfter(el,bar){
-    var t=el,nx=el.nextElementSibling;
-    if(nx&&nx.classList&&nx.classList.contains('tnote'))t=nx;
-    t.insertAdjacentElement('afterend',bar);
-  }
-  function attachChart(box){
-    if(!box||box.getAttribute('data-exp'))return;
-    var cv=box.querySelector('canvas');if(!cv)return;
-    box.setAttribute('data-exp','1');
-    var bar=document.createElement('div');bar.className='exp';
-    bar.appendChild(mkBtn('PNG','Download this chart as a PNG image',function(){var ch=getChart(cv);if(ch)pngFromChart(ch,fnameFor(box,'png'));}));
-    bar.appendChild(mkBtn('CSV','Download this chart’s data as a CSV file',function(){var ch=getChart(cv);if(ch)csvFromChart(ch,fnameFor(box,'csv'));}));
-    placeAfter(box,bar);
-  }
-  function attachTable(tbl){
-    if(!tbl||tbl.getAttribute('data-exp'))return;
-    if(!tbl.querySelector('th'))return;
-    if(tbl.closest('header')||tbl.closest('footer')||tbl.closest('nav'))return;
-    tbl.setAttribute('data-exp','1');
-    var bar=document.createElement('div');bar.className='exp';
-    bar.appendChild(mkBtn('CSV','Download this table as a CSV file',function(){csvFromTable(tbl,fnameFor(tbl,'csv'));}));
-    placeAfter(tbl,bar);
-  }
-  function scan(){
-    document.querySelectorAll('.chart-box').forEach(attachChart);
-    document.querySelectorAll('main canvas,#app canvas').forEach(function(cv){if(!cv.closest('.chart-box'))attachChart(cv.parentElement);});
-    document.querySelectorAll('main table,#app table,.card table').forEach(attachTable);
-  }
-  function addPdfBtn(){
-    if(document.querySelector('.pdf-btn'))return;
-    var b=mkBtn('Save PDF','Save or print this page as a PDF',function(){window.print();});
-    b.className='pdf-btn';
-    var inner=document.querySelector('.series-bar .inner');
-    if(inner){inner.appendChild(b);return;}
-    var header=document.querySelector('header');
-    if(header){var bar=document.createElement('div');bar.className='pdf-bar';bar.appendChild(b);header.insertAdjacentElement('afterend',bar);return;}
-    var nav=document.querySelector('.nav-links');if(nav)nav.appendChild(b);
-  }
-  var pending=null;
-  function start(){
-    addPdfBtn();scan();
-    try{
-      var mo=new MutationObserver(function(){if(pending)return;pending=setTimeout(function(){pending=null;scan();},300);});
-      mo.observe(document.body,{childList:true,subtree:true});
-    }catch(e){}
-    [400,1200,3000].forEach(function(t){setTimeout(scan,t);});
-  }
-  if(document.readyState!=='loading')start();else document.addEventListener('DOMContentLoaded',start);
-})();
-</script>
 </body>
 </html>
