@@ -317,6 +317,79 @@ td.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
 .series-bar .inner .pdf-btn{margin-left:auto;align-self:center}
 .pdf-bar{display:flex;justify-content:flex-end;max-width:calc(var(--maxw) + 2 * var(--gut));margin:0 auto;padding:var(--s-2) var(--gut)}
 
+/* ================= app chrome (PRD 6.5, 8.2) ================= */
+/* ---- sub-nav: in-page anchors under the rail; sticky from 768 ---- */
+.ci-subnav{background:var(--paper);border-bottom:1px solid var(--line);margin-top:var(--s-4)}
+.ci-subnav__list{display:flex;list-style:none;gap:var(--s-5);overflow-x:auto;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+.ci-subnav__list li{display:flex;flex:none}
+.ci-subnav a{display:inline-flex;align-items:center;min-height:var(--subnav-h);font-size:var(--t-ui-size);font-weight:500;color:var(--muted);white-space:nowrap}
+.ci-subnav a:hover{color:var(--ink);text-decoration:none}
+.ci-subnav a[aria-current]{color:var(--ink);font-weight:600;box-shadow:inset 0 -2px 0 var(--ink)}
+.ci-subnav a:focus-visible{outline-offset:-2px}
+@media (min-width:768px){
+  .ci-subnav{position:sticky;top:var(--header-h);z-index:40}
+}
+@media print{.ci-subnav{display:none !important}}
+
+/* ---- filter bar: the page's existing controls in one ruled row ---- */
+.ci-filterbar{background:var(--surface);border:1px solid var(--line);border-top:2px solid var(--ink);padding:var(--s-3) var(--s-4);margin-top:var(--s-6)}
+.controls.ci-filterbar{padding:var(--s-3) var(--s-4)}
+.ci-filterbar + .kpis{margin-top:var(--s-2)}
+
+/* ---- KPI tape: one ink rule over the tape, hairline dividers between tiles ---- */
+.kpis{border-left:0;border-top:2px solid var(--ink);padding:0;margin-top:var(--s-6);background:transparent}
+.kpis .kpi{background:transparent;border-top:0;border-right:1px solid var(--line);min-height:128px}
+.kpis .kpi:last-child{border-right:0}
+.kpis .kpi .k-label{color:var(--muted)}
+@media (max-width:1023px){
+  .kpis .kpi:nth-child(2n){border-right:0}
+  .kpis .kpi:nth-child(n+3){border-top:1px solid var(--line)}
+}
+
+/* ---- chart frame ---- */
+.ci-chart__tools{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s-2);margin:var(--s-3) 0 var(--s-2)}
+.ci-viewseg,.ci-chart__dl{display:inline-flex}
+.ci-viewseg button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.ci-viewseg button[aria-pressed="true"]:hover{color:var(--paper)}
+.ci-off{display:none !important}
+.ci-chart__table{margin-top:var(--s-2)}
+.ci-chart__table th[scope="row"]{font-family:var(--font-sans);font-size:var(--t-body-sm-size);font-weight:500;text-transform:none;letter-spacing:0;color:var(--ink);text-align:left;padding:var(--s-1) var(--s-2);border-bottom:1px solid var(--line);vertical-align:top}
+.ci-chart__table td{padding:var(--s-1) var(--s-2);border-bottom:1px solid var(--line);font-size:var(--t-num-sm-size)}
+.sec-head:has(.ci-chart__asof){justify-content:flex-start}
+.sec-head:has(.ci-chart__asof) .cap:not(.ci-chart__asof){margin-left:auto}
+.sec-head .ci-chart__asof{white-space:nowrap;margin-left:calc(var(--s-1) - var(--s-3))}
+.ci-chart__table tr:last-child > *{border-bottom:0}
+.sec-head .ci-chart__asof:empty{display:none}
+@media print{.ci-chart__tools{display:none !important}.ci-chart__table{display:none !important}}
+
+/* ---- rule tables: labelled overflow region, sticky header and first column ---- */
+.ci-table-wrap{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch;background:var(--surface)}
+.ci-table-wrap:has(> table > tbody > tr:nth-child(16)){overflow:auto;max-height:calc(100vh - var(--sticky-h) - var(--s-16))}
+.ci-table-wrap[tabindex]:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+.ci-table-wrap > table > thead th{position:sticky;top:0;z-index:2;background:var(--surface)}
+.ci-table-wrap > table > tbody > tr > :first-child:not([colspan]),.ci-table-wrap > table > thead > tr > :first-child{position:sticky;left:0;z-index:1;background:var(--surface)}
+.ci-table-wrap > table > thead > tr > :first-child{z-index:3}
+.ci-table-wrap--rank > table > tbody > tr > :first-child:not([colspan]),.ci-table-wrap--rank > table > thead > tr > :first-child{width:var(--s-10);min-width:var(--s-10);max-width:var(--s-10)}
+.ci-table-wrap--rank > table > tbody > tr > :nth-child(2):not([colspan]),.ci-table-wrap--rank > table > thead > tr > :nth-child(2){position:sticky;left:var(--s-10);z-index:1;background:var(--surface)}
+.ci-table-wrap--rank > table > thead > tr > :nth-child(2){z-index:3}
+.ci-table-wrap td,.ci-table-wrap th{min-height:24px}
+@media (max-width:1023px){
+  .card .ci-table-wrap > table{min-width:560px}
+  .card .ci-chart__table > table{min-width:0}
+}
+th .ci-sort{all:unset;display:inline-flex;align-items:center;gap:var(--s-1);min-height:24px;cursor:pointer;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit}
+th .ci-sort::after{content:"";width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--faint);opacity:.6}
+th[aria-sort="descending"] .ci-sort{color:var(--ink)}
+th[aria-sort="descending"] .ci-sort::after{border-top-color:var(--ink);opacity:1}
+th[aria-sort="ascending"] .ci-sort{color:var(--ink)}
+th[aria-sort="ascending"] .ci-sort::after{border-top:0;border-bottom:5px solid var(--ink);opacity:1}
+th .ci-sort:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+@media print{.ci-table-wrap{max-height:none !important;overflow:visible !important}}
+
+/* ---- briefing: editorial, numbered sections 01 to 04 ---- */
+.brief .card{counter-reset:ci-sec}
+.brief h2::before{counter-increment:ci-sec;content:counter(ci-sec, decimal-leading-zero);display:inline-block;min-width:var(--s-10);font-family:var(--font-mono);font-size:var(--t-label-size);font-weight:500;letter-spacing:var(--t-label-track);color:var(--muted);vertical-align:middle}
+
 /* ================= reduced motion and forced colors ================= */
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{transition-duration:0s !important;animation-duration:0s !important;scroll-behavior:auto !important}

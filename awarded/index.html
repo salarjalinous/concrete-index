@@ -30,6 +30,7 @@
 <link rel="stylesheet" href="/assets/ci.css">
 <link rel="stylesheet" href="/assets/pages/awarded.css">
 <meta name="ci:export" content="on">
+<meta name="ci:chrome" content="on">
 <script src="/assets/ci.js" defer></script>
 <script src="/assets/vendor/chart.umd.min.js" defer></script>
 <script src="/assets/ci-chart.js" defer></script>
@@ -71,6 +72,10 @@
   </div>
 </div>
 
+<nav class="ci-subnav" aria-label="On this page">
+  <div class="wrap"><ul class="ci-subnav__list"><li><a href="#trend">Monthly</a></li><li><a href="#by-agency">By agency</a></li><li><a href="#by-borough">By borough</a></li><li><a href="#vendors">Top recipients</a></li><li><a href="#recent">Latest</a></li><li><a href="#methodology">Definitions</a></li></ul></div>
+</nav>
+
 <div id="loader" class="wrap">
   <div class="spinner"></div>
   Pulling award data from NYC Open Data…
@@ -84,7 +89,7 @@
 
 <div data-ci-main id="app" class="wrap">
 
-  <div class="controls">
+  <div class="controls ci-filterbar" role="group" aria-label="Filters">
     <span class="ctl-label">Window</span>
     <div class="seg" id="seg-window">
       <button data-w="12">12 months</button>
@@ -113,7 +118,7 @@
   </div>
 
   <section class="kpis">
-    <div class="kpi hl"><div class="k-label">Awarded</div><div class="k-value" id="kpi-total">–</div><div class="k-note" id="kpi-total-note"></div></div>
+    <div class="kpi hl"><div class="k-label">Awarded, gross</div><div class="k-value" id="kpi-total">–</div><div class="k-note" id="kpi-total-note"></div></div>
     <div class="kpi"><div class="k-label">Awards</div><div class="k-value" id="kpi-count">–</div><div class="k-note" id="kpi-count-note"></div></div>
     <div class="kpi"><div class="k-label">Median award</div><div class="k-value" id="kpi-median">–</div><div class="k-note">published contract value</div></div>
     <div class="kpi"><div class="k-label">Largest award</div><div class="k-value" id="kpi-max">–</div><div class="k-note" id="kpi-max-note"></div></div>
@@ -125,22 +130,22 @@
     <div class="card">
       <div class="sec-head"><h2>Monthly awarded value</h2><span class="cap" id="trend-cap">USD · BY MONTH</span></div>
       <div class="h-sub" id="trend-sub"></div>
-      <div class="chart-box tall"><canvas id="chart-trend"></canvas></div>
+      <div class="chart-box tall"><canvas id="chart-trend" data-ci-col="Month" data-ci-val="Awarded value" data-ci-asof="series-asof"></canvas></div>
       <div class="tnote">Each bar is the total published award value for one month, on the deduplicated construction set (one record per procurement). Hover a bar for the exact figure; a month with no awards shows no bar. The series reflects the window, scope, type, and size filters set above.</div>
     </div>
   </section>
 
   <section class="grid two" id="agencies">
-    <div class="card">
+    <div class="card" id="by-agency">
       <div class="sec-head"><h2>Demand by agency</h2><span class="cap">TOP 8 · USD</span></div>
       <div class="h-sub">Awarded value in window, top agencies</div>
-      <div class="chart-box"><canvas id="chart-agency"></canvas></div>
+      <div class="chart-box"><canvas id="chart-agency" data-ci-col="Agency" data-ci-val="Awarded value" data-ci-asof="series-asof"></canvas></div>
       <div class="tnote">The eight agencies that awarded the most construction value in the selected window, ranked by total awarded value (not by number of contracts). Agencies outside the top eight are not shown; the bars do not sum to the headline total.</div>
     </div>
-    <div class="card">
+    <div class="card" id="by-borough">
       <div class="sec-head"><h2>Where the work is</h2><span class="cap">BY BOROUGH</span></div>
       <div class="h-sub">Borough referenced in the award notice</div>
-      <div class="chart-box"><canvas id="chart-boro"></canvas></div>
+      <div class="chart-box"><canvas id="chart-boro" data-ci-col="Borough" data-ci-val="Awarded value" data-ci-asof="series-asof"></canvas></div>
       <div class="tnote">Awarded value grouped by the borough named in each award's title or description, since the source has no borough field. Awards naming several boroughs are counted as multi-borough; those naming none (often citywide contracts) as citywide / unspecified. This is the softest figure on the page.</div>
     </div>
   </section>

@@ -190,6 +190,9 @@ function head(p) {
   L.push('<link rel="stylesheet" href="/assets/ci.css">');
   if (p.css) L.push(`<link rel="stylesheet" href="/assets/pages/${p.css}.css">`);
   if (p.export) L.push('<meta name="ci:export" content="on">');
+  // App chrome in ci.js (sub-nav, chart frames, rule tables, sort, toasts):
+  // every page but Home, whose landing build owns its own markup, and stubs.
+  if (!p.stub && p.file !== 'index.html') L.push('<meta name="ci:chrome" content="on">');
   L.push('<script src="/assets/ci.js" defer></script>');
   if (p.chart) {
     L.push('<script src="/assets/vendor/chart.umd.min.js" defer></script>');

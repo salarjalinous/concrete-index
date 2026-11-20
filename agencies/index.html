@@ -30,6 +30,7 @@
 <link rel="stylesheet" href="/assets/ci.css">
 <link rel="stylesheet" href="/assets/pages/agencies.css">
 <meta name="ci:export" content="on">
+<meta name="ci:chrome" content="on">
 <script src="/assets/ci.js" defer></script>
 <script src="/assets/vendor/chart.umd.min.js" defer></script>
 <script src="/assets/ci-chart.js" defer></script>
@@ -71,6 +72,10 @@
   </div>
 </div>
 
+<nav class="ci-subnav" aria-label="On this page">
+  <div class="wrap"><ul class="ci-subnav__list"><li><a href="#funnel-sec">Funnel</a></li><li><a href="#velocity-sec" data-also="vel-rank-sec vel-table-sec payvel-sec">Velocity</a></li><li><a href="#trades">Trades</a></li><li><a href="#recipients">Recipients</a></li><li><a href="#boro-sec">Boroughs</a></li><li><a href="#methodology">Definitions</a></li></ul></div>
+</nav>
+
 <div id="loader" class="wrap">
   <div class="spinner"></div>
   Pulling the capital plan and award record from NYC Open Data…
@@ -84,7 +89,7 @@
 
 <div data-ci-main id="app" class="wrap">
 
-  <section class="controls">
+  <section class="controls ci-filterbar" role="group" aria-label="Filters">
     <div class="ctrl">
       <label for="agency">Agency</label>
       <select id="agency" class="agency-select" aria-label="Select an agency"></select>
@@ -147,13 +152,13 @@
   </section>
 
   <section class="grid two" id="cuts">
-    <div class="card">
+    <div class="card" id="trades">
       <div class="sec-head"><h2>Top trades</h2><span class="cap" id="trades-cap">CAPITAL PLAN · DOLLAR-WEIGHTED</span></div>
       <div class="h-sub">The agency's committed budget split by capital-plan program category. This is the structured field on the plan, the firmest read of what the agency is buying.</div>
-      <div class="chart-box"><canvas id="chart-trades"></canvas></div>
+      <div class="chart-box"><canvas id="chart-trades" data-ci-col="Program category" data-ci-val="Committed" data-ci-asof="series-asof"></canvas></div>
       <div class="tnote">Each bar is the agency's unspent committed budget in one ten-year-plan program category, dollar-weighted. Categories come from the capital plan's own classification, not from award text.</div>
     </div>
-    <div class="card">
+    <div class="card" id="recipients">
       <div class="sec-head"><h2>Top recipients</h2><span class="cap" id="recipients-cap">CITY RECORD · TRAILING YEAR</span></div>
       <div class="h-sub">The firms winning this agency's work over the trailing twelve months, split into hard construction and design/CM professional services, each ordered by its own award dollars.</div>
       <table id="tbl-vendors">
@@ -219,7 +224,7 @@
     <div class="card">
       <div class="sec-head"><h2 id="velocity">Backlog coverage across agencies</h2><span class="cap">YEARS · TOP 10</span></div>
       <div class="h-sub">Years of funded work at each agency's current spending pace, so the selected agency reads against its peers. Longer bars are agencies sitting on more committed work relative to how fast they pay it out.</div>
-      <div class="chart-box tall"><canvas id="chart-vel-rank"></canvas></div>
+      <div class="chart-box tall"><canvas id="chart-vel-rank" data-ci-col="Agency" data-ci-val="Backlog coverage"></canvas></div>
       <div class="reading ci-note ci-note--label" id="vel-rank-reading"></div>
       <div class="tnote">Each bar is one agency's backlog coverage = open pipeline &divide; trailing-year spend, in years. A longer bar means more committed-but-unspent work relative to how fast the agency pays it out. Only the ten agencies with the deepest coverage among those with a computable ratio are shown.</div>
     </div>
@@ -242,7 +247,7 @@
       <div class="sec-head"><h2>Payment velocity across agencies</h2><span class="cap" id="payvel-cap">DATED SET · DAYS</span></div>
       <div class="h-sub">How fast each agency turns a registered award into cash, read from confirmed Checkbook NYC disbursements. Two clocks per agency: the median wait for the first payment after registration, and the median days to reach half the contract paid. Fastest to half-paid sits at the top.</div>
       <div id="payvel-unavail"></div>
-      <div class="chart-box tall" id="payvel-chartbox"><canvas id="chart-payvel"></canvas></div>
+      <div class="chart-box tall" id="payvel-chartbox"><canvas id="chart-payvel" data-ci-col="Agency" data-ci-val="Days to 50% paid"></canvas></div>
       <table id="tbl-payvel">
         <thead><tr><th>Agency</th><th class="num">Dated contracts</th><th class="num">First payment, days</th><th class="num">Days to 50% paid</th></tr></thead>
         <tbody></tbody>

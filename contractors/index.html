@@ -30,6 +30,7 @@
 <link rel="stylesheet" href="/assets/ci.css">
 <link rel="stylesheet" href="/assets/pages/contractors.css">
 <meta name="ci:export" content="on">
+<meta name="ci:chrome" content="on">
 <script src="/assets/ci.js" defer></script>
 <script src="/assets/vendor/chart.umd.min.js" defer></script>
 <script src="/assets/ci-chart.js" defer></script>
@@ -76,6 +77,10 @@
 
 <!-- ===== Contractor lookup (lead section). Independent of the market data load
      below, so it is usable immediately on page open. ===== -->
+<nav class="ci-subnav" aria-label="On this page">
+  <div class="wrap"><ul class="ci-subnav__list"><li><a href="#lookup">Lookup</a></li><li><a href="#market" data-also="app">Market structure</a></li><li><a href="#methodology">Definitions</a></li></ul></div>
+</nav>
+
 <div data-ci-main class="wrap" id="lookup">
 
   <section id="starter" class="grid">
@@ -136,13 +141,13 @@
       <div class="card">
         <div class="sec-head"><h2>Awarded value by year</h2><span class="cap">BY YEAR &middot; USD</span></div>
         <div class="h-sub">Job-size trend matters as much as the total: a book stepping up in size is taking on different risk</div>
-        <div class="chart-box"><canvas id="chart-year"></canvas></div>
+        <div class="chart-box"><canvas id="chart-year" data-ci-col="Year" data-ci-val="Awarded value"></canvas></div>
         <div class="tnote">Each bar is the group's awarded value for one year, on the deduplicated City Record set (one record per procurement). The trend in job size matters as much as the total: a book stepping up in scale is taking on work of a different size. These are award-notice values, not paid amounts.</div>
       </div>
       <div class="card">
         <div class="sec-head"><h2>Agency mix</h2><span class="cap">TOP 6 &middot; USD</span></div>
         <div class="h-sub">Who this vendor works for, by awarded value. <a href="/awarded/">See the full award flow on the &ldquo;Awarded&rdquo; page</a>.</div>
-        <div class="chart-box"><canvas id="chart-agency"></canvas></div>
+        <div class="chart-box"><canvas id="chart-agency" data-ci-col="Agency" data-ci-val="Awarded value"></canvas></div>
         <div class="tnote">The group's awarded value split across the agencies it has won City work from, the top six by value. Bars are awarded value, not contract counts, and agencies outside the top six are not shown.</div>
       </div>
     </section>
@@ -172,7 +177,7 @@
 
 </div>
 
-<div class="wrap u-pt-2">
+<div class="wrap u-pt-2" id="market">
   <div class="sec-head"><h2>Market structure</h2><span class="cap">COMPETITIVE SET BY WINS</span></div>
   <p class="asof u-mt-3 u-pt-0 u-bt-0" id="asof">Assembling the market set from City Record data&hellip;</p>
 </div>
@@ -190,7 +195,7 @@
 
 <div data-ci-main id="app" class="wrap">
 
-  <section class="controls">
+  <section class="controls ci-filterbar" role="group" aria-label="Filters">
     <div class="ctl-group">
       <span class="ctl-label">Window</span>
       <div class="seg" id="seg-window">
@@ -225,7 +230,7 @@
     <div class="card">
       <div class="sec-head"><h2>Count share versus dollar share, by band</h2><span class="cap">SHARE OF SET</span></div>
       <div class="h-sub">Each band's share of all awards by count, set against its share of all award dollars. The gap between the two bars is the small-awards / mega-dollars inversion.</div>
-      <div class="chart-box"><canvas id="chart-bands"></canvas></div>
+      <div class="chart-box"><canvas id="chart-bands" data-ci-col="Award-size band"></canvas></div>
       <div class="tnote">For each award-size band, two bars: its share of all awards by count (count share = awards in band ÷ total awards) and its share of all award dollars (dollar share = band dollars ÷ total dollars), on the deduplicated set. The gap is the inversion where many small awards hold a thin slice of dollars while a few large ones hold most.</div>
     </div>
   </section>

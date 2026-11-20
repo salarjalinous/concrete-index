@@ -29,6 +29,7 @@
 <link rel="stylesheet" href="/assets/tokens.css">
 <link rel="stylesheet" href="/assets/ci.css">
 <link rel="stylesheet" href="/assets/pages/contracts.css">
+<meta name="ci:chrome" content="on">
 <script src="/assets/ci.js" defer></script>
 <script src="/assets/vendor/chart.umd.min.js" defer></script>
 <script src="/assets/ci-chart.js" defer></script>
@@ -70,6 +71,10 @@
   </div>
 </div>
 
+<nav class="ci-subnav" aria-label="On this page">
+  <div class="wrap"><ul class="ci-subnav__list"><li><a href="#search">Search</a></li><li><a href="#methodology">Definitions</a></li></ul></div>
+</nav>
+
 <div id="loader" class="wrap">
   <div class="spinner"></div>
   Loading the contract search index&hellip;
@@ -96,9 +101,9 @@
     </div>
   </section>
 
-  <section class="search-row">
+  <section class="search-row" id="search">
     <div class="sec-head"><h2>Search the contract record</h2><span class="cap" id="search-cap">&ndash;</span></div>
-    <div class="u-pt-4">
+    <div class="u-pt-4 ci-filterbar" role="group" aria-label="Filters" data-ci-count="#match-note">
       <div class="search-box">
         <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Search contract ID, vendor, agency, category, scope, or PIN&hellip;" aria-label="Search contracts">
         <button class="sx" id="clear-q" type="button" aria-label="Clear search" hidden>&times;</button>
@@ -128,17 +133,17 @@
 
   <section class="grid">
     <div class="card u-pt-4">
-      <table id="tbl">
+      <table id="tbl" data-ci-label="Matching contracts">
         <thead>
           <tr>
             <th>Contract</th>
             <th>Vendor</th>
             <th>Agency</th>
             <th class="th-cat col-cat">Category</th>
-            <th class="num">Registered</th>
-            <th class="num">Current amt.</th>
+            <th class="num" data-ci-sort="f-sort" data-ci-sort-value="registration_date" data-ci-sort-dir="descending">Registered</th>
+            <th class="num" data-ci-sort="f-sort" data-ci-sort-value="current_amount" data-ci-sort-dir="descending">Current amt.</th>
             <th class="num">Paid to date</th>
-            <th class="num">% paid</th>
+            <th class="num" data-ci-sort="f-sort" data-ci-sort-value="pct_paid_to_date" data-ci-sort-dir="descending">% paid</th>
           </tr>
         </thead>
         <tbody id="rows"></tbody>

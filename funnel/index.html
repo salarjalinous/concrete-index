@@ -30,6 +30,7 @@
 <link rel="stylesheet" href="/assets/ci.css">
 <link rel="stylesheet" href="/assets/pages/funnel.css">
 <meta name="ci:export" content="on">
+<meta name="ci:chrome" content="on">
 <script src="/assets/ci.js" defer></script>
 <script src="/assets/vendor/chart.umd.min.js" defer></script>
 <script src="/assets/ci-chart.js" defer></script>
@@ -71,6 +72,10 @@
   </div>
 </div>
 
+<nav class="ci-subnav" aria-label="On this page">
+  <div class="wrap"><ul class="ci-subnav__list"><li><a href="#stages">Gauges</a></li><li><a href="#trend">Pace of spending</a></li><li><a href="#award-trend">Pace of awarding</a></li><li><a href="#velocity">Agency velocity</a></li><li><a href="#methodology">Definitions</a></li></ul></div>
+</nav>
+
 <div id="loader" class="wrap">
   <div class="spinner"></div>
   Pulling the capital plan and award record from NYC Open Data…
@@ -104,13 +109,13 @@
     <div class="card" id="trend">
       <div class="sec-head"><h2>Pace of spending</h2><span class="cap">PLAN-TO-PLAN · USD</span></div>
       <div class="h-sub">Capital dollars paid out between plan snapshots (≈4-month periods)</div>
-      <div class="chart-box"><canvas id="chart-spend"></canvas></div>
+      <div class="chart-box"><canvas id="chart-spend" data-ci-col="Period" data-ci-val="Spent"></canvas></div>
       <div class="tnote">Each bar is capital paid out in one plan period, computed as the increase in cumulative spend-to-date between two consecutive OMB plan snapshots (published roughly every four months), floored at zero. Spending is measured on a matched panel: only projects observed in both snapshots contribute, so a project's back-history does not land in the period it first appears. Spending by new entrants before they entered the plan is therefore outside the series. A restatement that lowers a cumulative figure reads as zero rather than negative spend.</div>
     </div>
     <div class="card" id="award-trend">
       <div class="sec-head"><h2>Pace of awarding</h2><span class="cap">BY QUARTER · USD</span></div>
       <div class="h-sub">Construction award value entering the market, by quarter</div>
-      <div class="chart-box"><canvas id="chart-award"></canvas></div>
+      <div class="chart-box"><canvas id="chart-award" data-ci-col="Quarter" data-ci-val="Awarded"></canvas></div>
       <div class="tnote">Each bar is the construction award value entering the market in one calendar quarter, on the deduplicated set (one record per procurement, keeping the largest amount). Award value is the figure stated at the notice, a floor that later change orders and registrations can grow.</div>
     </div>
   </section>

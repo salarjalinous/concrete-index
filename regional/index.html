@@ -30,6 +30,7 @@
 <link rel="stylesheet" href="/assets/ci.css">
 <link rel="stylesheet" href="/assets/pages/regional.css">
 <meta name="ci:export" content="on">
+<meta name="ci:chrome" content="on">
 <script src="/assets/ci.js" defer></script>
 <script src="/assets/vendor/chart.umd.min.js" defer></script>
 <script src="/assets/ci-chart.js" defer></script>
@@ -69,6 +70,10 @@
   <p class="asof" id="asof">Reading the SCA and MTA records…</p>
 </div>
 
+<nav class="ci-subnav" aria-label="On this page">
+  <div class="wrap"><ul class="ci-subnav__list"><li><a href="#sca-boro">SCA boroughs</a></li><li><a href="#sca-projects">SCA projects</a></li><li><a href="#mta-agency">MTA by agency</a></li><li><a href="#mta-plans">MTA plans</a></li><li><a href="#methodology">Definitions</a></li></ul></div>
+</nav>
+
 <div id="loader" class="wrap">
   <div class="spinner"></div>
   Pulling SCA and MTA capital data…
@@ -90,14 +95,14 @@
   </section>
 
   <section class="grid two" id="sca">
-    <div class="card">
+    <div class="card" id="sca-boro">
       <div class="sec-head"><h2>SCA: where the school work is</h2><span class="cap">BY BOROUGH · USD</span></div>
       <div class="h-sub">Awarded construction value of projects currently under construction, by borough</div>
-      <div class="chart-box"><canvas id="chart-sca-boro"></canvas></div>
+      <div class="chart-box"><canvas id="chart-sca-boro" data-ci-col="Borough" data-ci-val="Awarded construction value" data-ci-asof="series-asof"></canvas></div>
       <div class="reading ci-note ci-note--label" id="sca-reading"></div>
       <div class="tnote">Each bar is the awarded construction value of School Construction Authority projects currently under construction, grouped by the borough code the SCA assigns each project. This is the value of active work under contract, not committed or future budget, and the SCA dataset names no contractor. <span id="sca-boro-note"></span></div>
     </div>
-    <div class="card">
+    <div class="card" id="sca-projects">
       <div class="sec-head"><h2>SCA: largest active projects</h2><span class="cap">TOP 10 · USD</span></div>
       <div class="h-sub">By awarded construction value</div>
       <table id="tbl-sca">
@@ -109,16 +114,16 @@
   </section>
 
   <section class="grid two" id="mta">
-    <div class="card">
+    <div class="card" id="mta-agency">
       <div class="sec-head"><h2>MTA: the 2025–29 program by agency</h2><span class="cap">USD</span></div>
       <div class="h-sub">Current allocations in the active capital plan</div>
-      <div class="chart-box"><canvas id="chart-mta-agency"></canvas></div>
+      <div class="chart-box"><canvas id="chart-mta-agency" data-ci-col="Agency" data-ci-val="Current allocation"></canvas></div>
       <div class="tnote">Each bar is the MTA's current allocation to one constituent agency in the active 2025–29 capital program. The source reports in thousands of dollars (converted here) and sits on the State's books, so these figures are kept on their own ledger and never summed with the City's.</div>
     </div>
-    <div class="card">
+    <div class="card" id="mta-plans">
       <div class="sec-head"><h2>MTA: five capital plans of growth</h2><span class="cap">BY PLAN · USD</span></div>
       <div class="h-sub">Total current allocations by plan</div>
-      <div class="chart-box"><canvas id="chart-mta-plans"></canvas></div>
+      <div class="chart-box"><canvas id="chart-mta-plans" data-ci-col="Capital plan" data-ci-val="Current allocation"></canvas></div>
       <div class="reading ci-note ci-note--label" id="mta-reading"></div>
       <div class="tnote">Each bar is the total current allocation of one MTA capital plan, across five consecutive five-year programs, showing the program's growth over time. Figures are current planned dollars, converted from the source's thousands, not awards or actual outlays.</div>
     </div>

@@ -262,82 +262,419 @@
     return b;
   };
 
-  /* ================= export: page PDF, chart PNG and CSV, table CSV =================
-   * Moved verbatim from the per-page export module; the only changes are the
-   * opt-in meta tag and the container selector ([data-ci-main] is what each
-   * page's own <main> became when the shared <main id="content"> wrapped it). */
+  /* ================= app chrome (PRD 6.5, 8.2) =================
+   * Everything here enhances markup the page already has. None of it reads
+   * or changes a figure: tables built from a chart hold the strings the
+   * chart's own tooltip prints for each value. */
+  var seq = 0;
+  function uid(p) { return 'ci-' + p + '-' + (++seq); }
+  function headingFor(el) {
+    var card = el.closest('.card') || el.closest('section') || el.parentElement;
+    var h = card && card.querySelector('.sec-head h2,h2,h3,.dc-head');
+    if (!h) { var s = el.previousElementSibling; while (s) { if (/^H[23]$/.test(s.tagName)) { h = s; break; } s = s.previousElementSibling; } }
+    return h || null;
+  }
+  function textOf(el) { return el ? el.textContent.replace(/\s+/g, ' ').trim() : ''; }
+  function stickyH() {
+    var v = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop);
+    return isNaN(v) ? 0 : v;
+  }
+
+  /* ---- segmented controls: pressed state and group label ----
+   * Pages mark the selected button with class "on". aria-pressed follows
+   * that class, so the page logic stays as it is. */
+  function syncSegBtn(b) {
+    if (b.tagName !== 'BUTTON' || !b.closest('.seg')) return;
+    if (!b.hasAttribute('type')) b.setAttribute('type', 'button');
+    var on = b.classList.contains('on') ? 'true' : 'false';
+    if (b.getAttribute('aria-pressed') !== on) b.setAttribute('aria-pressed', on);
+  }
+  function labelSeg(seg) {
+    if (seg.hasAttribute('role')) return;
+    seg.setAttribute('role', 'group');
+    if (seg.hasAttribute('aria-label') || seg.hasAttribute('aria-labelledby')) return;
+    var lab = seg.previousElementSibling;
+    if (!(lab && lab.classList.contains('ctl-label'))) {
+      var box = seg.closest('.ctl,.ctl-group');
+      lab = box && box.querySelector('.ctl-label,label');
+    }
+    if (lab) { if (!lab.id) lab.id = uid('lbl'); seg.setAttribute('aria-labelledby', lab.id); }
+  }
+  function enhanceSegs(rootEl) {
+    var r = rootEl && rootEl.querySelectorAll ? rootEl : document;
+    if (r.matches && r.matches('.seg')) labelSeg(r);
+    r.querySelectorAll('.seg').forEach(labelSeg);
+    if (r.matches && r.matches('.seg button')) syncSegBtn(r);
+    r.querySelectorAll('.seg button').forEach(syncSegBtn);
+  }
+  ci.enhanceSegs = enhanceSegs;
+
+  /* ---- rule tables: labelled, focusable overflow region ---- */
+  function wrapTable(tbl) {
+    if (tbl.closest('.ci-table-wrap') || tbl.closest('header,footer,nav')) return;
+    var w = document.createElement('div');
+    w.className = 'ci-table-wrap';
+    var first = tbl.querySelector('tr > :first-child');
+    if (tbl.querySelector('td.rank') || (first && first.tagName === 'TH' && !textOf(first))) w.classList.add('ci-table-wrap--rank');
+    var h = headingFor(tbl);
+    w.setAttribute('data-label', (tbl.getAttribute('data-ci-label') || textOf(tbl.querySelector('caption')) || textOf(h) || 'Data') + ', table');
+    tbl.parentNode.insertBefore(w, tbl);
+    w.appendChild(tbl);
+    watchOverflow(w);
+  }
+  // The region role, label, and tab stop are added only while the table
+  // actually overflows its box, so short tables add no landmark noise.
+  var ro = window.ResizeObserver ? new ResizeObserver(function (es) { es.forEach(function (e) { overflowState(e.target.closest('.ci-table-wrap') || e.target); }); }) : null;
+  function overflowState(w) {
+    if (!w || !w.classList || !w.classList.contains('ci-table-wrap')) return;
+    var over = w.scrollWidth > w.clientWidth + 1 || w.scrollHeight > w.clientHeight + 1;
+    if (over) {
+      w.setAttribute('role', 'region'); w.setAttribute('tabindex', '0'); w.setAttribute('aria-label', w.getAttribute('data-label'));
+    } else if (w.hasAttribute('role')) {
+      w.removeAttribute('role'); w.removeAttribute('tabindex'); w.removeAttribute('aria-label');
+    }
+  }
+  function watchOverflow(w) {
+    overflowState(w);
+    if (ro) { ro.observe(w); var t = w.querySelector('table'); if (t) ro.observe(t); }
+  }
+  ci.wrapTables = function (rootEl) {
+    var r = rootEl || document;
+    r.querySelectorAll('main table').forEach(wrapTable);
+    document.querySelectorAll('.ci-table-wrap').forEach(overflowState);
+  };
+
+  /* ---- sort buttons in table headers ----
+   * <th data-ci-sort="<select id>" data-ci-sort-value="<option>"
+   *     data-ci-sort-dir="ascending|descending"> drives the page's existing
+   * sort control: the header button sets that control and fires its change
+   * event, and aria-sort mirrors whatever the control holds. */
+  function syncSort(selId) {
+    var sel = document.getElementById(selId);
+    if (!sel) return;
+    document.querySelectorAll('th[data-ci-sort="' + selId + '"]').forEach(function (th) {
+      th.setAttribute('aria-sort', th.getAttribute('data-ci-sort-value') === sel.value ? th.getAttribute('data-ci-sort-dir') : 'none');
+    });
+  }
+  function enhanceSort() {
+    var seen = {};
+    document.querySelectorAll('th[data-ci-sort]').forEach(function (th) {
+      var selId = th.getAttribute('data-ci-sort');
+      if (!th.querySelector('.ci-sort')) {
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'ci-sort';
+        while (th.firstChild) b.appendChild(th.firstChild);
+        th.appendChild(b);
+        b.addEventListener('click', function () {
+          var sel = document.getElementById(selId);
+          if (!sel || sel.value === th.getAttribute('data-ci-sort-value')) return;
+          sel.value = th.getAttribute('data-ci-sort-value');
+          sel.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+      }
+      if (!seen[selId]) {
+        seen[selId] = 1;
+        var sel = document.getElementById(selId);
+        if (sel) sel.addEventListener('change', function () { syncSort(selId); });
+        syncSort(selId);
+      }
+    });
+  }
+
+  /* ---- sub-nav: aria-current="location" follows the reader ---- */
+  function subnav() {
+    var nav = document.querySelector('.ci-subnav');
+    if (!nav) return;
+    var links = [].slice.call(nav.querySelectorAll('a[href^="#"]'));
+    var targets = [];
+    links.forEach(function (a) {
+      var ids = [a.getAttribute('href').slice(1)].concat((a.getAttribute('data-also') || '').split(/\s+/).filter(Boolean));
+      ids.forEach(function (id) { var t = document.getElementById(id); if (t) targets.push({ el: t, a: a }); });
+    });
+    if (!targets.length) return;
+    var current = null, raf = 0;
+    function set(a) {
+      if (a === current) return;
+      if (current) current.removeAttribute('aria-current');
+      current = a;
+      if (!a) return;
+      a.setAttribute('aria-current', 'location');
+      var list = a.closest('.ci-subnav__list');
+      if (list && list.scrollWidth > list.clientWidth) {
+        var l = a.offsetLeft - list.offsetLeft, r = l + a.offsetWidth;
+        if (l < list.scrollLeft) list.scrollLeft = l;
+        else if (r > list.scrollLeft + list.clientWidth) list.scrollLeft = r - list.clientWidth;
+      }
+    }
+    function pick() {
+      raf = 0;
+      var line = stickyH() + Math.min(160, window.innerHeight * 0.25), best = null;
+      targets.forEach(function (t) {
+        if (!t.el.getClientRects().length) return;
+        var top = t.el.getBoundingClientRect().top;
+        if (top <= line && (!best || top > best.top)) best = { a: t.a, top: top };
+      });
+      // At the very bottom the last section may never reach the line.
+      if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 2) {
+        var last = targets.filter(function (t) { return t.el.getClientRects().length; }).pop();
+        if (last) best = { a: last.a };
+      }
+      set(best ? best.a : null);
+    }
+    function soon() { if (!raf) raf = requestAnimationFrame(pick); }
+    if (window.IntersectionObserver) {
+      var io = new IntersectionObserver(soon, { threshold: [0, 0.25, 0.5, 1], rootMargin: '0px 0px -50% 0px' });
+      targets.forEach(function (t) { io.observe(t.el); });
+    }
+    window.addEventListener('scroll', soon, { passive: true });
+    window.addEventListener('resize', soon);
+    nav.addEventListener('click', function (e) { var a = e.target.closest('a'); if (a) set(a); });
+    soon();
+  }
+
+  /* ---- chart frame: Chart/Table toggle, data table, CSV and PNG ---- */
+  function slug(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60); }
+  var pageSlug = slug(location.pathname.replace(/\/index\.html?$/i, '').replace(/\/+$/, '')) || 'home';
+  function getChart(cv) { return (cv && window.Chart && Chart.getChart) ? (Chart.getChart(cv) || null) : null; }
+  function fnameFor(el, ext) {
+    var h = headingFor(el);
+    return ('concrete-index-' + pageSlug + '-' + slug(h ? h.textContent : 'export')).replace(/-+/g, '-') + '.' + ext;
+  }
+  function dl(href, name, revoke) {
+    var a = document.createElement('a'); a.href = href; a.download = name; a.rel = 'noopener';
+    document.body.appendChild(a); a.click(); a.remove();
+    if (revoke) setTimeout(function () { URL.revokeObjectURL(href); }, 2000);
+  }
+  function csvCell(v) { v = (v == null ? '' : String(v)); return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+  function csv(rows, name) {
+    var t = '﻿' + rows.map(function (r) { return r.map(csvCell).join(','); }).join('\r\n');
+    dl(URL.createObjectURL(new Blob([t], { type: 'text/csv;charset=utf-8' })), name, true);
+    var n = Math.max(rows.length - 1, 0);
+    ci.toast('CSV downloaded · ' + n + (n === 1 ? ' row' : ' rows'));
+  }
+  function pngFromChart(ch, name) {
+    var src = ch.canvas, out = document.createElement('canvas');
+    out.width = src.width; out.height = src.height;
+    var x = out.getContext('2d');
+    x.fillStyle = '#fefbf8'; x.fillRect(0, 0, out.width, out.height);
+    x.drawImage(src, 0, 0);
+    dl(out.toDataURL('image/png'), name, false);
+    ci.toast('PNG downloaded');
+  }
+  function csvFromChart(ch, name) {
+    var labels = ch.data.labels || [], ds = ch.data.datasets || [];
+    var rows = [['Label'].concat(ds.map(function (d, i) { return d.label || ('Series ' + (i + 1)); }))];
+    var n = labels.length || ((ds[0] && ds[0].data) ? ds[0].data.length : 0);
+    for (var r = 0; r < n; r++) {
+      var row = [labels[r] != null ? labels[r] : r];
+      ds.forEach(function (d) {
+        var v = d.data ? d.data[r] : '';
+        if (v && typeof v === 'object') v = (v.y != null ? v.y : (v.v != null ? v.v : JSON.stringify(v)));
+        row.push(v == null ? '' : v);
+      });
+      rows.push(row);
+    }
+    csv(rows, name);
+  }
+  function csvFromTable(tbl, name) {
+    var rows = [];
+    tbl.querySelectorAll('tr').forEach(function (tr) {
+      var cells = [];
+      tr.querySelectorAll('th,td').forEach(function (c) { cells.push(c.textContent.replace(/\s+/g, ' ').trim()); });
+      if (cells.some(function (x) { return x !== ''; })) rows.push(cells);
+    });
+    if (rows.length) csv(rows, name);
+  }
+  function mkBtn(label, title, fn, cls) {
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = label; b.title = title;
+    if (cls) b.className = cls;
+    b.addEventListener('click', fn); return b;
+  }
+
+  // The strings a chart's tooltip prints for one point: the same callback,
+  // the same item object Chart.js builds, so the table cannot drift from the
+  // chart. Datasets the tooltip filters out are left out here too.
+  function tipItem(ch, di, i) {
+    var meta = ch.getDatasetMeta(di), lv = meta.controller.getLabelAndValue(i);
+    return { chart: ch, label: lv.label, parsed: meta.controller.getParsed(i), raw: ch.data.datasets[di].data[i],
+      formattedValue: lv.value, dataset: ch.data.datasets[di], dataIndex: i, datasetIndex: di, element: meta.data[i] };
+  }
+  function strOf(t) { return Array.isArray(t) ? t.join(' · ') : (t == null ? '' : String(t)); }
+  function chartRows(ch) {
+    var tt = (ch.options.plugins && ch.options.plugins.tooltip) || {}, cb = tt.callbacks || {};
+    var stub = { chart: ch, options: tt };
+    var labels = ch.data.labels || [], sets = ch.data.datasets || [];
+    var cols = [], rowKeys = [], rowIdx = {}, cells = {}, parts = null;
+    sets.forEach(function (d, di) {
+      if (d.hidden || !ch.isDatasetVisible(di)) return;
+      var col = { label: d.label || '', di: di };
+      for (var i = 0; i < (d.data || []).length; i++) {
+        var it;
+        try { it = tipItem(ch, di, i); } catch (e) { continue; }
+        if (tt.filter) { try { if (!tt.filter.call(stub, it, [it], [it])) continue; } catch (e) { /* keep */ } }
+        var lab, title;
+        try { lab = cb.label ? cb.label.call(stub, it) : it.formattedValue; } catch (e) { lab = it.formattedValue; }
+        try { title = cb.title ? strOf(cb.title.call(stub, [it])) : ''; } catch (e) { title = ''; }
+        if (lab == null || lab === '') continue;
+        var key = labels.length && (it.raw == null || typeof it.raw !== 'object') ? strOf(labels[i]) : title;
+        if (Array.isArray(lab) && !key) { (parts || (parts = [])).push(lab.map(String)); continue; }
+        if (labels.length && title && cb.title) key = title;
+        if (!key) key = strOf(it.label) || String(i + 1);
+        if (!(key in rowIdx)) { rowIdx[key] = rowKeys.length; rowKeys.push(key); }
+        (cells[di] || (cells[di] = {}))[key] = strOf(lab);
+      }
+      if (cells[di]) cols.push(col);
+    });
+    // A point chart whose tooltip prints a list ("name", "k: v", ...).
+    if (parts && !cols.length) {
+      var head = parts[0].map(function (p, k) { var m = k ? p.match(/^([^:]{1,60}):\s/) : null; return m ? m[1] : (k ? '' : null); });
+      return { head: head, rows: parts.map(function (p) { return p.map(function (x, k) { return head[k] ? x.slice(head[k].length).replace(/^:\s*/, '') : x; }); }) };
+    }
+    // Strip a shared "Series: " prefix into the column head.
+    cols.forEach(function (c) {
+      var vals = rowKeys.map(function (k) { return cells[c.di][k]; }).filter(function (v) { return v != null; });
+      var m = vals.length && vals[0].match(/^([^:]{1,80}):\s/);
+      if (m && vals.every(function (v) { return v.indexOf(m[0]) === 0; }) && (!c.label || c.label === m[1])) {
+        c.label = m[1];
+        rowKeys.forEach(function (k) { if (cells[c.di][k] != null) cells[c.di][k] = cells[c.di][k].slice(m[0].length); });
+      }
+    });
+    return {
+      head: [null].concat(cols.map(function (c) { return c.label; })),
+      rows: rowKeys.map(function (k) { return [k].concat(cols.map(function (c) { var v = cells[c.di][k]; return v == null ? '–' : v; })); })
+    };
+  }
+  function fillChartTable(cv) {
+    var tbl = document.getElementById(cv.id + '-table');
+    var ch = getChart(cv);
+    if (!tbl || !ch) return;
+    var t = chartRows(ch);
+    var first = cv.getAttribute('data-ci-col') || 'Label';
+    var val = cv.getAttribute('data-ci-val') || 'Value';
+    var h = '<caption class="ci-vh">' + ci.esc(tbl.getAttribute('data-title') || '') + '</caption><thead><tr>' +
+      t.head.map(function (x, k) { return '<th scope="col"' + (k ? ' class="num"' : '') + '>' + ci.esc(k ? (x || val) : (x || first)) + '</th>'; }).join('') +
+      '</tr></thead><tbody>' +
+      t.rows.map(function (r) {
+        return '<tr>' + r.map(function (x, k) { return k ? '<td class="num">' + ci.esc(x) + '</td>' : '<th scope="row">' + ci.esc(x) + '</th>'; }).join('') + '</tr>';
+      }).join('') + '</tbody>';
+    if (!t.rows.length) h = '<caption class="ci-vh">' + ci.esc(tbl.getAttribute('data-title') || '') + '</caption><tbody><tr><td>No data to show.</td></tr></tbody>';
+    tbl.innerHTML = h;
+    overflowState(tbl.parentElement);
+  }
+  var pendingTables = {};
+  ci.chartUpdated = function (ch) {
+    var cv = ch && ch.canvas;
+    if (!cv || !document.querySelector('meta[name="ci:chrome"]')) return;
+    if (!cv.hasAttribute('data-ci-framed')) frameChart(cv);
+    if (!cv.id || pendingTables[cv.id]) return;
+    pendingTables[cv.id] = setTimeout(function () { delete pendingTables[cv.id]; fillChartTable(cv); }, 0);
+  };
+  function asofMirror(cv, h) {
+    var src = document.getElementById(cv.getAttribute('data-ci-asof') || '');
+    var card = cv.closest('.card');
+    var cap = card && card.querySelector('.sec-head .cap');
+    if (!src || !cap) return;
+    var span = document.createElement('span');
+    span.className = 'cap ci-chart__asof'; span.id = 'asof-' + cv.id;
+    // A sibling, not a child: some pages rewrite their caption's text.
+    cap.insertAdjacentElement('afterend', span);
+    function copy() {
+      var v = textOf(src);
+      span.textContent = (v && v !== '–') ? ' · AS OF ' + v : '';
+    }
+    copy();
+    new MutationObserver(copy).observe(src, { childList: true, characterData: true, subtree: true });
+  }
+  function frameChart(cv) {
+    if (!cv || cv.hasAttribute('data-ci-framed')) return;
+    var box = cv.closest('.chart-box') || cv.parentElement;
+    if (!box || box.closest('header,footer,nav')) return;
+    cv.setAttribute('data-ci-framed', '1');
+    box.setAttribute('data-exp', '1');
+    if (!cv.id) cv.id = uid('chart');
+    var h = headingFor(box);
+    var title = textOf(h) || 'Chart';
+    var card = box.closest('.card');
+    if (h && !h.id) h.id = cv.id + '-h';
+    if (card && h && h.closest('.sec-head') && card.contains(h) && card.querySelectorAll('canvas').length === 1 && !card.hasAttribute('role')) {
+      card.setAttribute('role', 'figure'); card.setAttribute('aria-labelledby', h.id);
+    }
+    var wrap = document.createElement('div');
+    wrap.className = 'ci-table-wrap ci-chart__table';
+    wrap.setAttribute('data-label', title + ', data table');
+    wrap.hidden = true;
+    var tbl = document.createElement('table');
+    tbl.id = cv.id + '-table'; tbl.setAttribute('data-exp', '1'); tbl.setAttribute('data-title', title);
+    wrap.appendChild(tbl);
+    box.insertAdjacentElement('afterend', wrap);
+    watchOverflow(wrap);
+    cv.setAttribute('role', 'img');
+    cv.setAttribute('aria-label', title + '. The data table that follows holds every value.');
+    cv.setAttribute('aria-describedby', tbl.id);
+    asofMirror(cv, h);
+
+    var bar = document.createElement('div'); bar.className = 'exp ci-chart__tools';
+    var seg = document.createElement('div'); seg.className = 'ci-viewseg'; seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', 'Show ' + title + ' as');
+    var bChart = mkBtn('Chart', 'Show the chart', function () { view(false); });
+    var bTable = mkBtn('Table', 'Show the values as a table', function () { view(true); });
+    bChart.setAttribute('aria-pressed', 'true'); bTable.setAttribute('aria-pressed', 'false');
+    seg.appendChild(bChart); seg.appendChild(bTable);
+    bar.appendChild(seg);
+    var tools = document.createElement('div'); tools.className = 'ci-chart__dl';
+    tools.appendChild(mkBtn('PNG', 'Download this chart as a PNG image', function () { var ch = getChart(cv); if (ch) pngFromChart(ch, fnameFor(box, 'png')); }));
+    tools.appendChild(mkBtn('CSV', 'Download this chart’s data as a CSV file', function () { var ch = getChart(cv); if (ch) csvFromChart(ch, fnameFor(box, 'csv')); }));
+    bar.appendChild(tools);
+    box.insertAdjacentElement('beforebegin', bar);
+    function view(asTable) {
+      bChart.setAttribute('aria-pressed', asTable ? 'false' : 'true');
+      bTable.setAttribute('aria-pressed', asTable ? 'true' : 'false');
+      box.classList.toggle('ci-off', asTable);
+      wrap.hidden = !asTable;
+      if (asTable) { fillChartTable(cv); }
+      else { var ch = getChart(cv); if (ch) ch.resize(); }
+    }
+    if (getChart(cv)) fillChartTable(cv);
+  }
+  ci.frameCharts = function (rootEl) {
+    (rootEl || document).querySelectorAll('main .chart-box canvas').forEach(frameChart);
+  };
+
+  function chrome() {
+    if (!document.querySelector('meta[name="ci:chrome"]')) return;
+    enhanceSegs(document);
+    ci.frameCharts();
+    ci.wrapTables();
+    enhanceSort();
+    subnav();
+    new MutationObserver(function (records) {
+      var tables = false;
+      for (var i = 0; i < records.length; i++) {
+        var r = records[i];
+        if (r.type === 'attributes') { syncSegBtn(r.target); continue; }
+        for (var j = 0; j < r.addedNodes.length; j++) {
+          var n = r.addedNodes[j];
+          if (n.nodeType !== 1) continue;
+          enhanceSegs(n);
+          if (n.tagName === 'TABLE' || n.querySelector('table')) tables = true;
+          if (n.tagName === 'CANVAS' || n.querySelector('canvas')) ci.frameCharts(n.tagName === 'CANVAS' ? n.parentElement : n);
+        }
+      }
+      if (tables) ci.wrapTables();
+    }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+  }
+  if (document.readyState !== 'loading') chrome(); else document.addEventListener('DOMContentLoaded', chrome);
+
+  /* ================= export: page PDF and table CSV =================
+   * On pages that opt in with <meta name="ci:export">. Chart PNG and CSV
+   * now live in the chart frame above, on every chart. */
   (function () {
     if (!document.querySelector('meta[name="ci:export"]')) return;
     if (window.__ciExport) return; window.__ciExport = 1;
-    function slug(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60); }
-    var pageSlug = slug(location.pathname.replace(/\/index\.html?$/i, '').replace(/\/+$/, '')) || 'home';
-    function getChart(cv) { return (cv && window.Chart && Chart.getChart) ? (Chart.getChart(cv) || null) : null; }
-    function fnameFor(el, ext) {
-      var card = el.closest('.card') || el.closest('section') || el.parentElement;
-      var h = card && card.querySelector('.sec-head h2,h2,h3');
-      if (!h) { var s = el.previousElementSibling; while (s) { if (s.tagName === 'H2' || s.tagName === 'H3') { h = s; break; } s = s.previousElementSibling; } }
-      return ('concrete-index-' + pageSlug + '-' + slug(h ? h.textContent : 'export')).replace(/-+/g, '-') + '.' + ext;
-    }
-    function dl(href, name, revoke) {
-      var a = document.createElement('a'); a.href = href; a.download = name; a.rel = 'noopener';
-      document.body.appendChild(a); a.click(); a.remove();
-      if (revoke) setTimeout(function () { URL.revokeObjectURL(href); }, 2000);
-    }
-    function csvCell(v) { v = (v == null ? '' : String(v)); return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
-    function csv(rows, name) {
-      var t = '﻿' + rows.map(function (r) { return r.map(csvCell).join(','); }).join('\r\n');
-      dl(URL.createObjectURL(new Blob([t], { type: 'text/csv;charset=utf-8' })), name, true);
-      ci.toast('CSV downloaded · ' + Math.max(rows.length - 1, 0) + ' rows');
-    }
-    function pngFromChart(ch, name) {
-      var src = ch.canvas, out = document.createElement('canvas');
-      out.width = src.width; out.height = src.height;
-      var x = out.getContext('2d');
-      x.fillStyle = '#fefbf8'; x.fillRect(0, 0, out.width, out.height);
-      x.drawImage(src, 0, 0);
-      dl(out.toDataURL('image/png'), name, false);
-    }
-    function csvFromChart(ch, name) {
-      var labels = ch.data.labels || [], ds = ch.data.datasets || [];
-      var rows = [['Label'].concat(ds.map(function (d, i) { return d.label || ('Series ' + (i + 1)); }))];
-      var n = labels.length || ((ds[0] && ds[0].data) ? ds[0].data.length : 0);
-      for (var r = 0; r < n; r++) {
-        var row = [labels[r] != null ? labels[r] : r];
-        ds.forEach(function (d) {
-          var v = d.data ? d.data[r] : '';
-          if (v && typeof v === 'object') v = (v.y != null ? v.y : (v.v != null ? v.v : JSON.stringify(v)));
-          row.push(v == null ? '' : v);
-        });
-        rows.push(row);
-      }
-      csv(rows, name);
-    }
-    function csvFromTable(tbl, name) {
-      var rows = [];
-      tbl.querySelectorAll('tr').forEach(function (tr) {
-        var cells = [];
-        tr.querySelectorAll('th,td').forEach(function (c) { cells.push(c.textContent.replace(/\s+/g, ' ').trim()); });
-        if (cells.some(function (x) { return x !== ''; })) rows.push(cells);
-      });
-      if (rows.length) csv(rows, name);
-    }
-    function mkBtn(label, title, fn) {
-      var b = document.createElement('button'); b.type = 'button'; b.textContent = label; b.title = title;
-      b.addEventListener('click', fn); return b;
-    }
     function placeAfter(el, bar) {
-      var t = el, nx = el.nextElementSibling;
+      var t = el.parentElement && el.parentElement.classList.contains('ci-table-wrap') ? el.parentElement : el;
+      var nx = t.nextElementSibling;
       if (nx && nx.classList && nx.classList.contains('tnote')) t = nx;
       t.insertAdjacentElement('afterend', bar);
-    }
-    function attachChart(box) {
-      if (!box || box.getAttribute('data-exp')) return;
-      var cv = box.querySelector('canvas'); if (!cv) return;
-      box.setAttribute('data-exp', '1');
-      var bar = document.createElement('div'); bar.className = 'exp';
-      bar.appendChild(mkBtn('PNG', 'Download this chart as a PNG image', function () { var ch = getChart(cv); if (ch) pngFromChart(ch, fnameFor(box, 'png')); }));
-      bar.appendChild(mkBtn('CSV', 'Download this chart’s data as a CSV file', function () { var ch = getChart(cv); if (ch) csvFromChart(ch, fnameFor(box, 'csv')); }));
-      placeAfter(box, bar);
     }
     function attachTable(tbl) {
       if (!tbl || tbl.getAttribute('data-exp')) return;
@@ -349,19 +686,26 @@
       placeAfter(tbl, bar);
     }
     function scan() {
-      document.querySelectorAll('.chart-box').forEach(attachChart);
-      document.querySelectorAll('[data-ci-main] canvas,#app canvas').forEach(function (cv) { if (!cv.closest('.chart-box')) attachChart(cv.parentElement); });
+      ci.wrapTables();
       document.querySelectorAll('[data-ci-main] table,#app table,.card table').forEach(attachTable);
     }
+    var printing = false;
     function addPdfBtn() {
       if (document.querySelector('.pdf-btn')) return;
-      var b = mkBtn('Save PDF', 'Save or print this page as a PDF', function () { window.print(); });
+      var b = mkBtn('Save PDF', 'Save or print this page as a PDF', function () { printing = true; window.print(); });
       b.className = 'pdf-btn';
       var inner = document.querySelector('.series-bar .inner');
       if (inner) { inner.appendChild(b); return; }
       var header = document.querySelector('.ci-masthead');
       if (header) { var bar = document.createElement('div'); bar.className = 'pdf-bar'; bar.appendChild(b); header.insertAdjacentElement('afterend', bar); }
     }
+    // The browser does not say whether the dialog saved a file, so the toast
+    // confirms only what is known: the print or PDF dialog has closed.
+    window.addEventListener('afterprint', function () {
+      if (!printing) return;
+      printing = false;
+      ci.toast('Print or PDF dialog closed');
+    });
     var pending = null;
     function start() {
       addPdfBtn(); scan();

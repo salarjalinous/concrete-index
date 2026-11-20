@@ -95,6 +95,8 @@
   --gutter:16px;            /* column gutter: 16 at 390, 24 from 768 */
   --masthead-h:56px;
   --rail-h:0px;
+  --subnav-h:44px;          /* in-page sub-nav on app pages (sticky from 768) */
+  --header-h:var(--masthead-h);
   --sticky-h:var(--masthead-h);
 
   /* Breakpoints, for reference by scripts (custom properties cannot be used
@@ -113,9 +115,14 @@
 }
 @media (min-width:768px){
   :root{--gut:24px;--gutter:24px}
+  /* Sticky stack, per breakpoint: masthead (and rail from 1024), plus the
+     sub-nav on pages that have one. Below 768 the sub-nav scrolls with the
+     page, so the stack stays at the 56px masthead. */
+  :root:has(.ci-subnav){--sticky-h:calc(var(--header-h) + var(--subnav-h))}
 }
 @media (min-width:1024px){
-  :root{--gut:32px;--masthead-h:64px;--rail-h:44px;--sticky-h:calc(var(--masthead-h) + var(--rail-h));--section:var(--s-12)}
+  :root{--gut:32px;--masthead-h:64px;--rail-h:44px;--header-h:calc(var(--masthead-h) + var(--rail-h));--sticky-h:var(--header-h);--section:var(--s-12)}
+  :root:has(.ci-subnav){--sticky-h:calc(var(--header-h) + var(--subnav-h))}
 }
 @media (min-width:1280px){
   :root{--gut:40px}

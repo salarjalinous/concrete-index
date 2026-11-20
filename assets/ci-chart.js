@@ -49,6 +49,10 @@
 
   Chart.register({
     id: 'ciGrammar',
+    // The chart frame in ci.js keeps each chart's data table in step.
+    afterUpdate: function (chart) {
+      if (window.ci && window.ci.chartUpdated) window.ci.chartUpdated(chart);
+    },
     beforeUpdate: function (chart) {
       capTicks(chart);
       var base = chart.config.type;

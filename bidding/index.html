@@ -30,6 +30,7 @@
 <link rel="stylesheet" href="/assets/ci.css">
 <link rel="stylesheet" href="/assets/pages/bidding.css">
 <meta name="ci:export" content="on">
+<meta name="ci:chrome" content="on">
 <script src="/assets/ci.js" defer></script>
 <script src="/assets/pages/bidding.js" defer></script>
 <!-- /ci:head -->
@@ -82,7 +83,7 @@
 
 <div data-ci-main id="app" class="wrap">
 
-  <div class="controls">
+  <div class="controls ci-filterbar" role="group" aria-label="Filters" data-ci-count-of="#list .sol" data-ci-count-label="open solicitation|open solicitations">
     <span class="ctl-label">Scope</span>
     <div class="seg" id="seg-scope">
       <button data-s="all">All construction</button>
