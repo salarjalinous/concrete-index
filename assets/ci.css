@@ -387,6 +387,21 @@ th[aria-sort="ascending"] .ci-sort::after{border-top:0;border-bottom:5px solid v
 th .ci-sort:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 @media print{.ci-table-wrap{max-height:none !important;overflow:visible !important}}
 
+/* ---- targets (PRD A7 rule 7): 24x24 everywhere, 44x44 below 1024 for
+   nav, menu, tabs, filters, pause; no horizontal page scroll at 320 ---- */
+main .seg{flex-wrap:wrap;max-width:100%}
+.ci-footer__meta a,.csv-link,.contact a,a.t-title,main td a,main .rule-table a,.page-index a,.method-src a,.ci-filterbar a{display:inline-flex;align-items:center;min-height:24px}
+.contact a{min-width:24px}
+.ci-viewseg button{min-height:24px;min-width:24px}
+@media (max-width:1023px){
+  main .seg button,main .seg .seg-btn,.ci-viewseg button,.ci-pause{min-height:44px;min-width:44px}
+  .ci-filterbar input,.ci-filterbar select,.ci-filterbar button,.ci-combo input{min-height:44px}
+  .ci-subnav a{min-width:44px;justify-content:center}
+}
+@media (max-width:767px){
+  .sec-head .ci-chart__asof{white-space:normal}
+}
+
 /* ---- moved subheads lead the card's reading note ---- */
 .card > .h-sub.ci-sub-note{margin:var(--s-3) 0 0;padding-top:var(--s-2);border-top:1px solid var(--line);font-size:var(--t-body-sm-size);line-height:var(--t-body-sm-line);color:var(--ink)}
 .card > .h-sub.ci-sub-note:empty{display:none}

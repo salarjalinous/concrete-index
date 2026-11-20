@@ -96,7 +96,7 @@
   --masthead-h:56px;
   --rail-h:0px;
   --subnav-h:44px;          /* in-page sub-nav on app pages (sticky from 768) */
-  --header-h:var(--masthead-h);
+  --header-h:calc(var(--masthead-h) + 2px);   /* masthead plus its 2px ink rule */
   --sticky-h:var(--masthead-h);
 
   /* Breakpoints, for reference by scripts (custom properties cannot be used
@@ -121,7 +121,7 @@
   :root:has(.ci-subnav){--sticky-h:calc(var(--header-h) + var(--subnav-h))}
 }
 @media (min-width:1024px){
-  :root{--gut:32px;--masthead-h:64px;--rail-h:44px;--header-h:calc(var(--masthead-h) + var(--rail-h));--sticky-h:var(--header-h);--section:var(--s-12)}
+  :root{--gut:32px;--masthead-h:64px;--rail-h:44px;--header-h:calc(var(--masthead-h) + var(--rail-h) + 3px);--sticky-h:var(--header-h);--section:var(--s-12)}
   :root:has(.ci-subnav){--sticky-h:calc(var(--header-h) + var(--subnav-h))}
 }
 @media (min-width:1280px){
