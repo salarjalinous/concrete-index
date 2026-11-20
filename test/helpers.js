@@ -11,7 +11,26 @@ const PAGES_ROOT = process.env.PAGES_ROOT || ROOT;
 
 const fixture = f => JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', f), 'utf8'));
 const readRoot = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
-const readPage = f => fs.readFileSync(path.join(PAGES_ROOT, f), 'utf8');
+/* A page is its HTML plus its /assets/pages/<module>*.js files (Phase 5 moved
+   inline scripts there). `f` is the page path, e.g. 'funnel/index.html' or
+   'index.html' (Home's module is 'home'). Single-file builds still work: with
+   no module on disk the HTML alone is returned. */
+const pageModule = f => (f === 'index.html' ? 'home' : f.split('/')[0]);
+function pageModules(f){
+  const dir = path.join(PAGES_ROOT, 'assets', 'pages');
+  if(!fs.existsSync(dir)) return [];
+  const mod = pageModule(f);
+  return fs.readdirSync(dir).filter(n => n === mod + '.js' || (n.startsWith(mod + '.') && /^\d+\.js$/.test(n.slice(mod.length + 1))))
+    .sort().map(n => path.join(dir, n));
+}
+const pageExists = f => fs.existsSync(path.join(PAGES_ROOT, f)) || pageModules(f).length > 0;
+const readPage = f => {
+  const html = path.join(PAGES_ROOT, f);
+  const parts = fs.existsSync(html) ? [fs.readFileSync(html, 'utf8')] : [];
+  for(const m of pageModules(f)) parts.push(fs.readFileSync(m, 'utf8'));
+  if(!parts.length) throw new Error('page not found: ' + f);
+  return parts.join('\n');
+};
 
 /* Every source file a figure can come from: pages, shared assets, lib, tools, workflows. */
 function sourceFiles(){
@@ -72,4 +91,4 @@ function sandbox(code, { now, globals = {} } = {}){
   return ctx;
 }
 
-module.exports = { ROOT, PAGES_ROOT, fixture, readRoot, readPage, sourceFiles, extractFunction, extractConst, sandbox };
+module.exports = { ROOT, PAGES_ROOT, fixture, readRoot, readPage, pageExists, sourceFiles, extractFunction, extractConst, sandbox };

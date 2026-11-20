@@ -25,7 +25,7 @@ const EXCLUDED = new Set([
   'completed','cancelled','inactive','on-hold','on hold','transferred',
   'withdrawn','terminated','defaulted','capitally ineligible','expense',
   'defunded','funding withdrawn','rescinded','fmsid changed','project renamed','n/a',
-  'land acquisition','property acquisition','real estate transaction','fundraising',
+  'land acquisition','property acquisition','land purchase','real estate transaction','fundraising',
   'it project','non capital fund','equipment','consultant services']);
 const PHASE_ORDER = ['Pending','Pre-Design','Design','Procurement','Construction','Close-out','Other active'];
 function normPhase(raw){
@@ -356,6 +356,10 @@ async function fetchVelocityPlan(){
     const prev = velState.snap[velState.periods[i-1]], cur = velState.snap[velState.periods[i]];
     let total = 0; const byAgency = new Map();
     for(const [key, rec] of cur){
+      // Same scope as the "Funnel" page (aligned Nov 20, 2026): excluded lines are
+      // not construction demand and must not inflate trailing spend under a
+      // pipeline that already drops them. Close-out is kept.
+      if(rec.bucket === 'excluded') continue;
       const was = prev.get(key);
       if(!was) continue; // new entrant: no prior reading, so no measurable period spend
       const d = Math.max(rec.spend - was.spend, 0);

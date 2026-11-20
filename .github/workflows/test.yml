@@ -35,4 +35,5 @@ jobs:
       - name: node --test (TZ=${{ matrix.tz }})
         env:
           TZ: ${{ matrix.tz }}
+          STRICT_PAGES: '1'
         run: node --test test/methodology.test.js test/builders.test.js

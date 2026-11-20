@@ -43,7 +43,7 @@ async function fetchPlan(){
   state.rows = dedupe(rows.map(normalize).filter(r => r.bucket !== 'excluded'));
   if(state.priorPeriod){
     const prior = await getJSON({
-      '$select':'fms_id,managing_agency,current_phase,total_budget,spend_to_date',
+      '$select':'fms_id,managing_agency,fms_project_name,current_phase,total_budget,spend_to_date',
       '$where': `reporting_period='${state.priorPeriod}'`,
       '$limit': '20000'
     });
@@ -110,10 +110,9 @@ function normalize(r, i){
   const budget = Math.max(parseFloat(r.total_budget) || 0, 0);
   const spent  = Math.max(parseFloat(r.spend_to_date) || 0, 0);
   return {
-    // Stable per-row surrogate for missing fms_id: keeps each such row standing
-    // alone (no merge) while making the run byte-reproducible. Math.random() did
-    // the same isolation but injected nondeterminism.
-    fmsId: r.fms_id || ('_np_' + i),
+    // Missing fms_id falls back to the project name, the rule every plan page and
+    // the nightly files use (aligned Nov 20, 2026).
+    fmsId: r.fms_id || r.fms_project_name || '',
     agency: r.managing_agency || '–',
     name: r.fms_project_name || '(unnamed project)',
     budget,

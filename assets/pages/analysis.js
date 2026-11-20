@@ -24,7 +24,7 @@ const EXCLUDED = new Set([
   // dead phases: the project is gone, not waiting to be built
   'defunded','funding withdrawn','rescinded','fmsid changed','project renamed','n/a',
   // not construction work: these do not belong in the construction-demand pipeline
-  'land acquisition','property acquisition','real estate transaction','fundraising',
+  'land acquisition','property acquisition','land purchase','real estate transaction','fundraising',
   'it project','non capital fund','equipment','consultant services']);
 const PHASE_ORDER = ['Pending','Pre-Design','Design','Procurement','Construction','Close-out'];
 function normPhase(raw){

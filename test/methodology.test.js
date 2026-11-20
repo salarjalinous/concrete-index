@@ -164,7 +164,7 @@ test('6. phase normalization: one canonical exclusion set', async t => {
   await t.test('Funnel, Agency, Analysis, Briefing: canonical, or the legacy set pending the page patch', () => {
     for(const p of ['funnel', 'agency', 'analysis', 'briefing']){
       const f = p + '/index.html';
-      if(!fs.existsSync(path.join(H.PAGES_ROOT, f))) continue;
+      if(!H.pageExists(f)) continue;
       const set = [...pageExcluded(H.readPage(f))].sort();
       const canon = [...P.EXCLUDED].sort(), legacy = [...P.EXCLUDED_LEGACY_D1].sort();
       if(process.env.STRICT_PAGES) assert.deepEqual(set, canon, f);
