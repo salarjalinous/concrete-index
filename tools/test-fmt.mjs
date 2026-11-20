@@ -21,8 +21,12 @@ vm.runInNewContext(ciSrc, sandbox);
 const ci = sandbox.ci;
 
 // Pull `function name(...){...}` (or a one-line arrow/const) out of a page module.
+// A file named 'legacy/<x>' is the frozen pre-Phase-5 module in
+// test/fixtures/fmt-legacy/, kept for pages whose module now calls ci.fmt
+// directly (Home), so each kind keeps the proof of the format it reproduces.
+const pagePath = (file) => file.startsWith('legacy/') ? join(ROOT, 'test', 'fixtures', 'fmt-legacy', file.slice(7)) : join(ROOT, 'assets', 'pages', file);
 function extract(file, name) {
-  const src = readFileSync(join(ROOT, 'assets', 'pages', file), 'utf8');
+  const src = readFileSync(pagePath(file), 'utf8');
   const start = src.search(new RegExp(`function ${name}\\s*\\(`));
   if (start < 0) throw new Error(`${file}: ${name} not found`);
   let i = src.indexOf('{', start), depth = 0;
@@ -82,11 +86,11 @@ const P = [
   ['analysis.js', 'fmtMoney', 'money-k', money],
   ['contracts.js', 'fmtMoney', 'money?', money.concat(empties)],
   ['contracts.js', 'fmtMoneyFull', 'money-full?', money.concat(empties)],
-  ['home.js', 'fmtMoney', 'money-compact', money.concat(empties, ['12', 'x', Infinity])],
+  ['legacy/home.js', 'fmtMoney', 'money-compact', money.concat(empties, ['12', 'x', Infinity])],
   ['pipeline.js', 'fmtInt', 'int', money],
   ['contractors.js', 'fmtInt', 'int0', money.concat([0, null, undefined])],
   ['contracts.js', 'fmtInt', 'int?', money.concat(empties)],
-  ['home.js', 'fmtInt', 'int-compact', money.concat(empties, ['12', 'x'])],
+  ['legacy/home.js', 'fmtInt', 'int-compact', money.concat(empties, ['12', 'x'])],
   ['agencies.js', 'fmtPct', 'pct', ratios],
   ['contracts.js', 'fmtPct', 'pct?', ratios.concat(empties)],
   ['analysis.js', 'fmtPct', 'pct0', ratios],
@@ -106,16 +110,16 @@ const P = [
   ['funnel.js', 'fmtPeriodLong', 'period-long', periods],
   ['briefing.js', 'fmtPeriodLong', 'period-long', periods],
   ['pipeline.js', 'fmtPeriod', 'period-long?', periods.concat(['', null])],
-  ['home.js', 'fmtMonth', 'month-long', ym.concat(['', null, '2026-13'])],
+  ['legacy/home.js', 'fmtMonth', 'month-long', ym.concat(['', null, '2026-13'])],
   // Home prints the index inline as Number(val).toFixed(1) (showIndex, fillAdjust).
-  ['home.js', '<inline> Number(v).toFixed(1)', 'index', money.concat(pcts, [80.27, 80.25, 80.35, 66.45, '80.27'])],
+  ['legacy/home.js', '<inline> Number(v).toFixed(1)', 'index', money.concat(pcts, [80.27, 80.25, 80.35, 66.45, '80.27'])],
 ];
 
 const run = (f, v) => { try { return f(v); } catch (e) { return 'THROW ' + e.constructor.name; } };
 let fail = 0, n = 0;
 for (const [file, name, kind, values] of P) {
   const ref = name.startsWith('<inline>') ? (v) => Number(v).toFixed(1) : pageFn(file, name, PRELUDE, kind);
-  if (name.startsWith('<inline>') && !readFileSync(join(ROOT, 'assets', 'pages', file), 'utf8').includes('Number(val).toFixed(1)')) throw new Error('home.js no longer formats the index inline');
+  if (name.startsWith('<inline>') && !readFileSync(pagePath(file), 'utf8').includes('Number(val).toFixed(1)')) throw new Error('home.js no longer formats the index inline');
   let bad = null;
   for (const v of values) {
     n++;
