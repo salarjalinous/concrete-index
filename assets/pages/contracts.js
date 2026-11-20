@@ -355,6 +355,28 @@ function init(payload){
   document.getElementById('f-cat').addEventListener('change', function(){ state.openId = null; render(); });
   document.getElementById('f-sort').addEventListener('change', function(){ render(); });
 
+  // Search box as a combobox: vendor names from the loaded index, local only.
+  // Choosing one fills the box and fires the same input event as typing it.
+  var vendorCounts = null;
+  ci.combobox(q, {
+    minChars: 2,
+    source: function(t){
+      if(!vendorCounts){
+        vendorCounts = new Map();
+        state.all.forEach(function(c){ if(c.vendor) vendorCounts.set(c.vendor, (vendorCounts.get(c.vendor) || 0) + 1); });
+      }
+      var ql = t.toLowerCase(), out = [];
+      vendorCounts.forEach(function(n, v){ if(v.toLowerCase().indexOf(ql) >= 0) out.push({ label: v, value: v, hint: n + (n === 1 ? ' contract' : ' contracts'), n: n }); });
+      return out.sort(function(a, b){ return (b.n - a.n) || a.label.localeCompare(b.label); });
+    },
+    onSelect: function(){ q.dispatchEvent(new Event('input', { bubbles: true })); },
+    status: function(t, opts){
+      var mn = document.getElementById('match-note');
+      var s = mn ? mn.textContent.replace(/\s+/g, ' ').trim() : '';
+      return s + (opts.length ? ' ' + opts.length + (opts.length === 1 ? ' vendor suggestion.' : ' vendor suggestions.') : '');
+    }
+  });
+
   var tbody = document.getElementById('rows');
   tbody.addEventListener('click', function(e){
     var tr = e.target.closest ? e.target.closest('tr.crow') : null;

@@ -69,9 +69,10 @@
   <h1>One contractor's record, and the market around it.</h1>
   <p class="sub">Look up a contractor's public award record across City and State construction, then read how award dollars and counts spread across the market by award-size band. The contractor lookup comes first; the market view follows. Awardee names in the market section are a grouping key only and are never published, ranked, or scored.</p>
   <div class="searchbar">
-    <input id="q" type="search" placeholder="Try a contractor name" autocomplete="off">
+    <input id="q" type="search" placeholder="Try a contractor name" autocomplete="off" aria-label="Contractor name" aria-describedby="q-sent">
     <button id="go">Search</button>
   </div>
+  <p class="hint" id="q-sent">Search text is sent to NYC Open Data to run the query.</p>
   <p class="hint">Matches the vendor name as published in the City Record. Where we can confirm by hand that several names belong to the same firm, they roll up under one parent total; every underlying name is listed below the profile.</p>
 </div>
 

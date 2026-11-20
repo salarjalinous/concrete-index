@@ -681,6 +681,27 @@ window.selectGroup = selectGroup;
 ci.on('run-search', function(el){ runSearch(el.getAttribute('data-q')); });
 ci.on('select-group', function(el){ selectGroup(el.getAttribute('data-key')); });
 
+// Search box as a combobox. Suggestions come from names already on the page
+// (the hand-confirmed alias groups and the starter list); nothing is sent
+// while typing. Choosing one runs the same search as typing it and pressing
+// Enter, so a query returns the same result set either way.
+function nameSuggestions(t){
+  const ql = t.toLowerCase(), seen = new Set(), out = [];
+  const add = (name, hint) => {
+    const k = name.toLowerCase();
+    if(seen.has(k) || !k.includes(ql)) return;
+    seen.add(k); out.push({ label: name, value: name, hint, starts: k.startsWith(ql) });
+  };
+  alias.groups.forEach(g => add(g.parent, g.variants.length + ' published name' + (g.variants.length===1?'':'s')));
+  document.querySelectorAll('#starter-list button[data-q]').forEach(b => add(b.getAttribute('data-q'), 'most awarded, TTM'));
+  return out.sort((a, b) => (b.starts - a.starts) || a.label.localeCompare(b.label));
+}
+ci.combobox(document.getElementById('q'), {
+  minChars: 2,
+  source: nameSuggestions,
+  onSelect: x => runSearch(x.value)
+});
+
 (async function init(){
   loadStarter().catch(()=>{});
   await Promise.all([ loadAliases(), loadCheckbook() ]);

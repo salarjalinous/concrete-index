@@ -381,6 +381,106 @@
     });
   }
 
+  /* ---- search combobox (ARIA 1.2 combobox with listbox) ----
+   * ci.combobox(input, {
+   *   source(text) -> [{ label, value, hint }]   local suggestions only,
+   *   onSelect(option)                            the page's own action,
+   *   status(text, options) -> string             announced in a polite region
+   * })
+   * Suggestions never touch the network. Enter on a highlighted option
+   * selects it; Enter with none highlighted falls through to the page's own
+   * handler, so a typed query runs exactly as before. */
+  ci.combobox = function (input, o) {
+    if (!input || input.hasAttribute('role')) return null;
+    o = o || {};
+    var min = o.minChars || 2, max = o.max || 8;
+    var lb = document.createElement('ul');
+    lb.id = (input.id || uid('in')) + '-listbox';
+    lb.className = 'ci-listbox'; lb.setAttribute('role', 'listbox');
+    lb.setAttribute('aria-label', (input.getAttribute('aria-label') || input.placeholder || 'Search') + ', suggestions');
+    lb.hidden = true;
+    var st = document.createElement('p');
+    st.className = 'ci-vh'; st.setAttribute('role', 'status'); st.setAttribute('aria-live', 'polite');
+    var host = input.parentElement;
+    host.classList.add('ci-combo');
+    input.insertAdjacentElement('afterend', lb);
+    lb.insertAdjacentElement('afterend', st);
+    input.setAttribute('role', 'combobox');
+    input.setAttribute('aria-autocomplete', 'list');
+    input.setAttribute('aria-expanded', 'false');
+    input.setAttribute('aria-controls', lb.id);
+    input.setAttribute('autocomplete', 'off');
+    var opts = [], active = -1, statusTimer = null;
+    function say(t) { clearTimeout(statusTimer); statusTimer = setTimeout(function () { st.textContent = t; }, 400); }
+    function close() {
+      lb.hidden = true; input.setAttribute('aria-expanded', 'false');
+      input.removeAttribute('aria-activedescendant'); active = -1;
+    }
+    function highlight(i) {
+      var items = lb.children;
+      if (active >= 0 && items[active]) items[active].setAttribute('aria-selected', 'false');
+      active = i;
+      if (i < 0 || !items[i]) { input.removeAttribute('aria-activedescendant'); return; }
+      items[i].setAttribute('aria-selected', 'true');
+      input.setAttribute('aria-activedescendant', items[i].id);
+      var top = items[i].offsetTop, bot = top + items[i].offsetHeight;
+      if (top < lb.scrollTop) lb.scrollTop = top; else if (bot > lb.scrollTop + lb.clientHeight) lb.scrollTop = bot - lb.clientHeight;
+    }
+    var muted = false;
+    function update() {
+      if (muted) { muted = false; close(); return; }
+      var t = input.value.trim();
+      opts = t.length >= min && o.source ? (o.source(t) || []).slice(0, max) : [];
+      lb.innerHTML = opts.map(function (x, i) {
+        return '<li role="option" id="' + lb.id + '-' + i + '" aria-selected="false" class="ci-option">' + ci.esc(x.label) +
+          (x.hint ? '<span class="ci-option__hint">' + ci.esc(x.hint) + '</span>' : '') + '</li>';
+      }).join('');
+      active = -1; input.removeAttribute('aria-activedescendant');
+      var open = opts.length > 0 && document.activeElement === input;
+      lb.hidden = !open; input.setAttribute('aria-expanded', open ? 'true' : 'false');
+      var s = o.status ? o.status(t, opts) : '';
+      if (s == null || s === '') s = t.length >= min ? (opts.length ? opts.length + (opts.length === 1 ? ' suggestion' : ' suggestions') + '. Use the arrow keys to choose one.' : 'No suggestions.') : '';
+      say(s);
+    }
+    function choose(i) {
+      var x = opts[i];
+      if (!x) return;
+      input.value = x.value;
+      close();
+      muted = true;
+      if (o.onSelect) o.onSelect(x);
+      muted = false;
+    }
+    input.addEventListener('input', update);
+    input.addEventListener('focus', function () { if (opts.length && input.value.trim().length >= min) { lb.hidden = false; input.setAttribute('aria-expanded', 'true'); } });
+    input.addEventListener('keydown', function (e) {
+      var open = !lb.hidden;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (!open) { update(); if (!opts.length) return; lb.hidden = false; input.setAttribute('aria-expanded', 'true'); }
+        highlight(active + 1 >= opts.length ? 0 : active + 1);
+      } else if (e.key === 'ArrowUp') {
+        if (!open) return;
+        e.preventDefault();
+        highlight(active <= 0 ? opts.length - 1 : active - 1);
+      } else if (e.key === 'Enter') {
+        if (open && active >= 0) { e.preventDefault(); e.stopImmediatePropagation(); choose(active); }
+        else close();
+      } else if (e.key === 'Escape' || e.key === 'Esc') {
+        if (open) { e.preventDefault(); e.stopImmediatePropagation(); close(); }
+      } else if (e.key === 'Tab') {
+        close();
+      }
+    }, true);
+    lb.addEventListener('mousedown', function (e) { e.preventDefault(); });
+    lb.addEventListener('click', function (e) {
+      var li = e.target.closest('[role="option"]');
+      if (li) choose([].indexOf.call(lb.children, li));
+    });
+    input.addEventListener('blur', function () { setTimeout(close, 0); });
+    return { update: update, close: close, say: say };
+  };
+
   /* ---- sub-nav: aria-current="location" follows the reader ---- */
   function subnav() {
     var nav = document.querySelector('.ci-subnav');

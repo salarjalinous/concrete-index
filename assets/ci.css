@@ -386,6 +386,14 @@ th[aria-sort="ascending"] .ci-sort::after{border-top:0;border-bottom:5px solid v
 th .ci-sort:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 @media print{.ci-table-wrap{max-height:none !important;overflow:visible !important}}
 
+/* ---- search combobox ---- */
+.ci-combo{position:relative}
+.ci-listbox{position:absolute;left:0;right:0;top:100%;z-index:30;list-style:none;margin-top:var(--s-1);max-height:min(320px, 50vh);overflow-y:auto;background:var(--surface);border:1px solid var(--ink);border-radius:0}
+.ci-option{display:flex;justify-content:space-between;align-items:center;gap:var(--s-3);min-height:44px;padding:var(--s-2) var(--s-3);font-size:var(--t-body-sm-size);color:var(--ink);cursor:pointer;border-bottom:1px solid var(--line)}
+.ci-option:last-child{border-bottom:0}
+.ci-option[aria-selected="true"],.ci-option:hover{background:var(--band);box-shadow:inset 2px 0 0 var(--ink)}
+.ci-option__hint{flex:none;font-family:var(--font-mono);font-size:var(--t-label-size);color:var(--muted)}
+
 /* ---- briefing: editorial, numbered sections 01 to 04 ---- */
 .brief .card{counter-reset:ci-sec}
 .brief h2::before{counter-increment:ci-sec;content:counter(ci-sec, decimal-leading-zero);display:inline-block;min-width:var(--s-10);font-family:var(--font-mono);font-size:var(--t-label-size);font-weight:500;letter-spacing:var(--t-label-track);color:var(--muted);vertical-align:middle}
