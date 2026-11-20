@@ -37,3 +37,5 @@ jobs:
           TZ: ${{ matrix.tz }}
           STRICT_PAGES: '1'
         run: node --test test/methodology.test.js test/builders.test.js
+      - name: Formatter parity (ci.fmt against every page format)
+        run: node tools/test-fmt.mjs

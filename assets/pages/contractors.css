@@ -39,11 +39,11 @@ td .t-sub{font-family:var(--font-mono);font-size:var(--fs-12);color:var(--faint)
 .searchbar button:hover{background:var(--navy-deep)}
 .hint{margin-top:var(--s-2);font-size:var(--fs-12);color:var(--faint)}
 .chips{display:flex;flex-wrap:wrap;gap:var(--s-2);margin:var(--s-4) 0 0}
-.chip{font-family:var(--font-mono);font-size:var(--fs-12);font-weight:500;border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);padding:var(--s-1) var(--s-3);cursor:pointer;color:var(--muted)}
+.chip{font-family:var(--font-mono);font-size:var(--fs-12);font-weight:500;border:1px solid var(--control-line);background:var(--surface);border-radius:var(--radius);padding:var(--s-1) var(--s-3);cursor:pointer;color:var(--muted)}
 .chip:hover{color:var(--ink);border-color:var(--ink)}
 .chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .starter{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-2);margin-top:var(--s-4)}
-.starter button{font:inherit;text-align:left;font-size:var(--fs-14);font-weight:600;padding:var(--s-3) var(--s-3);border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink);cursor:pointer}
+.starter button{font:inherit;text-align:left;font-size:var(--fs-14);font-weight:600;padding:var(--s-3) var(--s-3);border:1px solid var(--control-line);border-radius:var(--radius);background:var(--surface);color:var(--ink);cursor:pointer}
 .starter button:hover{border-color:var(--ink)}
 .starter .v-amt{display:block;font-family:var(--font-mono);font-weight:400;font-size:var(--fs-12);color:var(--muted);margin-top:var(--s-1)}
 .empty{padding:var(--s-8);text-align:center;color:var(--muted)}

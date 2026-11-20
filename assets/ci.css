@@ -399,7 +399,7 @@ main .seg{flex-wrap:wrap;max-width:100%}
   .ci-subnav a{min-width:44px;justify-content:center}
 }
 @media (max-width:767px){
-  .sec-head .ci-chart__asof{white-space:normal}
+  .sec-head .ci-chart__asof,.card .sec-head .cap,main .sec-head .cap,main .adj-head .cap{white-space:normal;text-align:left}
 }
 
 /* ---- moved subheads lead the card's reading note ---- */

@@ -8,7 +8,17 @@
  *   ci.getJSON(u, p)     Socrata GET with the app token
  *   ci.on(name, fn)      register a handler for [data-action="name"]
  *   ci.toast(msg)        confirmation toast (role="status")
- *   ci.banner(slot, o)   inline error or stale banner
+ *   ci.banner(slot, o)   inline error or stale banner (null clears the slot)
+ *   ci.alert(msg)        announce an error after a user action (role="alert")
+ *   ci.invalid(inp, msg) field-level invalid-input message
+ *   ci.stale(meta, o)    stale-archive banner from a file's stale_after_hours
+ *   ci.combobox(inp, o)  ARIA 1.2 search combobox with local suggestions
+ *
+ * App chrome (pages with <meta name="ci:chrome">): sub-nav current section,
+ * aria-pressed on segmented buttons, chart frames (Chart/Table toggle, data
+ * table from the chart's tooltip strings, PNG, CSV, as-of caption), rule
+ * tables as labelled overflow regions, header sort buttons, filter result
+ * toasts, and card subheads moved into the reading note.
  *
  * On load it also: applies [data-ci-hide] and [data-ci-style] through the
  * CSSOM (no style attributes, so the CSP needs no 'unsafe-inline'), wires

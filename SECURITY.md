@@ -69,7 +69,7 @@ No other third-party script, stylesheet, font, or image is loaded.
 
 ## Scheduled jobs and secrets
 
-Four scheduled GitHub Actions write public data into `data/` and push to `main`: `archive.yml`, `checkbook.yml`, `doing-business.yml`, and `payments.yml`. They share one concurrency group (`main-data-push`, cancel-in-progress off) and rebase before each push. A fifth workflow, `test.yml`, runs the test suite on pull requests and code pushes with `contents: read` and writes nothing. GitHub Pages serves the committed files directly; there is no build step on the server.
+Four scheduled GitHub Actions write public data into `data/` and push to `main`: `archive.yml`, `checkbook.yml`, `doing-business.yml`, and `payments.yml`. They share one concurrency group (`main-data-push`, cancel-in-progress off) and rebase before each push. A fifth workflow, `test.yml`, runs the test suite on pull requests and code pushes with `contents: read` and writes nothing. A sixth, `deploy.yml`, publishes the repository root to GitHub Pages with `contents: read`, `pages: write`, and `id-token: write`; it never pushes to `main` and has its own `pages` concurrency group. It takes effect once Pages is set to deploy from GitHub Actions; until then Pages serves the committed files from the branch root. There is no build step beyond checks.
 
 - The data jobs use the default `GITHUB_TOKEN` with `contents: write`.
 - `BLS_API_KEY` is optional; the archive job uses it only if present.

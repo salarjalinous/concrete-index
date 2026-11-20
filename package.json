@@ -8,7 +8,9 @@
     "stamp": "node tools/stamp.mjs",
     "check": "node tools/check.mjs",
     "test:fmt": "node tools/test-fmt.mjs",
-    "build": "node tools/vendor.mjs && node tools/stamp.mjs && node tools/check.mjs"
+    "build": "node tools/vendor.mjs && node tools/stamp.mjs && node tools/check.mjs",
+    "health": "node tools/health.mjs",
+    "health:mock": "node tools/health.mjs --mock"
   },
   "devDependencies": {
     "@fontsource/ibm-plex-mono": "5.3.0",
