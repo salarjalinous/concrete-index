@@ -22,7 +22,7 @@ The Concrete Index measures the *flow between* ledgers: how much funded work is 
 
 ## Architecture
 
-Each page is a self-contained static HTML file that queries the Socrata APIs (`data.cityofnewyork.us`, `data.ny.gov`) directly from the browser, and most figures are recomputed from the live public record on every load. No backend and no database. The one source a browser cannot reach, Checkbook NYC (which blocks cross-origin requests and returns a paged XML feed), is fetched and normalized nightly by a scheduled GitHub Action that writes a compact static file the site reads. Hosted on GitHub Pages.
+Each page is a static HTML file, with its logic in `/assets/pages/<page>.js` and shared code in `/assets/ci.js` and `/assets/ci.css`, that queries the Socrata APIs (`data.cityofnewyork.us`, `data.ny.gov`) directly from the browser, and most figures are recomputed from the live public record on every load. No backend and no database. The one source a browser cannot reach, Checkbook NYC (which blocks cross-origin requests and returns a paged XML feed), is fetched and normalized nightly by a scheduled GitHub Action that writes a compact static file the site reads. Hosted on GitHub Pages.
 
 A vendor lookup groups each contractor's name and joint-venture spellings into one parent total through a hand-verified, address-corroborated alias map (deterministic record linkage, not fuzzy matching), and shows award-notice value alongside Checkbook's registered and paid figures as three separate measures.
 
@@ -31,6 +31,13 @@ Data treatment highlights (full definitions on each page's methodology section):
 - Sub-project rows in the capital plan are collapsed to one record per project (by agency + FMS ID, keeping the most advanced phase) so no dollar is double-counted.
 - Spending per period is the growth in each project's cumulative spend-to-date between consecutive plan snapshots, floored at zero, a conservative treatment.
 - Borough on the Awarded page is derived from award title and description text and disclosed as such; the capital plan carries structured geography.
+
+## Working on the site
+
+- `npm ci`, then `node tools/vendor.mjs` copies the self-hosted fonts and Chart.js 4.4.1 into `/assets` (versions pinned in `package-lock.json`).
+- The shared `<head>`, masthead, section rail, and footer are stamped into every page between `<!-- ci:… -->` markers by `node tools/stamp.mjs`. Edit the stamp script, not the pages, for anything inside those markers.
+- `node tools/check.mjs` must exit 0 before a deploy: no inline script or style, no `style=` or `on*=` attributes, no em dashes, no third-party subresources, per-page CSP matching the hosts each page fetches, spacing only from `tokens.css`.
+- `node tools/test-fmt.mjs` proves `ci.fmt` reproduces every page formatter. `tools/figures.js`, pasted into the browser console after a page loads, returns every visible figure as JSON for old-versus-new parity checks.
 
 ## Author
 
