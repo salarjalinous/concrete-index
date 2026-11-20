@@ -164,6 +164,31 @@ test('B5. award-core reproduces the archived precompute', () => {
   assert.equal(ix.month, pre.index_month);
 });
 
+test('B5b. index points: same series as the published index, withheld on disagreement', () => {
+  const IP = require('../tools/build-index-points.js');
+  const pre = data('precomputed.json'), rows = data('awards.json');
+  const r = IP.points(pre, rows);
+  assert.equal(r.ok, true, r.why);
+  // The committed file carries exactly what the builder writes.
+  for(const f of IP.FIELDS) if(f in pre) assert.equal(pre[f], r.fields[f], f);
+  // Prior is the month before index_month, year-ago twelve months before.
+  const back = (ym, n) => { const d = new Date(Date.UTC(+ym.slice(0,4), +ym.slice(5,7) - 1 - n, 1)); return d.toISOString().slice(0,7); };
+  assert.equal(r.fields.index_prior_month, back(pre.index_month, 1));
+  assert.equal(r.fields.index_year_ago_month, back(pre.index_month, 12));
+  // Home's figures from the nightly points print the same as from the live series.
+  require('../assets/ci.js'); const fmt = globalThis.ci.fmt;
+  const s = A.indexSeriesFromRows(rows, pre.meta.generated), v = s.values, n = v.length;
+  assert.equal(fmt(Math.abs(pre.index_level - r.fields.index_prior_level), 'index'), fmt(Math.abs(v[n-1] - v[n-2]), 'index'));
+  assert.equal(fmt((pre.index_level / r.fields.index_year_ago_level - 1) * 100, 'pct-signed'), fmt((v[n-1] / v[n-13] - 1) * 100, 'pct-signed'));
+  // A precompute the series does not reproduce gets nulls, in place after index_month.
+  const bad = IP.points({ ...pre, index_level: pre.index_level + 0.01 }, rows);
+  assert.equal(bad.ok, false);
+  const out = IP.apply(pre, null);
+  assert.deepEqual(Object.keys(out).slice(Object.keys(out).indexOf('index_month') + 1, Object.keys(out).indexOf('index_month') + 5), IP.FIELDS);
+  for(const f of IP.FIELDS) assert.equal(out[f], null);
+  assert.equal(JSON.stringify(IP.apply(IP.apply(pre, r.fields), r.fields)), JSON.stringify(IP.apply(pre, r.fields)));
+});
+
 test('B6. socrata pager: refuses a short pull and an over-cap count, keeps order rules', async () => {
   const S = require('../lib/socrata.js');
   const rows = Array.from({ length: 25 }, (_, i) => ({ ':id': 'row-' + String(i).padStart(3, '0'), d: String(i % 3), r: String(100 - i) }));

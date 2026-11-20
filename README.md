@@ -43,12 +43,12 @@ Nightly workflows in `.github/workflows/`:
 
 | Workflow | Writes |
 | --- | --- |
-| `archive.yml` | `awards.json`, `solicitations.json`, `plan-latest.json`, `cost-index.json` (BLS), `precomputed.json`, `plan-history.json` |
-| `checkbook.yml` | `checkbook-vendors.json`, `flow.json` |
+| `archive.yml` | `awards.json`, `solicitations.json`, `plan-latest.json`, `cost-index.json` (BLS), `precomputed.json` (with the index's prior-month and year-ago levels from `tools/build-index-points.js`), `plan-history.json` |
+| `checkbook.yml` | `checkbook-vendors.json`, `flow.json`, and the stamped figures in `index.html` (`tools/render-flow.mjs`) |
 | `doing-business.yml` | `doing-business-corroboration.json` (organization-level only) |
 | `payments.yml` | `contract-search.json`, `contract-index.json`, `contract-detail/*.json`, `contract-aggregates.json` |
 
-Every Socrata pull in these jobs is paged and checked against the source's own row count, and the job stops rather than saving a partial file. `test.yml` runs the methodology and builder tests (`node --test`) on pull requests and code pushes, read-only. `deploy.yml` publishes the site to GitHub Pages on a source push to `main`, after any of the four data workflows succeeds, and by hand: it re-runs the checks and tests on `main` HEAD, uploads the repository root without `.github`, `test`, `tools`, `lib`, and `node_modules`, then runs `tools/health.mjs` against the live site as a report. It takes effect once Pages is set to deploy from GitHub Actions; until then Pages keeps serving the branch root.
+Every Socrata pull in these jobs is paged and checked against the source's own row count, and the job stops rather than saving a partial file. `test.yml` runs the methodology and builder tests (`node --test`) on pull requests and code pushes, read-only. `deploy.yml` publishes the site to GitHub Pages on a source push to `main`, after any of the four data workflows succeeds, and by hand: it re-runs the checks and tests on `main` HEAD, stamps Home's static figures from the data it ships (`tools/render-flow.mjs`, in the workspace only), uploads the repository root without `.github`, `test`, `tools`, `lib`, `node_modules`, `scratch`, and the package files, then runs `tools/health.mjs` against the live site as a report. It takes effect once Pages is set to deploy from GitHub Actions; until then Pages keeps serving the branch root.
 
 The git history of `data/` is a dated archive of each source.
 

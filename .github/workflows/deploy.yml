@@ -72,15 +72,29 @@ jobs:
       - name: Formatter parity (ci.fmt against every page format)
         run: node tools/test-fmt.mjs
 
+      # Home's no-JS figures are stamped from data/ (tools/render-flow.mjs). The
+      # checkbook job re-stamps and commits index.html nightly; the archive job
+      # changes precomputed.json without touching index.html, so the published
+      # copy is stamped here from the data it ships with. Workspace only: this
+      # workflow never commits.
+      - name: Stamp Home's static figures from the data being published
+        run: node tools/render-flow.mjs
+
+      # Excludes are anchored at the repository root (leading /), so a folder
+      # of the same name deeper in the site is never dropped by accident.
       - name: Assemble the site
         run: |
           mkdir -p "$RUNNER_TEMP/site"
           rsync -a \
-            --exclude '.git' --exclude '.github' --exclude 'test' --exclude 'tools' \
-            --exclude 'lib' --exclude 'node_modules' --exclude 'scratch' \
+            --exclude '.git' --exclude '/.github' --exclude '/test' --exclude '/tools' \
+            --exclude '/lib' --exclude '/node_modules' --exclude '/scratch' \
+            --exclude '/package.json' --exclude '/package-lock.json' --exclude '/.gitignore' \
             ./ "$RUNNER_TEMP/site/"
           test -f "$RUNNER_TEMP/site/index.html"
           test -d "$RUNNER_TEMP/site/data"
+          for x in node_modules scratch test tools lib .github package.json package-lock.json; do
+            if [ -e "$RUNNER_TEMP/site/$x" ]; then echo "::error::$x would be published"; exit 1; fi
+          done
           echo "Publishing $(find "$RUNNER_TEMP/site" -type f | wc -l) files from $(git rev-parse --short HEAD)"
 
       - uses: actions/configure-pages@v5

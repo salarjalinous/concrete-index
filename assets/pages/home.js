@@ -6,7 +6,10 @@
  * particles, and fills the figures that are read live:
  *
  *   hero index           precomputed.json index_level              (unchanged path)
- *   index vs a year ago  computeLive(): the Analysis index series, Analysis's yoy rule
+ *   index vs a year ago  precomputed.json index_year_ago_level/month and
+ *   and vs prior month   index_prior_level/month (tools/build-index-points.js: the
+ *                        Analysis series from lib/award-core.js, Analysis's yoy
+ *                        rule); computeLive() only when those fields are absent
  *   Spent TTM, coverage  data/plan-history.json, last three spend entries (the Funnel
  *                        rule); shown only when the file is present, fresh, and
  *                        agrees with precomputed.json; otherwise an en dash and a
@@ -301,29 +304,46 @@
   }
 
   /* ================= wiring ================= */
-  function showHeroDelta(pc, live) {
+
+  /* The index comparisons as one shape, whichever source supplied them:
+     { month, value, prior: {level, month}, yearAgo: {level, month} | null }. */
+  function pointsFromNightly(pc) {
+    if (!pc || pc.index_level == null || !pc.index_month) return null;
+    if (pc.index_prior_level == null || !pc.index_prior_month || pc.index_year_ago_level == null || !pc.index_year_ago_month) return null;
+    return { month: pc.index_month, value: +pc.index_level,
+      prior: { level: +pc.index_prior_level, month: pc.index_prior_month },
+      yearAgo: { level: +pc.index_year_ago_level, month: pc.index_year_ago_month } };
+  }
+  function pointsFromLive(pc, live) {
+    var n = live && live.values ? live.values.length : 0;
+    if (n < 2) return null;
+    var p = { month: live.month, value: live.value,
+      prior: { level: live.values[n - 2], month: live.months[n - 2] },
+      yearAgo: n > 12 ? { level: live.values[n - 13], month: live.months[n - 13] } : null };   // analysis.js renderKpis
+    // The hero chip sits beside the nightly figure, so it needs the same series:
+    // the live last month and value must match the nightly file.
+    p.heroOk = !!pc && live.month === pc.index_month && Math.abs(live.value - pc.index_level) < 0.005;
+    return p;
+  }
+
+  function showHeroDelta(p) {
     var el = $('lp-index-delta');
-    if (!el || !live || !live.values || live.values.length < 2 || !pc) return;
-    // Same series as the hero figure: last month and value must match the nightly file.
-    if (live.month !== pc.index_month || Math.abs(live.value - pc.index_level) >= 0.005) return;
-    var d = live.values[live.values.length - 1] - live.values[live.values.length - 2];
-    var prev = live.months[live.months.length - 2];
+    if (!el || !p || !p.prior) return;
+    var d = p.value - p.prior.level;
     var sign = d > 0 ? '+' : d < 0 ? '−' : '';
     el.className = 'lp-index__delta ci-delta ' + (d >= 0 ? 'ci-delta--pos' : 'ci-delta--neg');
     el.setAttribute('data-figure', 'home.hero.index.mom');
     el.setAttribute('data-value', String(d));
-    setText(el, sign + fmt(Math.abs(d), 'index') + ' vs ' + fmt(prev, 'ym-short'));
+    setText(el, sign + fmt(Math.abs(d), 'index') + ' vs ' + fmt(p.prior.month, 'ym-short'));
   }
 
-  function fillYoy(live) {
+  function fillYoy(p) {
     var el = $('kpi-yoy');
-    var values = live.values;
-    var last = values[values.length-1];
-    var yoy = values.length>12 ? (last/values[values.length-13]-1)*100 : null;   // analysis.js renderKpis
-    if (yoy === null) return;
+    if (!el || !p || !p.yearAgo || !(p.yearAgo.level > 0)) return;
+    var yoy = (p.value / p.yearAgo.level - 1) * 100;
     el.className = 'ci-tile__value ' + (yoy >= 0 ? 'is-up' : 'is-down');
-    setFigure(el, fmt(yoy, 'pct-signed'), yoy, live.month);
-    setText($('kpi-yoy-cap'), 'Concrete Index, ' + fmt(live.month, 'ym-short') + ' against twelve months earlier · Analysis');
+    setFigure(el, fmt(yoy, 'pct-signed'), yoy, p.month);
+    setText($('kpi-yoy-cap'), 'Concrete Index, ' + fmt(p.month, 'ym-short') + ' against twelve months earlier · Analysis');
   }
 
   function fillPlan(ph) {
@@ -411,10 +431,15 @@
         draw();
       }).catch(function () { /* keep the nightly figure */ });
 
-      // Index series: the year-ago tile and the month-on-month chip.
-      computeLive().then(function (live) {
-        fillYoy(live);
-        showHeroDelta(pc, live);
+      // The year-ago tile and the month-on-month chip, from the nightly file.
+      // Only when it lacks the comparison points (or did not load) does Home
+      // pull the award history and compute the series itself.
+      var pts = pointsFromNightly(pc);
+      if (pts) { fillYoy(pts); showHeroDelta(pts); }
+      else computeLive().then(function (live) {
+        var p = pointsFromLive(pc, live);
+        fillYoy(p);
+        if (p && p.heroOk) showHeroDelta(p);
       }).catch(function () { /* tile keeps its en dash */ });
 
       planHistory(pc).then(fillPlan).catch(planUnavailable);
