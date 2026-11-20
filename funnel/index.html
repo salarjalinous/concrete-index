@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://data.cityofnewyork.us; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://data.cityofnewyork.us; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="canonical" href="https://concreteindex.co/funnel/">
 <meta property="og:type" content="website">
@@ -309,7 +309,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="method-body">
       <h3>The measures</h3>
       <p><strong>Committed, unspent</strong> is the forward pipeline from the “<a href="/pipeline/">Pipeline</a>” page: total project budgets minus spending to date across active capital projects in the City's most recent capital plan snapshot (NYC OMB, dataset <code>fb86-vt7u</code>). <strong>Awarded</strong> is trailing-twelve-month construction award value from the City Record (dataset <code>qyyg-4tf5</code>), as on the “<a href="/awarded/">Awarded</a>” page. This figure is gross: deduplicated to one record per procurement but still inclusive of renewals, extensions, and awards of $500M and above. It sits on the same basis as the headline on the “<a href="/awarded/">Awarded</a>” page and the “Awarded, 12 mo” tile on the home page, which is the site's canonical gross reading. Every new-work reading runs below it: the competitive-set total on the “<a href="/competitive/">Contractors</a>” page, the index on the “<a href="/analysis/">Analysis</a>” page, and the trailing-year figure in the “<a href="/briefing/">Briefing</a>”, each of which strips renewals and megaprojects to isolate contested new demand. <strong>Spent</strong> is trailing-year capital outlays, measured as the growth in each project's cumulative spend-to-date between capital plan snapshots, across the projects observed in both. The underlying ledger is the City's FMS, the same accounting that feeds Checkbook NYC.</p>
-      <p><strong>Paid (Checkbook)</strong> is a separate reading drawn from the Comptroller's Checkbook NYC: total disbursements on registered construction contracts to named vendors, City scope, fiscal years 2021 to 2025. It is the demand-to-cash payoff at the vendor level, the same figures shown on the “<a href="/competitive/">Contractors</a>” page, summed across all construction vendor groups. It is not the same number as Spent. Spent is capital-plan outlays across all construction measured between plan snapshots; Paid is disbursements on the subset of work that has been registered as a contract to a named vendor. The two sit on different ledgers and different scopes and are never added together.</p>
+      <p><strong>Paid (Checkbook)</strong> is a separate reading drawn from the Comptroller's Checkbook NYC: paid to date, as of the file date, on registered construction contracts to named vendors, City scope, for the contracts Checkbook lists under <span class="cbk-fy-long">the fiscal years Checkbook publishes</span>. It is a cumulative figure, not a sum of payments made within those years, and the in-progress fiscal year is still adding contracts. It is the demand-to-cash payoff at the vendor level, the same figures shown on the “<a href="/competitive/">Contractors</a>” page, summed across all construction vendor groups. It is not the same number as Spent. Spent is capital-plan outlays across all construction measured between plan snapshots; Paid is disbursements on the subset of work that has been registered as a contract to a named vendor. The two sit on different ledgers and different scopes and are never added together.</p>
       <h3>How spending pace is computed</h3>
       <p>OMB publishes a plan snapshot roughly every four months. For each project, spending in a period is its cumulative spend-to-date in one snapshot minus the prior snapshot, floored at zero. Projects are matched across snapshots by agency and FMS ID, with sub-project rows collapsed first so nothing is double-counted.</p>
       <p>Spending is measured only across projects observed in both the prior and the current snapshot, a matched panel. The reason is that <code>spend_to_date</code> is a lifetime cumulative figure, not a period figure. A project appearing in the plan for the first time arrives carrying whatever it has already spent, sometimes years of it; counting that from zero would book its entire back-history as spending in the one period it happened to show up. A new entrant therefore contributes nothing until it has been observed twice, and its spending before it entered the plan is not counted. Projects that leave the dataset stop contributing at the same rule. Both edges hold the series to growth that two readings actually support.</p>
@@ -698,12 +698,27 @@ function renderKpis(){
   document.getElementById('kpi-coverage').textContent = spent > 0 ? (committed/spent).toFixed(1) + ' yrs' : '–';
 }
 
-function cbkFY(){
-  var ys=(state.checkbook.meta&&Array.isArray(state.checkbook.meta.fiscal_years))?state.checkbook.meta.fiscal_years:null;
-  if(!ys||!ys.length) return { short:'FY21–25', long:'fiscal years 2021 to 2025' };
-  var a=ys[0], b=ys[ys.length-1];
-  return { short:'FY'+String(a).slice(2)+'–'+String(b).slice(2), long:'fiscal years '+a+' to '+b };
+/* Fiscal-year window label for Paid, read only from the Checkbook file's meta.
+   fiscal_years is the ascending list the numbers cover; fiscal_year_ytd names
+   the in-progress year inside it (NYC FY N = Jul 1 N-1 to Jun 30 N), which is
+   labeled year to date. Files written before fiscal_year_ytd existed carry only
+   closed years and read as before. No years are hardcoded here or in the prose. */
+function cbkFYLabel(meta){
+  var ys=(meta&&Array.isArray(meta.fiscal_years))?meta.fiscal_years.filter(function(y){return isFinite(+y);}).map(Number):[];
+  if(!ys.length) return { short:'Checkbook FYs', long:'the fiscal years Checkbook publishes' };
+  var ytd=(meta&&meta.fiscal_year_ytd!=null&&ys.indexOf(+meta.fiscal_year_ytd)!==-1)?+meta.fiscal_year_ytd:null;
+  var closed=ys.filter(function(y){return y!==ytd;});
+  var yy=function(y){return String(y).slice(2);};
+  var cs='', cl='';
+  if(closed.length===1){ cs='FY'+yy(closed[0]); cl='fiscal year '+closed[0]; }
+  else if(closed.length>1){ var a=closed[0], b=closed[closed.length-1];
+    cs='FY'+yy(a)+'–'+yy(b); cl='fiscal years '+a+' to '+b; }
+  if(ytd===null) return { short:cs, long:cl };
+  var ys_='FY'+yy(ytd)+' YTD', yl='fiscal year '+ytd+' to date';
+  if(!closed.length) return { short:ys_, long:yl };
+  return { short:cs+' + '+ys_, long:cl+' plus '+yl };
 }
+function cbkFY(){ return cbkFYLabel(state.checkbook.meta); }
 function renderStages(){
   const stages = [
     { t:'Committed', s:'stock · full capital plan, unspent', v: state.pipeline.total, c: COLOR_B },
@@ -711,7 +726,8 @@ function renderStages(){
     { t:'Spent', s:'flow · capital outlays, trailing year', v: ttmSpend(), c: COLOR_C }
   ];
   // Paid (Checkbook): a fourth, separate ledger. Disbursements on registered
-  // construction contracts to named vendors, City scope, FY2021-2025. Shown
+  // construction contracts to named vendors, City scope, over the FY window in
+  // the file's meta (cbkFY). Shown
   // only when the static Checkbook file loaded; never summed with Spent.
   if(state.checkbookOk){
     // The Paid gauge is the one figure on this page served from a nightly file
@@ -721,6 +737,10 @@ function renderStages(){
     stages.push({ t:'Paid (Checkbook)',
       s:'disbursed · registered contracts, '+cbkFY().short + (asOf ? ' · as of '+asOf : ''),
       v: state.checkbook.paid, c: COLOR_B });
+  }
+  if(state.checkbookOk){
+    const fyLong = cbkFY().long;
+    document.querySelectorAll('.cbk-fy-long').forEach(function(el){ el.textContent = fyLong; });
   }
   document.getElementById('stages-title').textContent =
     state.checkbookOk ? 'Four gauges, not one flow' : 'Three gauges, not one flow';
