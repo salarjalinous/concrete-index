@@ -56,56 +56,44 @@ export const csp = (type) => CSP_BASE.replace('CONNECT', CONNECT[type]);
 // chart: loads Chart.js and the chart grammar. js: page modules in order.
 // export: the PNG/CSV/PDF export controls the page had before Phase 5.
 export const PAGES = [
-  { file: 'index.html', route: '/', current: null, title: 'The Concrete Index · NYC Public Construction Demand', ogTitle: 'The Concrete Index',
-    desc: 'The Concrete Index tracks NYC public construction capital, which agencies are awarding work, to whom, and how fast. Built on NYC Open Data, refreshed daily.',
-    ogDesc: 'NYC public construction capital, tracked end to end.', type: 'nyc', css: 'home', js: ['home'], export: true },
-  { file: 'pipeline/index.html', route: R.pipeline, current: R.pipeline, title: 'Pipeline',
-    desc: 'The forward pipeline of NYC public construction: capital dollars funded but not yet spent, by phase, agency, and borough. Built on NYC Open Data.',
-    ogDesc: 'NYC capital dollars funded but not yet spent.', type: 'nyc', chart: true, css: 'pipeline', js: ['pipeline'], export: true },
-  { file: 'solicitations/index.html', route: R.bidding, current: R.bidding, title: 'Bidding',
-    desc: "Every open NYC construction solicitation in one place, what's bidding right now, from the City Record, refreshed on every load.",
-    ogDesc: 'NYC construction work bidding right now.', type: 'nyc', css: 'solicitations', js: ['solicitations'], export: true },
-  { file: 'awarded/index.html', route: R.awarded, current: R.awarded, title: 'Awarded',
-    desc: 'The Concrete Index tracks NYC public construction capital, which agencies are awarding work, to whom, and how fast. Built on NYC Open Data, refreshed daily.',
-    ogDesc: 'NYC public construction capital, tracked end to end.', type: 'nyc', chart: true, css: 'awarded', js: ['awarded'], export: true },
-  { file: 'contracts/index.html', route: R.contracts, current: R.contracts, title: 'Contracts',
-    desc: "Search New York City construction contracts by ID, vendor, agency, or category, then open one contract to read its dates, amounts, payment velocity, and spend curve from the City's registered-contract and Checkbook spending records.",
-    ogDesc: 'Search registered NYC construction contracts and open one to read its dates, amounts, payment velocity, and spend curve.', type: 'self', chart: true, css: 'contracts', js: ['contracts'], export: false },
-  { file: 'funnel/index.html', route: R.funnel, current: R.funnel, title: 'Funnel',
-    desc: 'NYC public construction capital from budget to payment: how committed dollars become awards and spending, and how fast each agency moves money.',
-    ogDesc: 'How fast NYC capital commitments become cash.', type: 'nyc', chart: true, css: 'funnel', js: ['funnel'], export: true },
-  { file: 'agency/index.html', route: R.agencies, current: R.agencies, title: 'Agencies',
-    desc: 'Pick a New York City agency and read its construction demand: committed capital plan against awarded contracts, the trades it buys, the firms it pays, and a dollar-weighted borough footprint.',
-    ogDesc: 'One agency at a time: committed versus awarded, top trades, top recipients, and where the work lands across the five boroughs.', type: 'nyc', chart: true, css: 'agency', js: ['agency'], export: true },
-  { file: 'competitive/index.html', route: R.contractors, current: R.contractors, title: 'Contractors',
-    desc: "Look up any NYC public-construction contractor's award record across City, Checkbook, and MTA/State data, then read the market structure of those awards by award value: count share, dollar share, top-N share, and an HHI-style concentration reading.",
-    ogDesc: "Read one contractor's public award record across City and State construction, then see how award dollars and counts distribute across the market by size band.", type: 'nyc+ny', chart: true, css: 'competitive', js: ['competitive', 'competitive.2'], export: true },
-  { file: 'regional/index.html', route: R.regional, current: R.regional, title: 'Regional',
-    desc: "NYC public construction demand beyond City agencies: the School Construction Authority's active program and the MTA capital plan, from the public record.",
-    ogDesc: 'The SCA and MTA demand pools, measured live.', type: 'nyc+ny', chart: true, css: 'regional', js: ['regional'], export: true },
-  { file: 'analysis/index.html', route: R.analysis, current: R.analysis, title: 'Analysis',
-    desc: 'The Concrete Index: a composite measure of NYC public construction demand since 2004, plus seasonality, budget escalation, and pipeline conversion analysis.',
-    ogDesc: 'Two decades of NYC construction demand, in one number.', type: 'nyc', chart: true, css: 'analysis', js: ['analysis'], export: true },
-  { file: 'briefing/index.html', route: R.briefing, current: R.briefing, title: 'Briefing',
-    desc: 'The state of NYC public construction demand, written from the live public record every time the page loads.',
-    ogDesc: 'The state of NYC construction demand, generated from the live public record.', type: 'nyc', css: 'briefing', js: ['briefing'], export: true },
-  { file: 'about/index.html', route: R.about, current: R.about, title: 'About',
-    desc: 'Who builds The Concrete Index and why: closing the information gap in NYC public construction.',
-    ogDesc: 'Closing the information gap in NYC public construction.', type: 'editorial', css: 'about', js: ['about'], export: true },
-  { file: 'methodology/index.html', route: R.methodology, current: R.methodology, title: 'Methodology',
-    desc: 'The definitions behind each Concrete Index page, collected word for word: sources, dataset IDs, deduplication rules, time windows, and exclusions.',
+  { file: 'index.html', route: '/', current: null, title: "The Concrete Index · NYC Public Construction Demand",
+    desc: "Where New York City's public construction money stands: capital committed, work awarded and registered, cash paid, each read from its own public ledger.", ogDesc: "NYC public construction capital, from commitment to cash.", type: 'nyc', css: 'home', js: ['home'], export: true },
+  { file: 'pipeline/index.html', route: R.pipeline, current: R.pipeline, title: "Pipeline",
+    desc: "NYC capital work funded but not yet spent, from the OMB Capital Projects Dashboard: unspent budget by phase, agency, borough, and ten-year plan category.", type: 'nyc', chart: true, css: 'pipeline', js: ['pipeline'], export: true },
+  { file: 'solicitations/index.html', route: R.bidding, current: R.bidding, title: "Bidding",
+    desc: "Open City construction solicitations from the City Record, sorted by due date, with procurement method, PIN, agency contact, and trade and borough tags.", type: 'nyc', css: 'solicitations', js: ['solicitations'], export: true },
+  { file: 'awarded/index.html', route: R.awarded, current: R.awarded, title: "Awarded",
+    desc: "Construction contracts the City has awarded, from City Record award notices deduplicated to one record per PIN, by month, agency, borough, and recipient.", ogDesc: "Construction contracts the City has awarded, totaled from the City Record.", type: 'nyc', chart: true, css: 'awarded', js: ['awarded'], export: true },
+  { file: 'contracts/index.html', route: R.contracts, current: R.contracts, title: "Contracts",
+    desc: "Search registered NYC construction contracts from Checkbook NYC by number, vendor, agency, scope, or PIN, then read one contract's payments and spend curve.", type: 'self', chart: true, css: 'contracts', js: ['contracts'], export: false },
+  { file: 'funnel/index.html', route: R.funnel, current: R.funnel, title: "Funnel",
+    desc: "Committed, awarded, spent, and paid NYC construction dollars read as separate gauges, with spending pace, award pace, backlog coverage, and agency velocity.", type: 'nyc', chart: true, css: 'funnel', js: ['funnel'], export: true },
+  { file: 'agency/index.html', route: R.agencies, current: R.agencies, title: "Agencies",
+    desc: "One NYC agency at a time: committed capital against awarded contracts, spending velocity, the trades it buys, the firms it pays, and its borough footprint.", type: 'nyc', chart: true, css: 'agency', js: ['agency'], export: true },
+  { file: 'competitive/index.html', route: R.contractors, current: R.contractors, title: "Contractors",
+    desc: "A contractor's public award record from the City Record, Checkbook NYC, and MTA and State data, plus how award dollars spread across the market by size band.", type: 'nyc+ny', chart: true, css: 'competitive', js: ['competitive', 'competitive.2'], export: true },
+  { file: 'regional/index.html', route: R.regional, current: R.regional, title: "Regional",
+    desc: "School Construction Authority projects under construction and the MTA capital program by plan and agency, kept on their own ledgers apart from City totals.", ogDesc: "School Construction Authority and MTA capital, on their own ledgers.", type: 'nyc+ny', chart: true, css: 'regional', js: ['regional'], export: true },
+  { file: 'analysis/index.html', route: R.analysis, current: R.analysis, title: "Analysis",
+    desc: "The Concrete Index of new NYC construction awards, its cost-adjusted version, seasonality, pipeline conversion, budget growth, and pace of contract payments.", type: 'nyc', chart: true, css: 'analysis', js: ['analysis'], export: true },
+  { file: 'briefing/index.html', route: R.briefing, current: R.briefing, title: "Briefing",
+    desc: "A written reading of NYC public construction demand, composed on each load from the City Record and the OMB capital plan, each figure tied to its source page.", ogDesc: "The state of NYC construction demand, composed from the City Record and the capital plan.", type: 'nyc', css: 'briefing', js: ['briefing'], export: true },
+  { file: 'about/index.html', route: R.about, current: R.about, title: "About",
+    desc: "Why The Concrete Index exists and how it joins scattered City and State construction records into one view under a single disclosed rule set.", type: 'editorial', css: 'about', js: ['about'], export: true },
+  { file: 'methodology/index.html', route: R.methodology, current: R.methodology, title: "Methodology",
+    desc: "The definitions behind each Concrete Index page, collected word for word: sources, dataset IDs, deduplication rules, time windows, and exclusions.",
     type: 'editorial', css: 'editorial', js: [] },
-  { file: 'sources/index.html', route: R.sources, current: R.sources, title: 'Sources',
-    desc: 'Each dataset The Concrete Index reads, with its ID, publisher, the pages it feeds, the refresh cadence its publisher states, and its license or terms link.',
+  { file: 'sources/index.html', route: R.sources, current: R.sources, title: "Sources",
+    desc: "Each dataset The Concrete Index reads, with its ID, publisher, the pages it feeds, the refresh cadence its publisher states, and its license or terms link.",
     type: 'editorial', css: 'editorial', js: [] },
-  { file: 'privacy/index.html', route: R.privacy, current: R.privacy, title: 'Privacy',
-    desc: 'What a visit to The Concrete Index sends and to whom: GitHub Pages logs, the public data APIs a page queries, and the search text the Contractors page sends.',
+  { file: 'privacy/index.html', route: R.privacy, current: R.privacy, title: "Privacy",
+    desc: "What a visit to The Concrete Index sends and to whom: GitHub Pages logs, the public data APIs a page queries, and the search text the Contractors page sends.",
     type: 'editorial', css: 'editorial', js: [] },
-  { file: 'terms/index.html', route: R.terms, current: R.terms, title: 'Terms',
-    desc: 'Terms for using The Concrete Index: figures provided as is from public records, not advice of any kind, attribution for quotes, and how to report an error.',
+  { file: 'terms/index.html', route: R.terms, current: R.terms, title: "Terms",
+    desc: "Terms for using The Concrete Index: figures provided as is from public records, not advice of any kind, attribution for quotes, and how to report an error.",
     type: 'editorial', css: 'editorial', js: [] },
-  { file: '404.html', route: null, current: null, title: 'Page not found', robots: 'noindex',
-    desc: 'This page is not part of The Concrete Index. Every section of the site is listed here.', type: 'editorial', css: '404', js: [] },
+  { file: '404.html', route: null, current: null, title: "Page not found", robots: 'noindex',
+    desc: "This address does not match a page on The Concrete Index. The section list below links to every data page, the methodology, and the site policies.", type: 'editorial', css: '404', js: [] },
   { file: 'vendors/index.html', route: '/vendors/', current: null, title: 'Vendor Lookup has moved', robots: 'noindex,follow', refresh: R.contractors, canonical: R.contractors,
     desc: 'The contractor lookup now lives on the Contractors page of The Concrete Index.', type: 'editorial', css: 'vendors', js: [] },
   { file: 'velocity/index.html', route: '/velocity/', current: null, title: 'Agency Velocity has moved', robots: 'noindex,follow', refresh: R.agencies, canonical: R.agencies,
@@ -213,19 +201,22 @@ function header(p) {
 
 function footer() {
   const years = BUILD_YEAR > FIRST_PUBLISH_YEAR ? `${FIRST_PUBLISH_YEAR}–${BUILD_YEAR}` : `${FIRST_PUBLISH_YEAR}`;
+  // No cadence word in the footer (F-2) and no email address: corrections go
+  // to the repository's issues page.
   const links = [['Methodology', R.methodology], ['Sources', R.sources], ['Privacy', R.privacy], ['Terms', R.terms]]
     .map(([l, h]) => `<li><a href="${h}">${l}</a></li>`).join('');
   return `<footer class="ci-footer">
   <div class="wrap ci-footer__inner">
     <div class="ci-footer__brand">
       ${HOME_LINK(22)}
-      <p class="ci-footer__tag">NYC public construction capital, tracked end to end.</p>
+      <p class="ci-footer__tag">NYC public construction capital, from commitment to cash.</p>
     </div>
     <nav class="ci-footer__links" aria-label="Site information">
-      <ul>${links}<li><a href="${REPO}" rel="noopener">Source on GitHub</a></li><li><a href="${REPO}/issues" rel="noopener">Report a correction</a></li></ul>
+      <ul>${links}<li><a href="${REPO}/issues" rel="noopener">Corrections</a></li><li><a href="${REPO}" rel="noopener">Source on GitHub</a></li></ul>
     </nav>
     <div class="ci-footer__meta">
-      <p>Not affiliated with the City or State of New York or any employer.</p>
+      <p>An independent project built by Salar Jalinous using only public data. Not affiliated with the City or State of New York or any employer.</p>
+      <p><a href="${R.sources}">Data: NYC Open Data · Open NY · Checkbook NYC · BLS</a></p>
       <p><a href="${R.about}">© <span data-ci-year="${FIRST_PUBLISH_YEAR}">${years}</span> The Concrete Index</a></p>
     </div>
   </div>

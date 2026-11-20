@@ -8,12 +8,12 @@
 <meta name="referrer" content="same-origin">
 <meta name="color-scheme" content="light">
 <title>Awarded · The Concrete Index</title>
-<meta name="description" content="The Concrete Index tracks NYC public construction capital, which agencies are awarding work, to whom, and how fast. Built on NYC Open Data, refreshed daily.">
+<meta name="description" content="Construction contracts the City has awarded, from City Record award notices deduplicated to one record per PIN, by month, agency, borough, and recipient.">
 <link rel="canonical" href="https://concreteindex.co/awarded/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="The Concrete Index">
 <meta property="og:title" content="Awarded · The Concrete Index">
-<meta property="og:description" content="NYC public construction capital, tracked end to end.">
+<meta property="og:description" content="Construction contracts the City has awarded, totaled from the City Record.">
 <meta property="og:url" content="https://concreteindex.co/awarded/">
 <meta property="og:image" content="https://concreteindex.co/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -65,15 +65,15 @@
 
 <div class="wrap">
   <div class="hero">
-    <h1>Construction the City has awarded, totaled live from the City Record.</h1>
-    <p class="sub">This is the award stage of the funnel: the construction contracts the City has let, read live from the City Record. Each procurement is counted once (deduplicated to one record per City Record PIN), so no award is double-counted. These are published award values, before registration and any change orders. Set a time window to see how much work is being awarded, which agencies are awarding it, and to whom.</p>
+    <h1>Construction the City has awarded, totaled from the City Record.</h1>
+    <p class="sub">This is the award stage of the funnel: the construction contracts the City has let, read from the City Record on each page load. Each procurement is counted once (deduplicated to one record per City Record PIN), so no award is double-counted. These are published award values, before registration and any change orders. Set a time window to see how much work is being awarded, which agencies are awarding it, and to whom.</p>
     <p class="asof" id="asof">Loading latest award data…</p>
   </div>
 </div>
 
 <div id="loader" class="wrap">
   <div class="spinner"></div>
-  Pulling live award data from NYC Open Data…
+  Pulling award data from NYC Open Data…
 </div>
 
 <div id="error" class="wrap">
@@ -147,13 +147,14 @@
 
   <section class="grid" id="vendors">
     <div class="card">
-      <div class="sec-head"><h2>Top recipients</h2><span class="cap">RANKED BY AWARDED VALUE</span></div>
+      <div class="sec-head"><h2>Top recipients</h2><span class="cap">ORDERED BY AWARDED VALUE</span></div>
       <div class="h-sub">Vendors winning the most awarded value in window</div>
       <table id="tbl-vendors">
         <thead><tr><th></th><th>Vendor</th><th class="num">Awards</th><th class="num">Awarded value</th></tr></thead>
         <tbody></tbody>
       </table>
       <div class="tnote">The vendors winning the most awarded value in the window, by the name exactly as published in the City Record. Names are not grouped across spellings here, so a firm filing under several names is split; the “Contractors” page rolls a contractor's variants into one total. Awards is the count of notices, value their deduplicated sum.</div>
+      <p class="vendor-note">Ordered by published award dollars, not a ranking of quality or credit. These are public award records, not credit information, and say nothing about a firm's costs, margins, bonding capacity, financial condition, or performance.</p>
     </div>
   </section>
 
@@ -174,7 +175,7 @@
       <div class="sec-head"><h2>Awarded · Methodology &amp; definitions</h2><span class="cap">SERIES NOTES</span></div>
       <div class="method-body">
       <h3>Source</h3>
-      <p>All figures are drawn live from <a href="https://data.cityofnewyork.us/City-Government/Recent-Contract-Awards/qyyg-4tf5" target="_blank" rel="noopener">Recent Contract Awards</a> on NYC Open Data (dataset <code>qyyg-4tf5</code>), the City Record's public notice of contract awards, maintained by the NYC Department of Citywide Administrative Services. The dataset is updated daily; this page queries it directly every time it loads, so what you see is the current public record.</p>
+      <p>All figures are drawn live from <a href="https://data.cityofnewyork.us/City-Government/Recent-Contract-Awards/qyyg-4tf5" target="_blank" rel="noopener">Recent Contract Awards</a> on NYC Open Data (dataset <code>qyyg-4tf5</code>), the City Record's public notice of contract awards, maintained by the NYC Department of Citywide Administrative Services. The dataset is updated daily; this page queries it on each load, and the index comparison is read from the nightly archive.</p>
       <h3>What counts as an award</h3>
       <p>Each record is a contract award notice published in the City Record. Dollar values are the contract amounts as published at award. An award notice comes before contract registration with the Comptroller and well before any payment. It measures demand entering the market rather than cash out the door.</p>
       <p>A single procurement can be published as more than one notice. To avoid counting the same award twice, notices are deduplicated to one record per procurement (the City Record <code>pin</code>), keeping the largest published contract amount for that procurement. Every dollar total on this page is computed on that deduplicated set, the same rule used across the “Funnel”, “Briefing”, and “Contractors” pages.</p>
@@ -204,13 +205,14 @@
   <div class="wrap ci-footer__inner">
     <div class="ci-footer__brand">
       <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="22" height="22" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
-      <p class="ci-footer__tag">NYC public construction capital, tracked end to end.</p>
+      <p class="ci-footer__tag">NYC public construction capital, from commitment to cash.</p>
     </div>
     <nav class="ci-footer__links" aria-label="Site information">
-      <ul><li><a href="/methodology/">Methodology</a></li><li><a href="/sources/">Sources</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source on GitHub</a></li><li><a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">Report a correction</a></li></ul>
+      <ul><li><a href="/methodology/">Methodology</a></li><li><a href="/sources/">Sources</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">Corrections</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source on GitHub</a></li></ul>
     </nav>
     <div class="ci-footer__meta">
-      <p>Not affiliated with the City or State of New York or any employer.</p>
+      <p>An independent project built by Salar Jalinous using only public data. Not affiliated with the City or State of New York or any employer.</p>
+      <p><a href="/sources/">Data: NYC Open Data · Open NY · Checkbook NYC · BLS</a></p>
       <p><a href="/about/">© <span data-ci-year="2026">2026</span> The Concrete Index</a></p>
     </div>
   </div>

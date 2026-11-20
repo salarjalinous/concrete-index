@@ -8,12 +8,12 @@
 <meta name="referrer" content="same-origin">
 <meta name="color-scheme" content="light">
 <title>Contractors · The Concrete Index</title>
-<meta name="description" content="Look up any NYC public-construction contractor's award record across City, Checkbook, and MTA/State data, then read the market structure of those awards by award value: count share, dollar share, top-N share, and an HHI-style concentration reading.">
+<meta name="description" content="A contractor's public award record from the City Record, Checkbook NYC, and MTA and State data, plus how award dollars spread across the market by size band.">
 <link rel="canonical" href="https://concreteindex.co/competitive/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="The Concrete Index">
 <meta property="og:title" content="Contractors · The Concrete Index">
-<meta property="og:description" content="Read one contractor's public award record across City and State construction, then see how award dollars and counts distribute across the market by size band.">
+<meta property="og:description" content="A contractor's public award record from the City Record, Checkbook NYC, and MTA and State data, plus how award dollars spread across the market by size band.">
 <meta property="og:url" content="https://concreteindex.co/competitive/">
 <meta property="og:image" content="https://concreteindex.co/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -59,14 +59,14 @@
 <!-- /ci:header -->
 
 <div class="series-bar">
-  <div class="inner">SERIES&nbsp;·&nbsp;<b>CI-CONTRACTORS</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CITY RECORD (qyyg-4tf5), DAILY · CHECKBOOK, NIGHTLY · DATA.NY.GOV, LIVE</b><span class="sep">·</span>DEDUPE&nbsp;·&nbsp;<b>ONE PER PIN</b></div>
+  <div class="inner">SERIES&nbsp;·&nbsp;<b>CI-CONTRACTORS</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CITY RECORD (qyyg-4tf5), DAILY · CHECKBOOK, NIGHTLY · DATA.NY.GOV, ON LOOKUP</b><span class="sep">·</span>DEDUPE&nbsp;·&nbsp;<b>ONE PER PIN</b></div>
 </div>
 
 <main id="content" tabindex="-1">
 
 <div class="wrap hero">
   <h1>One contractor's record, and the market around it.</h1>
-  <p class="sub">Look up any firm's public award record across City and State construction, then read how award dollars and counts spread across the market by award-size band. The contractor lookup leads because it is the view an underwriter opens first. The market-structure read follows below it. Awardee names in the market section are a grouping key only and are never published, ranked, or scored.</p>
+  <p class="sub">Look up a contractor's public award record across City and State construction, then read how award dollars and counts spread across the market by award-size band. The contractor lookup comes first; the market view follows. Awardee names in the market section are a grouping key only and are never published, ranked, or scored.</p>
   <div class="searchbar">
     <input id="q" type="search" placeholder="Try a contractor name" autocomplete="off">
     <button id="go">Search</button>
@@ -174,7 +174,7 @@
 
 <div class="wrap u-pt-2">
   <div class="sec-head"><h2>Market structure</h2><span class="cap">COMPETITIVE SET BY WINS</span></div>
-  <p class="asof u-mt-3 u-pt-0 u-bt-0" id="asof">Assembling the market set from live City Record data&hellip;</p>
+  <p class="asof u-mt-3 u-pt-0 u-bt-0" id="asof">Assembling the market set from City Record data&hellip;</p>
 </div>
 
 <div id="loader" class="wrap">
@@ -260,7 +260,7 @@
       <h3>Contractor lookup &middot; how vendor totals are grouped</h3>
       <p>The contractor lookup at the top of the page comes from the New York City Record Recent Contract Awards dataset (NYC Open Data <code>qyyg-4tf5</code>), limited to awards in Construction categories. Many firms appear under several spellings of their name, and a single firm group can file under more than one legal entity. Where we can confirm by hand that several names belong to the same firm, they roll up under one parent total and every underlying name and its amount is listed, so nothing is hidden. Grouping is a fixed, verified list of name variants, not automated name-matching or any statistical guess; we group only on a distinctive shared identifier or an unmistakable spelling variation of the same company, and when a connection is uncertain we leave the names separate. Each amount is the value stated in the award notice, a floor rather than a running total of work performed or paid, so a group's total is a lower bound. The School Construction Authority and the Port Authority remain out of scope for naming a contractor, because those datasets carry no vendor field.</p>
       <h3>Contractor lookup &middot; registered and paid</h3>
-      <p>The award-notice figure is queried live from the City Record on each load. The registered and paid figures come from Checkbook NYC, the Comptroller's system of record, which a browser cannot call directly: it allows no cross-origin request and returns a paged XML feed. An automated job fetches and normalizes it server-side every night and writes a compact static file the lookup reads. That job reconciles each Checkbook vendor name to the same parent groups used here through the same <code>normName()</code> normalization the award record uses, so the three measures line up against one contractor. A group with no exact name match after normalization shows no Checkbook figure rather than a guess.</p>
+      <p>The award-notice figure is queried live from the City Record on each load. The registered and paid figures come from Checkbook NYC, the Comptroller's public ledger of registered and paid amounts, which a browser cannot call directly: it allows no cross-origin request and returns a paged XML feed. An automated job fetches and normalizes it server-side every night and writes a compact static file the lookup reads. That job reconciles each Checkbook vendor name to the same parent groups used here through the same <code>normName()</code> normalization the award record uses, so the three measures line up against one contractor. A group with no exact name match after normalization shows no Checkbook figure rather than a guess.</p>
       <h3>Contractor lookup &middot; MTA &amp; State public work</h3>
       <p>The MTA and State figures come from New York State open data on <code>data.ny.gov</code>: MTA Procurements (<code>twsw-2mqa</code>) and the State University Construction Fund contracts (<code>cfjm-ii27</code>), both limited to the Design and Construction/Maintenance procurement type. These datasets name the awarded contractor, so they close the contractor-naming gap that City sources leave on authority work. They are reported through the Public Authorities Reporting Information System, which re-reports every active contract each fiscal year with a growing cumulative spend, so figures here are deduplicated to one record per contract at its latest fiscal-year report; summing the raw rows would multi-count. They are a separate ledger from the City and Checkbook figures and are never added to them, because they sit on different books. A firm with no exact name match after normalization shows nothing here rather than a guess. The three measures, award-notice value, registered, and paid to date, are never summed; this is the public demand-side view of a contractor and says nothing about costs, margins, bonding capacity, or performance.</p>
       <p>The Concrete Index is an independent personal project built on public data. It is not affiliated with, endorsed by, or speaking for any employer, and nothing here is any employer's assessment of any named company.</p>
@@ -285,13 +285,14 @@
   <div class="wrap ci-footer__inner">
     <div class="ci-footer__brand">
       <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="22" height="22" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
-      <p class="ci-footer__tag">NYC public construction capital, tracked end to end.</p>
+      <p class="ci-footer__tag">NYC public construction capital, from commitment to cash.</p>
     </div>
     <nav class="ci-footer__links" aria-label="Site information">
-      <ul><li><a href="/methodology/">Methodology</a></li><li><a href="/sources/">Sources</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source on GitHub</a></li><li><a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">Report a correction</a></li></ul>
+      <ul><li><a href="/methodology/">Methodology</a></li><li><a href="/sources/">Sources</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">Corrections</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source on GitHub</a></li></ul>
     </nav>
     <div class="ci-footer__meta">
-      <p>Not affiliated with the City or State of New York or any employer.</p>
+      <p>An independent project built by Salar Jalinous using only public data. Not affiliated with the City or State of New York or any employer.</p>
+      <p><a href="/sources/">Data: NYC Open Data · Open NY · Checkbook NYC · BLS</a></p>
       <p><a href="/about/">© <span data-ci-year="2026">2026</span> The Concrete Index</a></p>
     </div>
   </div>

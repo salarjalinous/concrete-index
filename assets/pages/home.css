@@ -44,7 +44,6 @@ td .t-sub{font-size:var(--fs-12);color:var(--muted);margin-top:var(--s-1);font-f
 .lp-adjust{max-width:980px;margin:var(--s-12) auto 0;border-top:2px solid var(--ink);padding-top:0}
 .lp-adjust-inner{display:grid;grid-template-columns:1.15fr 1fr;gap:0;align-items:stretch}
 .lp-adjust-l{padding:var(--s-5) var(--s-6) var(--s-5) 0;border-right:1px solid var(--line)}
-.lp-adjust-k{font-family:var(--font-mono);font-size:var(--fs-12);letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:var(--s-2)}
 .lp-adjust-h{font-family:var(--font-serif);font-weight:700;font-size:var(--fs-22);line-height:1.18;color:var(--ink);margin:0 0 var(--s-2)}
 .lp-adjust-d{font-family:var(--font-sans);font-size:var(--fs-14);line-height:1.55;color:var(--muted);margin:0 0 var(--s-3)}
 .lp-adjust-go{font-family:var(--font-mono);font-size:var(--fs-12);color:var(--steel)}
@@ -83,3 +82,4 @@ td .t-sub{font-size:var(--fs-12);color:var(--muted);margin-top:var(--s-1);font-f
   .lp-stat{border:1px solid var(--line)}
   .lp-cards{grid-template-columns:1fr}
 }
+.thesis .thesis-line{display:block}

@@ -41,7 +41,7 @@ Data treatment highlights (full definitions on each page's methodology section):
 
 ## Author
 
-Built by Salar Jalinous · [salar.jalinous@gmail.com](mailto:salar.jalinous@gmail.com)
+Built by Salar Jalinous · corrections: [GitHub issues](https://github.com/salarjalinous/concrete-index/issues)
 
 
 <!-- deploy: trigger clean Pages build 2026-07-02 -->

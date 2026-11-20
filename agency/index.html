@@ -8,12 +8,12 @@
 <meta name="referrer" content="same-origin">
 <meta name="color-scheme" content="light">
 <title>Agencies · The Concrete Index</title>
-<meta name="description" content="Pick a New York City agency and read its construction demand: committed capital plan against awarded contracts, the trades it buys, the firms it pays, and a dollar-weighted borough footprint.">
+<meta name="description" content="One NYC agency at a time: committed capital against awarded contracts, spending velocity, the trades it buys, the firms it pays, and its borough footprint.">
 <link rel="canonical" href="https://concreteindex.co/agency/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="The Concrete Index">
 <meta property="og:title" content="Agencies · The Concrete Index">
-<meta property="og:description" content="One agency at a time: committed versus awarded, top trades, top recipients, and where the work lands across the five boroughs.">
+<meta property="og:description" content="One NYC agency at a time: committed capital against awarded contracts, spending velocity, the trades it buys, the firms it pays, and its borough footprint.">
 <meta property="og:url" content="https://concreteindex.co/agency/">
 <meta property="og:image" content="https://concreteindex.co/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -155,12 +155,13 @@
     </div>
     <div class="card">
       <div class="sec-head"><h2>Top recipients</h2><span class="cap" id="recipients-cap">CITY RECORD · TRAILING YEAR</span></div>
-      <div class="h-sub">The firms winning this agency's work over the trailing twelve months, split into hard construction and design/CM professional services, each ranked on its own award dollars.</div>
+      <div class="h-sub">The firms winning this agency's work over the trailing twelve months, split into hard construction and design/CM professional services, each ordered by its own award dollars.</div>
       <table id="tbl-vendors">
         <thead><tr><th></th><th>Recipient</th><th class="num">Awarded</th><th class="num">Share</th></tr></thead>
         <tbody></tbody>
       </table>
       <div class="tnote">The firms with the most City Record award dollars from this agency over the trailing twelve months, deduped to one row per award and split by the City's own award category: hard construction (bondable work) and design or construction-management professional services. Share is each firm's portion of its own group. Joint ventures appear under the name on the notice; a parent firm bidding through several entities is not consolidated.</div>
+      <p class="vendor-note">Ordered by published award dollars, not a ranking of quality or credit. These are public award records, not credit information, and say nothing about a firm's costs, margins, bonding capacity, financial condition, or performance.</p>
     </div>
   </section>
 
@@ -274,7 +275,7 @@
       <h3>Payment velocity from the dated contracts</h3>
       <p>The cross-agency payment-velocity figures, median first-payment lag and median days to fifty percent paid, are computed from a separate same-origin dataset, <code>/data/contract-search.json</code>, the file the “<a href="/contracts/">Contracts</a>” page reads. It holds registered construction contracts, each carrying its scope description and the City's procurement identification number; only those of $500,000 or more registered since 2019 that are open or closed within the past year, and that carry confirmed Checkbook NYC disbursements, contribute dated timing. For each such contract the nightly job orders its checks in time and measures days from registration to the first disbursement and to the day cumulative payment crosses half the contract value. An agency's figure is the median across its dated contracts, shown only where it has at least eight; the per-contract detail behind each one, including the dated spend curve, lives on the “Contracts” page. These medians are a floor built on confirmed payments, not a full accounting.</p>
       <h3>Scope and what this is not</h3>
-      <p>Committed covers the City's capital plan; awarded covers the City Record's construction categories; spent covers the capital plan's full scope because capital budgets are not divided by procurement category. All are public records, read live on each page load and never hardcoded. The page reads one agency at a time and does not trace a single project from plan to award to payment; it places public ledgers next to each other on their own terms. Backlog coverage is a structural ratio, a stock measured now over a flow measured over the trailing year, not a delivery schedule.</p>
+      <p>Committed covers the City's capital plan; awarded covers the City Record's construction categories; spent covers the capital plan's full scope because capital budgets are not divided by procurement category. All are public records, read on each page load or from the nightly archive, and never hardcoded. The page reads one agency at a time and does not trace a single project from plan to award to payment; it places public ledgers next to each other on their own terms. Backlog coverage is a structural ratio, a stock measured now over a flow measured over the trailing year, not a delivery schedule.</p>
       </div>
     </div>
   </section>
@@ -287,13 +288,14 @@
   <div class="wrap ci-footer__inner">
     <div class="ci-footer__brand">
       <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="22" height="22" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
-      <p class="ci-footer__tag">NYC public construction capital, tracked end to end.</p>
+      <p class="ci-footer__tag">NYC public construction capital, from commitment to cash.</p>
     </div>
     <nav class="ci-footer__links" aria-label="Site information">
-      <ul><li><a href="/methodology/">Methodology</a></li><li><a href="/sources/">Sources</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source on GitHub</a></li><li><a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">Report a correction</a></li></ul>
+      <ul><li><a href="/methodology/">Methodology</a></li><li><a href="/sources/">Sources</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">Corrections</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source on GitHub</a></li></ul>
     </nav>
     <div class="ci-footer__meta">
-      <p>Not affiliated with the City or State of New York or any employer.</p>
+      <p>An independent project built by Salar Jalinous using only public data. Not affiliated with the City or State of New York or any employer.</p>
+      <p><a href="/sources/">Data: NYC Open Data · Open NY · Checkbook NYC · BLS</a></p>
       <p><a href="/about/">© <span data-ci-year="2026">2026</span> The Concrete Index</a></p>
     </div>
   </div>
