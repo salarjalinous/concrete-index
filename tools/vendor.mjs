@@ -4,7 +4,10 @@
 // another origin. Run after `npm ci`. Versions are pinned in package.json and
 // package-lock.json; this script refuses to run against any other version.
 //
-//   fonts  -> /assets/fonts/*.woff2 (latin subset) + one OFL license per family
+//   fonts  -> /assets/fonts/*.woff2 (latin subset) + one OFL license per family,
+//             only with --fonts: the committed files are re-subset by
+//             tools/subset-fonts.sh to fit the 110 KB budget, and a plain
+//             copy would undo that. Run the subset script after --fonts.
 //   chart  -> /assets/vendor/chart.umd.min.js (Chart.js 4.4.1 UMD build)
 
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
@@ -32,7 +35,7 @@ expect('chart.js', '4.4.1');
 
 const fontDir = join(ROOT, 'assets', 'fonts');
 mkdirSync(fontDir, { recursive: true });
-for (const f of FONTS) {
+for (const f of process.argv.includes('--fonts') ? FONTS : []) {
   for (const w of f.weights) {
     const file = `${f.slug}-latin-${w}-normal.woff2`;
     copyFileSync(join(NM, f.pkg, 'files', file), join(fontDir, file));
@@ -49,4 +52,4 @@ const chart = readFileSync(join(NM, 'chart.js', 'dist', 'chart.umd.js'), 'utf8')
 writeFileSync(join(vendorDir, 'chart.umd.min.js'), chart);
 copyFileSync(join(NM, 'chart.js', 'LICENSE.md'), join(vendorDir, 'chart.js-LICENSE.md'));
 
-console.log('vendor: fonts and Chart.js 4.4.1 copied into /assets');
+console.log(`vendor: ${process.argv.includes('--fonts') ? 'fonts and ' : ''}Chart.js 4.4.1 copied into /assets`);

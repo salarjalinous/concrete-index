@@ -134,6 +134,13 @@ for (const f of js) {
   each(/\beval\(|new Function\(/g, t, (m) => report(f, lineOf(t, m.index), 'eval'));
 }
 
+// ------------------------------------------------------------------ font budget (PRD 12.1)
+{
+  const dir = join(ROOT, 'assets', 'fonts');
+  const total = readdirSync(dir).filter((n) => n.endsWith('.woff2')).reduce((s, n) => s + statSync(join(dir, n)).size, 0);
+  if (total > 110 * 1024) problems.push(`assets/fonts: ${(total / 1024).toFixed(1)} KB of woff2 is over the 110 KB budget; run tools/subset-fonts.sh`);
+}
+
 // ------------------------------------------------------------------ shared blocks current
 try {
   execFileSync(process.execPath, [join(ROOT, 'tools', 'stamp.mjs'), '--check'], { stdio: 'pipe' });
