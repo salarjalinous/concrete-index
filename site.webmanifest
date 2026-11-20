@@ -1,0 +1,15 @@
+{
+  "name": "The Concrete Index",
+  "short_name": "Concrete Index",
+  "description": "NYC public construction capital, from commitment to cash.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "browser",
+  "background_color": "#f7f3ef",
+  "theme_color": "#f7f3ef",
+  "icons": [
+    { "src": "/assets/img/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/assets/img/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
