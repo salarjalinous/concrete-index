@@ -15,7 +15,8 @@ name: Checkbook NYC dated payments
 #
 # SWEEP STRATEGY (probe candidate CODEs -> learn CODE->NAME, then bulk pull all
 # contract-type CODEs):
-#   Stage 1 pulls the construction registered-contract universe (FY2021-2025).
+#   Stage 1 pulls the construction registered-contract universe (FY2021 through
+#   the current FY, derived from the run date; the current FY is year to date).
 #   Stage 2a PROBES the live API to learn the CODE->NAME map: for each curated
 #   candidate 2-char code it POSTs Spending with {spending_category=<code>,
 #   fiscal_year=2024}, max_records=1, and reads the human-readable spending_category
@@ -97,7 +98,22 @@ jobs:
           import xml.etree.ElementTree as ET
 
           API = "https://www.checkbooknyc.com/api"
-          FYS = [2021, 2022, 2023, 2024, 2025]   # Stage-1 universe window
+          # ---- fiscal-year window, derived from the run date (never hardcoded) ----
+          # Same rule as site/checkbook.yml. NYC fiscal year N runs Jul 1 of N-1
+          # through Jun 30 of N. The window is every closed FY from FY_START plus
+          # the in-progress FY as year to date. It drives BOTH the Stage-1 contract
+          # universe and the Stage-2b Spending pull, so checks issued in the
+          # current FY land on the spend curves. CHECKBOOK_AS_OF=YYYY-MM-DD
+          # overrides the run date for testing only.
+          FY_START = 2021
+          def nyc_fy(d):
+              return d.year + 1 if d.month >= 7 else d.year
+          _as_of_env = os.environ.get("CHECKBOOK_AS_OF", "").strip()
+          AS_OF = (datetime.date.fromisoformat(_as_of_env) if _as_of_env
+                   else datetime.datetime.now(datetime.timezone.utc).date())
+          FY_CURRENT = nyc_fy(AS_OF)                      # in progress (YTD)
+          FYS = list(range(FY_START, FY_CURRENT + 1))     # Stage-1 universe + Spending window
+          FYS_CLOSED = [fy for fy in FYS if fy < FY_CURRENT]
           MAX_RECORDS = 1000        # Contracts paging chunk (server max)
           CONSTR_RE = re.compile(r"constr|engineer|architect|paving|excavat|infrastructure", re.I)
 
@@ -404,13 +420,23 @@ jobs:
           def c(r, k, default=""):
               return r.get(k, default) or default
 
+          log("=== FY window: as_of=%s current=FY%d (YTD) closed=%s ===" % (AS_OF, FY_CURRENT, FYS_CLOSED))
           all_contracts = []
+          rows_per_fy = {}
           for fy in FYS:
               log("--- Contracts FY%d ---" % fy)
               crit = CONTRACTS_BASE + [("fiscal_year", "value", str(fy))]
               rows, _ = fetch_all("Contracts", contracts_cols, crit)
               log("  %d contract rows" % len(rows))
+              rows_per_fy[fy] = len(rows)
               all_contracts.extend(rows)
+          # Publish only the FYs that returned rows, so the window the page prints
+          # is the window the index covers. A closed FY with no rows means the
+          # universe is short a year: the quality gate below keeps the last good
+          # file. An empty YTD FY (first days of July) is simply left off.
+          FYS_COVERED = [fy for fy in FYS if rows_per_fy.get(fy, 0) > 0]
+          missing_closed = [fy for fy in FYS_CLOSED if rows_per_fy.get(fy, 0) == 0]
+          FY_YTD = FY_CURRENT if FY_CURRENT in FYS_COVERED else None
 
           # Construction filter, client-side on the returned industry text (the
           # server industry filter needs a 2-char code we do not have; identical
@@ -955,7 +981,17 @@ jobs:
                          "source by EVERY runtime-probed spending_category code whose name "
                          "contains 'Contract' (Capital Contracts + Contracts), bucketed by "
                          "contract_id"),
-              "fiscal_years": FYS,
+              # fiscal_years stays a plain ascending int list (backward compatible):
+              # the FYs the Stage-1 universe covers. fiscal_year_ytd names the
+              # in-progress FY inside it (null if none); same keys as
+              # checkbook-vendors.json so the two files label one window one way.
+              "fiscal_years": FYS_COVERED,
+              "fiscal_year_ytd": FY_YTD,
+              "fiscal_years_closed": [fy for fy in FYS_COVERED if fy != FY_YTD],
+              "fiscal_years_requested": FYS,
+              "contract_rows_per_fy": {str(k): v for k, v in rows_per_fy.items()},
+              "as_of": AS_OF.isoformat(),
+              "fiscal_year_basis": "NYC FY (Jul 1 to Jun 30); Checkbook fiscal_year search criterion on Contracts and Spending",
               "sweep_strategy": ("the 2-char spending_category codes are DISCOVERED at runtime by "
                                  "probing a curated candidate list against the live API: each "
                                  "candidate code is POSTed to Spending (fiscal_year=%d, max_records=1) "
@@ -1015,7 +1051,11 @@ jobs:
                                 "cover every contract in the index."),
               "coverage_notes": [
                   "Universe is construction registered contracts (category=expense, "
-                  "status=registered, industry matches construction) registered in FY2021-2025.",
+                  "status=registered, industry matches construction) returned by the Checkbook "
+                  "fiscal_year search for FY%d-%d%s; dated checks are pulled over the same FYs."
+                  % (FYS_COVERED[0] if FYS_COVERED else FY_START,
+                     FYS_COVERED[-1] if FYS_COVERED else FY_CURRENT,
+                     (" (FY%d year to date)" % FY_YTD) if FY_YTD else ""),
                   "Paid to date and percent paid are the City's registered-contract figures "
                   "(prime_vendor_spent_to_date over current amount) and cover every contract.",
                   "Dated payment timing covers construction contracts of $500,000 or more "
@@ -1082,6 +1122,35 @@ jobs:
                   "(contracts=%d, with_dated_payments=%d). Writing the file "
                   "anyway; every contract remains searchable with its contract-level fields."
                   % (len(records), contracts_with_dated_payments))
+
+          # HARD gate for a short universe: a closed FY that returned no contract
+          # rows would silently drop a year of contracts from search. Keep the last
+          # good file's contracts and generated stamp, and stamp the failed attempt
+          # on its meta (same pattern as checkbook.yml). With no readable previous
+          # file, write this pull anyway so the file always exists.
+          now_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+          if missing_closed:
+              note = "closed FYs with no contract rows: %s" % missing_closed
+              log("WARNING: %s. Keeping the last good contract-search file." % note)
+              prev = None
+              try:
+                  with open("data/contract-search.json") as f:
+                      prev = json.load(f)
+              except Exception as e:
+                  log("  no readable previous file (%s); writing this pull." % e)
+              if prev is not None:
+                  pm = prev.get("meta") or {}
+                  pm["last_attempt"] = now_iso
+                  pm["last_attempt_status"] = "degraded"
+                  pm["last_attempt_note"] = note
+                  prev["meta"] = pm
+                  payload = json.dumps(prev, separators=(",", ":"), ensure_ascii=False)
+          else:
+              meta["last_attempt"] = now_iso
+              meta["last_attempt_status"] = "ok"
+              # out already carries any size trimming applied above (records are
+              # trimmed in place), so re-serializing adds only the two stamps.
+              payload = json.dumps(out, separators=(",", ":"), ensure_ascii=False)
 
           with open("data/contract-search.json", "w") as f:
               f.write(payload)

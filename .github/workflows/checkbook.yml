@@ -40,12 +40,29 @@ jobs:
         run: |
           mkdir -p data
           python3 - <<'PYEOF'
-          import json, sys, time, re, os
+          import json, sys, time, re, os, datetime
           import urllib.request, urllib.error
           import xml.etree.ElementTree as ET
 
           API = "https://www.checkbooknyc.com/api"
-          FYS = [2021, 2022, 2023, 2024, 2025]
+          # ---- fiscal-year window, derived from the run date (never hardcoded) ----
+          # NYC fiscal year N runs Jul 1 of N-1 through Jun 30 of N. The window is
+          # every closed FY from FY_START through the last one that has ended, plus
+          # the in-progress FY as year-to-date. Paid (prime_vendor_spent_to_date)
+          # is a cumulative, as-of-today figure on every contract regardless of
+          # which FY pulled it in, so stopping the window at the last closed FY
+          # would drop the newest registrations while still counting this year's
+          # payments on older ones. CHECKBOOK_AS_OF=YYYY-MM-DD overrides the run
+          # date for testing only.
+          FY_START = 2021
+          def nyc_fy(d):
+              return d.year + 1 if d.month >= 7 else d.year
+          _as_of_env = os.environ.get("CHECKBOOK_AS_OF", "").strip()
+          AS_OF = (datetime.date.fromisoformat(_as_of_env) if _as_of_env
+                   else datetime.datetime.now(datetime.timezone.utc).date())
+          FY_CURRENT = nyc_fy(AS_OF)                      # in progress (YTD)
+          FYS = list(range(FY_START, FY_CURRENT + 1))     # closed FYs + current YTD
+          FYS_CLOSED = [fy for fy in FYS if fy < FY_CURRENT]
           MAX_RECORDS = 1000
           CONSTR_RE = re.compile(r"constr|engineer|architect|paving|excavat|infrastructure", re.I)
 
@@ -264,8 +281,15 @@ jobs:
           def c_amount(r):  return r.get("prime_contract_current_amount", "")
           def c_paid(r):    return r.get("prime_vendor_spent_to_date", "")
           def c_fy(r):
-              # fiscal year derived from registration date (YYYY-MM-DD...).
+              # NYC fiscal year derived from registration date (YYYY-MM-DD...):
+              # a contract registered Jul-Dec of year Y is FY Y+1. (Earlier builds
+              # took the calendar year, which labeled e.g. a Sep 2020 registration
+              # "2020" instead of FY2021.)
               d = r.get("prime_contract_registration_date", "") or ""
+              m = re.match(r"(\d{4})-(\d{2})", d)
+              if m:
+                  y, mo = int(m.group(1)), int(m.group(2))
+                  return str(y + 1 if mo >= 7 else y)
               m = re.match(r"(\d{4})", d)
               return m.group(1) if m else ""
 
@@ -282,8 +306,10 @@ jobs:
 
           # Confirmation probe: one page, dump first parsed record to verify the
           # parser fix and field names (incl. prime_vendor_spent_to_date).
-          log("=== PROBE: Contracts FY%d (confirm parser) ===" % FYS[-1])
-          cprobe, _ = fetch_all("Contracts", contracts_cols, CONTRACTS_BASE, FYS[-1], industry_server=False)
+          PROBE_FY = FYS_CLOSED[-1] if FYS_CLOSED else FYS[-1]
+          log("=== FY window: as_of=%s current=FY%d (YTD) closed=%s ===" % (AS_OF, FY_CURRENT, FYS_CLOSED))
+          log("=== PROBE: Contracts FY%d (confirm parser) ===" % PROBE_FY)
+          cprobe, _ = fetch_all("Contracts", contracts_cols, CONTRACTS_BASE, PROBE_FY, industry_server=False)
           log("  parsed %d contract rows" % len(cprobe))
           if cprobe:
               log("  FIRST Contracts record:")
@@ -291,11 +317,23 @@ jobs:
                   log("    %s = %r" % (k, v[:90] if isinstance(v, str) else v))
 
           all_contracts = []
+          rows_per_fy = {}
           for fy in FYS:
               log("--- Contracts FY%d ---" % fy)
-              rows, _ = fetch_all("Contracts", contracts_cols, CONTRACTS_BASE, fy, industry_server=server)
+              if fy == PROBE_FY and not server:
+                  rows = cprobe   # the probe already paged this FY in full; reuse it
+              else:
+                  rows, _ = fetch_all("Contracts", contracts_cols, CONTRACTS_BASE, fy, industry_server=server)
               log("  %d contract rows" % len(rows))
+              rows_per_fy[fy] = len(rows)
               all_contracts.extend(rows)
+          # Publish only the FYs that actually returned rows, so the window the
+          # pages print is the window the numbers cover. A closed FY that returns
+          # nothing marks the pull degraded (quality gate below); an empty YTD FY
+          # (first days of July) is simply left off the window.
+          FYS_COVERED = [fy for fy in FYS if rows_per_fy.get(fy, 0) > 0]
+          missing_closed = [fy for fy in FYS_CLOSED if rows_per_fy.get(fy, 0) == 0]
+          FY_YTD = FY_CURRENT if FY_CURRENT in FYS_COVERED else None
 
           def keep_c(r):
               return True if server else bool(CONSTR_RE.search(c_industry(r)))
@@ -406,7 +444,9 @@ jobs:
           group_count = len(vendors)
           truncated = False
           raw_estimate = len(json.dumps({"vendors": vendors}))
-          if group_count > 1500 or raw_estimate > 150 * 1024:
+          # Size guard. Raised from 150 KB when the FY window began rolling forward:
+          # five FYs were ~111 KB / 626 groups, and each added FY adds ~100 groups.
+          if group_count > 2500 or raw_estimate > 300 * 1024:
               items = sorted(vendors.items(), key=lambda kv: -kv[1]["registered"])[:300]
               vendors = dict(items)
               truncated = True
@@ -431,7 +471,16 @@ jobs:
                   "stale_after_hours": 48,
                   "drop_after_hours": 336,
                   "source": "Checkbook NYC API (checkbooknyc.com), Registered Contracts (expense)",
-                  "fiscal_years": FYS,
+                  # fiscal_years stays a plain ascending int list (backward compatible);
+                  # fiscal_year_ytd names the in-progress FY inside it (null if none),
+                  # fiscal_years_closed the completed ones, as_of the run date.
+                  "fiscal_years": FYS_COVERED,
+                  "fiscal_year_ytd": FY_YTD,
+                  "fiscal_years_closed": [fy for fy in FYS_COVERED if fy != FY_YTD],
+                  "fiscal_years_requested": FYS,
+                  "rows_per_fy": {str(k): v for k, v in rows_per_fy.items()},
+                  "as_of": AS_OF.isoformat(),
+                  "fiscal_year_basis": "NYC FY (Jul 1 to Jun 30); Checkbook fiscal_year search criterion; fy_first/fy_last from registration date",
                   "industry_filter_mode": industry_mode, "contracts_rows": len(contracts),
                   "spending_rows": spending_rows, "groups": group_count,
                   "paid_source": "prime_vendor_spent_to_date on registered contracts"}
@@ -463,10 +512,11 @@ jobs:
           # is unchanged; the fact that it is aging is now on the record, and the
           # page's own staleness check keys off `generated`.
           ok = (len(contracts) > 0 and spending_rows > 0
-                and group_count >= 50 and total_registered >= 1_000_000_000)
+                and group_count >= 50 and total_registered >= 1_000_000_000
+                and not missing_closed)
           if not ok:
-              note = ("degraded pull: contracts=%d, paid_rows=%d, groups=%d, registered=$%d"
-                      % (len(contracts), spending_rows, group_count, total_registered))
+              note = ("degraded pull: contracts=%d, paid_rows=%d, groups=%d, registered=$%d, closed FYs with no rows=%s"
+                      % (len(contracts), spending_rows, group_count, total_registered, missing_closed))
               log("WARNING: Checkbook pull looks partial or degraded (%s). "
                   "Keeping the last good vendor numbers and stamping the failed "
                   "attempt on the file's meta." % note)
@@ -512,7 +562,7 @@ jobs:
             exit 0
           fi
           git commit -m "Checkbook vendor data $(date -u +%Y-%m-%d)"
-          # THE FAILURE THIS FIXES: this job checks out main, then spends ~6 minutes
+          # THE FAILURE THIS FIXES: this job checks out main, then spends ~6-8 minutes
           # on the Checkbook API. The archive, doing-business and payments jobs push
           # to main on their own crons, and GitHub's scheduler drifts them into that
           # window, so by the time this job pushed, main had moved:
