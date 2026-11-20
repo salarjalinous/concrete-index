@@ -216,6 +216,10 @@ td.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
   .ci-note--label::before{position:absolute;left:var(--s-5);top:var(--s-4);width:calc(20% - var(--s-5));margin:0}
 }
 
+/* ---- line art (inlined by tools/stamp.mjs; decorative, never behind data) ---- */
+.ci-art,.page-art{color:var(--muted);height:auto;flex:none}
+.ci-art .ci-accent,.page-art .ci-accent{stroke:var(--accent)}
+
 /* ---- rule table ---- */
 .ci-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .ci-table-wrap:focus-visible{outline-offset:-2px}

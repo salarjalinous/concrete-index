@@ -37,3 +37,6 @@
   .about{grid-template-columns:1fr}
   .photo-col img{max-width:280px}
 }
+.hero--art{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s-6)}
+.ci-art--about{width:220px}
+@media (max-width:767px){.ci-art--about{display:none}}

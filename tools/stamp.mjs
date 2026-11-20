@@ -92,6 +92,18 @@ export const PAGES = [
   { file: 'about/index.html', route: R.about, current: R.about, title: 'About',
     desc: 'Who builds The Concrete Index and why: closing the information gap in NYC public construction.',
     ogDesc: 'Closing the information gap in NYC public construction.', type: 'editorial', css: 'about', js: ['about'], export: true },
+  { file: 'methodology/index.html', route: R.methodology, current: R.methodology, title: 'Methodology',
+    desc: 'The definitions behind each Concrete Index page, collected word for word: sources, dataset IDs, deduplication rules, time windows, and exclusions.',
+    type: 'editorial', css: 'editorial', js: [] },
+  { file: 'sources/index.html', route: R.sources, current: R.sources, title: 'Sources',
+    desc: 'Each dataset The Concrete Index reads, with its ID, publisher, the pages it feeds, the refresh cadence its publisher states, and its license or terms link.',
+    type: 'editorial', css: 'editorial', js: [] },
+  { file: 'privacy/index.html', route: R.privacy, current: R.privacy, title: 'Privacy',
+    desc: 'What a visit to The Concrete Index sends and to whom: GitHub Pages logs, the public data APIs a page queries, and the search text the Contractors page sends.',
+    type: 'editorial', css: 'editorial', js: [] },
+  { file: 'terms/index.html', route: R.terms, current: R.terms, title: 'Terms',
+    desc: 'Terms for using The Concrete Index: figures provided as is from public records, not advice of any kind, attribution for quotes, and how to report an error.',
+    type: 'editorial', css: 'editorial', js: [] },
   { file: '404.html', route: null, current: null, title: 'Page not found', robots: 'noindex',
     desc: 'This page is not part of The Concrete Index. Every section of the site is listed here.', type: 'editorial', css: '404', js: [] },
   { file: 'vendors/index.html', route: '/vendors/', current: null, title: 'Vendor Lookup has moved', robots: 'noindex,follow', refresh: R.contractors, canonical: R.contractors,
@@ -106,8 +118,27 @@ const fullTitle = (p) => (p.title.includes('The Concrete Index') ? p.title : `${
 
 const MARK = (size) => `<svg class="ci-mark" viewBox="0 0 120 120" width="${size}" height="${size}" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg>`;
 const HOME_LINK = (size) => `<a class="ci-home" href="/" aria-label="The Concrete Index, home">${MARK(size)}<span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>`;
-const ICON_MENU = '<svg class="ci-i-menu" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
-const ICON_CLOSE = '<svg class="ci-i-close" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+// Icons come from the shared sprite (/assets/icons.svg, 24 grid, currentColor).
+const icon = (id, cls) => `<svg class="${cls}" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#${id}"/></svg>`;
+const ICON_MENU = icon('menu', 'ci-i-menu');
+const ICON_CLOSE = icon('close', 'ci-i-close');
+
+// Line art (/assets/art/<name>.svg) is inlined, not referenced with <use>:
+// page CSS cannot reach into an external <use> tree, and the one accent
+// stroke (.ci-accent) has to take --accent. Marker in a page:
+//   <!-- ci:art crane ci-art --><!-- /ci:art -->   (name, then class list)
+// Decorative only: aria-hidden, never behind a figure, table, or chart.
+function art(name, cls) {
+  const src = readFileSync(join(ROOT, 'assets', 'art', `${name}.svg`), 'utf8');
+  const m = src.match(/<symbol id="art" viewBox="([^"]+)">([\s\S]*?)<\/symbol>/);
+  if (!m) throw new Error(`art ${name}: no <symbol id="art">`);
+  const [, , w, h] = m[1].split(/\s+/);
+  return `<svg class="${esc(cls)}" viewBox="${m[1]}" width="${w}" height="${h}" aria-hidden="true" focusable="false">${m[2].trim()}</svg>`;
+}
+function stampArt(html) {
+  return html.replace(/<!-- ci:art ([a-z0-9-]+) ([^>]*?) -->[\s\S]*?<!-- \/ci:art -->/g,
+    (_, name, cls) => `<!-- ci:art ${name} ${cls} -->${art(name, cls)}<!-- /ci:art -->`);
+}
 
 function link(label, href, p) {
   const cur = p.current && href === p.current ? ' aria-current="page"' : '';
@@ -218,6 +249,7 @@ for (const p of PAGES) {
   html = replaceBlock(html, 'head', head(p), p.file);
   html = replaceBlock(html, 'header', header(p), p.file);
   html = replaceBlock(html, 'footer', footer(), p.file);
+  html = stampArt(html);
   if (html !== before) {
     stale++;
     if (!checkOnly) writeFileSync(path, html);

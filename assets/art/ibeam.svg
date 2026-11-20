@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 200" width="280" height="200">
+<symbol id="art" viewBox="0 0 280 200">
+<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+<g stroke-width="2"><path d="M140 0V14"/><path d="M50 110H230V116H50zM50 140H230V146H50z"/><path d="M230 110L241.2 103.6V109.6L237 112V136L241.2 133.6V139.6L230 146V140L234.2 137.6V113.6L230 116Z"/></g>
+<g stroke-width="1.5"><path d="M50 110L61.2 103.6H241.2"/><path d="M54.2 116V137.6H234.2M50 140L54.2 137.6"/><circle cx="140" cy="40" r="5"/><path d="M137 45L66 103.6M143 45L214 103.6"/><path d="M70 103.6c-5 0-6 42.4 0 42.4M76 104c5 0 6 42 0 42M204 104c-5 0-6 42 0 42M210 103.6c5 0 6 42.4 0 42.4"/></g>
+<g stroke-width="1">
+<path d="M58 120H230M58 124H230M58 128H230M58 132H230M58 136H230"/>
+<path d="M62 104.5h179M66 106h175M60 107.5h181"/>
+<path d="M238.5 114v20M240 112.5v1.5M240 134.5v3"/>
+<path d="M56 149h170M64 152h150"/>
+<path d="M52 146c-6 10 6 18 0 28s-8 12-10 18M228 146c6 9-6 17 0 26s8 12 10 20"/>
+<path d="M40 186c40 8 160 8 200 0" stroke-dasharray="3 4"/>
+<path d="M134 12h12v8h-12z"/>
+</g>
+<path class="ci-accent" stroke-width="2" d="M140 20v8a6 6 0 1 0 6 6"/>
+</g>
+</symbol>
+<use href="#art"/>
+</svg>

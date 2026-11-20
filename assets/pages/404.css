@@ -9,3 +9,4 @@ p{font-size:var(--fs-16);line-height:1.55;color:var(--muted);margin:0 0 var(--s-
 .links a.primary{background:var(--navy);color:var(--surface);border-color:var(--navy)}
 .links a.primary:hover{background:var(--accent);border-color:var(--accent);color:var(--surface)}
 #content{display:flex;flex-direction:column}
+.ci-art--404{display:block;width:200px;margin-bottom:var(--s-5)}
