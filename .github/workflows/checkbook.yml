@@ -66,7 +66,7 @@ jobs:
           MAX_RECORDS = 1000
           CONSTR_RE = re.compile(r"constr|engineer|architect|paving|excavat|infrastructure", re.I)
 
-          # ---- normalizer: byte-for-byte equivalent of the /vendors/ page normName() ----
+          # ---- normalizer: byte-for-byte equivalent of the Contractors page (/contractors/) normName() ----
           # JS: (s||'').trim().replace(/\s+/g,' ').toUpperCase().replace(/[.,;:&/\\'"`\-\s]+$/,'').trim()
           _TRAIL = re.compile(r"[.,;:&/\\'\"`\-\s]+$")
           def norm_name(s):
@@ -549,6 +549,40 @@ jobs:
               % (os.path.getsize("data/checkbook-vendors.json"), len(vendors)))
           PYEOF
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Landing money-flow ledgers (PRD 7.2). Built here, after the Checkbook file,
+      # so Registered and Paid are tonight's; Committed and Awarded come from the
+      # archive job's precomputed.json and plan-history.json. Only this job writes
+      # flow.json, so no two jobs edit the same file. A failure keeps the
+      # previous flow.json, which carries its own generated_at.
+      - name: Build flow.json (four ledgers)
+        continue-on-error: true
+        run: |
+          node tools/build-flow.js --data data --out data/flow.json
+          rm -f data/*.tmp-*
+
+      # Home's served HTML carries the figures for readers without JavaScript
+      # (the money-flow drawing, the index, the tape, source dates), stamped
+      # from precomputed.json and checkbook-vendors.json. Re-stamped here, after
+      # tonight's Checkbook file and flow.json, so the no-JS values never lag
+      # the data. render-flow only rewrites marked regions and data-home text.
+      # A failure restores the committed index.html; JS still corrects on load.
+      - name: Stamp Home's static figures (tools/render-flow.mjs)
+        id: renderflow
+        continue-on-error: true
+        run: |
+          node tools/render-flow.mjs
+          node tools/render-flow.mjs --check
+
+      - name: Keep the committed index.html after a failed stamp
+        if: steps.renderflow.outcome == 'failure'
+        run: |
+          git checkout -- index.html
+          echo "::warning::index.html not re-stamped tonight; Home corrects its figures at load"
+
       - name: Commit if changed
         run: |
           set -euo pipefail
@@ -556,7 +590,7 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           # Stage everything under data/ so a never-before-committed file does not
           # trip `pathspec did not match any files` (the same bug payments.yml hit).
-          git add -A data/
+          git add -A data/ index.html
           if git diff --cached --quiet; then
             echo "No changes today"
             exit 0
@@ -574,12 +608,33 @@ jobs:
           # onto the latest main first -- exactly what payments.yml already does.
           # Retried, because the racing job can land again between our fetch and our
           # push. Only a rebase CONFLICT (a real problem) fails the job.
+          #
+          # index.html is generated from data/, so it is the one file this job may
+          # resolve itself: on a conflict there (a source edit to Home landed in
+          # the window), take main's markup and stamp it again. Any other conflict
+          # still fails the job. After every rebase the stamp is re-run, so a data
+          # commit that landed meanwhile is reflected before the push.
           for attempt in 1 2 3 4 5; do
-            git pull --rebase origin main || {
-              echo "Rebase onto origin/main failed (conflict) on attempt $attempt"
-              git rebase --abort || true
-              exit 1
-            }
+            if ! git pull --rebase origin main; then
+              while [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; do
+                CONFLICTS=$(git diff --name-only --diff-filter=U)
+                if [ "$CONFLICTS" = "index.html" ] \
+                  && git checkout --ours -- index.html \
+                  && node tools/render-flow.mjs \
+                  && git add index.html; then
+                  echo "index.html conflict resolved by re-stamping main's markup"
+                  GIT_EDITOR=true git rebase --continue || true
+                else
+                  echo "Rebase onto origin/main failed (conflict: ${CONFLICTS:-unknown}) on attempt $attempt"
+                  git rebase --abort || true
+                  exit 1
+                fi
+              done
+            fi
+            if node tools/render-flow.mjs && ! git diff --quiet -- index.html; then
+              git add index.html
+              git commit --amend --no-edit
+            fi
             if git push origin HEAD:main; then
               echo "Pushed on attempt $attempt"
               exit 0

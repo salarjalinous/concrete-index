@@ -1,40 +1,71 @@
 # The Concrete Index
 
-**NYC public construction capital, tracked end to end.**
+**NYC public construction capital, from commitment to cash.**
 
-Live at **[concreteindex.co](https://concreteindex.co)**
+[concreteindex.co](https://concreteindex.co)
 
-The Concrete Index tracks the demand side of New York City public construction: where capital money is coming from, how fast it moves, and which agencies drive it. It is built entirely on public data and refreshes itself from the public record, live in the browser for most sources and nightly for the one a browser cannot reach.
+The Concrete Index tracks the demand side of New York City public construction: where capital money is committed, how fast it reaches contractors, and how fast it turns into cash. It is built entirely on public data. Most pages query NYC Open Data and Open NY from the browser when they load; payment data, cost series, and long histories come from nightly jobs that write same-origin files under `data/`.
 
-## The three-stage funnel
+## Four ledgers
 
-| Stage | What it measures | Source |
-|---|---|---|
-| **[Pipeline](https://concreteindex.co/pipeline/)** | Capital dollars committed to projects but not yet spent (forward demand) | NYC OMB Capital Projects Dashboard ([`fb86-vt7u`](https://data.cityofnewyork.us/City-Government/Capital-Projects-Dashboard-Citywide-Budget-and-Sch/fb86-vt7u)), published 3×/year |
-| **[Awarded](https://concreteindex.co)** | Construction contract awards entering the market | City Record Recent Contract Awards ([`qyyg-4tf5`](https://data.cityofnewyork.us/City-Government/Recent-Contract-Awards/qyyg-4tf5)), updated daily |
-| **[Funnel](https://concreteindex.co/funnel/)** | All three stages plus velocity: spending pace and backlog coverage | Both sources; spending measured as growth in cumulative spend-to-date between plan snapshots |
+| Ledger | What it measures | Source | Page |
+| --- | --- | --- | --- |
+| Committed | Unspent budget on active capital projects, one record per agency and FMS ID | NYC OMB Capital Projects Dashboard ([`fb86-vt7u`](https://data.cityofnewyork.us/City-Government/Capital-Projects-Dashboard-Citywide-Budget-and-Sch/fb86-vt7u)), published three times a year | [Pipeline](https://concreteindex.co/pipeline/) |
+| Awarded | Construction award notices, deduplicated to one record per PIN | City Record Recent Contract Awards ([`qyyg-4tf5`](https://data.cityofnewyork.us/City-Government/Recent-Contract-Awards/qyyg-4tf5)), published daily | [Awarded](https://concreteindex.co/awarded/) |
+| Registered | Current amounts of registered construction expense contracts | Checkbook NYC, Office of the NYC Comptroller | [Contracts](https://concreteindex.co/contracts/) |
+| Paid | Cumulative paid to date on those same contracts | Checkbook NYC | [Funnel](https://concreteindex.co/funnel/) |
 
-The **[Briefing](https://concreteindex.co/briefing/)** page composes a written "state of NYC construction demand" from the live data on every load.
+The ledgers come from three publishers with different scopes and windows. No key joins Committed to Awarded, so the site never sums the four or draws one as a share of another. Every dataset, with its ID, publisher, cadence, and license, is listed at [/sources/](https://concreteindex.co/sources/).
 
-## The differentiator
+## Pages
 
-The Concrete Index measures the *flow between* ledgers: how much funded work is stacked upstream and how fast it converts to awards and cash. **Backlog coverage**, unspent committed dollars divided by trailing-year spending, is the demand-side counterpart to a contractor's backlog ratio.
+Pipeline, Bidding, Awarded, Contracts, Funnel, Agencies, Contractors, Regional, Analysis, Briefing, plus Methodology, About, Privacy, Terms, and Sources. Routes: `/pipeline/`, `/bidding/`, `/awarded/`, `/contracts/`, `/funnel/`, `/agencies/`, `/contractors/`, `/regional/`, `/analysis/`, `/briefing/`, `/methodology/`, `/about/`, `/privacy/`, `/terms/`, `/sources/`. The retired addresses `/solicitations/`, `/competitive/`, `/agency/`, `/vendors/`, and `/velocity/` forward to their new pages with the query and hash kept. Most data pages end with their own "Methodology & definitions" section; [/methodology/](https://concreteindex.co/methodology/) collects them word for word, with a dated log of methodology changes.
+
+## What it computes
+
+- **Backlog coverage:** unspent committed dollars divided by trailing-year capital spending, in years. A market-level ratio, the demand-side counterpart to a contractor's backlog; it is not any firm's backlog.
+- **The Concrete Index:** a geometric blend of trailing-twelve-month new-award value and count, renewals and awards of $500M and above excluded, 2019 = 100. A cost-adjusted version deflates award value by a 60/40 blend of two BLS series.
+- **Payment velocity:** first-payment lag and days to half paid on registered construction contracts of $500,000 or more registered since 2019 that are open or closed within the past year, from dated Checkbook NYC disbursements.
+
+Treatments, disclosed on each page:
+
+- Capital-plan sub-project rows collapse to one record per project (agency plus FMS ID, most advanced phase kept), so no budget is counted twice.
+- Spending per period is the growth in cumulative spend-to-date between consecutive plan snapshots, on a matched panel of projects observed in both, floored at zero.
+- Trailing twelve months is twelve fully-elapsed months; the partial month in progress is never read.
+- Borough on award notices is derived from title and description text and labeled as such; the capital plan carries a structured borough field.
+- Contractor name variants roll up through a hand-verified alias map, corroborated at the organization level against the Doing Business Database. No individual is named.
 
 ## Architecture
 
-Each page is a self-contained static HTML file that queries the Socrata APIs (`data.cityofnewyork.us`, `data.ny.gov`) directly from the browser, and most figures are recomputed from the live public record on every load. No backend and no database. The one source a browser cannot reach, Checkbook NYC (which blocks cross-origin requests and returns a paged XML feed), is fetched and normalized nightly by a scheduled GitHub Action that writes a compact static file the site reads. Hosted on GitHub Pages.
+Static HTML served by GitHub Pages from the repository root. Shared CSS and JavaScript under `/assets/`; no inline script or style; per-page Content Security Policy. No backend, no database, no cookies, no analytics.
 
-A vendor lookup groups each contractor's name and joint-venture spellings into one parent total through a hand-verified, address-corroborated alias map (deterministic record linkage, not fuzzy matching), and shows award-notice value alongside Checkbook's registered and paid figures as three separate measures.
+Nightly workflows in `.github/workflows/`:
 
-Data treatment highlights (full definitions on each page's methodology section):
+| Workflow | Writes |
+| --- | --- |
+| `archive.yml` | `awards.json`, `solicitations.json`, `plan-latest.json`, `cost-index.json` (BLS), `precomputed.json` (with the index's prior-month and year-ago levels from `tools/build-index-points.js`), `plan-history.json` |
+| `checkbook.yml` | `checkbook-vendors.json`, `flow.json`, and the stamped figures in `index.html` (`tools/render-flow.mjs`) |
+| `doing-business.yml` | `doing-business-corroboration.json` (organization-level only) |
+| `payments.yml` | `contract-search.json`, `contract-index.json`, `contract-detail/*.json`, `contract-aggregates.json` |
 
-- Sub-project rows in the capital plan are collapsed to one record per project (by agency + FMS ID, keeping the most advanced phase) so no dollar is double-counted.
-- Spending per period is the growth in each project's cumulative spend-to-date between consecutive plan snapshots, floored at zero, a conservative treatment.
-- Borough on the Awarded page is derived from award title and description text and disclosed as such; the capital plan carries structured geography.
+Every Socrata pull in these jobs is paged and checked against the source's own row count, and the job stops rather than saving a partial file. `test.yml` runs the methodology and builder tests (`node --test`) on pull requests and code pushes, read-only. `deploy.yml` publishes the site to GitHub Pages on a source push to `main`, after any of the four data workflows succeeds, and by hand: it re-runs the checks and tests on `main` HEAD, stamps Home's static figures from the data it ships (`tools/render-flow.mjs`, in the workspace only), uploads the repository root without `.github`, `test`, `tools`, `lib`, `node_modules`, `scratch`, and the package files, then runs `tools/health.mjs` against the live site as a report. It takes effect once Pages is set to deploy from GitHub Actions; until then Pages keeps serving the branch root.
+
+The git history of `data/` is a dated archive of each source.
+
+See [SECURITY.md](SECURITY.md) for data flows, the CSP, and how to report a vulnerability.
+
+## Working on the site
+
+- `npm ci`, then `node tools/vendor.mjs` copies Chart.js 4.4.1 into `/assets/vendor` (versions pinned in `package-lock.json`). `node tools/vendor.mjs --fonts` also recopies the fonts; follow it with `tools/subset-fonts.sh` to keep them inside the 110 KB budget.
+- The shared `<head>`, masthead, rail, footer, line art, and the redirect stubs at retired routes are generated by `node tools/stamp.mjs` between `<!-- ci:… -->` markers. Titles, descriptions, routes, and CSP types live in that script; edit it, not the stamped blocks.
+- `node tools/health.mjs --mock` runs the scripted health check (sitemap status, titles, descriptions, favicons, footer links, images, CSP, contrast, keyboard, overflow at 320 to 414) against this checkout with the data APIs answered from `data/`; `--base https://concreteindex.co` runs it against the live site. It needs Playwright (`npm install --no-save playwright`).
+- `node tools/check.mjs` must exit 0 before a deploy: no inline script or style, no `style=` or `on*=` attributes, no em dashes, no third-party subresources, per-page CSP matching the hosts each page fetches, spacing only from `tokens.css`, fonts within budget.
+- `STRICT_PAGES=1 node --test test/methodology.test.js test/builders.test.js` runs the methodology rules against the page modules in `/assets/pages/` and the nightly builders against archived data. `node tools/test-fmt.mjs` proves `ci.fmt` reproduces every page formatter.
+
+## Corrections
+
+Open an issue at [github.com/salarjalinous/concrete-index/issues](https://github.com/salarjalinous/concrete-index/issues) with the page, the figure, and the source record.
 
 ## Author
 
-Built by Salar Jalinous · [salar.jalinous@gmail.com](mailto:salar.jalinous@gmail.com)
-
-
-<!-- deploy: trigger clean Pages build 2026-07-02 -->
+Built by Salar Jalinous. An independent personal project, not affiliated with the City or State of New York or any employer.

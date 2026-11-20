@@ -1,0 +1,41 @@
+name: Methodology tests
+
+# PRD 11.3 / 11.5: the methodology regression tests run on every pull request
+# and on pushes that touch code, under UTC and Europe/Berlin. Read-only: this
+# workflow never commits or pushes, so it needs no place in the main-data-push
+# concurrency group.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    paths:
+      - 'lib/**'
+      - 'tools/**'
+      - 'test/**'
+      - '.github/workflows/**'
+      - '**/*.html'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        tz: ['UTC', 'Europe/Berlin']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: node --test (TZ=${{ matrix.tz }})
+        env:
+          TZ: ${{ matrix.tz }}
+          STRICT_PAGES: '1'
+        run: node --test test/methodology.test.js test/builders.test.js
+      - name: Formatter parity (ci.fmt against every page format)
+        run: node tools/test-fmt.mjs

@@ -1,701 +1,285 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data: https://images.unsplash.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://data.cityofnewyork.us; upgrade-insecure-requests">
-<meta name="referrer" content="strict-origin-when-cross-origin">
+<!-- ci:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' https://data.cityofnewyork.us; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="same-origin">
+<meta name="color-scheme" content="light">
+<title>The Concrete Index · NYC Public Construction Demand</title>
+<meta name="description" content="Where New York City's public construction money stands: capital committed, work awarded and registered, cash paid, each read from its own public ledger.">
+<link rel="canonical" href="https://concreteindex.co/">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="The Concrete Index">
+<meta property="og:title" content="The Concrete Index · NYC Public Construction Demand">
+<meta property="og:description" content="NYC public construction capital, from commitment to cash.">
+<meta property="og:url" content="https://concreteindex.co/">
 <meta property="og:image" content="https://concreteindex.co/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://concreteindex.co/og-image.png">
-<title>The Concrete Index · NYC Public Construction Demand</title>
-<meta name="description" content="The Concrete Index tracks NYC public construction capital, which agencies are awarding work, to whom, and how fast. Built on NYC Open Data, refreshed daily.">
-<meta property="og:title" content="The Concrete Index">
-<meta property="og:description" content="NYC public construction capital, tracked end to end.">
-<meta property="og:url" content="https://concreteindex.co/">
-<link rel="canonical" href="https://concreteindex.co/">
-<!-- BROADSHEET-V1 -->
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23ae4e34%22/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<style>
-:root{
-  --paper:#f7f3ef; --surface:#fefbf8; --band:#f2ede8;
-  --ink:#201611; --navy:#243b53; --muted:#6b5e56; --faint:#968a7f;
-  --line:#ded5ce; --rule:#201611;
-  --accent:#ae4e34; --accent-soft:#eadbd4; --steel:#2f5d8f;
-  --pos:#2f7d52; --neg:#9e362f; --radius:3px;
-  --maxw:1180px; --gut:28px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'Public Sans',-apple-system,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
-a{color:var(--steel);text-decoration:none}
-a:hover{text-decoration:underline}
-.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
-.serif{font-family:'Source Serif 4',Georgia,serif}
-.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
-
-/* ---------- header ---------- */
-header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2px solid var(--ink)}
-.nav{display:flex;align-items:center;justify-content:space-between;height:62px}
-.brand{display:flex;align-items:center;gap:10px;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:20px;letter-spacing:-.01em;color:var(--ink)}
-.brand svg{color:var(--navy);flex-shrink:0}
-.brand .tick{color:var(--accent)}
-.nav-links{display:flex;gap:17px;align-items:center;font-size:13.5px;font-weight:500}
-.nav-links a{color:var(--muted)}
-.nav-links a:hover{color:var(--ink);text-decoration:none}
-.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px}
-.badge-live{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--pos);background:rgba(47,125,82,.1);border:1px solid rgba(47,125,82,.34);border-radius:3px;padding:3px 9px}
-.badge-live .dot{width:6px;height:6px;border-radius:50%;background:var(--pos);animation:pulse 2.4s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* ---------- release-series bar ---------- */
-.series-bar{background:var(--band);border-bottom:1px solid var(--line)}
-.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px var(--gut);max-width:var(--maxw);margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.series-bar b{color:var(--ink);font-weight:600}
-.series-bar .sep{color:var(--faint);padding:0 12px}
-@media(max-width:720px){.series-bar .inner{white-space:normal}}
-
-/* ---------- hero ---------- */
-.hero{padding:46px 0 14px}
-.kicker{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:14px}
-.hero h1{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(32px,4.6vw,46px);line-height:1.06;letter-spacing:-.012em;max-width:840px;color:var(--ink)}
-.hero p.sub{margin-top:17px;font-size:16px;color:var(--muted);max-width:700px}
-.hero .asof{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--faint)}
-.hero .asof strong{color:var(--muted);font-weight:600}
-
-/* ---------- value strip ---------- */
-
-/* ---------- commitment-to-cash span strip ---------- */
-
-/* ---------- controls ---------- */
-.controls{display:flex;flex-wrap:wrap;gap:14px 16px;align-items:center;padding:30px 0 4px}
-.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:2px}
-.seg button{border:0;background:transparent;font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:6px 13px;border-radius:2px;cursor:pointer;transition:all .12s}
-.seg button:hover{color:var(--ink)}
-.seg button.on{background:var(--ink);color:var(--paper)}
-.ctl-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-right:-4px}
-.wt-select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:6px 10px;cursor:pointer}
-.wt-select:focus{outline:2px solid var(--accent)}
-
-/* ---------- KPI tape ---------- */
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:28px 0 8px;border-left:1px solid var(--line)}
-.kpi{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px 18px}
-.kpi.hl{border-top-color:var(--accent)}
-.kpi .k-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
-.kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--ink);line-height:1}
-.kpi.hl .k-value{font-size:38px;color:var(--ink)}
-.kpi:not(.hl) .k-value{color:var(--navy)}
-.kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:8px}
-.kpi .up,.kpi .down{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums;padding:0}
-.kpi .up{color:var(--pos)}
-.kpi .down{color:var(--neg)}
-@media(max-width:560px){.kpi.hl .k-value{font-size:30px}}
-
-/* ---------- section heads ---------- */
-.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:0}
-.sec-head h2{font-family:'Source Serif 4',Georgia,serif;font-size:21px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
-.sec-head .cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em;text-align:right;white-space:nowrap}
-
-/* ---------- cards & grid ---------- */
-.grid{display:grid;gap:22px;padding:30px 0 0}
-.grid.two{grid-template-columns:3fr 2fr}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 22px;box-shadow:0 1px 0 rgba(32,22,17,.04)}
-.card .sec-head{border-bottom-color:var(--ink)}
-.card .h-sub{font-size:12.5px;color:var(--muted);margin-top:9px;margin-bottom:18px}
-.chart-box{position:relative;height:300px}
-.tnote{font-size:11.5px;line-height:1.55;color:var(--muted);margin-top:13px;padding-top:9px;border-top:1px solid var(--line)}
-.chart-box.tall{height:340px}
-
-/* ---------- tables ---------- */
-table{width:100%;border-collapse:collapse;font-size:13.5px}
-th{text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);padding:0 10px 8px;border-bottom:1px solid var(--ink)}
-td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-tr:last-child td{border-bottom:0}
-td.num,th.num{text-align:right}
-td.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
-td .t-title{font-weight:500;color:var(--ink)}
-td .t-sub{font-size:12px;color:var(--muted);margin-top:3px;font-family:'Public Sans',sans-serif}
-.amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
-.pill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.03em;border-radius:3px;padding:2px 6px;white-space:nowrap}
-.pill.hard{background:var(--accent-soft);color:var(--accent)}
-.pill.rel{background:var(--band);color:var(--steel)}
-.rank{color:var(--faint);font-weight:600;width:28px;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
-
-/* ---------- reading box ---------- */
-.readbox{background:var(--band);border-left:3px solid var(--accent);border-radius:0;padding:16px 20px;margin-top:30px;font-size:14px;color:var(--muted)}
-.readbox strong{color:var(--ink);font-weight:600}
-
-/* ---------- methodology ---------- */
-.method{padding:44px 0 10px}
-.method h2{font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:700;letter-spacing:-.012em;color:var(--ink)}
-.method .m-cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em}
-.method-body{margin-top:24px}
-.method h3{font-family:'Public Sans',sans-serif;font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin:24px 0 6px;color:var(--ink)}
-.method p{font-size:14px;color:var(--muted);max-width:820px}
-.method p+p{margin-top:8px}
-.method code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:var(--band);padding:1px 5px;border-radius:3px;border:1px solid var(--line)}
-
-/* ---------- footer ---------- */
-footer{margin-top:54px;background:var(--band);border-top:2px solid var(--ink);padding:30px 0 40px;font-size:13px;color:var(--muted)}
-footer a{color:var(--steel)}
-footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-footer .brand{font-size:17px;color:var(--ink)}
-footer .brand svg{color:var(--navy)}
-footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em}
-
-/* ---------- loading / error ---------- */
-#loader{padding:80px 0;text-align:center;color:var(--muted)}
-.spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-#error{display:none;padding:60px 24px;text-align:center;color:var(--muted)}
-#app{display:none}
-
-@media(max-width:880px){
-  .kpis{grid-template-columns:repeat(2,1fr)}
-  .kpi:nth-child(2){border-right:0}
-  .grid.two{grid-template-columns:1fr}
-}
-@media(max-width:560px){
-  .kpis{grid-template-columns:1fr 1fr}
-  .kpi .k-value{font-size:26px}
-  .hero{padding-top:34px}
-  :root{--maxw:1180px;--gut:18px}
-}
-.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
-@media(max-width:1180px){
-  .menu-btn{display:block}
-  .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:61px;left:calc(-1 * var(--gut));right:calc(-1 * var(--gut));background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px var(--gut);gap:13px;box-shadow:0 10px 24px rgba(32,22,17,.16);z-index:60;max-height:calc(100vh - 62px);overflow-y:auto}
-  .nav-links.open{display:flex}
-}
-
-/* ---------- reduced motion ---------- */
-@media (prefers-reduced-motion: reduce){
-  .badge-live .dot{animation:none}
-  .spinner{animation:none}
-  *{scroll-behavior:auto}
-}
-
-/* ---------- print ---------- */
-@media print{
-  header,.series-bar,.badge-live,.controls,.seg,.menu-btn{display:none !important}
-  body{background:#fff;color:#000}
-  .card{background:#fff !important;box-shadow:none}
-  footer{background:#fff;border-top:1px solid #000;color:#000}
-  footer a,a{color:#000}
-}
-
-/* ---------- display scaling: fill wide / high-resolution screens ---------- */
-@media(min-width:1400px){
-  :root{--maxw:1330px;--gut:34px}
-  body{font-size:15.5px}
-  .kpi .k-value{font-size:33px}
-  .kpi.hl .k-value{font-size:42px}
-  .hero p.sub,.lp-sub{font-size:17.5px;max-width:860px}
-  .hero h1{max-width:960px}
-  .method p{max-width:980px}
-  table{font-size:14px}
-  .chart-box{height:330px}
-  .chart-box.tall{height:376px}
-}
-@media(min-width:1750px){
-  :root{--maxw:1500px;--gut:40px}
-  body{font-size:16px}
-  .kpi .k-value{font-size:35px}
-  .kpi.hl .k-value{font-size:45px}
-  .method p{max-width:1060px}
-  table{font-size:14.5px}
-  .chart-box{height:360px}
-  .chart-box.tall{height:410px}
-}
-@media(min-width:2100px){ :root{--maxw:1620px} }
-/* ---------- narrow: wide tables scroll inside their card, not the page ---------- */
-@media(max-width:900px){
-  .card{overflow-x:auto}
-  .card table{min-width:560px}
-  .sec-head{flex-wrap:wrap}
-  .sec-head .cap{white-space:normal;text-align:left}
-}
-</style>
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/public-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/ci.css">
+<link rel="stylesheet" href="/assets/pages/home.css">
+<meta name="ci:export" content="on">
+<script src="/assets/ci.js" defer></script>
+<script src="/assets/pages/home.js" defer></script>
+<!-- /ci:head -->
 </head>
 <body>
 
-<header>
-  <div class="wrap nav">
-    <div class="brand">
-      <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
-      <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
-    </div>
-    <button class="menu-btn" aria-label="Menu" aria-expanded="false" onclick="const o=this.nextElementSibling.classList.toggle('open');this.setAttribute('aria-expanded',o)">☰</button>
-    <nav class="nav-links">
-      <a href="/pipeline/">Pipeline</a>
-      <a href="/solicitations/">Bidding</a>
-      <a href="/awarded/">Awarded</a>
-      <a href="/funnel/">Funnel</a>
-      <a href="/agency/">Agencies</a>
-      <a href="/regional/">SCA &amp; MTA</a>
-      <a href="/competitive/">Contractors</a>
-      <a href="/contracts/">Contracts</a>
-      <a href="/analysis/">Analysis</a>
-      <a href="/briefing/">Briefing</a>
-      <a href="/about/">About</a>
-      <span class="badge-live"><span class="dot"></span>Live data</span>
-    </nav>
+<!-- ci:header -->
+<a class="ci-skip" href="#content">Skip to content</a>
+<header class="ci-masthead">
+  <div class="wrap ci-masthead__bar">
+    <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="26" height="26" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+    <nav class="ci-utility" aria-label="Site"><a href="/methodology/">Methodology</a><a href="/about/">About</a><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></nav>
+    <button class="ci-menu-btn" type="button" aria-expanded="false" aria-controls="ci-menu"><svg class="ci-i-menu" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#menu"/></svg><svg class="ci-i-close" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#close"/></svg><span class="ci-menu-btn__label">Menu</span></button>
   </div>
+  <nav class="ci-rail" id="ci-menu" aria-label="Sections">
+    <div class="wrap ci-rail__inner">
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-stages">Stages</p><ul class="ci-rail__list" aria-labelledby="ci-g-stages"><li><a href="/pipeline/">Pipeline</a></li><li><a href="/bidding/">Bidding</a></li><li><a href="/awarded/">Awarded</a></li><li><a href="/contracts/">Contracts</a></li><li><a href="/funnel/">Funnel</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-entities">Entities</p><ul class="ci-rail__list" aria-labelledby="ci-g-entities"><li><a href="/agencies/">Agencies</a></li><li><a href="/contractors/">Contractors</a></li><li><a href="/regional/">Regional</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-synthesis">Synthesis</p><ul class="ci-rail__list" aria-labelledby="ci-g-synthesis"><li><a href="/analysis/">Analysis</a></li><li><a href="/briefing/">Briefing</a></li></ul></div>
+      <div class="ci-rail__group ci-rail__group--utility"><p class="ci-rail__label" id="ci-g-site">Site</p><ul class="ci-rail__list" aria-labelledby="ci-g-site"><li><a href="/methodology/">Methodology</a></li><li><a href="/about/">About</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></li></ul></div>
+    </div>
+  </nav>
 </header>
+<!-- /ci:header -->
 
 <div class="series-bar">
-  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-INDEX</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>NYC OPEN DATA, DAILY · DATA.NY.GOV, LIVE</b><span class="sep">·</span>AS OF&nbsp;·&nbsp;<b id="series-asof">–</b></div>
+  <div class="inner" id="series-bar"><span class="sb-seg">SERIES&nbsp;·&nbsp;<b>CI-INDEX</b></span><span class="sb-seg"><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>NYC OPEN DATA · CHECKBOOK NYC</b></span><span class="sb-seg"><span class="sep">·</span>UPDATED&nbsp;·&nbsp;<b id="series-updated" data-home="series-updated">NOV 20, 2026</b></span><span class="sb-seg sb-asof"><span class="sep">·</span>AS OF&nbsp;·&nbsp;<b id="series-asof" data-home="series-asof">OCTOBER 2026</b></span></div>
+</div>
+
+<main id="content" tabindex="-1">
+
+<div class="wrap lp-hero">
+  <div class="lp-hero__lead">
+    <h1 class="thesis"><span class="thesis-line"><span class="thesis-in">NYC funds construction</span></span> <span class="thesis-line"><span class="thesis-in">years before it pays.</span></span></h1>
+    <div class="lp-index">
+      <p class="lp-index__label">The Concrete Index &middot; 2019 = 100</p>
+      <p class="lp-index__row"><span class="lp-num" id="lp-index" data-figure="home.hero.index" data-figure-ref="analysis.kpi.idx" data-home="index">80.3</span><span class="lp-index__delta" id="lp-index-delta"></span></p>
+      <p class="lp-index__window" id="lp-index-window" data-home="index-window">Trailing twelve months, Nov 2025–Oct 2026</p>
+      <p class="lp-num-cap" id="lp-index-cap" data-home="index-cap">A single number for how much new construction work the City is putting out, measured against its 2019 pace. Renewals and $500M megaprojects are stripped out so the reading tracks fresh demand. As of October 2026.</p>
+      <a class="lp-num-how" href="/analysis/#how-its-calculated">How the Concrete Index is calculated</a>
+    </div>
+  </div>
+  <!-- home:flow -->
+  <figure class="flow" id="flow" aria-labelledby="flow-cap" data-sig="4046589262" data-stamp-split="{&quot;awarded&quot;:{&quot;value&quot;:4851812919,&quot;split&quot;:[{&quot;name&quot;:&quot;Transportation&quot;,&quot;value&quot;:1393253391},{&quot;name&quot;:&quot;Environmental Protection&quot;,&quot;value&quot;:1220666311},{&quot;name&quot;:&quot;Design and Construction&quot;,&quot;value&quot;:906768076},{&quot;name&quot;:&quot;Small Business Services&quot;,&quot;value&quot;:586887735},{&quot;name&quot;:&quot;Parks and Recreation&quot;,&quot;value&quot;:277093364},{&quot;name&quot;:&quot;All other&quot;,&quot;value&quot;:467144042}]}}"><div class="flow__bar"><button class="ci-pause flow__pause" type="button" aria-pressed="false" hidden><svg class="flow-i" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#pause"/></svg><svg class="flow-i" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#play"/></svg><span class="flow__pause-label">Pause animation</span></button><p class="flow__dot"><span class="flow__dot-mark" aria-hidden="true"></span>Each dot = <span class="flow__unit" data-figure="home.flow.unit" data-value="1000000000">$1B</span>. Dots move at one speed, which encodes nothing.</p></div><ol class="flow__lanes" id="flow-lanes" data-mode="desktop" data-unit="1000000000" data-scale="1.1123501245237152e-9"><li class="flow-lane" id="lane-committed" data-lane="committed"><div class="flow-lane__label"><span class="flow-lane__n">01</span> <span class="flow-lane__name">Committed</span></div><div class="flow-lane__band"><svg class="flow-band" width="100%" height="120" role="img" aria-label="Committed band, $107.9B on the shared scale" aria-describedby="flow-table" data-h="120"><rect class="flow-band__fill" x="0" y="0" width="100%" height="120"/><g class="flow-band__dots"><circle cx="0.34%" cy="90.18" r="1.75"/><circle cx="1.54%" cy="82.47" r="1.75"/><circle cx="2.57%" cy="88.62" r="1.75"/><circle cx="3.29%" cy="17.43" r="1.75"/><circle cx="4.3%" cy="61.99" r="1.75"/><circle cx="5.08%" cy="115.26" r="1.75"/><circle cx="5.73%" cy="7.97" r="1.75"/><circle cx="6.71%" cy="60.17" r="1.75"/><circle cx="8.08%" cy="105.29" r="1.75"/><circle cx="8.93%" cy="21.83" r="1.75"/><circle cx="9.84%" cy="113.52" r="1.75"/><circle cx="10.81%" cy="81.83" r="1.75"/><circle cx="11.37%" cy="96.35" r="1.75"/><circle cx="12.35%" cy="15.29" r="1.75"/><circle cx="13.37%" cy="54.87" r="1.75"/><circle cx="14.04%" cy="111.3" r="1.75"/><circle cx="15.13%" cy="34.94" r="1.75"/><circle cx="15.94%" cy="96.71" r="1.75"/><circle cx="17.39%" cy="8.45" r="1.75"/><circle cx="18.18%" cy="114.36" r="1.75"/><circle cx="19.2%" cy="38.2" r="1.75"/><circle cx="20.22%" cy="91.73" r="1.75"/><circle cx="20.59%" cy="67.64" r="1.75"/><circle cx="21.89%" cy="6.34" r="1.75"/><circle cx="22.9%" cy="3.49" r="1.75"/><circle cx="23.91%" cy="86.94" r="1.75"/><circle cx="24.25%" cy="67" r="1.75"/><circle cx="25.3%" cy="16.93" r="1.75"/><circle cx="26.24%" cy="28.9" r="1.75"/><circle cx="27.32%" cy="42.39" r="1.75"/><circle cx="28.07%" cy="23.06" r="1.75"/><circle cx="29.31%" cy="85.98" r="1.75"/><circle cx="30.17%" cy="47.67" r="1.75"/><circle cx="31%" cy="5.85" r="1.75"/><circle cx="32.22%" cy="25.75" r="1.75"/><circle cx="33.19%" cy="60.7" r="1.75"/><circle cx="33.77%" cy="74.05" r="1.75"/><circle cx="35.03%" cy="75.1" r="1.75"/><circle cx="35.45%" cy="62.03" r="1.75"/><circle cx="36.77%" cy="81.78" r="1.75"/><circle cx="37.7%" cy="37.22" r="1.75"/><circle cx="38.34%" cy="95.57" r="1.75"/><circle cx="39.16%" cy="104.29" r="1.75"/><circle cx="40.57%" cy="56.78" r="1.75"/><circle cx="41.01%" cy="92.33" r="1.75"/><circle cx="41.85%" cy="64.03" r="1.75"/><circle cx="42.81%" cy="69.66" r="1.75"/><circle cx="43.9%" cy="95.88" r="1.75"/><circle cx="44.9%" cy="14.5" r="1.75"/><circle cx="45.54%" cy="109.16" r="1.75"/><circle cx="46.85%" cy="64.16" r="1.75"/><circle cx="47.76%" cy="91.77" r="1.75"/><circle cx="48.8%" cy="83.85" r="1.75"/><circle cx="49.36%" cy="25.41" r="1.75"/><circle cx="50.32%" cy="66.2" r="1.75"/><circle cx="51.2%" cy="41" r="1.75"/><circle cx="52.06%" cy="79.58" r="1.75"/><circle cx="53.21%" cy="17.53" r="1.75"/><circle cx="54.19%" cy="76.82" r="1.75"/><circle cx="55.32%" cy="13.5" r="1.75"/><circle cx="55.82%" cy="99.18" r="1.75"/><circle cx="56.97%" cy="88.54" r="1.75"/><circle cx="58%" cy="12.66" r="1.75"/><circle cx="58.9%" cy="88.14" r="1.75"/><circle cx="59.43%" cy="73.43" r="1.75"/><circle cx="60.62%" cy="21.77" r="1.75"/><circle cx="61.84%" cy="91.73" r="1.75"/><circle cx="62.26%" cy="97.2" r="1.75"/><circle cx="63.42%" cy="73.44" r="1.75"/><circle cx="64.22%" cy="74.82" r="1.75"/><circle cx="65.06%" cy="15.16" r="1.75"/><circle cx="65.89%" cy="111.51" r="1.75"/><circle cx="67.26%" cy="74.93" r="1.75"/><circle cx="67.75%" cy="79.41" r="1.75"/><circle cx="68.91%" cy="6.68" r="1.75"/><circle cx="70.23%" cy="74.45" r="1.75"/><circle cx="70.66%" cy="32.62" r="1.75"/><circle cx="71.49%" cy="56.21" r="1.75"/><circle cx="72.39%" cy="92.32" r="1.75"/><circle cx="73.67%" cy="83.47" r="1.75"/><circle cx="74.56%" cy="61.12" r="1.75"/><circle cx="75.41%" cy="14.93" r="1.75"/><circle cx="76.64%" cy="47.59" r="1.75"/><circle cx="77.28%" cy="72.35" r="1.75"/><circle cx="78.09%" cy="62.38" r="1.75"/><circle cx="79.4%" cy="15.88" r="1.75"/><circle cx="80.11%" cy="112.82" r="1.75"/><circle cx="81.33%" cy="12.91" r="1.75"/><circle cx="81.71%" cy="53.92" r="1.75"/><circle cx="82.79%" cy="44.32" r="1.75"/><circle cx="83.81%" cy="29.5" r="1.75"/><circle cx="84.41%" cy="96.64" r="1.75"/><circle cx="85.46%" cy="92.31" r="1.75"/><circle cx="86.54%" cy="104.58" r="1.75"/><circle cx="87.62%" cy="109.19" r="1.75"/><circle cx="88.17%" cy="53.71" r="1.75"/><circle cx="89.6%" cy="100.05" r="1.75"/><circle cx="90.42%" cy="45.66" r="1.75"/><circle cx="91.48%" cy="20.69" r="1.75"/><circle cx="92.19%" cy="36.71" r="1.75"/><circle cx="93.16%" cy="4.92" r="1.75"/><circle cx="93.97%" cy="107.14" r="1.75"/><circle cx="94.84%" cy="21.03" r="1.75"/><circle cx="96.05%" cy="116.58" r="1.75"/><circle cx="96.74%" cy="100.36" r="1.75"/><circle cx="97.86%" cy="30.52" r="1.75"/><circle cx="98.63%" cy="106.2" r="1.75"/><circle cx="99.22%" cy="72.99" r="1.75"/></g></svg></div><div class="flow-lane__value"><span class="flow-lane__v" data-figure="home.flow.committed" data-figure-ref="pipeline.kpi.unspent" data-value="107879702042" data-asof="2026-11-20T15:30:05Z">$107.9B</span></div><p class="flow-lane__meta">Full capital plan · stock, latest plan · as of Nov 20, 2026</p><div class="flow-lane__tools"><details class="flow-def"><summary><span>Definition</span></summary><div class="flow-def__panel"><p>For each project, funded, unspent dollars are its total budget (city plus non-city funds) minus spending to date: money the City has funded in the capital plan but not yet spent. This is the page's headline measure of forward demand, the work still ahead on funded projects. It is a planning measure, not encumbered or bondable backlog: budgets shift between plan releases, and a place in the plan is no guarantee of timing.</p><p class="flow-def__src">Pipeline methodology · <a href="/methodology/#pipeline">Methodology</a></p></div></details></div><a class="flow-lane__go" href="/pipeline/">Pipeline</a></li><li class="flow-lane" id="lane-awarded" data-lane="awarded"><div class="flow-lane__label"><span class="flow-lane__n">02</span> <span class="flow-lane__name">Awarded</span></div><div class="flow-lane__band"><svg class="flow-band is-thin" width="100%" height="5.4" role="img" aria-label="Awarded band, $4.85B on the shared scale" aria-describedby="flow-table" data-h="5.4"><rect class="flow-band__fill" x="0" y="0" width="100%" height="5.4"/><g class="flow-band__split"><rect class="flow-sw-0" x="0" y="0" width="100%" height="1.55"/><rect class="flow-sw-1" x="0" y="1.55" width="100%" height="1.36"/><rect class="flow-split-gap" x="0" y="1.05" width="100%" height="1"/><rect class="flow-sw-0" x="0" y="2.91" width="100%" height="1.01"/><rect class="flow-split-gap" x="0" y="2.41" width="100%" height="1"/><rect class="flow-sw-1" x="0" y="3.92" width="100%" height="0.65"/><rect class="flow-split-gap" x="0" y="3.42" width="100%" height="1"/><rect class="flow-sw-0" x="0" y="4.57" width="100%" height="0.31"/><rect class="flow-split-gap" x="0" y="4.07" width="100%" height="1"/><rect class="flow-sw-o" x="0" y="4.88" width="100%" height="0.52"/><rect class="flow-split-gap" x="0" y="4.38" width="100%" height="1"/></g><g class="flow-band__dots"><circle cx="7.96%" cy="2.7" r="2"/><circle cx="36.99%" cy="2.7" r="2"/><circle cx="51.83%" cy="2.7" r="2"/><circle cx="68.11%" cy="2.7" r="2"/><circle cx="88.63%" cy="2.7" r="2"/></g></svg></div><div class="flow-lane__value"><span class="flow-lane__v" data-figure="home.flow.awarded" data-figure-ref="awarded.kpi.total" data-value="4851812919" data-asof="2026-11-20T15:30:05Z">$4.85B</span></div><p class="flow-lane__meta">Gross · City Record · Nov 2025–Oct 2026 · as of Nov 20, 2026</p><div class="flow-lane__tools"><details class="flow-def"><summary><span>Definition</span></summary><div class="flow-def__panel"><p>Awarded is trailing-twelve-month construction award value from the City Record (dataset qyyg-4tf5), as on the “Awarded” page. This figure is gross: deduplicated to one record per procurement but still inclusive of renewals, extensions, and awards of $500M and above.</p><p class="flow-def__src">Funnel methodology · <a href="/methodology/#funnel">Methodology</a></p></div></details><button class="flow-lane__split" type="button" aria-pressed="false" aria-controls="split-awarded" aria-label="Split Awarded by agency" hidden>Split</button></div><a class="flow-lane__go" href="/awarded/">Awarded</a><div class="flow-split" id="split-awarded" hidden><p class="flow-split__h">Awarded by agency, top five and All other</p><ol><li><span class="flow-split__sw flow-sw-0" aria-hidden="true"></span><span class="flow-split__name">Transportation</span><span class="flow-split__v">$1.39B</span></li><li><span class="flow-split__sw flow-sw-1" aria-hidden="true"></span><span class="flow-split__name">Environmental Protection</span><span class="flow-split__v">$1.22B</span></li><li><span class="flow-split__sw flow-sw-0" aria-hidden="true"></span><span class="flow-split__name">Design and Construction</span><span class="flow-split__v">$907M</span></li><li><span class="flow-split__sw flow-sw-1" aria-hidden="true"></span><span class="flow-split__name">Small Business Services</span><span class="flow-split__v">$587M</span></li><li><span class="flow-split__sw flow-sw-0" aria-hidden="true"></span><span class="flow-split__name">Parks and Recreation</span><span class="flow-split__v">$277M</span></li><li><span class="flow-split__sw flow-sw-o" aria-hidden="true"></span><span class="flow-split__name">All other</span><span class="flow-split__v">$467M</span></li></ol></div></li><li class="flow-lane" id="lane-registered" data-lane="registered"><div class="flow-lane__label"><span class="flow-lane__n">03</span> <span class="flow-lane__name">Registered</span></div><div class="flow-lane__band"><svg class="flow-band" width="100%" height="34.52" role="img" aria-label="Registered band, $31.0B on the shared scale" aria-describedby="flow-table" data-h="34.52"><rect class="flow-band__fill" x="0" y="0" width="100%" height="34.52"/><g class="flow-band__dots"><circle cx="0.69%" cy="7.27" r="1.75"/><circle cx="5.51%" cy="13.82" r="1.75"/><circle cx="7.45%" cy="24.54" r="1.75"/><circle cx="10.36%" cy="27.66" r="1.75"/><circle cx="14.3%" cy="6.43" r="1.75"/><circle cx="17.35%" cy="10.88" r="1.75"/><circle cx="21.78%" cy="7" r="1.75"/><circle cx="24.22%" cy="32.59" r="1.75"/><circle cx="26.93%" cy="3.44" r="1.75"/><circle cx="30.3%" cy="9.01" r="1.75"/><circle cx="33.68%" cy="10.72" r="1.75"/><circle cx="37.11%" cy="31.29" r="1.75"/><circle cx="39.27%" cy="25.28" r="1.75"/><circle cx="44.21%" cy="12.9" r="1.75"/><circle cx="46.25%" cy="22.12" r="1.75"/><circle cx="51.04%" cy="30.44" r="1.75"/><circle cx="52.88%" cy="9.19" r="1.75"/><circle cx="57.12%" cy="22.71" r="1.75"/><circle cx="58.87%" cy="24.64" r="1.75"/><circle cx="61.89%" cy="22.01" r="1.75"/><circle cx="66.64%" cy="27.75" r="1.75"/><circle cx="68.75%" cy="32.15" r="1.75"/><circle cx="72.1%" cy="26.92" r="1.75"/><circle cx="75.4%" cy="29.82" r="1.75"/><circle cx="78.64%" cy="29.11" r="1.75"/><circle cx="81.64%" cy="20.34" r="1.75"/><circle cx="85.45%" cy="24.47" r="1.75"/><circle cx="89.63%" cy="2.45" r="1.75"/><circle cx="92.07%" cy="28.42" r="1.75"/><circle cx="94.53%" cy="31.02" r="1.75"/><circle cx="99.17%" cy="16.37" r="1.75"/></g></svg></div><div class="flow-lane__value"><span class="flow-lane__v" data-figure="home.flow.registered" data-figure-ref="contracts.kpi.registered" data-value="31029022599" data-asof="2026-11-20">$31.0B</span></div><p class="flow-lane__meta">Registered contracts · FY21–26 + FY27 YTD · as of Nov 20, 2026</p><div class="flow-lane__tools"><details class="flow-def"><summary><span>Definition</span></summary><div class="flow-def__panel"><p>The index covers construction contracts registered with the City, drawn from the Comptroller's Checkbook NYC registered-contract record (expense contracts in registered status) that Checkbook lists under the fiscal years in the current build. Original is the contract value at registration; current reflects registered modifications.</p><p class="flow-def__src">Contracts methodology · <a href="/methodology/#contracts">Methodology</a></p></div></details></div><a class="flow-lane__go" href="/contracts/">Contracts</a></li><li class="flow-lane" id="lane-paid" data-lane="paid"><div class="flow-lane__label"><span class="flow-lane__n">04</span> <span class="flow-lane__name">Paid</span></div><div class="flow-lane__band"><svg class="flow-band" width="100%" height="19.14" role="img" aria-label="Paid band, $17.2B on the shared scale" aria-describedby="flow-table" data-h="19.14"><rect class="flow-band__fill" x="0" y="0" width="100%" height="19.14"/><g class="flow-band__dots"><circle cx="1.82%" cy="8.74" r="1.75"/><circle cx="10.28%" cy="16.04" r="1.75"/><circle cx="14.67%" cy="11.73" r="1.75"/><circle cx="21.15%" cy="15.79" r="1.75"/><circle cx="24.63%" cy="6.38" r="1.75"/><circle cx="30.9%" cy="2.16" r="1.75"/><circle cx="38.55%" cy="7.13" r="1.75"/><circle cx="43.1%" cy="16.57" r="1.75"/><circle cx="49.88%" cy="11.81" r="1.75"/><circle cx="57.08%" cy="9.4" r="1.75"/><circle cx="61.86%" cy="2.05" r="1.75"/><circle cx="67.27%" cy="12.67" r="1.75"/><circle cx="73.03%" cy="16.13" r="1.75"/><circle cx="80.43%" cy="14.56" r="1.75"/><circle cx="84.59%" cy="5.81" r="1.75"/><circle cx="89.99%" cy="14.27" r="1.75"/><circle cx="95.68%" cy="14.27" r="1.75"/></g></svg></div><div class="flow-lane__value"><span class="flow-lane__v" data-figure="home.flow.paid" data-figure-ref="funnel.kpi.paid" data-value="17211252053" data-asof="2026-11-20">$17.2B</span></div><p class="flow-lane__meta">Cumulative paid · FY21–26 + FY27 YTD · as of Nov 20, 2026<br><span class="flow-lane__ratio">55% of Registered, same contracts</span></p><div class="flow-lane__tools"><details class="flow-def"><summary><span>Definition</span></summary><div class="flow-def__panel"><p>Paid (Checkbook) is a separate reading drawn from the Comptroller's Checkbook NYC: paid to date, as of the file date, on registered construction contracts to named vendors, City scope, for the contracts Checkbook lists under the fiscal years Checkbook publishes. It is a cumulative figure, not a sum of payments made within those years, and the in-progress fiscal year is still adding contracts.</p><p class="flow-def__src">Funnel methodology · <a href="/methodology/#funnel">Methodology</a></p></div></details></div><a class="flow-lane__go" href="/funnel/">Funnel</a></li></ol><figcaption class="flow__note" id="flow-cap">Four separate ledgers, not one flow. Each band is sized to its own dollar total on one shared scale. The ledgers cover different scopes and time windows, so no band is a share of the one above it, and the four are never added together.</figcaption><div class="flow__scale"><p class="flow__scale-item"><svg class="flow__scale-bar" width="24" height="11.12" aria-hidden="true" focusable="false"><rect x="0" y="0" width="24" height="11.12"/></svg><span><span class="flow__scale-amt">$10B</span> at this thickness. Band thickness: dollars, one scale for all four.</span></p><details class="flow__table" id="flow-table-box"><summary><svg class="flow-i" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#table"/></svg><span>View as table</span></summary><div class="ci-table-wrap" role="region" tabindex="0" aria-label="Money-flow values as a table"><table class="ci-table flow-table" id="flow-table"><caption class="ci-vh">The four ledgers of the money-flow drawing: value, scope, window, and as-of date, then each split lane by agency.</caption><thead><tr><th scope="col">Ledger</th><th scope="col" class="num">Value</th><th scope="col">Scope</th><th scope="col">Window</th><th scope="col">As of</th></tr></thead><tbody><tr><th scope="row">01 Committed</th><td class="num">$107.9B</td><td>Full City capital plan: unspent budget of active projects, one record per agency and FMS ID, close-out excluded</td><td>stock, latest plan</td><td>Nov 20, 2026</td></tr><tr><th scope="row">02 Awarded, gross</th><td class="num">$4.85B</td><td>City Record construction award notices, one record per PIN at its largest amount; renewals, extensions, and $500M+ awards included</td><td>Nov 2025–Oct 2026</td><td>Nov 20, 2026</td></tr><tr><th scope="row">03 Registered</th><td class="num">$31.0B</td><td>Current registered amounts of construction expense contracts to named vendors, City scope</td><td>FY21–26 + FY27 YTD</td><td>Nov 20, 2026</td></tr><tr><th scope="row">04 Paid, cumulative paid</th><td class="num">$17.2B</td><td>Cumulative paid to date on the same registered contracts</td><td>FY21–26 + FY27 YTD</td><td>Nov 20, 2026</td></tr></tbody><tbody><tr><th scope="rowgroup" colspan="5" class="flow-table__group">Committed by agency</th></tr><tr><td colspan="5">No agency split available for this build.</td></tr></tbody><tbody><tr><th scope="rowgroup" colspan="5" class="flow-table__group">Awarded by agency</th></tr><tr><th scope="row">Transportation</th><td class="num">$1.39B</td><td colspan="3">Awarded, Nov 2025–Oct 2026</td></tr><tr><th scope="row">Environmental Protection</th><td class="num">$1.22B</td><td colspan="3">Awarded, Nov 2025–Oct 2026</td></tr><tr><th scope="row">Design and Construction</th><td class="num">$907M</td><td colspan="3">Awarded, Nov 2025–Oct 2026</td></tr><tr><th scope="row">Small Business Services</th><td class="num">$587M</td><td colspan="3">Awarded, Nov 2025–Oct 2026</td></tr><tr><th scope="row">Parks and Recreation</th><td class="num">$277M</td><td colspan="3">Awarded, Nov 2025–Oct 2026</td></tr><tr><th scope="row">All other</th><td class="num">$467M</td><td colspan="3">Awarded, Nov 2025–Oct 2026</td></tr></tbody><tbody><tr><th scope="rowgroup" colspan="5" class="flow-table__group">Registered by agency</th></tr><tr><td colspan="5">No agency split is published for this ledger.</td></tr></tbody><tbody><tr><th scope="rowgroup" colspan="5" class="flow-table__group">Paid by agency</th></tr><tr><td colspan="5">No agency split is published for this ledger.</td></tr></tbody></table></div></details></div></figure>
+  <!-- /home:flow -->
 </div>
 
 <div class="wrap">
-<style id="lp-css">
-.lp-hero{max-width:860px;padding:58px 0 4px}
-.lp-hero .kicker{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px}
-.lp-hero h1{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(31px,4.5vw,49px);line-height:1.07;letter-spacing:-.015em;color:var(--ink);margin:0 0 18px}
-.lp-sub{font-family:'Public Sans',sans-serif;font-size:17px;line-height:1.55;color:var(--muted);max-width:690px;margin:0}
-.lp-hero-num{margin:32px 0 4px;border-top:2px solid var(--accent);padding-top:14px;max-width:560px}
-.lp-num-label{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
-.lp-num{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:clamp(44px,6.6vw,62px);line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
-.lp-num-cap{font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.55;color:var(--muted);margin-top:10px;max-width:520px}
-.lp-num-how{display:inline-block;margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--steel);text-decoration:none}
-.lp-num-how:hover{color:var(--accent)}
-.photo-band{position:relative;height:230px;background-size:cover;background-position:center 44%;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);filter:sepia(.15) saturate(.68) contrast(1.03) brightness(.98);margin:34px 0 0}
-.ph-credit{position:absolute;right:10px;bottom:8px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.04em;color:rgba(247,243,239,.92);background:rgba(32,22,17,.55);padding:2px 8px;border-radius:3px}
-@media(max-width:560px){.photo-band{height:150px}}
-.lp-funnel{display:flex;align-items:stretch;gap:0;margin:48px auto 0;max-width:980px}
-.ff-stage{flex:1;display:flex;flex-direction:column;gap:4px;padding:18px 20px;background:var(--surface);border:1px solid var(--line);text-decoration:none}
-.ff-stage:hover{border-color:var(--accent);text-decoration:none}
-.ff-stage.ff-mid{border-color:var(--navy)}
-.ff-k{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:18px;color:var(--ink)}
-.ff-stage.ff-mid .ff-k{color:var(--navy)}
-.ff-d{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
-.ff-arrow{display:flex;align-items:center;padding:0 13px;color:var(--accent);font-size:21px;font-family:'IBM Plex Mono',monospace}
-.lp-funnel-cap{font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.55;color:var(--muted);max-width:980px;margin:12px auto 0;text-align:center}
-.lp-stats{display:grid;grid-template-columns:repeat(4,1fr);max-width:980px;margin:50px auto 0;border-top:2px solid var(--ink)}
-.lp-stat{padding:16px 16px 18px;text-decoration:none;border-right:1px solid var(--line)}
-.lp-stat:last-child{border-right:none}
-.lp-stat:hover{background:var(--band)}
-.ls-v{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:clamp(20px,2.3vw,26px);color:var(--navy);font-variant-numeric:tabular-nums;line-height:1}
-.ls-k{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:14px;color:var(--ink);margin-top:8px}
-.ls-d{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-top:5px;line-height:1.45}
-.lp-adjust{max-width:980px;margin:50px auto 0;border-top:2px solid var(--ink);padding-top:0}
-.lp-adjust-inner{display:grid;grid-template-columns:1.15fr 1fr;gap:0;align-items:stretch}
-.lp-adjust-l{padding:22px 26px 22px 0;border-right:1px solid var(--line)}
-.lp-adjust-k{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
-.lp-adjust-h{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:21px;line-height:1.18;color:var(--ink);margin:0 0 10px}
-.lp-adjust-d{font-family:'Public Sans',sans-serif;font-size:13.5px;line-height:1.55;color:var(--muted);margin:0 0 14px}
-.lp-adjust-go{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--steel)}
-.lp-adjust a.lp-adjust-go:hover{color:var(--accent)}
-.lp-adjust-r{padding:22px 0 22px 26px;display:flex;flex-direction:column;justify-content:center;gap:14px}
-.lp-pair{display:flex;align-items:center;gap:14px}
-.lp-pair .bar-wrap{flex:1;height:18px;background:var(--band);border:1px solid var(--line);position:relative;overflow:hidden}
-.lp-pair .bar{position:absolute;left:0;top:0;bottom:0;width:0;transition:width .6s ease}
-.lp-pair.nom .bar{background:var(--navy)}
-.lp-pair.adj .bar{background:var(--accent)}
-.lp-pair .lp-pair-lab{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);width:92px;flex-shrink:0}
-.lp-pair .lp-pair-v{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:18px;color:var(--ink);font-variant-numeric:tabular-nums;width:56px;text-align:right;flex-shrink:0}
-.lp-adjust-gap{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:11px;margin-top:2px}
-.lp-adjust-gap b{color:var(--neg);font-weight:600}
-@media(max-width:680px){
-  .lp-adjust-inner{grid-template-columns:1fr}
-  .lp-adjust-l{border-right:none;border-bottom:1px solid var(--line);padding:20px 0}
-  .lp-adjust-r{padding:20px 0}
-}
-.lp-thesis{max-width:860px;margin:52px auto 0}
-.lp-thesis p{font-family:'Public Sans',sans-serif;font-size:15.5px;line-height:1.66;color:var(--ink);margin:0 0 12px}
-.lp-thesis p:last-child{margin-bottom:0}
-.lp-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:980px;margin:46px auto 0}
-.lp-card{display:block;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);padding:20px 22px;text-decoration:none}
-.lp-card:hover{border-color:var(--accent);text-decoration:none}
-.lp-card:hover .lc-go{color:var(--accent)}
-.lc-k{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
-.lc-t{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:19px;line-height:1.18;color:var(--ink);margin:7px 0}
-.lc-d{font-family:'Public Sans',sans-serif;font-size:13.5px;line-height:1.5;color:var(--muted)}
-.lc-go{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--steel);margin-top:12px;display:inline-block}
-.lp-card-quiet{border-left-color:var(--navy)}
-@media(max-width:680px){
-  .lp-hero{padding-top:40px}
-  .lp-funnel{flex-direction:column}
-  .ff-arrow{justify-content:center;padding:8px 0;transform:rotate(90deg)}
-  .lp-stats{grid-template-columns:repeat(2,1fr);border-top:none}
-  .lp-stat{border:1px solid var(--line)}
-  .lp-cards{grid-template-columns:1fr}
-}
-</style>
-  <section class="lp-hero">
-    <div class="kicker">The demand side of NYC public construction</div>
-    <h1>Every construction award notice in the City Record, totaled on the spot.</h1>
-    <p class="lp-sub">It tracks New York City public construction from the budget that funds a project to the payments that settle it, drawn from the public record and refreshed daily.</p>
-    <div class="lp-hero-num">
-      <div class="lp-num-label">The Concrete Index &middot; 2019 = 100</div>
-      <div class="lp-num" id="lp-index">&ndash;</div>
-      <div class="lp-num-cap" id="lp-index-cap">A single number for how much new construction work the City is putting out, measured against its 2019 pace. Renewals and $500M megaprojects are stripped out so the reading tracks fresh demand.</div>
-      <a class="lp-num-how" href="/analysis/#how-its-calculated">&rarr; How the Concrete Index is calculated</a>
+  <section class="lp-tape" aria-label="Four readings the drawing does not show">
+    <div class="ci-tape">
+      <a class="ci-tile lp-tile" href="/analysis/" data-reveal><span class="ci-tile__label">Index vs a year ago</span><span class="ci-tile__value" id="kpi-yoy" data-figure="home.kpi.index-yoy" data-figure-ref="analysis.kpi.yoy" aria-label="no data">–</span><span class="ci-tile__caption" id="kpi-yoy-cap">Concrete Index against twelve months earlier · Analysis</span></a>
+      <a class="ci-tile lp-tile" href="/funnel/" data-reveal><span class="ci-tile__label">Spent, TTM</span><span class="ci-tile__value" id="kpi-spent" data-figure="home.kpi.spent.ttm" data-figure-ref="funnel.kpi.spent.ttm" aria-label="no data">–</span><span class="ci-tile__caption" id="kpi-spent-cap">Capital-plan outlays between plan snapshots, trailing year; not the same ledger as Paid.</span></a>
+      <a class="ci-tile lp-tile" href="/funnel/" data-reveal><span class="ci-tile__label">Backlog coverage</span><span class="ci-tile__value" id="kpi-coverage" data-figure="home.kpi.coverage" data-figure-ref="funnel.kpi.coverage" aria-label="no data">–</span><span class="ci-tile__caption" id="kpi-coverage-cap">Open pipeline over trailing-year spending · Funnel</span></a>
+      <a class="ci-tile lp-tile" href="/bidding/" data-reveal><span class="ci-tile__label">Open solicitations</span><span class="ci-tile__value" id="st-sol" data-figure="home.kpi.open-solicitations" data-figure-ref="bidding.list.count" data-home="sol">76</span><span class="ci-tile__caption" id="st-sol-cap" data-home="sol-cap">Construction notices still open for bids · Bidding</span></a>
     </div>
+  </section>
+
+  <section class="lp-sec lp-steps" aria-labelledby="h-steps">
+    <div class="sec-head"><h2 id="h-steps"><span class="ci-num">01</span>How money moves</h2></div>
+    <div class="steps">
+      <ol class="steps__list">
+        <li class="step is-on" data-step="0">
+          <div class="step__art"><!-- ci:art stage-committed ci-art step__svg --><svg class="ci-art step__svg" viewBox="0 0 320 240" width="320" height="240" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+<g stroke-width="1.5"><path d="M160 60L263.9 120L160 180L56.1 120Z"/><path d="M56.1 120V150L160 210L263.9 150V120M160 180V210"/><path d="M160 90v-12M212 120v-12M160 150v-12M108 120v-12"/><path d="M160 155L177.3 165L164.3 172.5L147 162.5Z"/></g>
+<g stroke-width="1">
+<path d="M64 124.6v30M72 129.2v30M80 133.8v30M88 138.4v30M96 143v30M104 147.7v30M112 152.3v30M120 156.9v30M128 161.5v30M136 166.1v30M144 170.7v30M152 175.4v30"/>
+<path d="M168 175.4v30M184 166.1v30M200 156.9v30M216 147.7v30M232 138.4v30M248 129.2v30"/>
+<path d="M56.1 137c18 6 34 19 52 26s36 18 51.9 30M160 194c18-9 34-19 52-28s36-15 51.9-30"/>
+<path d="M160 90L212 120L160 150L108 120Z"/>
+<path d="M155.7 157.5L173 167.5M151.3 160L168.7 170M168.7 160L155.7 167.5"/>
+<path d="M84 112v-3M90 108v-3M236 112v-3M241 116v-3M200 150v-3M120 150v-3M196 96v-3M124 96v-3"/>
+<path stroke-dasharray="3 4" d="M108 120V60M160 150V90M212 120V60M160 90V30M160 30L212 60L160 90L108 60Z"/>
+</g>
+<path class="ci-accent" stroke-width="1.5" d="M212 108l9 3-9 3"/>
+</g></svg><!-- /ci:art --></div>
+          <div class="step__text">
+            <h3 class="step__h"><span class="step__n">01</span>The capital plan sets money aside</h3>
+            <p>Each project in the City's capital plan carries a budget years before a contract is let. Committed is what remains unspent on active projects: <span class="step__fig" data-flow-fig="committed" data-figure="home.steps.committed" data-figure-ref="home.flow.committed" data-home="flow-committed">$107.9B</span> in the latest plan.</p>
+            <a class="step__go" href="/pipeline/">Pipeline</a>
+          </div>
+        </li>
+        <li class="step" data-step="1">
+          <div class="step__art"><!-- ci:art stage-awarded ci-art step__svg --><svg class="ci-art step__svg" viewBox="0 0 320 240" width="320" height="240" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+<g stroke-width="1.5"><path d="M160 60L263.9 120L160 180L56.1 120Z"/><path d="M56.1 120V150L160 210L263.9 150V120M160 180V210"/>
+<path d="M160 60v-14M177.3 70v-14M194.6 80v-14M212 90v-14M229.3 100v-14M246.6 110v-14M263.9 120v-14M142.7 70v-14M125.4 80v-14M108 90v-14M90.7 100v-14M73.4 110v-14M56.1 120v-14"/>
+<path d="M218.9 116L243.1 130V112L218.9 98ZM243.1 130L258.7 121V103L243.1 112M218.9 98L234.5 89L258.7 103"/>
+<path d="M160 90L212 120L160 150L108 120Z"/>
+<circle cx="118" cy="153" r="4"/><circle cx="126" cy="153" r="4"/><circle cx="122" cy="146" r="4"/></g>
+<g stroke-width="1">
+<path d="M64 124.6v30M72 129.2v30M80 133.8v30M88 138.4v30M96 143v30M104 147.7v30M112 152.3v30M120 156.9v30M128 161.5v30M136 166.1v30M144 170.7v30M152 175.4v30"/>
+<path d="M168 175.4v30M184 166.1v30M200 156.9v30M216 147.7v30M232 138.4v30M248 129.2v30"/>
+<path d="M56.1 137c18 6 34 19 52 26s36 18 51.9 30M160 194c18-9 34-19 52-28s36-15 51.9-30"/>
+<path d="M160 55L263.9 115M160 49L263.9 109M160 55L56.1 115M160 49L56.1 109"/>
+<path d="M222 99.8v18M225 101.5v18M236 107.9v18M239 109.6v18M242 111.4v18"/>
+<path d="M247 119v-8l6-3.5v8z"/>
+<path d="M160 90v10M160 100L203.3 125M160 100L116.7 125"/>
+<path d="M166 93.5v10M171 96.3v10M176 99.2v10M181 102.1v10M186 105v10M191 107.9v10M196 110.8v10M201 113.7v10M206 116.5v7"/>
+<path d="M154 93.5v10M150 95.8v10M146 98.1v10M142 100.4v10M138 102.7v10M134 105v10M130 107.3v10M126 109.6v10M122 111.9v10M118 114.2v8"/>
+<path d="M124 142.5l-26-15M120 149.5l-26-15M130 149.5l-26-15M114 156.5l-26-15"/>
+<path d="M84 112v-3M90 108v-3M240 131v-3M200 150v-3M80 120v-3"/>
+</g>
+<path class="ci-accent" stroke-width="1.5" d="M227.5 121L232.7 124V112L227.5 109Z"/>
+</g></svg><!-- /ci:art --></div>
+          <div class="step__text">
+            <h3 class="step__h"><span class="step__n">02</span>Agencies award the work</h3>
+            <p>When a project is ready, an agency bids it out and publishes the award in the City Record. Award notices over the last twelve full months total <span class="step__fig" data-flow-fig="awarded" data-figure="home.steps.awarded" data-figure-ref="home.flow.awarded" data-home="flow-awarded">$4.85B</span>, including renewals and $500M+ awards.</p>
+            <a class="step__go" href="/awarded/">Awarded</a>
+          </div>
+        </li>
+        <li class="step" data-step="2">
+          <div class="step__art"><!-- ci:art stage-registered ci-art step__svg --><svg class="ci-art step__svg" viewBox="0 0 320 240" width="320" height="240" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+<g stroke-width="1.5"><path d="M160 60L263.9 120L160 180L56.1 120Z"/><path d="M56.1 120V150L160 210L263.9 150V120M160 180V210"/>
+<path d="M160 90L212 120L160 150L108 120Z"/>
+<path d="M212 120V60M186 135V101M160 150V116M134 135V101M108 120V60M186 105V45M134 105V45"/>
+<path d="M108 90L134 105L160 120L186 105L212 90"/>
+<path d="M134 75L160 90L186 105M186 75L160 90L134 105"/>
+<path d="M212 60L186 45L160 30L134 45L108 60"/></g>
+<g stroke-width="1">
+<path d="M64 124.6v30M72 129.2v30M80 133.8v30M88 138.4v30M96 143v30M104 147.7v30M112 152.3v30M120 156.9v30M128 161.5v30M136 166.1v30M144 170.7v30M152 175.4v30"/>
+<path d="M168 175.4v30M184 166.1v30M200 156.9v30M216 147.7v30M232 138.4v30M248 129.2v30"/>
+<path d="M56.1 137c18 6 34 19 52 26s36 18 51.9 30M160 194c18-9 34-19 52-28s36-15 51.9-30"/>
+<path d="M160 90V30M186 105V45M160 120V60"/>
+<path d="M160 60L186 75L212 90M160 60L134 75L108 90"/>
+<path d="M186 45L160 60L134 45"/>
+<path d="M160 90L186 75M186 105L160 60"/>
+<path d="M127.5 78.8L153.5 93.8M121 82.5L147 97.5M114.5 86.3L140.5 101.3"/>
+<path d="M118 126l8 4.6M196 126l-8 4.6M150 142l6 3.5M170 142l-6 3.5"/>
+<path d="M84 112v-3M90 108v-3M236 112v-3M241 116v-3M220 146v-3M100 146v-3"/>
+</g>
+<g class="ci-accent" stroke-width="1.5"><circle cx="212" cy="90" r="2.5"/><path d="M216 86l4-4M217 91h5M215 94l3 3"/></g>
+</g></svg><!-- /ci:art --></div>
+          <div class="step__text">
+            <h3 class="step__h"><span class="step__n">03</span>The Comptroller registers the contract</h3>
+            <p>A contract becomes a public obligation when the Comptroller registers it. The construction contracts Checkbook NYC lists for the current build carry <span class="step__fig" data-flow-fig="registered" data-figure="home.steps.registered" data-figure-ref="home.flow.registered" data-home="flow-registered">$31.0B</span> in current registered amounts.</p>
+            <a class="step__go" href="/contracts/">Contracts</a>
+          </div>
+        </li>
+        <li class="step" data-step="3">
+          <div class="step__art"><!-- ci:art stage-paid ci-art step__svg --><svg class="ci-art step__svg" viewBox="0 0 320 240" width="320" height="240" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+<g stroke-width="1.5"><path d="M160 60L263.9 120L160 180L56.1 120Z"/><path d="M56.1 120V150L160 210L263.9 150V120M160 180V210"/><circle cx="84" cy="128" r="6"/><circle cx="240" cy="122" r="6"/></g>
+<g stroke-width="2"><path d="M108 120L160 150L212 120V48L160 18L108 48ZM160 150V78L212 48M160 78L108 48"/></g>
+<g stroke-width="1">
+<path d="M64 124.6v30M72 129.2v30M80 133.8v30M88 138.4v30M96 143v30M104 147.7v30M112 152.3v30M120 156.9v30M128 161.5v30M136 166.1v30M144 170.7v30M152 175.4v30"/>
+<path d="M168 175.4v30M184 166.1v30M200 156.9v30M216 147.7v30M232 138.4v30M248 129.2v30"/>
+<path d="M56.1 137c18 6 34 19 52 26s36 18 51.9 30M160 194c18-9 34-19 52-28s36-15 51.9-30"/>
+<path d="M160 132L212 102M160 114L212 84M160 96L212 66M108 102L160 132M108 84L160 114M108 66L160 96"/>
+<path d="M112 50.3v72M116 52.6v72M120 54.9v72M124 57.2v72M128 59.5v72M132 61.8v72M136 64.2v72M140 66.5v72M144 68.8v72M148 71.1v72M152 73.4v72M156 75.7v72"/>
+<path d="M205 119L196.3 124V116L205 111ZM175.5 136L166.9 141V133L175.5 128ZM205 101L196.3 106V98L205 93ZM190.3 109.5L181.6 114.5V106.5L190.3 101.5ZM175.5 118L166.9 123V115L175.5 110ZM205 83L196.3 88V80L205 75ZM190.3 91.5L181.6 96.5V88.5L190.3 83.5ZM175.5 100L166.9 105V97L175.5 92ZM205 65L196.3 70V62L205 57ZM190.3 73.5L181.6 78.5V70.5L190.3 65.5ZM175.5 82L166.9 87V79L175.5 74Z"/>
+<path d="M160 24L202 48L160 72L118 48Z"/>
+<path d="M100 120L160 155L220 120"/>
+<path d="M84 134v6M240 128v6M80 125l6 6M81 130l5 5M236 119l6 6M237 124l5 5"/>
+</g>
+<path class="ci-accent" stroke-width="1.5" d="M190.3 132.5L181.6 137.5V123.5L190.3 118.5Z"/>
+</g></svg><!-- /ci:art --></div>
+          <div class="step__text">
+            <h3 class="step__h"><span class="step__n">04</span>The City pays as work is done</h3>
+            <p>Payments follow progress on site. On those same contracts, <span class="step__fig" data-flow-fig="paid" data-figure="home.steps.paid" data-figure-ref="home.flow.paid" data-home="flow-paid">$17.2B</span> has been paid to date, counted over each contract's life.</p>
+            <a class="step__go" href="/funnel/">Funnel</a>
+          </div>
+        </li>
+      </ol>
+      <div class="steps__frame" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <section class="lp-sec lp-month" aria-labelledby="h-month">
+    <div class="sec-head"><h2 id="h-month"><span class="ci-num">02</span>This month in NYC construction</h2><p class="cap" id="month-cap">Readings from the Briefing</p></div>
+    <dl class="month">
+      <div class="month__item" data-reveal><dt>Awarded, TTM · new work</dt><dd class="month__v" id="mo-new" data-figure="home.month.new-work.ttm" data-figure-ref="briefing.stats.new-work.ttm" aria-label="no data">–</dd><dd class="month__cap">Renewals and $500M+ awards held out</dd></div>
+      <div class="month__item" data-reveal><dt>New work vs prior year</dt><dd class="month__v" id="mo-delta" data-figure="home.month.new-work.yoy" data-figure-ref="briefing.stats.new-work.yoy" aria-label="no data">–</dd><dd class="month__cap">Same new-work basis, both years</dd></div>
+      <div class="month__item" data-reveal><dt>Open pipeline</dt><dd class="month__v" id="mo-pipe" data-figure="home.month.pipeline" data-figure-ref="briefing.stats.pipeline" data-home="month-pipe">$107.9B</dd><dd class="month__cap" id="mo-pipe-cap" data-home="month-pipe-cap">Committed, unspent, latest plan</dd></div>
+      <div class="month__item" data-reveal><dt>Backlog coverage</dt><dd class="month__v" id="mo-cover" data-figure="home.month.coverage" data-figure-ref="briefing.stats.coverage" aria-label="no data">–</dd><dd class="month__cap" id="mo-cover-cap">Years of work at the trailing pace</dd></div>
+    </dl>
+    <p class="lp-more"><a href="/briefing/">Read the Briefing</a></p>
+  </section>
+
+  <section class="lp-sec lp-audience" aria-labelledby="h-audience">
+    <div class="sec-head"><h2 id="h-audience"><span class="ci-num">03</span>Questions this answers</h2></div>
+    <div class="ci-table-wrap" role="region" tabindex="0" aria-labelledby="h-audience">
+      <table class="ci-table aud">
+        <thead><tr><th scope="col">Question you have</th><th scope="col">Page</th><th scope="col">The figure it gives you</th></tr></thead>
+        <tbody>
+          <tr><th scope="rowgroup" colspan="3" class="aud__group">Underwriters and brokers</th></tr>
+          <tr><td>Is this contractor's City award volume growing or shrinking?</td><td><a href="/contractors/">Contractors</a></td><td>The firm's awards by year</td></tr>
+          <tr><td>How much of a firm's City work comes from one agency?</td><td><a href="/contractors/">Contractors</a></td><td>The firm's award dollars by agency</td></tr>
+          <tr><td>Is new City construction work growing or shrinking?</td><td><a href="/awarded/">Awarded</a></td><td>TTM awards against the prior twelve months</td></tr>
+          <tr><td>Which agencies will put the next round of bonded work out to bid?</td><td><a href="/bidding/">Bidding</a></td><td>Open solicitations by agency, with due dates</td></tr>
+          <tr><td>Where is committed money not yet awarded?</td><td><a href="/pipeline/">Pipeline</a></td><td>Unspent capital commitments by agency and borough</td></tr>
+        </tbody>
+        <tbody>
+          <tr><th scope="rowgroup" colspan="3" class="aud__group">Contractors</th></tr>
+          <tr><td>What is due, and when?</td><td><a href="/bidding/">Bidding</a></td><td>Open solicitations with due date, agency, category</td></tr>
+          <tr><td>Who wins this agency's work?</td><td><a href="/agencies/">Agencies</a></td><td>Top recipients and top-recipient share</td></tr>
+          <tr><td>How fast does an agency pay once a contract is registered?</td><td><a href="/agencies/">Agencies</a></td><td>Median days to first payment and to 50 percent paid</td></tr>
+        </tbody>
+        <tbody>
+          <tr><th scope="rowgroup" colspan="3" class="aud__group">Analysts and benchmarking</th></tr>
+          <tr><td>How many years of work does the open pipeline cover?</td><td><a href="/funnel/">Funnel</a></td><td>Backlog coverage: open pipeline over trailing spend</td></tr>
+          <tr><td>How long does an award take to turn into cash?</td><td><a href="/analysis/">Analysis</a></td><td>The award-to-spend curve</td></tr>
+          <tr><td>Is demand rising in real terms or only with inflation?</td><td><a href="/analysis/">Analysis</a></td><td>The cost-adjusted Concrete Index</td></tr>
+          <tr><td>What does school and transit capital look like?</td><td><a href="/regional/">Regional</a></td><td>SCA and MTA capital, on separate ledgers</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="lp-sec lp-method" aria-labelledby="h-method">
+    <div class="sec-head"><h2 id="h-method"><span class="ci-num">04</span>Methodology and sources</h2></div>
+    <div class="msrc">
+      <ul class="msrc__list" aria-label="Sources this page reads">
+        <li><span class="msrc__name">City Record, Recent Contract Awards</span><span class="msrc__id">qyyg-4tf5</span><span class="msrc__asof" data-home="src-awards">as of Nov 20, 2026</span></li>
+        <li><span class="msrc__name">OMB Capital Projects Dashboard</span><span class="msrc__id">fb86-vt7u</span><span class="msrc__asof" data-home="src-plan">file of Nov 20, 2026</span></li>
+        <li><span class="msrc__name">City Record, Current Solicitations</span><span class="msrc__id">3khw-qi8f</span><span class="msrc__asof" data-home="src-sol">file of Nov 20, 2026</span></li>
+        <li><span class="msrc__name">Checkbook NYC, registered contracts</span><span class="msrc__id">Comptroller</span><span class="msrc__asof" data-home="src-cbk">as of Nov 20, 2026</span></li>
+      </ul>
+      <dl class="msrc__defs">
+        <div><dt>Concrete Index</dt><dd>Trailing-twelve-month value and count of new construction awards against their 2019 average.</dd></div>
+        <div><dt>Gross awards</dt><dd>Every construction award notice, one record per PIN at its largest amount, renewals and $500M+ included.</dd></div>
+        <div><dt>Backlog coverage</dt><dd>Unspent committed dollars divided by trailing-year spending.</dd></div>
+      </dl>
+    </div>
+    <p class="msrc__series">Series CI-INDEX · method revised Nov 20, 2026 · <a href="/methodology/">Methodology</a> · <a href="/sources/">Sources</a></p>
   </section>
 </div>
-
-<div class="photo-band" style="background-image:url('https://images.unsplash.com/photo-1496588152823-86ff7695e68f?auto=format&fit=crop&w=1800&q=55')"><span class="ph-credit">Lower Manhattan &middot; Unsplash</span></div>
-
-<main class="wrap lp">
-  <section class="lp-funnel" aria-label="Committed to Awarded to Spent">
-    <a class="ff-stage" href="/pipeline/"><span class="ff-k">Committed</span><span class="ff-d">Funded capital work</span></a>
-    <span class="ff-arrow">&rarr;</span>
-    <a class="ff-stage ff-mid" href="/awarded/"><span class="ff-k">Awarded</span><span class="ff-d">Let to a contractor</span></a>
-    <span class="ff-arrow">&rarr;</span>
-    <a class="ff-stage" href="/funnel/"><span class="ff-k">Spent</span><span class="ff-d">Paid out</span></a>
-  </section>
-  <p class="lp-funnel-cap">Each stage comes from a different public source and a different scope, so the Index never sums them into one number.</p>
-
-  <section class="lp-stats" aria-label="A look across the site">
-    <a class="lp-stat" href="/pipeline/"><div class="ls-v" id="st-committed">&ndash;</div><div class="ls-k">Committed</div><div class="ls-d">Current plan, not yet spent &middot; Pipeline</div></a>
-    <a class="lp-stat" href="/awarded/"><div class="ls-v" id="st-awarded">&ndash;</div><div class="ls-k">Awarded, 12 mo</div><div class="ls-d">Last 12 complete months, gross &middot; Awarded</div></a>
-    <a class="lp-stat" href="/solicitations/"><div class="ls-v" id="st-sol">&ndash;</div><div class="ls-k">Open bids</div><div class="ls-d">Out to bid now, no value published &middot; Bidding</div></a>
-    <a class="lp-stat" href="/competitive/"><div class="ls-v" id="st-vendors">&ndash;</div><div class="ls-k">Contractors</div><div class="ls-d">Distinct vendor names on file, all years &middot; Contractors</div></a>
-  </section>
-  <p class="lp-funnel-cap">Awarded is a gross figure over the last twelve complete months: it counts renewals and extensions of existing contracts, and it counts single awards of $500M or more. The Concrete Index above and the “<a href="/briefing/">Briefing</a>” both hold those out to read fresh demand, so their figures run lower than this one.</p>
-
-  <section class="lp-adjust" aria-label="Adjusting for construction cost">
-    <div class="lp-adjust-inner">
-      <div class="lp-adjust-l">
-        <div class="lp-adjust-k">Adjusting for materials and labor costs</div>
-        <div class="lp-adjust-h">Is the City buying more construction, or just paying more?</div>
-        <div class="lp-adjust-d">The headline index counts dollars at face value. Discount each award by the construction-cost level of the month it was let, and the picture changes. The gap between the two is the part of the headline that is price, not work.</div>
-        <a class="lp-adjust-go" href="/analysis/#cost-adjusted">&rarr; See the cost-adjusted trend on Analysis</a>
-      </div>
-      <div class="lp-adjust-r">
-        <div class="lp-pair nom">
-          <span class="lp-pair-lab">Nominal</span>
-          <span class="bar-wrap"><span class="bar" id="adj-bar-nom"></span></span>
-          <span class="lp-pair-v" id="adj-v-nom">&ndash;</span>
-        </div>
-        <div class="lp-pair adj">
-          <span class="lp-pair-lab">Adjusted</span>
-          <span class="bar-wrap"><span class="bar" id="adj-bar-adj"></span></span>
-          <span class="lp-pair-v" id="adj-v-adj">&ndash;</span>
-        </div>
-        <div class="lp-adjust-gap" id="adj-gap-line">Cost-adjusted Concrete Index, 2019 = 100. Loading.</div>
-      </div>
-    </div>
-  </section>
-
-  <section class="lp-thesis">
-    <p>Public construction has two sides. The supply side, contractors and their bonds and backlogs, is tracked closely. The demand side, every dollar the City budgets, solicits, and awards, sits in the public record but is rarely read, because reading it means pulling thousands of notices and totaling them by hand.</p>
-    <p>The Concrete Index does that reading continuously. It pulls every construction award, solicitation, and capital commitment the City and State publish, totals them on the spot, and reads the three stages side by side: capital committed, work awarded, and cash spent. Each stage is measured on its own ledger and its own terms, not traced as a single project's dollar moving through all three. The result is a live, contractor-attributed view of where New York's public construction demand is forming, which agencies are moving it, and how fast it turns into cash.</p>
-  </section>
-
-  <section class="lp-cards" aria-label="Explore the rest of the site">
-    <a class="lp-card" href="/solicitations/"><div class="lc-k">Bidding</div><div class="lc-t">Every City construction job out to bid</div><div class="lc-d">Open City construction solicitations, sorted by what is due next, with the procurement method, PIN, and the agency contact who answers questions, re-pulled on every load.</div><div class="lc-go">&rarr; Bidding</div></a>
-    <a class="lp-card" href="/agency/"><div class="lc-k">Agencies</div><div class="lc-t">One agency's book, end to end</div><div class="lc-d">A single agency's committed-versus-awarded book, the trades it buys, the firms it pays, and a dollar-weighted borough footprint of where its work lands.</div><div class="lc-go">&rarr; Agencies</div></a>
-    <a class="lp-card" href="/regional/"><div class="lc-k">SCA &amp; MTA</div><div class="lc-t">School and transit construction</div><div class="lc-d">School Construction Authority work under construction and the MTA capital dashboard, read on their own scopes and never summed with the City figures.</div><div class="lc-go">&rarr; SCA &amp; MTA</div></a>
-    <a class="lp-card" href="/competitive/"><div class="lc-k">Contractors</div><div class="lc-t">A contractor's public award record</div><div class="lc-d">Any firm's awarded work across City and State construction, the agencies it wins from, how its job sizes are trending, and how award dollars spread across the market by job size.</div><div class="lc-go">&rarr; Contractors</div></a>
-    <a class="lp-card" href="/contracts/"><div class="lc-k">Contracts</div><div class="lc-t">Look up one contract, see what's been paid</div><div class="lc-d">Search by contract number, vendor, agency, or the work's scope and PIN, then open one registered contract to read how much of it the public record confirms has been paid, on a dated spend curve with first-payment lag and pay-down speed. This checks a single contract rather than the whole market, and the figure is a floor built from confirmed disbursements.</div><div class="lc-go">&rarr; Contracts</div></a>
-    <a class="lp-card" href="/analysis/"><div class="lc-k">Analysis</div><div class="lc-t">The demand cycle and the pace of cash</div><div class="lc-d">The composite index of new-award value over time, a cost-adjusted version that strips out price, and how quickly each agency turns committed dollars into payments.</div><div class="lc-go">&rarr; Analysis</div></a>
-    <a class="lp-card" href="/briefing/"><div class="lc-k">Briefing</div><div class="lc-t">The whole market in plain language</div><div class="lc-d">One automated briefing reads the entire public record and reports what NYC public construction demand is doing in the current quarter.</div><div class="lc-go">&rarr; Briefing</div></a>
-    <a class="lp-card lp-card-quiet" href="/about/"><div class="lc-k">About</div><div class="lc-t">Why this exists, and how it's built</div><div class="lc-d">An independent project by Salar Jalinous, built on public data to make the demand side of NYC construction legible. The methodology section lays out how every number is computed.</div><div class="lc-go">&rarr; About</div></a>
-  </section>
 </main>
 
-<footer>
-  <div class="wrap f-row">
-    <div>
-      <div class="brand">
-        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
-        <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.01em">The Concrete Index<span class="tick" style="color:var(--accent)">.</span></span>
-      </div>
-      <div style="margin-top:8px">NYC public construction capital, tracked end to end.</div>
-      <div style="margin-top:6px;font-size:12px;color:var(--faint);max-width:430px">An independent project built by Salar Jalinous using only public data. Not affiliated with any employer.</div>
+<script src="/assets/flow/flow-layout.js" defer></script>
+<script src="/assets/flow/flow-svg.js" defer></script>
+<script src="/assets/flow/flow-data.js" defer></script>
+<script src="/assets/flow/flow-stamp.js" defer></script>
+<script src="/assets/flow/flow-particles.js" defer></script>
+<script src="/assets/flow/flow-controller.js" defer></script>
+
+<!-- ci:footer -->
+<footer class="ci-footer">
+  <div class="wrap ci-footer__inner">
+    <div class="ci-footer__brand">
+      <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="22" height="22" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+      <p class="ci-footer__tag">NYC public construction capital, from commitment to cash.</p>
     </div>
-    <div style="text-align:right" class="f-meta">
-      <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed daily</div>
-      <div style="margin-top:5px"><a href="https://github.com/salarjalinous/concrete-index" target="_blank" rel="noopener">Source on GitHub</a></div>
-      <div style="margin-top:5px">© 2026 <a href="/about/">Salar Jalinous</a></div>
+    <nav class="ci-footer__links" aria-label="Site information">
+      <ul><li><a href="/methodology/">Methodology</a></li><li><a href="/sources/">Sources</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">Corrections</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source on GitHub</a></li></ul>
+    </nav>
+    <div class="ci-footer__meta">
+      <p>An independent project built by Salar Jalinous using only public data. Not affiliated with the City or State of New York or any employer.</p>
+      <p><a href="/sources/">Data: NYC Open Data · Open NY · Checkbook NYC · BLS</a></p>
+      <p><a href="/about/">© <span data-ci-year="2026">2026</span> The Concrete Index</a></p>
     </div>
   </div>
 </footer>
-<script>
-(function(){
-  var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  function fmtMonth(ym){ if(!ym) return ''; var p=String(ym).split('-'); var mo=MONTHS[(+p[1])-1]; return mo?(mo+' '+p[0]):''; }
-  function fmtMoney(n){ n=+n; if(!isFinite(n)) return '–'; if(n>=1e9) return '$'+(n/1e9).toFixed(1)+'B'; if(n>=1e6) return '$'+Math.round(n/1e6)+'M'; if(n>=1e3) return '$'+Math.round(n/1e3)+'K'; return '$'+Math.round(n); }
-  function fmtInt(n){ n=+n; if(!isFinite(n)) return '–'; return Math.round(n).toLocaleString('en-US'); }
-  function setText(id,t){ var el=document.getElementById(id); if(el) el.textContent=t; }
-  function showIndex(val, asof){
-    setText('lp-index', Number(val).toFixed(1));
-    setText('lp-index-cap','A single number for how much new construction work the City is putting out, measured against its 2019 pace. Renewals and $500M megaprojects are stripped out so the reading tracks fresh demand.'+(asof?(' As of '+asof+'.'):''));
-    var sb=document.getElementById('series-asof'); if(sb&&asof) sb.textContent=asof.toUpperCase();
-  }
-  function indexNeutral(){ setText('lp-index-cap','A single number for how much new construction work the City is putting out, measured against its 2019 pace. Renewals and $500M megaprojects are stripped out so the reading tracks fresh demand.'); }
-  function fillAdjust(pc){
-    var nom = pc.index_level, adj = pc.adjusted_index_level;
-    if(nom==null || adj==null) return;
-    nom = Number(nom); adj = Number(adj);
-    if(!isFinite(nom) || !isFinite(adj)) return;
-    setText('adj-v-nom', nom.toFixed(1));
-    setText('adj-v-adj', adj.toFixed(1));
-    // bar widths scaled to the larger value so the wedge is legible
-    var max = Math.max(nom, adj, 1);
-    var bn = document.getElementById('adj-bar-nom');
-    var ba = document.getElementById('adj-bar-adj');
-    if(bn) bn.style.width = (nom/max*100).toFixed(1) + '%';
-    if(ba) ba.style.width = (adj/max*100).toFixed(1) + '%';
-    var gap = nom - adj;
-    var gl = document.getElementById('adj-gap-line');
-    if(gl) gl.innerHTML = 'Cost-adjusted Concrete Index, 2019 = 100. Cost accounts for <b>' + gap.toFixed(1) + '</b> index points of the headline.';
-  }
-  function fillStats(g){
-    if(!g) return;
-    if(g.committed!=null) setText('st-committed', fmtMoney(g.committed));
-    if(g.awarded!=null) setText('st-awarded', fmtMoney(g.awarded));
-    if(g.open_solicitations!=null) setText('st-sol', fmtInt(g.open_solicitations));
-    if(g.contractors!=null) setText('st-vendors', fmtInt(g.contractors));
-  }
-  // One small same-origin read drives the whole front door.
-  fetch('/data/precomputed.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(pc){
-    var asof = fmtMonth(pc.index_month) || (pc.meta&&pc.meta.generated?pc.meta.generated.slice(0,10):'');
-    var g = pc.glimpse || {};
-    if(g.awarded==null && pc.awarded_ttm && pc.awarded_ttm.total!=null) g.awarded=pc.awarded_ttm.total;
-    fillStats(g);
-    fillAdjust(pc);
-    if(pc.index_level!=null){ showIndex(pc.index_level, asof); return; }
-    throw new Error('no index_level');
-  }).catch(function(){
-    var gl=document.getElementById('adj-gap-line');
-    if(gl) gl.textContent='Cost-adjusted Concrete Index, 2019 = 100. See the full comparison on the “Analysis” page.';
-    computeLive().then(function(o){ showIndex(o.value, fmtMonth(o.month)); }).catch(indexNeutral);
-  });
-
-  // The nightly file carries a rolling-365-day award total. The site's trailing
-  // twelve months is twelve FULLY-ELAPSED months, so the awarded stat is
-  // recomputed live on that window and overwrites the precomputed value once it
-  // lands. The precomputed number paints first and stands if this pull fails, so
-  // first paint is unaffected and one slow API call cannot blank the stat.
-  awardedCompleteMonths().then(function(total){
-    setText('st-awarded', fmtMoney(total));
-  }).catch(function(){ /* keep the precomputed figure */ });
-
-  /* First day of the month n complete months back. isoBoundary(0) is the first
-     of the current, incomplete month, so [isoBoundary(12), isoBoundary(0)) is
-     twelve fully-elapsed months. Same helper the funnel, Briefing, Analysis, and
-     Contractors pages use.
-
-     Anchored in UTC end to end. A local midnight formatted through toISOString
-     reads back a day early for anyone east of UTC, which moved the whole window
-     and made the headline figure depend on where the reader was sitting.
-     Date.UTC in, toISOString out, so every reader gets one window. */
-  function isoBoundary(n){
-    var now=new Date();
-    return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()-n, 1))
-      .toISOString().slice(0,10);
-  }
-
-  /* Gross awarded value over the canonical trailing twelve months: every
-     construction award notice, renewals and $500M+ megaprojects included,
-     deduped to one record per pin at its maximum amount (the same procurement is
-     published as several notices, so a raw sum overstates). Twelve months is a
-     few hundred rows, so this is a single small request. */
-  function awardedCompleteMonths(){
-    var API='https://data.cityofnewyork.us/resource/qyyg-4tf5.json', TOKEN='3TAzQQPiSG2T4WGWfYYUxxqfJ', PAGE=50000;
-    var lo=isoBoundary(12), hi=isoBoundary(0);
-    var where="starts_with(category_description,'Construction') AND contract_amount>0"
-      + " AND start_date>='"+lo+"' AND start_date<'"+hi+"'";
-    var byPin=new Map(), off=0;
-    function page(){
-      var u=API+'?'+new URLSearchParams({'$select':'pin,contract_amount','$where':where,'$order':'pin','$limit':String(PAGE),'$offset':String(off)});
-      return fetch(u,{headers:{'X-App-Token':TOKEN}}).then(function(r){ if(!r.ok) throw new Error('api'); return r.json(); }).then(function(b){
-        for(var i=0;i<b.length;i++){
-          var amt=parseFloat(b[i].contract_amount);
-          if(!(amt>0)) continue;
-          var pin=b[i].pin||('_np_'+off+'_'+i);   // unpinned notices stand alone
-          var prev=byPin.get(pin);
-          if(prev==null||amt>prev) byPin.set(pin,amt);
-        }
-        if(b.length>=PAGE && off<400000){ off+=PAGE; return page(); }
-      });
-    }
-    return page().then(function(){
-      var total=0;
-      byPin.forEach(function(amt){ total+=amt; });
-      if(!(total>0)) throw new Error('empty award window');
-      return total;
-    });
-  }
-
-  // Fallback: compute the index live from the City Record, identical to the Analysis page.
-  function computeLive(){
-    var API='https://data.cityofnewyork.us/resource/qyyg-4tf5.json', TOKEN='3TAzQQPiSG2T4WGWfYYUxxqfJ', MEGA=500e6;
-    var isCont=function(m){ return /renewal|extension/i.test(m||''); };
-    var byPin=new Map(), off=0, PAGE=50000;
-    var where="starts_with(category_description,'Construction') AND contract_amount>0 AND contract_amount<"+MEGA;
-    function page(){
-      var u=API+'?'+new URLSearchParams({'$select':'pin,contract_amount,start_date,selection_method_description','$where':where,'$order':'pin','$limit':String(PAGE),'$offset':String(off)});
-      return fetch(u,{headers:{'X-App-Token':'3TAzQQPiSG2T4WGWfYYUxxqfJ'}}).then(function(r){ if(!r.ok) throw new Error('api'); return r.json(); }).then(function(b){
-        for(var i=0;i<b.length;i++){ var r=b[i]; var amt=parseFloat(r.contract_amount); if(!(amt>0)||amt>=MEGA) continue; var pin=r.pin||('_np_'+off+'_'+i); var rec={amt:amt,m:r.start_date?r.start_date.slice(0,7):null,cont:isCont(r.selection_method_description)}; var p=byPin.get(pin); if(!p||rec.amt>p.amt) byPin.set(pin,rec); }
-        if(b.length>=PAGE && off<400000){ off+=PAGE; return page(); }
-      });
-    }
-    return page().then(function(){
-      var byMonth=new Map();
-      byPin.forEach(function(rec){ if(rec.cont||!rec.m) return; var c=byMonth.get(rec.m)||{v:0,c:0}; c.v+=rec.amt; c.c+=1; byMonth.set(rec.m,c); });
-      /* The month keys have to match the raw start_date prefixes the rows are
-         bucketed under, so they are built in UTC. A local first-of-month put
-         through toISOString names the PREVIOUS month for any reader east of UTC,
-         which slid the whole series one month off its own data and produced a
-         different index value abroad than at home. */
-      var now=new Date(), lastC=Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),1), months=[], mi=0;
-      for(var t=Date.UTC(2003,0,1); t<lastC; t=Date.UTC(2003,++mi,1)){ months.push(new Date(t).toISOString().slice(0,7)); }
-      var v=months.map(function(m){return (byMonth.get(m)||{v:0}).v;}), c=months.map(function(m){return (byMonth.get(m)||{c:0}).c;});
-      var tM=[],tV=[],tC=[],sv=0,sc=0;
-      for(var i=0;i<months.length;i++){ sv+=v[i]; sc+=c[i]; if(i>=12){sv-=v[i-12];sc-=c[i-12];} if(i>=11){tM.push(months[i]);tV.push(sv);tC.push(sc);} }
-      var bi=tM.map(function(m,i){return m.indexOf('2019')===0?i:-1;}).filter(function(i){return i>=0;});
-      var mean=function(a){return a.reduce(function(x,y){return x+y;},0)/a.length;};
-      var baseV=bi.length?mean(bi.map(function(i){return tV[i];})):tV[0], baseC=bi.length?mean(bi.map(function(i){return tC[i];})):tC[0];
-      var last=tM.length-1;
-      return { value:100*Math.sqrt((tV[last]/baseV)*(tC[last]/baseC)), month:tM[last] };
-    });
-  }
-})();
-</script>
-<!-- ===== Concrete Index export module: page PDF, chart PNG, tile CSV. No external dependencies. ===== -->
-<style id="exp-css">
-.exp{display:flex;justify-content:flex-end;gap:0;margin-top:10px}
-.exp button{background:none;border:1px solid var(--line);color:var(--muted);font:500 10px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.07em;text-transform:uppercase;padding:6px 9px;cursor:pointer;transition:color .12s,border-color .12s}
-.exp button+button{border-left:none}
-.exp button:hover{color:var(--accent);border-color:var(--accent)}
-.exp button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.pdf-btn{background:none;border:1px solid var(--line);color:var(--muted);font:600 11px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;cursor:pointer;white-space:nowrap;transition:color .12s,border-color .12s}
-.pdf-btn:hover{color:var(--accent);border-color:var(--accent)}
-.series-bar .inner .pdf-btn{margin-left:auto;font-size:10px;padding:4px 9px;align-self:center}
-.pdf-bar{display:flex;justify-content:flex-end;max-width:var(--maxw);margin:0 auto;padding:6px var(--gut)}
-@media (max-width:720px){.pdf-bar{padding:6px 18px}}
-@media print{
-  @page{margin:14mm}
-  header .menu-btn,.nav-links,.controls,.series-bar,.photo-band,.exp,.pdf-btn,.pdf-bar,.badge-live,.valstrip{display:none !important}
-  header{border-bottom:2px solid #201611}
-  body{background:#fff !important}
-  .wrap{max-width:none !important;width:100% !important}
-  .grid,.grid.two,.grid.three{display:block !important}
-  .card{break-inside:avoid;page-break-inside:avoid;box-shadow:none !important;margin:0 0 16px !important}
-  .chart-box,.chart-box.tall{height:300px !important}
-  a{color:inherit;text-decoration:none}
-  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
-}
-</style>
-<script>
-(function(){
-  "use strict";
-  if(window.__ciExport)return; window.__ciExport=1;
-  function slug(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60);}
-  var pageSlug=slug(location.pathname.replace(/\/index\.html?$/i,'').replace(/\/+$/,''))||'home';
-  function getChart(cv){return (cv&&window.Chart&&Chart.getChart)?(Chart.getChart(cv)||null):null;}
-  function fnameFor(el,ext){
-    var card=el.closest('.card')||el.closest('section')||el.parentElement;
-    var h=card&&card.querySelector('.sec-head h2,h2,h3');
-    if(!h){var s=el.previousElementSibling;while(s){if(s.tagName==='H2'||s.tagName==='H3'){h=s;break;}s=s.previousElementSibling;}}
-    return ('concrete-index-'+pageSlug+'-'+slug(h?h.textContent:'export')).replace(/-+/g,'-')+'.'+ext;
-  }
-  function dl(href,name,revoke){
-    var a=document.createElement('a');a.href=href;a.download=name;a.rel='noopener';
-    document.body.appendChild(a);a.click();a.remove();
-    if(revoke)setTimeout(function(){URL.revokeObjectURL(href);},2000);
-  }
-  function csvCell(v){v=(v==null?'':String(v));return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
-  function csv(rows,name){
-    var t='\ufeff'+rows.map(function(r){return r.map(csvCell).join(',');}).join('\r\n');
-    dl(URL.createObjectURL(new Blob([t],{type:'text/csv;charset=utf-8'})),name,true);
-  }
-  function pngFromChart(ch,name){
-    var src=ch.canvas,out=document.createElement('canvas');
-    out.width=src.width;out.height=src.height;
-    var x=out.getContext('2d');
-    x.fillStyle='#fefbf8';x.fillRect(0,0,out.width,out.height);
-    x.drawImage(src,0,0);
-    dl(out.toDataURL('image/png'),name,false);
-  }
-  function csvFromChart(ch,name){
-    var labels=ch.data.labels||[],ds=ch.data.datasets||[];
-    var rows=[['Label'].concat(ds.map(function(d,i){return d.label||('Series '+(i+1));}))];
-    var n=labels.length||((ds[0]&&ds[0].data)?ds[0].data.length:0);
-    for(var r=0;r<n;r++){
-      var row=[labels[r]!=null?labels[r]:r];
-      ds.forEach(function(d){
-        var v=d.data?d.data[r]:'';
-        if(v&&typeof v==='object')v=(v.y!=null?v.y:(v.v!=null?v.v:JSON.stringify(v)));
-        row.push(v==null?'':v);
-      });
-      rows.push(row);
-    }
-    csv(rows,name);
-  }
-  function csvFromTable(tbl,name){
-    var rows=[];
-    tbl.querySelectorAll('tr').forEach(function(tr){
-      var cells=[];
-      tr.querySelectorAll('th,td').forEach(function(c){cells.push(c.textContent.replace(/\s+/g,' ').trim());});
-      if(cells.some(function(x){return x!=='';}))rows.push(cells);
-    });
-    if(rows.length)csv(rows,name);
-  }
-  function mkBtn(label,title,fn){
-    var b=document.createElement('button');b.type='button';b.textContent=label;b.title=title;
-    b.addEventListener('click',fn);return b;
-  }
-  function placeAfter(el,bar){
-    var t=el,nx=el.nextElementSibling;
-    if(nx&&nx.classList&&nx.classList.contains('tnote'))t=nx;
-    t.insertAdjacentElement('afterend',bar);
-  }
-  function attachChart(box){
-    if(!box||box.getAttribute('data-exp'))return;
-    var cv=box.querySelector('canvas');if(!cv)return;
-    box.setAttribute('data-exp','1');
-    var bar=document.createElement('div');bar.className='exp';
-    bar.appendChild(mkBtn('PNG','Download this chart as a PNG image',function(){var ch=getChart(cv);if(ch)pngFromChart(ch,fnameFor(box,'png'));}));
-    bar.appendChild(mkBtn('CSV','Download this chart’s data as a CSV file',function(){var ch=getChart(cv);if(ch)csvFromChart(ch,fnameFor(box,'csv'));}));
-    placeAfter(box,bar);
-  }
-  function attachTable(tbl){
-    if(!tbl||tbl.getAttribute('data-exp'))return;
-    if(!tbl.querySelector('th'))return;
-    if(tbl.closest('header')||tbl.closest('footer')||tbl.closest('nav'))return;
-    tbl.setAttribute('data-exp','1');
-    var bar=document.createElement('div');bar.className='exp';
-    bar.appendChild(mkBtn('CSV','Download this table as a CSV file',function(){csvFromTable(tbl,fnameFor(tbl,'csv'));}));
-    placeAfter(tbl,bar);
-  }
-  function scan(){
-    document.querySelectorAll('.chart-box').forEach(attachChart);
-    document.querySelectorAll('main canvas,#app canvas').forEach(function(cv){if(!cv.closest('.chart-box'))attachChart(cv.parentElement);});
-    document.querySelectorAll('main table,#app table,.card table').forEach(attachTable);
-  }
-  function addPdfBtn(){
-    if(document.querySelector('.pdf-btn'))return;
-    var b=mkBtn('Save PDF','Save or print this page as a PDF',function(){window.print();});
-    b.className='pdf-btn';
-    var inner=document.querySelector('.series-bar .inner');
-    if(inner){inner.appendChild(b);return;}
-    var header=document.querySelector('header');
-    if(header){var bar=document.createElement('div');bar.className='pdf-bar';bar.appendChild(b);header.insertAdjacentElement('afterend',bar);return;}
-    var nav=document.querySelector('.nav-links');if(nav)nav.appendChild(b);
-  }
-  var pending=null;
-  function start(){
-    addPdfBtn();scan();
-    try{
-      var mo=new MutationObserver(function(){if(pending)return;pending=setTimeout(function(){pending=null;scan();},300);});
-      mo.observe(document.body,{childList:true,subtree:true});
-    }catch(e){}
-    [400,1200,3000].forEach(function(t){setTimeout(scan,t);});
-  }
-  if(document.readyState!=='loading')start();else document.addEventListener('DOMContentLoaded',start);
-})();
-</script>
+<!-- /ci:footer -->
 </body>
 </html>

@@ -1,269 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://data.cityofnewyork.us; upgrade-insecure-requests">
-<meta name="referrer" content="strict-origin-when-cross-origin">
+<!-- ci:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' https://data.cityofnewyork.us; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="same-origin">
+<meta name="color-scheme" content="light">
+<title>Analysis · The Concrete Index</title>
+<meta name="description" content="The Concrete Index of new NYC construction awards, its cost-adjusted version, seasonality, pipeline conversion, budget growth, and pace of contract payments.">
 <link rel="canonical" href="https://concreteindex.co/analysis/">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="The Concrete Index">
+<meta property="og:title" content="Analysis · The Concrete Index">
+<meta property="og:description" content="The Concrete Index of new NYC construction awards, its cost-adjusted version, seasonality, pipeline conversion, budget growth, and pace of contract payments.">
 <meta property="og:url" content="https://concreteindex.co/analysis/">
 <meta property="og:image" content="https://concreteindex.co/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://concreteindex.co/og-image.png">
-<title>Analysis · The Concrete Index</title>
-<meta name="description" content="The Concrete Index: a composite measure of NYC public construction demand since 2004, plus seasonality, budget escalation, and pipeline conversion analysis.">
-<meta property="og:title" content="The Concrete Index · Analysis">
-<meta property="og:description" content="Two decades of NYC construction demand, in one number.">
-<!-- BROADSHEET-V1 -->
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23ae4e34%22/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha384-bs/nf9FbdNouRbMiFcrcZfLXYPKiPaGVGplVbv7dLGECccEXDW+S3zjqSKR5ZEaD" crossorigin="anonymous"></script>
-<style>
-:root{
-  --paper:#f7f3ef; --surface:#fefbf8; --band:#f2ede8;
-  --ink:#201611; --navy:#243b53; --muted:#6b5e56; --faint:#968a7f;
-  --line:#ded5ce; --rule:#201611;
-  --accent:#ae4e34; --accent-soft:#eadbd4; --steel:#2f5d8f;
-  --pos:#2f7d52; --neg:#9e362f; --radius:3px;
-  --maxw:1180px; --gut:28px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'Public Sans',-apple-system,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
-a{color:var(--steel);text-decoration:none}
-a:hover{text-decoration:underline}
-.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
-.serif{font-family:'Source Serif 4',Georgia,serif}
-.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
-
-/* ---------- header ---------- */
-header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2px solid var(--ink)}
-.nav{display:flex;align-items:center;justify-content:space-between;height:62px}
-.brand{display:flex;align-items:center;gap:10px;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:20px;letter-spacing:-.01em;color:var(--ink)}
-.brand svg{color:var(--navy);flex-shrink:0}
-.brand .tick{color:var(--accent)}
-.nav-links{display:flex;gap:17px;align-items:center;font-size:13.5px;font-weight:500}
-.nav-links a{color:var(--muted)}
-.nav-links a:hover{color:var(--ink);text-decoration:none}
-.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px}
-.badge-live{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--pos);background:rgba(47,125,82,.1);border:1px solid rgba(47,125,82,.34);border-radius:3px;padding:3px 9px}
-.badge-live .dot{width:6px;height:6px;border-radius:50%;background:var(--pos);animation:pulse 2.4s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* ---------- release-series bar ---------- */
-.series-bar{background:var(--band);border-bottom:1px solid var(--line)}
-.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px var(--gut);max-width:var(--maxw);margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.series-bar b{color:var(--ink);font-weight:600}
-.series-bar .sep{color:var(--faint);padding:0 12px}
-@media(max-width:720px){.series-bar .inner{white-space:normal}}
-
-/* ---------- hero ---------- */
-.hero{padding:46px 0 14px}
-.kicker{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:14px}
-.hero h1{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(32px,4.6vw,46px);line-height:1.06;letter-spacing:-.012em;max-width:840px;color:var(--ink)}
-.hero p.sub{margin-top:17px;font-size:16px;color:var(--muted);max-width:700px}
-.hero .asof{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--faint)}
-.hero .asof strong{color:var(--muted);font-weight:600}
-
-/* ---------- KPI tape ---------- */
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:28px 0 8px;border-left:1px solid var(--line)}
-.kpi{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px 18px}
-.kpi.hl{border-top-color:var(--accent)}
-.kpi .k-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
-.kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--navy);line-height:1}
-.kpi.hl .k-value{font-size:clamp(30px,4.5vw,38px);color:var(--ink)}.kpi:not(.hl) .k-value{color:var(--navy)}
-.kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:8px}
-.kpi .up,.kpi .down{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
-.kpi .up{color:var(--pos)}
-.kpi .down{color:var(--neg)}
-/* a signal span that IS the KPI value renders at value size, not chip size */
-.kpi .k-value>.up,.kpi .k-value>.down{font-size:inherit;letter-spacing:inherit}
-
-/* ---------- section heads (card) ---------- */
-.card .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:0}
-.card h2{font-family:'Source Serif 4',Georgia,serif;font-size:21px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
-.card .cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em;text-align:right;white-space:nowrap}
-
-.grid{display:grid;gap:22px;padding:30px 0 0}
-.grid.two{grid-template-columns:1fr 1fr}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 22px;box-shadow:0 1px 0 rgba(32,22,17,.04)}
-.card .h-sub{font-size:12.5px;color:var(--muted);margin-top:9px;margin-bottom:18px;max-width:760px}
-.chart-box{position:relative;height:300px}
-.tnote{font-size:11.5px;line-height:1.55;color:var(--muted);margin-top:13px;padding-top:9px;border-top:1px solid var(--line)}
-.chart-box.tall{height:360px}
-.reading{font-size:13.5px;color:var(--muted);background:var(--band);border-left:3px solid var(--accent);border-radius:0;padding:16px 20px;margin-top:20px;max-width:880px}
-.reading strong{color:var(--ink);font-weight:600}
-.unavail{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);background:var(--band);border-left:3px solid var(--faint);border-radius:0;padding:12px 16px;margin-top:14px;max-width:880px}
-table{width:100%;border-collapse:collapse;font-size:13.5px}
-th{text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);padding:0 10px 8px;border-bottom:1px solid var(--ink)}
-td{padding:11px 10px;border-bottom:1px solid var(--line)}
-tr:last-child td{border-bottom:0}
-td.num,th.num{text-align:right}
-td.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
-.amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
-.pct{font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink)}
-
-/* ---------- methodology ---------- */
-.method{padding:44px 0 10px}
-.method .card{padding:20px 22px 22px}
-.method .sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:0}
-.method h2{font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:700;letter-spacing:-.012em;color:var(--ink)}
-.method .m-cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em}
-.method h3{font-family:'Public Sans',sans-serif;font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin:24px 0 6px;color:var(--ink)}
-.method p{font-size:14px;color:var(--muted);max-width:820px}
-.method p+p{margin-top:8px}
-.method code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:var(--band);padding:1px 5px;border-radius:3px;border:1px solid var(--line)}
-
-/* ---------- cost-adjusted section ---------- */
-#cost-adjusted{padding:48px 0 0}
-.adj-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:8px}
-.adj-head h2{font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:700;letter-spacing:-.012em;color:var(--ink)}
-.adj-head .cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em;text-align:right;white-space:nowrap}
-.adj-intro{font-size:14.5px;color:var(--muted);max-width:780px;margin:16px 0 4px}
-.adj-kpis{padding-top:26px}
-
-/* ---------- how-its-calculated explainer ---------- */
-#how-its-calculated{scroll-margin-top:80px;background:var(--band);border-left:3px solid var(--accent);border-radius:0;padding:18px 22px;margin:22px 0 4px}
-#how-its-calculated .hic-kicker{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
-#how-its-calculated h3{font-family:'Source Serif 4',Georgia,serif;font-size:18px;font-weight:600;letter-spacing:-.01em;color:var(--ink);margin-bottom:8px}
-#how-its-calculated p{font-size:14px;color:var(--muted);max-width:820px}
-#how-its-calculated code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:var(--surface);padding:1px 5px;border-radius:3px;border:1px solid var(--line)}
-
-/* ---------- footer ---------- */
-footer{margin-top:54px;background:var(--band);border-top:2px solid var(--ink);padding:30px 0 40px;font-size:13px;color:var(--muted)}
-footer a{color:var(--steel)}
-footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-footer .brand{font-size:17px;color:var(--ink)}
-footer .brand svg{color:var(--navy)}
-footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em}
-
-#loader{padding:80px 0;text-align:center;color:var(--muted)}
-.spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-#error{display:none;padding:60px 24px;text-align:center;color:var(--muted)}
-#app{display:none}
-@media(max-width:880px){
-  .kpis{grid-template-columns:repeat(2,1fr)}
-  .kpi:nth-child(2){border-right:0}
-  .grid.two{grid-template-columns:1fr}
-}
-@media(max-width:560px){
-  .kpis{grid-template-columns:1fr 1fr}
-  .kpi .k-value{font-size:26px}
-  .hero{padding-top:34px}
-  :root{--maxw:1180px;--gut:18px}
-}
-.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
-@media(max-width:1180px){
-  .menu-btn{display:block}
-  .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:61px;left:calc(-1 * var(--gut));right:calc(-1 * var(--gut));background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px var(--gut);gap:13px;box-shadow:0 10px 24px rgba(32,22,17,.16);z-index:60;max-height:calc(100vh - 62px);overflow-y:auto}
-  .nav-links.open{display:flex}
-}
-
-/* ---------- reduced motion ---------- */
-@media (prefers-reduced-motion: reduce){
-  .badge-live .dot{animation:none}
-  .spinner{animation:none}
-  *{scroll-behavior:auto}
-}
-
-/* ---------- print ---------- */
-@media print{
-  header,.series-bar,.badge-live,.controls,.seg,.menu-btn{display:none !important}
-  body{background:#fff;color:#000}
-  .card{background:#fff !important;box-shadow:none}
-  footer{background:#fff;border-top:1px solid #000;color:#000}
-  footer a,a{color:#000}
-}
-
-/* ---------- display scaling: fill wide / high-resolution screens ---------- */
-@media(min-width:1400px){
-  :root{--maxw:1330px;--gut:34px}
-  body{font-size:15.5px}
-  .kpi .k-value{font-size:33px}
-  .kpi.hl .k-value{font-size:42px}
-  .hero p.sub,.lp-sub{font-size:17.5px;max-width:860px}
-  .hero h1{max-width:960px}
-  .method p{max-width:980px}
-  table{font-size:14px}
-  .chart-box{height:330px}
-  .chart-box.tall{height:376px}
-}
-@media(min-width:1750px){
-  :root{--maxw:1500px;--gut:40px}
-  body{font-size:16px}
-  .kpi .k-value{font-size:35px}
-  .kpi.hl .k-value{font-size:45px}
-  .method p{max-width:1060px}
-  table{font-size:14.5px}
-  .chart-box{height:360px}
-  .chart-box.tall{height:410px}
-}
-@media(min-width:2100px){ :root{--maxw:1620px} }
-/* ---------- narrow: wide tables scroll inside their card, not the page ---------- */
-@media(max-width:900px){
-  .card{overflow-x:auto}
-  .card table{min-width:560px}
-  .sec-head{flex-wrap:wrap}
-  .sec-head .cap{white-space:normal;text-align:left}
-}
-</style>
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/public-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/ci.css">
+<link rel="stylesheet" href="/assets/pages/analysis.css">
+<meta name="ci:export" content="on">
+<meta name="ci:chrome" content="on">
+<script src="/assets/ci.js" defer></script>
+<script src="/assets/vendor/chart.umd.min.js" defer></script>
+<script src="/assets/ci-chart.js" defer></script>
+<script src="/assets/pages/analysis.js" defer></script>
+<!-- /ci:head -->
 </head>
 <body>
 
-<header>
-  <div class="wrap nav">
-    <div class="brand">
-      <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
-      <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
-    </div>
-    <button class="menu-btn" aria-label="Menu" aria-expanded="false" onclick="const o=this.nextElementSibling.classList.toggle('open');this.setAttribute('aria-expanded',o)">☰</button>
-    <nav class="nav-links">
-      <a href="/pipeline/">Pipeline</a>
-      <a href="/solicitations/">Bidding</a>
-      <a href="/awarded/">Awarded</a>
-      <a href="/funnel/">Funnel</a>
-      <a href="/agency/">Agencies</a>
-      <a href="/regional/">SCA &amp; MTA</a>
-      <a href="/competitive/">Contractors</a>
-      <a href="/contracts/">Contracts</a>
-      <a href="/analysis/" class="active">Analysis</a>
-      <a href="/briefing/">Briefing</a>
-      <a href="/about/">About</a>
-      <span class="badge-live"><span class="dot"></span>Live data</span>
-    </nav>
+<!-- ci:header -->
+<a class="ci-skip" href="#content">Skip to content</a>
+<header class="ci-masthead">
+  <div class="wrap ci-masthead__bar">
+    <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="26" height="26" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+    <nav class="ci-utility" aria-label="Site"><a href="/methodology/">Methodology</a><a href="/about/">About</a><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></nav>
+    <button class="ci-menu-btn" type="button" aria-expanded="false" aria-controls="ci-menu"><svg class="ci-i-menu" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#menu"/></svg><svg class="ci-i-close" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#close"/></svg><span class="ci-menu-btn__label">Menu</span></button>
   </div>
+  <nav class="ci-rail" id="ci-menu" aria-label="Sections">
+    <div class="wrap ci-rail__inner">
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-stages">Stages</p><ul class="ci-rail__list" aria-labelledby="ci-g-stages"><li><a href="/pipeline/">Pipeline</a></li><li><a href="/bidding/">Bidding</a></li><li><a href="/awarded/">Awarded</a></li><li><a href="/contracts/">Contracts</a></li><li><a href="/funnel/">Funnel</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-entities">Entities</p><ul class="ci-rail__list" aria-labelledby="ci-g-entities"><li><a href="/agencies/">Agencies</a></li><li><a href="/contractors/">Contractors</a></li><li><a href="/regional/">Regional</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-synthesis">Synthesis</p><ul class="ci-rail__list" aria-labelledby="ci-g-synthesis"><li><a href="/analysis/" aria-current="page">Analysis</a></li><li><a href="/briefing/">Briefing</a></li></ul></div>
+      <div class="ci-rail__group ci-rail__group--utility"><p class="ci-rail__label" id="ci-g-site">Site</p><ul class="ci-rail__list" aria-labelledby="ci-g-site"><li><a href="/methodology/">Methodology</a></li><li><a href="/about/">About</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></li></ul></div>
+    </div>
+  </nav>
 </header>
+<!-- /ci:header -->
 
 <div class="series-bar">
   <div class="inner">SERIES&nbsp;·&nbsp;<b>CI-ANALYSIS</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CITY RECORD (qyyg-4tf5), DAILY · CAPITAL PLAN (fb86-vt7u), 3× YEARLY · BLS MATERIALS &amp; LABOR, MONTHLY</b><span class="sep">·</span>BASE&nbsp;·&nbsp;<b>2019 = 100</b></div>
 </div>
 
+<main id="content" tabindex="-1">
+
 <div class="wrap hero">
-  <div class="kicker">Analysis</div>
   <h1>Two decades of demand in a single index.</h1>
   <p class="sub">The Concrete Index condenses the City's construction award record into a single composite measure, then digs into the patterns underneath: when the City buys, how project budgets grow, and how fast the pipeline converts.</p>
-  <p class="asof" id="asof">Computing from the public record…</p>
+  <p class="asof" id="asof"><span class="ci-skel ci-skel--line" aria-hidden="true"></span><span class="ci-vh">Computing from the public record…</span></p>
 </div>
 
-<div id="loader" class="wrap">
-  <div class="spinner"></div>
-  Computing two decades of award history and three capital plan snapshots…
+<nav class="ci-subnav" aria-label="On this page">
+  <div class="wrap"><ul class="ci-subnav__list"><li><a href="#index">Index</a></li><li><a href="#cost-adjusted">Cost-adjusted</a></li><li><a href="#cost-card">Cost since 2019</a></li><li><a href="#adj-card">Nominal vs real</a></li><li><a href="#seasonality">Seasonality</a></li><li><a href="#conversion">Conversion</a></li><li><a href="#escalation">Budget growth</a></li><li><a href="#scurve">Pay-down</a></li><li><a href="#schedpace">Schedule</a></li><li><a href="#methodology">Definitions</a></li></ul></div>
+</nav>
+
+<div id="loader" class="wrap ci-loading">
+  <p class="ci-loading__status" role="status">Computing two decades of award history and three capital plan snapshots…</p>
+  <div class="ci-skel-tape" aria-hidden="true"><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span></div><div class="ci-skel ci-skel--chart" aria-hidden="true"></div>
 </div>
 
-<div id="error" class="wrap">
+<div id="error" class="wrap ci-error">
   <p><strong>Couldn't reach NYC Open Data.</strong></p>
-  <p style="margin-top:6px">The City's API may be momentarily unavailable.</p>
-  <button type="button" onclick="location.reload()" style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--paper);background:var(--navy);border:none;border-radius:var(--radius);padding:9px 16px;cursor:pointer">Retry</button>
+  <p class="u-mt-2">The City's API may be momentarily unavailable.</p>
+  <button type="button" class="ci-btn" data-action="reload">Retry</button>
 </div>
 
-<main id="app" class="wrap">
+<div data-ci-main id="app" class="wrap">
 
   <section class="kpis">
     <div class="kpi hl"><div class="k-label">The Concrete Index</div><div class="k-value" id="kpi-idx">–</div><div class="k-note" id="kpi-idx-note"></div></div>
@@ -276,8 +98,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     <div class="card">
       <div class="sec-head"><h2>The Concrete Index, 2004 → today</h2><span class="cap">2019 = 100</span></div>
       <div class="h-sub">Composite of trailing-twelve-month new-award value and award count, megaprojects excluded, 2019 average = 100. One line for the demand cycle: the GFC, the 2010s build-up, COVID, and the current correction.</div>
-      <div class="chart-box tall"><canvas id="chart-idx"></canvas></div>
-      <div class="reading" id="idx-reading"></div>
+      <div class="chart-box tall"><canvas id="chart-idx" data-ci-col="Month" data-ci-val="Index"></canvas></div>
+      <div class="reading ci-note ci-note--label" id="idx-reading"></div>
       <div class="tnote">Each point is a geometric blend of two trailing-twelve-month series, new-award dollar value and new-award count: index = 100 × √[(value-TTM ÷ value-2019) × (count-TTM ÷ count-2019)]. Renewals and $500M-plus megaprojects are excluded so it tracks genuinely new demand, and the geometric mean keeps either series from dominating. Read it as a relative level against the 2019 = 100 baseline, not a dollar amount; the series is nominal.</div>
     </div>
   </section>
@@ -304,19 +126,19 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="kpi"><div class="k-label">Labor since 2019</div><div class="k-value" id="kpi-lab">–</div><div class="k-note" id="kpi-lab-note">NY State construction hourly earnings</div></div>
     </section>
 
-    <div class="grid two" style="padding-top:22px">
+    <div class="grid two u-pt-5">
       <div class="card" id="cost-card">
         <div class="sec-head"><h2>Construction cost since 2019</h2><span class="cap">2019 = 100</span></div>
         <div class="h-sub" id="cost-sub">Materials and labor price levels, each rebased to its 2019 average. The wedge between them is the input mix the City pays for.</div>
-        <div class="chart-box"><canvas id="chart-cost"></canvas></div>
-        <div class="reading" id="cost-reading"></div>
+        <div class="chart-box"><canvas id="chart-cost" data-ci-col="Month" data-ci-val="Index"></canvas></div>
+        <div class="reading ci-note ci-note--label" id="cost-reading"></div>
         <div class="tnote">Two BLS price series, each rebased to its own 2019 twelve-month average = 100. Materials is the national PPI for inputs to construction industries, goods (<code>WPUSI012011</code>), kept national because construction materials trade in national markets. Labor is New York State construction average hourly earnings of production and nonsupervisory employees, not seasonally adjusted (<code>SMU36000002000000008</code>, monthly back to 2004), the State-localized twin of the prior national series. Monthly, no interpolation; the most recent month or two are forward-filled at the last published value until BLS posts them, and New York publishes one month behind the national figure. The blended deflator that drives the adjusted index weights these 60% materials, 40% labor.</div>
       </div>
       <div class="card" id="adj-card">
         <div class="sec-head"><h2>Nominal vs cost-adjusted</h2><span class="cap">2019 = 100</span></div>
         <div class="h-sub" id="adj-sub">The same Concrete Index, before and after discounting each award month by that month's construction-cost level. The shaded band is the cost wedge.</div>
-        <div class="chart-box tall"><canvas id="chart-adj"></canvas></div>
-        <div class="reading" id="adj-reading"></div>
+        <div class="chart-box tall"><canvas id="chart-adj" data-ci-col="Month" data-ci-val="Index"></canvas></div>
+        <div class="reading ci-note ci-note--label" id="adj-reading"></div>
         <div class="tnote">For every award month, the new-award dollar value is divided by that month's deflator (deflator ÷ 100), then summed to a trailing-twelve real total before the geometric blend with award count: adjusted = 100 × √[(real-value-TTM ÷ real-value-2019) × (count-TTM ÷ count-2019)], with the deflated total over a window written as Σ over m of nominal_m ÷ (deflator_m ÷ 100). The count component is unchanged from the nominal index. Nominal stays the headline; this adjusted series is disclosed alongside it, not in place of it.</div>
       </div>
     </div>
@@ -326,8 +148,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     <div class="card" id="seasonality">
       <div class="sec-head"><h2>When the City buys</h2><span class="cap">×AVG MONTH</span></div>
       <div class="h-sub">Typical share of annual new-award value by month, 2004–2025. 1.0× = an average month.</div>
-      <div class="chart-box"><canvas id="chart-season"></canvas></div>
-      <div class="reading" id="season-reading"></div>
+      <div class="chart-box"><canvas id="chart-season" data-ci-col="Month" data-ci-val="Share of an average month"></canvas></div>
+      <div class="reading ci-note ci-note--label" id="season-reading"></div>
       <div class="tnote">Each bar is a calendar month's typical share of annual new-award value, computed as the median across years (2004 to 2025) of that month's fraction of its year's total, expressed as a multiple of an even share. 1.0× is an average month; above it the City awards more than its even slice, below it less. Descriptive of the procurement calendar; no other figure on the site is seasonally adjusted.</div>
     </div>
     <div class="card" id="conversion">
@@ -337,7 +159,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <thead><tr><th>Phase</th><th class="num">Projects tracked</th><th class="num">Advanced</th><th class="num">Held in phase</th></tr></thead>
         <tbody></tbody>
       </table>
-      <div class="reading" id="conv-reading"></div>
+      <div class="reading ci-note ci-note--label" id="conv-reading"></div>
       <div class="tnote">For each capital-plan phase, the projects tracked between two consecutive plan snapshots, how many advanced to a later phase, and how many stayed put. The advancement rate is advanced ÷ projects tracked. It is a structural read of how fast the pipeline matures across the plan, not a schedule for any one project.</div>
     </div>
   </section>
@@ -346,8 +168,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     <div class="card">
       <div class="sec-head"><h2>How project budgets grow</h2><span class="cap">MEDIAN · BY AGENCY</span></div>
       <div class="h-sub" id="esc-sub"></div>
-      <div class="chart-box"><canvas id="chart-esc"></canvas></div>
-      <div class="reading" id="esc-reading"></div>
+      <div class="chart-box"><canvas id="chart-esc" data-ci-col="Agency" data-ci-val="Median budget growth"></canvas></div>
+      <div class="reading ci-note ci-note--label" id="esc-reading"></div>
       <div class="tnote">Each bar is an agency's median project-budget growth across plan snapshots: for projects present in two snapshots, the percentage change in total budget, taken as a median so a single large revision does not dominate. Positive means budgets are being revised up. Nominal dollars, not inflation-adjusted.</div>
     </div>
   </section>
@@ -357,8 +179,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2>How fast the City pays a contract down</h2><span class="cap" id="scurve-cap">DATED SET · MONTHS SINCE REGISTRATION</span></div>
       <div class="h-sub">Every dated contract drawn against its own registration month, then averaged into one citywide payment curve, with the busiest agencies overlaid. The vertical reads percent of contract value paid; the horizontal reads months since the contract was registered.</div>
       <div id="scurve-unavail"></div>
-      <div class="chart-box tall"><canvas id="chart-scurve"></canvas></div>
-      <div class="reading" id="scurve-reading"></div>
+      <div class="chart-box tall"><canvas id="chart-scurve" data-ci-col="Months since registration" data-ci-val="Paid"></canvas></div>
+      <div class="reading ci-note ci-note--label" id="scurve-reading"></div>
       <div class="tnote" id="scurve-method">Each dated contract's cumulative dollars paid are read at each month against its registered amount (original amount where the registered figure is missing) and placed at the whole-month index since its registration date. For each integer month the curve averages percent paid across every dated contract that carries a value there, so the contract set behind each point changes as contracts enter and finish; the line is a population average, not one contract's path. Overlay lines are the agencies with the most dated contracts. The horizon is capped at 60 months. Nominal dollars; a floor built on confirmed Checkbook NYC disbursements. Agencies with fewer than 8 dated contracts are not overlaid.</div>
     </div>
   </section>
@@ -368,8 +190,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2>Does the agency pay ahead of or behind schedule</h2><span class="cap" id="schedpace-cap">DATED SET · AGENCY MEANS</span></div>
       <div class="h-sub">Each point is one agency: how far its contracts have run through their planned schedule against how much of their value has been paid. The diagonal is pay-keeping-pace; above it an agency is paying ahead of where the calendar sits, below it behind.</div>
       <div id="schedpace-unavail"></div>
-      <div class="chart-box tall"><canvas id="chart-schedpace"></canvas></div>
-      <div class="reading" id="schedpace-reading"></div>
+      <div class="chart-box tall"><canvas id="chart-schedpace" data-ci-col="Agency" data-ci-val="Value"></canvas></div>
+      <div class="reading ci-note ci-note--label" id="schedpace-reading"></div>
       <div class="tnote" id="schedpace-method">For each agency's dated contracts, schedule elapsed is time from start date to today as a share of start-to-end, clamped to 0 to 150 percent; paid is percent of value paid to date. The point is the agency mean of each. Contracts missing a start or end date are skipped. The end date is the registered or planned end, not actual completion, so a point below the diagonal can mean a contract running long rather than an agency paying slowly; read this as directional, not a completion measure. Agencies with fewer than 8 dated contracts are omitted.</div>
     </div>
   </section>
@@ -397,1067 +219,26 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     </div>
   </section>
 
+</div>
 </main>
 
-<footer>
-  <div class="wrap f-row">
-    <div>
-      <div class="brand">
-        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
-        <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.01em">The Concrete Index<span class="tick" style="color:var(--accent)">.</span></span>
-      </div>
-      <div style="margin-top:8px">NYC public construction capital, tracked end to end.</div>
-      <div style="margin-top:6px;font-size:12px;color:var(--faint);max-width:430px">An independent project built by Salar Jalinous using only public data. Not affiliated with any employer.</div>
+<!-- ci:footer -->
+<footer class="ci-footer">
+  <div class="wrap ci-footer__inner">
+    <div class="ci-footer__brand">
+      <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="22" height="22" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+      <p class="ci-footer__tag">NYC public construction capital, from commitment to cash.</p>
     </div>
-    <div style="text-align:right" class="f-meta">
-      <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed daily</div>
-      <div style="margin-top:5px">© 2026 <a href="/about/">Salar Jalinous</a></div>
+    <nav class="ci-footer__links" aria-label="Site information">
+      <ul><li><a href="/methodology/">Methodology</a></li><li><a href="/sources/">Sources</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">Corrections</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source on GitHub</a></li></ul>
+    </nav>
+    <div class="ci-footer__meta">
+      <p>An independent project built by Salar Jalinous using only public data. Not affiliated with the City or State of New York or any employer.</p>
+      <p><a href="/sources/">Data: NYC Open Data · Open NY · Checkbook NYC · BLS</a></p>
+      <p><a href="/about/">© <span data-ci-year="2026">2026</span> The Concrete Index</a></p>
     </div>
   </div>
 </footer>
-
-<script>
-'use strict';
-/* ================= data ================= */
-const AWARD_API = 'https://data.cityofnewyork.us/resource/qyyg-4tf5.json';
-const PLAN_API = 'https://data.cityofnewyork.us/resource/fb86-vt7u.json';
-const MEGA = 500e6;
-
-async function getJSON(api, params){
-  const res = await fetch(api + '?' + new URLSearchParams(params), { headers: { 'X-App-Token': '3TAzQQPiSG2T4WGWfYYUxxqfJ' } });
-  if(!res.ok) throw new Error('API ' + res.status);
-  return res.json();
-}
-function isContinuation(m){ return /renewal|extension/i.test(m||''); }
-
-/* plan normalization, same rules as the rest of the site */
-const PHASE_MAP = {
-  'pending':'Pending','initiation':'Pending','pre-design':'Pre-Design','predesign':'Pre-Design',
-  'design':'Design','construction procurement':'Procurement','construction':'Construction',
-  'design build':'Construction','design built':'Construction','close-out':'Close-out','closeout':'Close-out'
-};
-const EXCLUDED = new Set([
-  // inactive / finished states
-  'completed','cancelled','inactive','on-hold','on hold','transferred',
-  'withdrawn','terminated','defaulted','capitally ineligible','expense',
-  // dead phases: the project is gone, not waiting to be built
-  'defunded','funding withdrawn','rescinded','fmsid changed','project renamed','n/a',
-  // not construction work: these do not belong in the construction-demand pipeline
-  'land acquisition','property acquisition','real estate transaction','fundraising',
-  'it project','non capital fund','equipment','consultant services']);
-const PHASE_ORDER = ['Pending','Pre-Design','Design','Procurement','Construction','Close-out'];
-function normPhase(raw){
-  const p = (raw||'').replace(/[()]/g,'').trim().toLowerCase();
-  if(EXCLUDED.has(p)) return 'excluded';
-  return PHASE_MAP[p] || 'Other active';
-}
-function rank(b){ return PHASE_ORDER.indexOf(b); } // -1 for Other active/excluded
-function collapseSnapshot(rows){
-  const m = new Map();
-  for(const r of rows){
-    const key = (r.managing_agency||'') + '|' + (r.fms_id||r.fms_project_name||'');
-    const bucket = normPhase(r.current_phase);
-    const rec = { spend:Math.max(parseFloat(r.spend_to_date)||0,0),
-      budget:Math.max(parseFloat(r.total_budget)||0,0), bucket };
-    const prev = m.get(key);
-    if(!prev || (rank(bucket) > rank(prev.bucket))) m.set(key, rec);
-  }
-  return m;
-}
-
-const D = {};
-
-/* The award record (City Record) feeds the index and seasonality; the capital
-   plan (OMB) feeds conversion, escalation, and the procurement-supply KPI. They
-   are independent sources, settled separately so one being down does not blank
-   the sections that depend on the other. */
-async function fetchAwardsData(){
-  // full award history (megas excluded), pulled as rows and deduped to one
-  // record per pin (max contract_amount), then re-aggregated to the monthly
-  // {m, sm, s, n} shape buildIndex consumes. Pulling rows lets the canonical
-  // pin-dedupe apply; a raw server-side sum overstates by the duplicate share.
-  D.monthly = await fetchMonthlyAwards();
-}
-
-async function fetchCostData(){
-  // Same-origin read of the BLS-derived construction-cost series written by the
-  // nightly archive. The browser cannot reach api.bls.gov (locked connect-src),
-  // so the cost series is pre-fetched server-side into /data/cost-index.json.
-  const res = await fetch('/data/cost-index.json', { cache:'no-store' });
-  if(!res.ok) throw new Error('cost ' + res.status);
-  D.cost = await res.json();
-}
-
-async function fetchPlanData(){
-  // plan snapshots: earliest, prior two, latest
-  const periods = (await getJSON(PLAN_API, {
-    '$select':'reporting_period','$group':'reporting_period','$order':'reporting_period','$limit':'60'
-  })).map(p=>p.reporting_period);
-  const need = [periods[0], ...periods.slice(-3)]; // earliest + last three
-  const FIELDS = 'fms_id,fms_project_name,managing_agency,spend_to_date,total_budget,current_phase';
-  const snapRows = await Promise.all(need.map(p => getJSON(PLAN_API, {
-    '$select': FIELDS, '$where': `reporting_period='${p}'`, '$limit':'20000'
-  })));
-  D.periods = need;
-  D.snaps = snapRows.map(collapseSnapshot);
-}
-
-/* Paged pull of mega-capped construction award rows, deduped to one record per
-   pin (max contract_amount), then aggregated to one row per (month, type) in the
-   {m, sm, s, n} shape buildIndex expects. sm is 'Renewal' for continuations and
-   '' for new awards, so the existing isContinuation(r.sm) filter still works. */
-async function fetchMonthlyAwards(){
-  const PAGE = 50000;
-  let offset = 0;
-  const byPin = new Map();
-  const where = `starts_with(category_description,'Construction') AND contract_amount>0 AND contract_amount<${MEGA}`;
-  for(;;){
-    const batch = await getJSON(AWARD_API, {
-      '$select':'pin,contract_amount,start_date,selection_method_description',
-      '$where': where, '$order':'pin', '$limit':String(PAGE), '$offset':String(offset)
-    });
-    for(let i=0; i<batch.length; i++){
-      const r = batch[i];
-      const amt = parseFloat(r.contract_amount);
-      if(!(amt > 0) || amt >= MEGA) continue;
-      const pin = r.pin || ('_np_' + offset + '_' + i);
-      const rec = { amt, m: r.start_date ? r.start_date.slice(0,7) : null,
-        cont: isContinuation(r.selection_method_description) };
-      const prev = byPin.get(pin);
-      if(!prev || rec.amt > prev.amt) byPin.set(pin, rec);
-    }
-    if(batch.length < PAGE) break;
-    offset += PAGE;
-    if(offset > 400000) break; // safety stop
-  }
-  // aggregate to {m, sm, s, n}
-  const agg = new Map();   // m|cont -> {m, sm, s, n}
-  for(const rec of byPin.values()){
-    if(!rec.m) continue;
-    const key = rec.m + '|' + (rec.cont ? 1 : 0);
-    let e = agg.get(key);
-    if(!e){ e = { m: rec.m, sm: rec.cont ? 'Renewal' : '', s: 0, n: 0 }; agg.set(key, e); }
-    e.s += rec.amt; e.n += 1;
-  }
-  return [...agg.values()].sort((a,b)=> a.m<b.m?-1:(a.m>b.m?1:0));
-}
-
-/* ================= the index ================= */
-function buildIndex(){
-  // monthly new-award value/count
-  const byMonth = new Map();
-  for(const r of D.monthly){
-    if(isContinuation(r.sm)) continue;
-    const m = r.m.slice(0,7);
-    const cur = byMonth.get(m) || {v:0,c:0};
-    cur.v += parseFloat(r.s)||0; cur.c += parseInt(r.n)||0;
-    byMonth.set(m, cur);
-  }
-  /* Continuous month list from 2003-01 through the last COMPLETE month.
-     The keys have to match the raw start_date prefixes the rows are bucketed
-     under above, so they are built in UTC. A local first-of-month put through
-     toISOString names the PREVIOUS month for any reader east of UTC, which slid
-     the whole series one month off its own data and gave the index a different
-     value abroad than at home. Date.UTC in, toISOString out. */
-  const now = new Date();
-  const lastComplete = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1); // exclude current month
-  const months = [];
-  for(let mi = 0, t = Date.UTC(2003, 0, 1); t < lastComplete; t = Date.UTC(2003, ++mi, 1)){
-    months.push(new Date(t).toISOString().slice(0,7));
-  }
-  const v = months.map(m => (byMonth.get(m)||{v:0}).v);
-  const c = months.map(m => (byMonth.get(m)||{c:0}).c);
-  // trailing-12 sums
-  const ttmMonths = [], ttmV = [], ttmC = [];
-  let sv=0, sc=0;
-  for(let i=0;i<months.length;i++){
-    sv+=v[i]; sc+=c[i];
-    if(i>=12){ sv-=v[i-12]; sc-=c[i-12]; }
-    if(i>=11){ ttmMonths.push(months[i]); ttmV.push(sv); ttmC.push(sc); }
-  }
-  // base = 2019 average
-  const baseIdx = ttmMonths.map((m,i)=>m.startsWith('2019')?i:-1).filter(i=>i>=0);
-  const mean = a => a.reduce((x,y)=>x+y,0)/a.length;
-  const baseV = baseIdx.length ? mean(baseIdx.map(i=>ttmV[i])) : ttmV[0];
-  const baseC = baseIdx.length ? mean(baseIdx.map(i=>ttmC[i])) : ttmC[0];
-  const idx = ttmMonths.map((m,i)=> 100*Math.sqrt((ttmV[i]/baseV)*(ttmC[i]/baseC)));
-  D.idx = { months: ttmMonths, values: idx };
-  D.monthlyNew = { months, v };
-  // monthly new-award value AND count, kept for the cost-adjusted build below
-  D.monthlyVC = { months, v, c };
-}
-
-/* ================= cost-adjusted index ================= */
-/* Deflate each award month's nominal value by THAT month's construction-cost
-   deflator (60% materials, 40% labor, 2019 = 100), sum to trailing-twelve real
-   value, then apply the same geometric blend with the unchanged award count.
-   The nominal index is left untouched; this runs alongside it. */
-function buildAdjusted(){
-  const cost = D.cost;
-  if(!cost || !Array.isArray(cost.series) || !cost.series.length) return false;
-  const deflByMonth = new Map();
-  for(const s of cost.series){ if(s && s.month != null && s.deflator != null) deflByMonth.set(s.month, +s.deflator); }
-  if(!deflByMonth.size) return false;
-  const firstDefl = +cost.series[0].deflator;
-  const lastDeflMonth = cost.series[cost.series.length-1].month;
-  const lastDefl = +cost.series[cost.series.length-1].deflator;
-  const { months, v, c } = D.monthlyVC;
-  // real (deflated) monthly value. Award months past the last published cost
-  // month are forward-filled at the latest deflator (BLS posts a month or two
-  // behind, so the most recent award month has no own-month figure yet); award
-  // months before the series begins fall back to the earliest deflator.
-  const realV = months.map((m,i)=>{
-    const d = deflByMonth.has(m) ? deflByMonth.get(m)
-              : (m > lastDeflMonth ? lastDefl : firstDefl);
-    return (d>0) ? v[i] / (d/100) : v[i];
-  });
-  // trailing-twelve nominal value, real value, count
-  const tM=[], tNom=[], tReal=[], tC=[];
-  let sn=0, sr=0, sc=0;
-  for(let i=0;i<months.length;i++){
-    sn+=v[i]; sr+=realV[i]; sc+=c[i];
-    if(i>=12){ sn-=v[i-12]; sr-=realV[i-12]; sc-=c[i-12]; }
-    if(i>=11){ tM.push(months[i]); tNom.push(sn); tReal.push(sr); tC.push(sc); }
-  }
-  const bi = tM.map((m,i)=>m.startsWith('2019')?i:-1).filter(i=>i>=0);
-  const mean = a => a.reduce((x,y)=>x+y,0)/a.length;
-  const bNom = bi.length ? mean(bi.map(i=>tNom[i])) : tNom[0];
-  const bReal = bi.length ? mean(bi.map(i=>tReal[i])) : tReal[0];
-  const bC = bi.length ? mean(bi.map(i=>tC[i])) : tC[0];
-  const nominal = tM.map((m,i)=> 100*Math.sqrt((tNom[i]/bNom)*(tC[i]/bC)));
-  const adjusted = tM.map((m,i)=> 100*Math.sqrt((tReal[i]/bReal)*(tC[i]/bC)));
-  // cumulative cost inflation since 2019 from the latest deflator-bearing series points
-  const ser = cost.series;
-  const lastCost = ser[ser.length-1];
-  D.adj = {
-    months: tM, nominal, adjusted,
-    matCum: lastCost ? (lastCost.materials - 100) : null,
-    labCum: lastCost ? (lastCost.labor - 100) : null,
-    deflLatest: lastCost ? lastCost.deflator : null,
-    costMonth: lastCost ? lastCost.month : null,
-    ff: lastCost ? !!lastCost.ff : false
-  };
-  return true;
-}
-
-/* ================= seasonality ================= */
-function buildSeasonality(){
-  const { months, v } = D.monthlyNew;
-  const years = {};
-  months.forEach((m,i)=>{
-    const y = m.slice(0,4);
-    (years[y] = years[y] || Array(12).fill(0))[+m.slice(5,7)-1] += v[i];
-  });
-  // UTC year, so the seasonal panel does not gain or lose a year over New Year
-  // depending on which side of the date line the reader is sitting on.
-  const lastFullYear = new Date().getUTCFullYear()-1;
-  const shares = Array.from({length:12}, ()=>[]);
-  for(const y of Object.keys(years)){
-    if(+y < 2004 || +y > lastFullYear) continue;
-    const tot = years[y].reduce((a,b)=>a+b,0);
-    if(tot<=0) continue;
-    years[y].forEach((mv,mi)=> shares[mi].push(mv/tot*12));
-  }
-  const median = a => { const s=[...a].sort((x,y)=>x-y); const m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; };
-  D.season = shares.map(median);
-}
-
-/* ================= conversion ================= */
-function buildConversion(){
-  // pooled over last two transitions: snaps[1]→snaps[2], snaps[2]→snaps[3]
-  const stats = {};
-  for(const ph of ['Pending','Pre-Design','Design','Procurement']) stats[ph] = {n:0, adv:0, held:0};
-  for(let t=1; t<3; t++){
-    const a = D.snaps[t], b = D.snaps[t+1];
-    for(const [key, ra] of a){
-      if(!(ra.bucket in stats)) continue;
-      const rb = b.get(key);
-      if(!rb || rb.bucket==='excluded') continue;
-      stats[ra.bucket].n++;
-      if(rank(rb.bucket) > rank(ra.bucket)) stats[ra.bucket].adv++;
-      else if(rb.bucket === ra.bucket) stats[ra.bucket].held++;
-    }
-  }
-  D.conv = stats;
-  // nearest-term award supply: unspent in Procurement, latest snapshot
-  let proc = 0;
-  for(const rec of D.snaps[3].values())
-    if(rec.bucket==='Procurement') proc += Math.max(rec.budget-rec.spend,0);
-  D.procUnspent = proc;
-}
-
-/* ================= escalation ================= */
-function buildEscalation(){
-  const a = D.snaps[0], b = D.snaps[3];
-  const growths = [];
-  let added = 0;
-  for(const [key, ra] of a){
-    const rb = b.get(key);
-    if(!rb || ra.budget < 1e6 || rb.budget < 1e6) continue;
-    growths.push({ key, g: rb.budget/ra.budget - 1 });
-    added += rb.budget - ra.budget;
-  }
-  growths.sort((x,y)=>x.g-y.g);
-  const median = growths.length ? growths[Math.floor(growths.length/2)].g : 0;
-  const grew = growths.filter(x=>x.g>0.05).length;
-  // per-agency medians (agency = key prefix), min 30 matched projects
-  const byAg = new Map();
-  for(const x of growths){
-    const ag = x.key.split('|')[0];
-    (byAg.get(ag) || byAg.set(ag, []).get(ag)).push(x.g);
-  }
-  const agRows = [...byAg.entries()].filter(([,v])=>v.length>=30)
-    .map(([ag,v])=>{ v.sort((x,y)=>x-y); return [ag, v[Math.floor(v.length/2)], v.length]; })
-    .sort((x,y)=>y[1]-x[1]).slice(0,8);
-  D.esc = { n: growths.length, median, grewShare: growths.length? grew/growths.length : 0, added, agRows };
-}
-
-/* ================= formatting ================= */
-const AGENCY_NAMES = {
-  DPR:'Parks & Recreation', DDC:'Design & Construction', DOT:'Transportation',
-  EDC:'Economic Development', DEP:'Environmental Protection', HHC:'NYC Health + Hospitals',
-  DCAS:'Citywide Admin Services', CUNY:'CUNY', NYPD:'Police', FDNY:'Fire',
-  DCLA:'Cultural Affairs', DHS:'Homeless Services', DSNY:'Sanitation',
-  QPL:'Queens Public Library', DOC:'Correction', DOHMH:'Health & Mental Hygiene',
-  BPL:'Brooklyn Public Library', NYPL:'New York Public Library', HRA:'Human Resources Admin',
-  DFTA:'Aging', ACS:'Children’s Services', HPD:'Housing Preservation & Dev'
-};
-function agencyLabel(c){ return AGENCY_NAMES[c] ? `${AGENCY_NAMES[c]} (${c})` : c; }
-function fmtMoney(v){
-  if(v >= 1e9) return '$' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2) + 'B';
-  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
-  return '$' + Math.round(v/1e3) + 'K';
-}
-function fmtInt(v){ return v.toLocaleString('en-US'); }
-function fmtPct(v){ return (v*100).toFixed(0) + '%'; }
-const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-function fmtYM(m){ return MONTH_SHORT[+m.slice(5,7)-1] + ' ' + m.slice(0,4); }
-function fmtPeriodLong(p){ return MONTH_NAMES[+p.slice(4,6)-1] + ' ' + p.slice(0,4); }
-
-/* ================= rendering ================= */
-const COLOR_A = '#ae4e34', COLOR_B = '#243b53', COLOR_C = '#2f7d52', GRID = '#e3dbd3';
-Chart.defaults.font.family = "'IBM Plex Mono',monospace";
-Chart.defaults.font.size = 10;
-Chart.defaults.color = '#6b5e56';
-Object.assign(Chart.defaults.plugins.tooltip, {
-  backgroundColor:'#fefbf8', titleColor:'#201611', bodyColor:'#6b5e56',
-  borderColor:'#ae4e34', borderWidth:1, cornerRadius:2, padding:10, displayColors:false,
-  titleFont:{family:"'Public Sans',sans-serif",weight:'600',size:12}, bodyFont:{family:"'IBM Plex Mono',monospace",size:12},
-  caretSize:5
-});
-const charts = {};
-function destroy(k){ if(charts[k]){ charts[k].destroy(); delete charts[k]; } }
-
-function renderKpis(){
-  // Award-sourced KPIs (the index and its year-on-year change).
-  if(D.awardsOk){
-    const { months, values } = D.idx;
-    const last = values[values.length-1];
-    const yoy = values.length>12 ? (last/values[values.length-13]-1)*100 : null;
-    document.getElementById('kpi-idx').textContent = last.toFixed(1);
-    document.getElementById('kpi-idx-note').textContent = fmtYM(months[months.length-1]) + ' · 2019 = 100';
-    document.getElementById('kpi-yoy').innerHTML = yoy===null ? '–' :
-      `<span class="${yoy>=0?'up':'down'}">${yoy>=0?'+':'−'}${Math.abs(yoy).toFixed(0)}%</span>`;
-  } else {
-    document.getElementById('kpi-idx').textContent = '–';
-    document.getElementById('kpi-yoy').textContent = '–';
-  }
-  // Plan-sourced KPIs (nearest-term supply and budget escalation).
-  if(D.planOk){
-    document.getElementById('kpi-proc').textContent = fmtMoney(D.procUnspent);
-    document.getElementById('kpi-esc').textContent = '+' + fmtPct(D.esc.median);
-    document.getElementById('kpi-esc-note').textContent =
-      `median project, ${fmtPeriodLong(D.periods[0])} → ${fmtPeriodLong(D.periods[3])}`;
-  } else {
-    document.getElementById('kpi-proc').textContent = '–';
-    document.getElementById('kpi-esc').textContent = '–';
-  }
-}
-
-function renderIndexChart(){
-  const { months, values } = D.idx;
-  destroy('idx');
-  charts.idx = new Chart(document.getElementById('chart-idx'), {
-    type:'line',
-    data:{ labels: months.map(fmtYM), datasets:[{
-      data: values, borderColor: COLOR_A, borderWidth: 2.2, pointRadius: 0,
-      fill: {target:'origin'}, backgroundColor: 'rgba(174,78,52,0.07)', tension: .25
-    }]},
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false},
-        tooltip:{callbacks:{label:(c)=>'Index: '+c.parsed.y.toFixed(1)}} },
-      scales:{
-        x:{grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:12}},
-        y:{grid:{color:GRID}, border:{display:false}, ticks:{maxTicksLimit:6}}
-      }
-    }
-  });
-  const { values: v, months: m } = D.idx;
-  const last = v[v.length-1];
-  const peak = v.reduce((a,x,i)=> x>v[a]?i:a, 0);
-  document.getElementById('idx-reading').innerHTML =
-    `<strong>Reading:</strong> the index stands at <strong>${last.toFixed(1)}</strong>, ` +
-    (last<90 ? 'below its 2019 baseline' : last>110 ? 'above its 2019 baseline' : 'near its 2019 baseline') +
-    `. The series peaked at <strong>${v[peak].toFixed(1)}</strong> in ${fmtYM(m[peak])}. ` +
-    `Because megaprojects and renewals are excluded, this line tracks the breadth-and-volume cycle of new work reaching the market, not one-off awards.`;
-}
-
-/* ================= cost-adjusted rendering ================= */
-const COLOR_MAT = '#ae4e34', COLOR_LAB = '#243b53';
-function fmtSignedPct(v){ return (v>=0?'+':'−') + Math.abs(v).toFixed(0) + '%'; }
-
-function renderAdjKpis(){
-  const a = D.adj;
-  const lastAdj = a.adjusted[a.adjusted.length-1];
-  const lastNom = a.nominal[a.nominal.length-1];
-  const gap = lastNom - lastAdj;
-  document.getElementById('kpi-adj').textContent = lastAdj.toFixed(1);
-  document.getElementById('kpi-adj-note').textContent = fmtYM(a.months[a.months.length-1]) + ' · 2019 = 100';
-  document.getElementById('kpi-gap').innerHTML = `<span class="down">−${gap.toFixed(1)}</span>`;
-  document.getElementById('kpi-gap-note').textContent = 'index points below the nominal ' + lastNom.toFixed(1);
-  if(a.matCum != null){
-    document.getElementById('kpi-mat').innerHTML = `<span class="${a.matCum>=0?'up':'down'}">${fmtSignedPct(a.matCum)}</span>`;
-  }
-  if(a.labCum != null){
-    document.getElementById('kpi-lab').innerHTML = `<span class="${a.labCum>=0?'up':'down'}">${fmtSignedPct(a.labCum)}</span>`;
-  }
-  document.getElementById('adj-cap').textContent =
-    'MATERIALS +' + Math.round(a.matCum) + '% · LABOR +' + Math.round(a.labCum) + '% SINCE 2019';
-}
-
-function renderCostChart(){
-  const ser = D.cost.series;
-  const labels = ser.map(s=>fmtYM(s.month));
-  destroy('cost');
-  charts.cost = new Chart(document.getElementById('chart-cost'), {
-    type:'line',
-    data:{ labels, datasets:[
-      { label:'Materials (national)', data: ser.map(s=>s.materials), borderColor: COLOR_MAT, borderWidth: 2, pointRadius: 0, tension:.25 },
-      { label:'Labor (NY State)', data: ser.map(s=>s.labor), borderColor: COLOR_LAB, borderWidth: 2, pointRadius: 0, tension:.25 }
-    ]},
-    options:{
-      responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
-      plugins:{
-        legend:{display:true, position:'top', align:'end', labels:{boxWidth:9,boxHeight:9,font:{family:"'Public Sans',sans-serif",size:11},color:'#201611'}},
-        tooltip:{callbacks:{label:(c)=> c.dataset.label + ': ' + c.parsed.y.toFixed(0)}}
-      },
-      scales:{
-        x:{grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:10}},
-        y:{grid:{color:GRID}, border:{display:false}, ticks:{maxTicksLimit:6}}
-      }
-    }
-  });
-  const latest = ser[ser.length-1];
-  const matCum = latest.materials - 100, labCum = latest.labor - 100;
-  document.getElementById('cost-reading').innerHTML =
-    `<strong>Reading:</strong> since 2019, national construction materials prices are up <strong>${fmtSignedPct(matCum)}</strong> and New York State construction wages <strong>${fmtSignedPct(labCum)}</strong>. ` +
-    `Materials ran first and hardest through the 2021 to 2022 spike, then plateaued; labor has climbed more steadily and is still rising. The 60/40 blend of the two sets the deflator that discounts every award.`;
-}
-
-function renderAdjChart(){
-  const a = D.adj;
-  const labels = a.months.map(fmtYM);
-  destroy('adj');
-  charts.adj = new Chart(document.getElementById('chart-adj'), {
-    type:'line',
-    data:{ labels, datasets:[
-      // adjusted drawn first as the lower bound; nominal fills down to it to shade the wedge
-      { label:'Cost-adjusted', data: a.adjusted, borderColor: COLOR_MAT, borderWidth: 2.2, pointRadius: 0, tension:.25, fill:false, order:1 },
-      { label:'Nominal', data: a.nominal, borderColor: COLOR_LAB, borderWidth: 2, pointRadius: 0, tension:.25,
-        fill:'-1', backgroundColor:'rgba(174,78,52,0.10)', order:2 }
-    ]},
-    options:{
-      responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
-      plugins:{
-        legend:{display:true, position:'top', align:'end', labels:{boxWidth:9,boxHeight:9,font:{family:"'Public Sans',sans-serif",size:11},color:'#201611'}},
-        tooltip:{callbacks:{label:(c)=> c.dataset.label + ': ' + c.parsed.y.toFixed(1)}}
-      },
-      scales:{
-        x:{grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:10}},
-        y:{grid:{color:GRID}, border:{display:false}, ticks:{maxTicksLimit:6}}
-      }
-    }
-  });
-  const lastAdj = a.adjusted[a.adjusted.length-1];
-  const lastNom = a.nominal[a.nominal.length-1];
-  const gap = lastNom - lastAdj;
-  document.getElementById('adj-reading').innerHTML =
-    `<strong>Reading:</strong> the nominal index reads <strong>${lastNom.toFixed(1)}</strong>, but once each award is discounted by the construction-cost level of the month it was let, the adjusted index sits at <strong>${lastAdj.toFixed(1)}</strong>, a gap of <strong>${gap.toFixed(1)}</strong> points. ` +
-    `That gap is the share of the headline that is price, not work. The two lines tracked together through 2019, then split as costs climbed: the City is buying less real construction than the nominal dollars suggest.`;
-}
-
-function renderSeasonality(){
-  destroy('season');
-  charts.season = new Chart(document.getElementById('chart-season'), {
-    type:'bar',
-    data:{ labels: MONTH_SHORT, datasets:[{
-      data: D.season, backgroundColor: D.season.map(s=> s===Math.max(...D.season) ? COLOR_A : COLOR_B), borderRadius:1
-    }]},
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false},
-        tooltip:{callbacks:{label:(c)=> c.parsed.y.toFixed(2)+'× an average month'}} },
-      scales:{
-        x:{grid:{display:false}},
-        y:{grid:{color:GRID}, border:{display:false}, ticks:{callback:v=>v.toFixed(1)+'×', maxTicksLimit:5}}
-      }
-    }
-  });
-  const hi = D.season.indexOf(Math.max(...D.season));
-  const lo = D.season.indexOf(Math.min(...D.season));
-  document.getElementById('season-reading').innerHTML =
-    `<strong>Reading:</strong> ${MONTH_NAMES[hi]} is the City's heaviest awarding month (${D.season[hi].toFixed(2)}× average) and ${MONTH_NAMES[lo]} the lightest (${D.season[lo].toFixed(2)}×). The fiscal-year rhythm matters: a slow ${MONTH_NAMES[lo]} isn't a slowdown, and a strong ${MONTH_NAMES[hi]} isn't a boom.`;
-}
-
-function renderConversion(){
-  document.getElementById('conv-sub').textContent =
-    `Phase advancement across the last two plan-to-plan transitions (${fmtPeriodLong(D.periods[1])} → ${fmtPeriodLong(D.periods[3])})`;
-  const tb = document.querySelector('#tbl-conv tbody');
-  tb.innerHTML = ['Pending','Pre-Design','Design','Procurement'].map(ph=>{
-    const s = D.conv[ph];
-    return `<tr><td><span style="font-weight:600">${ph}</span></td>
-      <td class="num">${fmtInt(s.n)}</td>
-      <td class="num"><span class="pct">${s.n? fmtPct(s.adv/s.n) : '–'}</span></td>
-      <td class="num">${s.n? fmtPct(s.held/s.n) : '–'}</td></tr>`;
-  }).join('');
-  const p = D.conv['Procurement'];
-  const rate = p.n ? p.adv/p.n : 0;
-  document.getElementById('conv-reading').innerHTML =
-    `<strong>Reading:</strong> ${fmtPct(rate)} of procurement-phase projects reach construction within ~4 months, the fastest gate in the sequence. Applied to the <strong>${fmtMoney(D.procUnspent)}</strong> currently sitting in procurement, that is the nearest-term supply of new awards.`;
-}
-
-function renderEscalation(){
-  document.getElementById('esc-sub').textContent =
-    `Median total-budget growth for projects tracked from ${fmtPeriodLong(D.periods[0])} to ${fmtPeriodLong(D.periods[3])}, agencies with 30+ matched projects`;
-  destroy('esc');
-  charts.esc = new Chart(document.getElementById('chart-esc'), {
-    type:'bar',
-    data:{ labels: D.esc.agRows.map(r=>agencyLabel(r[0])), datasets:[{
-      data: D.esc.agRows.map(r=>r[1]*100), backgroundColor: COLOR_A, borderRadius:1, barThickness:18
-    }]},
-    options:{
-      indexAxis:'y', responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false},
-        tooltip:{callbacks:{label:(c)=> '+'+c.parsed.x.toFixed(1)+'% median · '+fmtInt(D.esc.agRows[c.dataIndex][2])+' projects'}} },
-      scales:{
-        x:{grid:{color:GRID}, border:{display:false}, ticks:{callback:v=>'+'+v+'%', maxTicksLimit:6}},
-        y:{grid:{display:false}, ticks:{autoSkip:false, font:{size:11.5}}}
-      }
-    }
-  });
-  document.getElementById('esc-reading').innerHTML =
-    `<strong>Reading:</strong> across <strong>${fmtInt(D.esc.n)}</strong> projects tracked over the span, the median budget grew <strong>+${fmtPct(D.esc.median)}</strong> and ${fmtPct(D.esc.grewShare)} of projects grew more than 5%. In aggregate the City added <strong>${fmtMoney(Math.abs(D.esc.added))}</strong> ${D.esc.added>=0?'to':'(net reduction) from'} the budgets of already-planned projects, demand growth that never appears as a new project announcement.`;
-}
-
-function unavailNote(host){
-  return `<div class="unavail">This dataset (${host}) is temporarily unavailable. The rest of the page reflects what loaded; refresh to retry.</div>`;
-}
-
-(async function init(){
-  const [awardsR, planR, costR] = await Promise.allSettled([fetchAwardsData(), fetchPlanData(), fetchCostData()]);
-  D.awardsOk = awardsR.status === 'fulfilled';
-  D.planOk = planR.status === 'fulfilled';
-  D.costOk = costR.status === 'fulfilled';
-
-  // Build only the computations whose source loaded; a failure in one must not
-  // stop the other. Each build is itself wrapped so a data-shape surprise
-  // degrades that one section rather than the whole page.
-  if(D.awardsOk){ try{ buildIndex(); buildSeasonality(); }catch(e){ D.awardsOk = false; } }
-  if(D.planOk){ try{ buildConversion(); buildEscalation(); }catch(e){ D.planOk = false; } }
-  // The cost-adjusted index needs both the monthly award series and the cost series.
-  D.adjOk = false;
-  if(D.awardsOk && D.costOk){ try{ D.adjOk = buildAdjusted(); }catch(e){ D.adjOk = false; } }
-
-  if(!D.awardsOk && !D.planOk){
-    document.getElementById('loader').style.display='none';
-    document.getElementById('error').style.display='block';
-    return;
-  }
-
-  const planSpan = D.planOk ? `capital plan snapshots ${fmtPeriodLong(D.periods[0])} → ${fmtPeriodLong(D.periods[3])}` : 'capital plan temporarily unavailable';
-  document.getElementById('asof').innerHTML =
-    `Award history since 2003 · ${planSpan} · awards refreshed on load, cost series nightly`;
-  document.getElementById('loader').style.display='none';
-  document.getElementById('app').style.display='block';
-
-  if(!D.awardsOk) document.getElementById('index').insertAdjacentHTML('beforebegin', unavailNote('City Record awards'));
-  if(!D.planOk) document.getElementById('escalation').insertAdjacentHTML('beforebegin', unavailNote('OMB capital plan'));
-
-  renderKpis();
-  if(D.awardsOk){ renderIndexChart(); renderSeasonality(); }
-  if(D.planOk){ renderConversion(); renderEscalation(); }
-
-  if(D.adjOk){
-    renderAdjKpis(); renderCostChart(); renderAdjChart();
-  } else {
-    // Leave the section visible but explain the gap rather than half-render it.
-    const host = !D.awardsOk ? 'City Record awards' : 'BLS construction cost';
-    document.getElementById('adj-unavail').innerHTML = unavailNote(host);
-    ['cost-card','adj-card'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
-    document.querySelector('#cost-adjusted .adj-kpis').style.display='none';
-  }
-
-  // The app starts hidden until data loads, so a hash present at page load cannot
-  // scroll to its target (the element is inside a display:none container, and its
-  // final position is not settled until the charts above it render). Re-apply the
-  // jump once everything is laid out, honoring the section's scroll-margin-top.
-  if(location.hash){
-    // The app starts hidden until data loads, so the browser's anchor jump at load
-    // fails and a fixed timeout can fire while the target is still display:none.
-    // Poll until the target is actually laid out (offsetParent set = app revealed),
-    // then force one instant jump (scroll-behavior:smooth otherwise suppresses a
-    // programmatic jump from the top), with a rAF correction for any late reflow.
-    var hashId=decodeURIComponent(location.hash.slice(1)), userScrolled=false, jumpTries=0;
-    window.addEventListener('wheel', function(){ userScrolled=true; }, {passive:true, once:true});
-    window.addEventListener('touchmove', function(){ userScrolled=true; }, {passive:true, once:true});
-    (function tryJump(){
-      if(userScrolled) return;
-      var t=document.getElementById(hashId);
-      if(t && t.offsetParent!==null){
-        var de=document.documentElement, prev=de.style.scrollBehavior;
-        de.style.scrollBehavior='auto';
-        t.scrollIntoView({block:'start'});
-        requestAnimationFrame(function(){ if(!userScrolled) t.scrollIntoView({block:'start'}); de.style.scrollBehavior=prev; });
-        return;
-      }
-      if(jumpTries++ < 150) setTimeout(tryJump, 80);   // wait up to ~12s for data + reveal
-    })();
-  }
-})();
-
-/* ===========================================================================
-   Dated-payment tiles (payment S-curve + schedule-pace scatter).
-   Self-contained: reads the same same-origin file the Contracts page uses
-   (/data/contract-search.json, sample fallback), independent of the award and
-   plan fetches above so a slow or failed contract file never blanks the page.
-   =========================================================================== */
-(function(){
-  'use strict';
-  var LIVE_URL = '/data/contract-search.json';
-  var SAMPLE_URL = '/data/contract-search.sample.json';
-  var MIN_AGENCY_N = 8;          // min dated contracts for an agency to be shown
-  var SCURVE_HORIZON = 60;       // x-axis cap, months since registration
-  var SCURVE_OVERLAY_AGENCIES = 3;
-  var PC_A = '#ae4e34', PC_B = '#243b53', PC_C = '#2f5d8f', PC_GRID = '#e3dbd3';
-  var pcCharts = {};
-  function pcDestroy(k){ if(pcCharts[k]){ pcCharts[k].destroy(); delete pcCharts[k]; } }
-  function escp(s){ var d = document.createElement('div'); d.textContent = String(s == null ? '' : s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
-
-  /* ----- pure aggregations (mirror site/test/payment-tiles.test.js) ----- */
-  function sweptContracts(cs){ return (cs || []).filter(function(c){ return c && c.payments_swept === true; }); }
-  function median(arr){
-    var a = (arr || []).filter(function(v){ return v != null && !isNaN(v); }).sort(function(x,y){ return x - y; });
-    if(!a.length) return null;
-    var m = Math.floor(a.length / 2);
-    return a.length % 2 ? a[m] : (a[m-1] + a[m]) / 2;
-  }
-  function groupBy(arr, keyFn){
-    var m = new Map();
-    (arr || []).forEach(function(x){ var k = keyFn(x); if(!m.has(k)) m.set(k, []); m.get(k).push(x); });
-    return m;
-  }
-  function monthIndex(reg, ym){
-    if(!reg || !ym) return null;
-    var ry = +reg.slice(0,4), rm = +reg.slice(5,7), py = +ym.slice(0,4), pm = +ym.slice(5,7);
-    if(!ry || !rm || !py || !pm) return null;
-    return (py - ry) * 12 + (pm - rm);
-  }
-  function contractCurvePoints(c){
-    var denom = (c.current_amount > 0) ? c.current_amount : (c.original_amount > 0) ? c.original_amount : 0;
-    if(!denom || !Array.isArray(c.monthly_cumulative)) return [];
-    var out = [];
-    c.monthly_cumulative.forEach(function(pair){
-      if(!Array.isArray(pair) || pair.length < 2) return;
-      var idx = monthIndex(c.registration_date, pair[0]); var cum = +pair[1];
-      if(idx == null || idx < 0 || isNaN(cum)) return;
-      out.push({ idx: idx, pct: cum / denom * 100 });
-    });
-    return out;
-  }
-  function sCurve(list){
-    var sums = [], counts = [];
-    for(var i = 0; i <= SCURVE_HORIZON; i++){ sums[i] = 0; counts[i] = 0; }
-    list.forEach(function(c){
-      contractCurvePoints(c).forEach(function(p){
-        if(p.idx > SCURVE_HORIZON) return;
-        sums[p.idx] += p.pct; counts[p.idx] += 1;
-      });
-    });
-    var pts = [];
-    for(var j = 0; j <= SCURVE_HORIZON; j++) if(counts[j] > 0) pts.push({ x: j, y: sums[j] / counts[j], n: counts[j] });
-    return pts;
-  }
-  function sCurveBundle(cs){
-    var swept = sweptContracts(cs);
-    var citywide = sCurve(swept);
-    var ranked = [];
-    groupBy(swept, function(c){ return c.agency || '–'; }).forEach(function(list, agency){ ranked.push({ agency: agency, n: list.length, list: list }); });
-    ranked.sort(function(a,b){ return b.n - a.n; });
-    var overlays = ranked.slice(0, SCURVE_OVERLAY_AGENCIES)
-      .filter(function(r){ return r.n >= MIN_AGENCY_N; })
-      .map(function(r){ return { agency: r.agency, n: r.n, points: sCurve(r.list) }; });
-    return { citywide: citywide, overlays: overlays, sweptTotal: swept.length };
-  }
-  function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
-  /* Day-granular dates read in UTC. A bare 'YYYY-MM-DDTHH:MM:SS.000' is parsed
-     as LOCAL time, so measuring elapsed schedule against an absolute now shifted
-     the numerator by the reader's UTC offset and moved the scatter slightly
-     between New York and Tokyo. Contract start and end are day-granular anyway. */
-  function utcDayMs(s){
-    var t = String(s||'');
-    if(t.length < 10) return NaN;
-    return Date.UTC(+t.slice(0,4), +t.slice(5,7)-1, +t.slice(8,10));
-  }
-  function scheduleElapsedPct(c, today){
-    if(!c.start_date || !c.end_date) return null;
-    var s = utcDayMs(c.start_date), e = utcDayMs(c.end_date);
-    if(isNaN(s) || isNaN(e) || e <= s) return null;
-    return clamp((today - s) / (e - s) * 100, 0, 150);
-  }
-  function scatterAgencyMeans(cs){
-    var n = new Date();
-    var today = Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate());
-    var swept = sweptContracts(cs);
-    var rows = [];
-    groupBy(swept, function(c){ return c.agency || '–'; }).forEach(function(list, agency){
-      if(list.length < MIN_AGENCY_N) return;
-      var sch = [], paid = [];
-      list.forEach(function(c){
-        var se = scheduleElapsedPct(c, today);
-        if(se == null) return;
-        if(c.pct_paid_to_date == null || isNaN(c.pct_paid_to_date)) return;
-        sch.push(se); paid.push(c.pct_paid_to_date * 100);
-      });
-      if(!sch.length) return;
-      var mean = function(a){ return a.reduce(function(x,y){ return x + y; }, 0) / a.length; };
-      rows.push({ agency: agency, n: list.length, used: sch.length, schedElapsed: mean(sch), paidPct: mean(paid) });
-    });
-    return rows;
-  }
-  function shortAgency(name){
-    return String(name || '').replace(/^Department of /, '').replace(/^New York City /, '');
-  }
-
-  /* ----- render: S-curve ----- */
-  function renderSCurve(cs){
-    var card = document.getElementById('scurve');
-    var bundle = sCurveBundle(cs);
-    if(!bundle.citywide.length){
-      if(card) card.style.display = 'none';
-      return;
-    }
-    var maxX = bundle.citywide.reduce(function(a,p){ return Math.max(a, p.x); },
-      bundle.overlays.reduce(function(a,o){ return o.points.reduce(function(b,p){ return Math.max(b,p.x); }, a); }, 0));
-    var xCap = Math.min(SCURVE_HORIZON, Math.max(12, maxX));
-    var overlayColors = [PC_B, PC_C, '#776b5e'];
-    var datasets = [{
-      label: 'Citywide average', data: bundle.citywide.map(function(p){ return { x: p.x, y: p.y }; }),
-      borderColor: PC_A, borderWidth: 2.4, pointRadius: 0, tension: 0.25, fill: false, order: 1
-    }];
-    bundle.overlays.forEach(function(o, i){
-      datasets.push({
-        label: shortAgency(o.agency) + ' (n ' + o.n + ')',
-        data: o.points.map(function(p){ return { x: p.x, y: p.y }; }),
-        borderColor: overlayColors[i % overlayColors.length], borderWidth: 1.6,
-        pointRadius: 0, tension: 0.25, fill: false, borderDash: [4, 3], order: 2 + i
-      });
-    });
-    pcDestroy('scurve');
-    pcCharts.scurve = new Chart(document.getElementById('chart-scurve'), {
-      type: 'line',
-      data: { datasets: datasets },
-      options: {
-        responsive: true, maintainAspectRatio: false, parsing: false,
-        interaction: { mode: 'nearest', intersect: false },
-        plugins: {
-          legend: { display: true, position: 'top', align: 'end', labels: { boxWidth: 9, boxHeight: 9, font: { family: "'Public Sans',sans-serif", size: 11 }, color: '#201611' } },
-          tooltip: { callbacks: { title: function(items){ return 'Month ' + items[0].parsed.x; },
-            label: function(c){ return c.dataset.label + ': ' + c.parsed.y.toFixed(0) + '% paid'; } } }
-        },
-        scales: {
-          x: { type: 'linear', min: 0, max: xCap, grid: { display: false },
-               title: { display: true, text: 'months since registration', color: '#968a7f', font: { family: "'IBM Plex Mono',monospace", size: 10 } },
-               ticks: { maxTicksLimit: 10, stepSize: 6, callback: function(v){ return v; } } },
-          y: { min: 0, suggestedMax: 100, grid: { color: PC_GRID }, border: { display: false },
-               ticks: { maxTicksLimit: 6, callback: function(v){ return v + '%'; } } }
-        }
-      }
-    });
-    var cap = document.getElementById('scurve-cap');
-    if(cap) cap.textContent = 'DATED SET · ' + bundle.sweptTotal + ' CONTRACTS';
-    var last = bundle.citywide[bundle.citywide.length - 1];
-    var reach50 = bundle.citywide.find(function(p){ return p.y >= 50; });
-    var rd = document.getElementById('scurve-reading');
-    if(rd) rd.innerHTML = '<strong>Reading:</strong> across the dated set, the average contract crosses '
-      + (reach50 ? '<strong>50% paid</strong> around month <strong>' + reach50.x + '</strong>' : 'its midpoint late in the window')
-      + ', and by month <strong>' + last.x + '</strong> stands near <strong>' + last.y.toFixed(0)
-      + '%</strong> of value paid. Because the contract set behind each month changes as work enters and finishes, the line reads the population, not any one contract; the overlays show where the busiest agencies pay faster or slower than that average.';
-  }
-
-  /* ----- render: schedule-pace scatter ----- */
-  function renderSchedPace(cs){
-    var card = document.getElementById('schedpace');
-    var rows = scatterAgencyMeans(cs);
-    var unavail = document.getElementById('schedpace-unavail');
-    if(!rows.length){
-      pcDestroy('schedpace');
-      var box = document.querySelector('#schedpace .chart-box'); if(box) box.style.display = 'none';
-      var rd0 = document.getElementById('schedpace-reading'); if(rd0) rd0.style.display = 'none';
-      if(unavail) unavail.innerHTML = '<div class="unavail">No agency has at least ' + MIN_AGENCY_N
-        + ' dated contracts with usable start and end dates yet, so the schedule-pace view is held until the dated set fills in.</div>';
-      return;
-    }
-    var pts = rows.map(function(r){ return { x: r.schedElapsed, y: r.paidPct, agency: shortAgency(r.agency), n: r.n }; });
-    pcDestroy('schedpace');
-    var diagonalLine = {
-      id: 'diag',
-      beforeDatasetsDraw: function(chart){
-        var sc = chart.scales; if(!sc.x || !sc.y) return;
-        var ctx = chart.ctx;
-        var lo = Math.max(sc.x.min, sc.y.min), hi = Math.min(sc.x.max, sc.y.max);
-        ctx.save(); ctx.strokeStyle = '#968a7f'; ctx.lineWidth = 1; ctx.setLineDash([5, 4]);
-        ctx.beginPath(); ctx.moveTo(sc.x.getPixelForValue(lo), sc.y.getPixelForValue(lo));
-        ctx.lineTo(sc.x.getPixelForValue(hi), sc.y.getPixelForValue(hi)); ctx.stroke(); ctx.restore();
-      }
-    };
-    var labelPoints = {
-      id: 'plabels',
-      afterDatasetsDraw: function(chart){
-        var ctx = chart.ctx, meta = chart.getDatasetMeta(0);
-        ctx.save(); ctx.fillStyle = '#201611';
-        ctx.font = "10px 'IBM Plex Mono', monospace"; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-        meta.data.forEach(function(el, i){ if(el) ctx.fillText(pts[i].agency, el.x + 7, el.y); });
-        ctx.restore();
-      }
-    };
-    pcCharts.schedpace = new Chart(document.getElementById('chart-schedpace'), {
-      type: 'scatter',
-      data: { datasets: [{ label: 'Agency mean', data: pts, backgroundColor: PC_A,
-        borderColor: PC_A, pointRadius: 5, pointHoverRadius: 7 }] },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: { callbacks: { label: function(c){ var p = pts[c.dataIndex];
-            return [p.agency + ' (n ' + p.n + ')', 'schedule elapsed: ' + p.x.toFixed(0) + '%', 'paid to date: ' + p.y.toFixed(0) + '%']; } } }
-        },
-        scales: {
-          x: { min: 0, suggestedMax: 150, grid: { color: PC_GRID }, border: { display: false },
-               title: { display: true, text: 'schedule elapsed (%)', color: '#968a7f', font: { family: "'IBM Plex Mono',monospace", size: 10 } },
-               ticks: { maxTicksLimit: 7, callback: function(v){ return v + '%'; } } },
-          // suggestedMax, not a hard max: a fixed ceiling silently clipped a real
-          // point (Small Business Services, paid 132.95%) off the top of the
-          // chart while the caption still counted it as "above the line," so the
-          // one point the reader could not see was the one the prose promised.
-          // suggestedMax keeps the same look for the common case and lets the
-          // axis grow when a real value runs past it.
-          y: { min: 0, suggestedMax: 120, grid: { color: PC_GRID }, border: { display: false },
-               title: { display: true, text: 'paid to date (%)', color: '#968a7f', font: { family: "'IBM Plex Mono',monospace", size: 10 } },
-               ticks: { maxTicksLimit: 7, callback: function(v){ return v + '%'; } } }
-        }
-      },
-      plugins: [diagonalLine, labelPoints]
-    });
-    var ahead = rows.filter(function(r){ return r.paidPct > r.schedElapsed; }).length;
-    var behind = rows.length - ahead;
-    var cap = document.getElementById('schedpace-cap');
-    // The dated set can hold a single agency, so every noun and verb in the
-    // generated sentence agrees with the live count rather than assuming plural.
-    if(cap) cap.textContent = 'DATED SET · ' + rows.length + ' AGENC' + (rows.length === 1 ? 'Y' : 'IES');
-    var body;
-    if(ahead === 0){
-      body = (rows.length === 1 ? 'it sits' : 'all of them sit')
-        + ' below the pay-keeping-pace diagonal, paying behind where the planned calendar would put '
-        + (rows.length === 1 ? 'it' : 'them');
-    } else {
-      body = '<strong>' + ahead + '</strong> sit' + (ahead === 1 ? 's' : '')
-        + ' above the pay-keeping-pace diagonal, paying ahead of where the planned calendar would put '
-        + (ahead === 1 ? 'it' : 'them')
-        + (behind === 0 ? '; none sit below'
-          : (behind === 1 ? '; the other one sits below' : '; the rest sit below'));
-    }
-    var rd = document.getElementById('schedpace-reading');
-    if(rd) rd.innerHTML = '<strong>Reading:</strong> of the <strong>' + rows.length
-      + '</strong> agenc' + (rows.length === 1 ? 'y' : 'ies') + ' with enough dated contracts, ' + body
-      + '. The end date is the planned end, not actual completion, so a point below the line can mean contracts running long rather than an agency holding back payment. Read the pattern, not any single point.';
-  }
-
-  function loadJSON(url){
-    return fetch(url, { cache: 'no-store' }).then(function(res){
-      if(!res.ok) throw new Error('HTTP ' + res.status); return res.json();
-    });
-  }
-  function paintAll(payload){
-    var cs = (payload && Array.isArray(payload.contracts)) ? payload.contracts : [];
-    try { renderSCurve(cs); } catch(e){ if(window.console) console.error('scurve render', e); var s = document.getElementById('scurve'); if(s) s.style.display = 'none'; }
-    try { renderSchedPace(cs); } catch(e){ if(window.console) console.error('schedpace render', e); var p = document.getElementById('schedpace'); if(p) p.style.display = 'none'; }
-  }
-  function hideTiles(){
-    ['scurve','schedpace'].forEach(function(id){ var el = document.getElementById(id); if(el) el.style.display = 'none'; });
-  }
-  function fetchOnce(){
-    return loadJSON(LIVE_URL).catch(function(){ return loadJSON(SAMPLE_URL); });
-  }
-  function start(){
-    if(typeof Chart === 'undefined'){ hideTiles(); return; }
-    // The tiles live inside #app, which the main init() reveals only after its
-    // own fetches settle. Fetch the contract file now, but defer painting until
-    // #app is visible so the canvases lay out at full size, then paint once.
-    var payloadP = fetchOnce();
-    var tries = 0;
-    (function whenVisible(){
-      var app = document.getElementById('app');
-      if(app && app.offsetParent !== null){
-        payloadP.then(paintAll).catch(function(err){
-          if(window.console) console.error('contract-search load failed (analysis tiles)', err); hideTiles();
-        });
-        return;
-      }
-      if(tries++ < 200) setTimeout(whenVisible, 80); // wait up to ~16s for reveal
-      else { // app never revealed (both upstream sources failed); leave tiles hidden
-        hideTiles();
-      }
-    })();
-  }
-  if(document.readyState !== 'loading') start(); else document.addEventListener('DOMContentLoaded', start);
-})();
-
-</script>
-<!-- ===== Concrete Index export module: page PDF, chart PNG, tile CSV. No external dependencies. ===== -->
-<style id="exp-css">
-.exp{display:flex;justify-content:flex-end;gap:0;margin-top:10px}
-.exp button{background:none;border:1px solid var(--line);color:var(--muted);font:500 10px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.07em;text-transform:uppercase;padding:6px 9px;cursor:pointer;transition:color .12s,border-color .12s}
-.exp button+button{border-left:none}
-.exp button:hover{color:var(--accent);border-color:var(--accent)}
-.exp button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.pdf-btn{background:none;border:1px solid var(--line);color:var(--muted);font:600 11px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;cursor:pointer;white-space:nowrap;transition:color .12s,border-color .12s}
-.pdf-btn:hover{color:var(--accent);border-color:var(--accent)}
-.series-bar .inner .pdf-btn{margin-left:auto;font-size:10px;padding:4px 9px;align-self:center}
-.pdf-bar{display:flex;justify-content:flex-end;max-width:var(--maxw);margin:0 auto;padding:6px var(--gut)}
-@media (max-width:720px){.pdf-bar{padding:6px 18px}}
-@media print{
-  @page{margin:14mm}
-  header .menu-btn,.nav-links,.controls,.series-bar,.photo-band,.exp,.pdf-btn,.pdf-bar,.badge-live,.valstrip{display:none !important}
-  header{border-bottom:2px solid #201611}
-  body{background:#fff !important}
-  .wrap{max-width:none !important;width:100% !important}
-  .grid,.grid.two,.grid.three{display:block !important}
-  .card{break-inside:avoid;page-break-inside:avoid;box-shadow:none !important;margin:0 0 16px !important}
-  .chart-box,.chart-box.tall{height:300px !important}
-  a{color:inherit;text-decoration:none}
-  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
-}
-</style>
-<script>
-(function(){
-  "use strict";
-  if(window.__ciExport)return; window.__ciExport=1;
-  function slug(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60);}
-  var pageSlug=slug(location.pathname.replace(/\/index\.html?$/i,'').replace(/\/+$/,''))||'awarded';
-  function getChart(cv){return (cv&&window.Chart&&Chart.getChart)?(Chart.getChart(cv)||null):null;}
-  function fnameFor(el,ext){
-    var card=el.closest('.card')||el.closest('section')||el.parentElement;
-    var h=card&&card.querySelector('.sec-head h2,h2,h3');
-    if(!h){var s=el.previousElementSibling;while(s){if(s.tagName==='H2'||s.tagName==='H3'){h=s;break;}s=s.previousElementSibling;}}
-    return ('concrete-index-'+pageSlug+'-'+slug(h?h.textContent:'export')).replace(/-+/g,'-')+'.'+ext;
-  }
-  function dl(href,name,revoke){
-    var a=document.createElement('a');a.href=href;a.download=name;a.rel='noopener';
-    document.body.appendChild(a);a.click();a.remove();
-    if(revoke)setTimeout(function(){URL.revokeObjectURL(href);},2000);
-  }
-  function csvCell(v){v=(v==null?'':String(v));return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
-  function csv(rows,name){
-    var t='\ufeff'+rows.map(function(r){return r.map(csvCell).join(',');}).join('\r\n');
-    dl(URL.createObjectURL(new Blob([t],{type:'text/csv;charset=utf-8'})),name,true);
-  }
-  function pngFromChart(ch,name){
-    var src=ch.canvas,out=document.createElement('canvas');
-    out.width=src.width;out.height=src.height;
-    var x=out.getContext('2d');
-    x.fillStyle='#fefbf8';x.fillRect(0,0,out.width,out.height);
-    x.drawImage(src,0,0);
-    dl(out.toDataURL('image/png'),name,false);
-  }
-  function csvFromChart(ch,name){
-    var labels=ch.data.labels||[],ds=ch.data.datasets||[];
-    var rows=[['Label'].concat(ds.map(function(d,i){return d.label||('Series '+(i+1));}))];
-    var n=labels.length||((ds[0]&&ds[0].data)?ds[0].data.length:0);
-    for(var r=0;r<n;r++){
-      var row=[labels[r]!=null?labels[r]:r];
-      ds.forEach(function(d){
-        var v=d.data?d.data[r]:'';
-        if(v&&typeof v==='object')v=(v.y!=null?v.y:(v.v!=null?v.v:JSON.stringify(v)));
-        row.push(v==null?'':v);
-      });
-      rows.push(row);
-    }
-    csv(rows,name);
-  }
-  function csvFromTable(tbl,name){
-    var rows=[];
-    tbl.querySelectorAll('tr').forEach(function(tr){
-      var cells=[];
-      tr.querySelectorAll('th,td').forEach(function(c){cells.push(c.textContent.replace(/\s+/g,' ').trim());});
-      if(cells.some(function(x){return x!=='';}))rows.push(cells);
-    });
-    if(rows.length)csv(rows,name);
-  }
-  function mkBtn(label,title,fn){
-    var b=document.createElement('button');b.type='button';b.textContent=label;b.title=title;
-    b.addEventListener('click',fn);return b;
-  }
-  function placeAfter(el,bar){
-    var t=el,nx=el.nextElementSibling;
-    if(nx&&nx.classList&&nx.classList.contains('tnote'))t=nx;
-    t.insertAdjacentElement('afterend',bar);
-  }
-  function attachChart(box){
-    if(!box||box.getAttribute('data-exp'))return;
-    var cv=box.querySelector('canvas');if(!cv)return;
-    box.setAttribute('data-exp','1');
-    var bar=document.createElement('div');bar.className='exp';
-    bar.appendChild(mkBtn('PNG','Download this chart as a PNG image',function(){var ch=getChart(cv);if(ch)pngFromChart(ch,fnameFor(box,'png'));}));
-    bar.appendChild(mkBtn('CSV','Download this chart’s data as a CSV file',function(){var ch=getChart(cv);if(ch)csvFromChart(ch,fnameFor(box,'csv'));}));
-    placeAfter(box,bar);
-  }
-  function attachTable(tbl){
-    if(!tbl||tbl.getAttribute('data-exp'))return;
-    if(!tbl.querySelector('th'))return;
-    if(tbl.closest('header')||tbl.closest('footer')||tbl.closest('nav'))return;
-    tbl.setAttribute('data-exp','1');
-    var bar=document.createElement('div');bar.className='exp';
-    bar.appendChild(mkBtn('CSV','Download this table as a CSV file',function(){csvFromTable(tbl,fnameFor(tbl,'csv'));}));
-    placeAfter(tbl,bar);
-  }
-  function scan(){
-    document.querySelectorAll('.chart-box').forEach(attachChart);
-    document.querySelectorAll('main canvas,#app canvas').forEach(function(cv){if(!cv.closest('.chart-box'))attachChart(cv.parentElement);});
-    document.querySelectorAll('main table,#app table,.card table').forEach(attachTable);
-  }
-  function addPdfBtn(){
-    if(document.querySelector('.pdf-btn'))return;
-    var b=mkBtn('Save PDF','Save or print this page as a PDF',function(){window.print();});
-    b.className='pdf-btn';
-    var inner=document.querySelector('.series-bar .inner');
-    if(inner){inner.appendChild(b);return;}
-    var header=document.querySelector('header');
-    if(header){var bar=document.createElement('div');bar.className='pdf-bar';bar.appendChild(b);header.insertAdjacentElement('afterend',bar);return;}
-    var nav=document.querySelector('.nav-links');if(nav)nav.appendChild(b);
-  }
-  var pending=null;
-  function start(){
-    addPdfBtn();scan();
-    try{
-      var mo=new MutationObserver(function(){if(pending)return;pending=setTimeout(function(){pending=null;scan();},300);});
-      mo.observe(document.body,{childList:true,subtree:true});
-    }catch(e){}
-    [400,1200,3000].forEach(function(t){setTimeout(scan,t);});
-  }
-  if(document.readyState!=='loading')start();else document.addEventListener('DOMContentLoaded',start);
-})();
-</script>
+<!-- /ci:footer -->
 </body>
 </html>

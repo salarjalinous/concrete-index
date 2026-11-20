@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- ci:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="same-origin">
+<meta name="color-scheme" content="light">
+<title>Privacy · The Concrete Index</title>
+<meta name="description" content="What a visit to The Concrete Index sends and to whom: GitHub Pages logs, the public data APIs a page queries, and the search text the Contractors page sends.">
+<link rel="canonical" href="https://concreteindex.co/privacy/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Concrete Index">
+<meta property="og:title" content="Privacy · The Concrete Index">
+<meta property="og:description" content="What a visit to The Concrete Index sends and to whom: GitHub Pages logs, the public data APIs a page queries, and the search text the Contractors page sends.">
+<meta property="og:url" content="https://concreteindex.co/privacy/">
+<meta property="og:image" content="https://concreteindex.co/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://concreteindex.co/og-image.png">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/public-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/ci.css">
+<link rel="stylesheet" href="/assets/pages/editorial.css">
+<meta name="ci:chrome" content="on">
+<script src="/assets/ci.js" defer></script>
+<!-- /ci:head -->
+</head>
+<body>
+<!-- ci:header -->
+<a class="ci-skip" href="#content">Skip to content</a>
+<header class="ci-masthead">
+  <div class="wrap ci-masthead__bar">
+    <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="26" height="26" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+    <nav class="ci-utility" aria-label="Site"><a href="/methodology/">Methodology</a><a href="/about/">About</a><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></nav>
+    <button class="ci-menu-btn" type="button" aria-expanded="false" aria-controls="ci-menu"><svg class="ci-i-menu" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#menu"/></svg><svg class="ci-i-close" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#close"/></svg><span class="ci-menu-btn__label">Menu</span></button>
+  </div>
+  <nav class="ci-rail" id="ci-menu" aria-label="Sections">
+    <div class="wrap ci-rail__inner">
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-stages">Stages</p><ul class="ci-rail__list" aria-labelledby="ci-g-stages"><li><a href="/pipeline/">Pipeline</a></li><li><a href="/bidding/">Bidding</a></li><li><a href="/awarded/">Awarded</a></li><li><a href="/contracts/">Contracts</a></li><li><a href="/funnel/">Funnel</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-entities">Entities</p><ul class="ci-rail__list" aria-labelledby="ci-g-entities"><li><a href="/agencies/">Agencies</a></li><li><a href="/contractors/">Contractors</a></li><li><a href="/regional/">Regional</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-synthesis">Synthesis</p><ul class="ci-rail__list" aria-labelledby="ci-g-synthesis"><li><a href="/analysis/">Analysis</a></li><li><a href="/briefing/">Briefing</a></li></ul></div>
+      <div class="ci-rail__group ci-rail__group--utility"><p class="ci-rail__label" id="ci-g-site">Site</p><ul class="ci-rail__list" aria-labelledby="ci-g-site"><li><a href="/methodology/">Methodology</a></li><li><a href="/about/">About</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></li></ul></div>
+    </div>
+  </nav>
+</header>
+<!-- /ci:header -->
+
+<main id="content" tabindex="-1">
+<div class="wrap">
+<article class="editorial prose" aria-labelledby="privacy-title">
+  <header class="page-head">
+    <h1 id="privacy-title">Privacy</h1>
+    <p class="page-meta">Last updated: <time datetime="2026-11-20">November 20, 2026</time></p>
+  </header>
+
+  <p class="lede">The Concrete Index is a personal project run by Salar Jalinous. It has no accounts, sign-up, newsletter, advertising, or analytics. It sets no cookies and stores nothing in your browser.</p>
+
+  <section aria-labelledby="pv-host">
+    <h2 id="pv-host">What your browser sends, and to whom</h2>
+    <p>Loading any page sends a standard web request to the site's host, GitHub Pages. GitHub logs the IP address of every visitor to a GitHub Pages site for security purposes, under <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">GitHub's privacy statement</a>. This site cannot see or change that log, and GitHub does not publish a retention period specific to Pages.</p>
+    <p>Most data pages ask public data services for figures directly from your browser. Those services receive your IP address and the query the page sends. Both run on Socrata, a platform operated by Tyler Technologies, which collects IP and network activity for its government clients under the <a href="https://tylertech.com/privacy" rel="noopener">Tyler Technologies privacy policy</a>.</p>
+    <div class="table-wrap" role="region" aria-labelledby="pv-table-cap" tabindex="0">
+      <table class="rule-table">
+        <caption id="pv-table-cap">Hosts a visitor's browser contacts</caption>
+        <thead>
+          <tr><th scope="col">Host</th><th scope="col">Run for</th><th scope="col">Contacted on</th><th scope="col">What it receives</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>concreteindex.co (GitHub Pages)</td><td>This site</td><td>Every page</td><td>IP address, the page requested, browser user agent</td></tr>
+          <tr><td>data.cityofnewyork.us (NYC Open Data)</td><td>City of New York</td><td>Home, Pipeline, Bidding, Awarded, Funnel, Agencies, Contractors, Regional, Analysis, Briefing</td><td>IP address, user agent, the query the page sends</td></tr>
+          <tr><td>data.ny.gov (Open NY)</td><td>New York State</td><td>Regional; Contractors, when a firm lookup runs its MTA and State section</td><td>IP address, user agent, the query the page sends</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The Contracts page and the editorial pages (Methodology, About, Privacy, Terms, Sources) contact no host other than this site. Each page's Content Security Policy lists exactly the hosts above for that page, so the browser refuses any other connection.</p>
+  </section>
+
+  <section aria-labelledby="pv-typed">
+    <h2 id="pv-typed">What you type</h2>
+    <p>When you run a Contractors search, the name you enter is sent to NYC Open Data, and to Open NY for the MTA and State section, as part of the query. Those operators can log it together with your IP address. Do not enter anything you would not want a public data service to receive. The search term is never written to the page address or to browser storage.</p>
+    <p>The Contracts search filters a file already downloaded from this site. It runs inside your browser and sends nothing.</p>
+  </section>
+
+  <section aria-labelledby="pv-not">
+    <h2 id="pv-not">What this site does not do</h2>
+    <p>No cookies, local storage, session storage, tracking pixels, fingerprinting, or third-party scripts. Fonts, the charting library, and illustrations are served from this site. Requests to the data services carry no referrer. Payment data from Checkbook NYC and cost series from the U.S. Bureau of Labor Statistics are collected once a night by an automated job, so your browser never contacts either.</p>
+  </section>
+
+  <section aria-labelledby="pv-contact">
+    <h2 id="pv-contact">Questions and corrections</h2>
+    <p>Open an issue on the project's <a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">GitHub issues page</a>. Issues are public and are governed by GitHub's own terms and privacy statement, so leave out anything you would not post publicly.</p>
+    <p>This notice changes whenever a host is added to or removed from the list above, and the date at the top changes with it.</p>
+  </section>
+</article>
+</div>
+</main>
+
+<!-- ci:footer -->
+<footer class="ci-footer">
+  <div class="wrap ci-footer__inner">
+    <div class="ci-footer__brand">
+      <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="22" height="22" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+      <p class="ci-footer__tag">NYC public construction capital, from commitment to cash.</p>
+    </div>
+    <nav class="ci-footer__links" aria-label="Site information">
+      <ul><li><a href="/methodology/">Methodology</a></li><li><a href="/sources/">Sources</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">Corrections</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source on GitHub</a></li></ul>
+    </nav>
+    <div class="ci-footer__meta">
+      <p>An independent project built by Salar Jalinous using only public data. Not affiliated with the City or State of New York or any employer.</p>
+      <p><a href="/sources/">Data: NYC Open Data · Open NY · Checkbook NYC · BLS</a></p>
+      <p><a href="/about/">© <span data-ci-year="2026">2026</span> The Concrete Index</a></p>
+    </div>
+  </div>
+</footer>
+<!-- /ci:footer -->
+</body>
+</html>

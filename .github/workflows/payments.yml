@@ -199,7 +199,7 @@ jobs:
           # growth; GitHub Pages gzips the file, so wire transfer stays small.
           MAX_BYTES = 6_000_000
 
-          # ---- normalizer: byte-for-byte equivalent of the /vendors/ page normName() ----
+          # ---- normalizer: byte-for-byte equivalent of the Contractors page (/contractors/) normName() ----
           # JS: (s||'').trim().replace(/\s+/g,' ').toUpperCase().replace(/[.,;:&/\\'"`\-\s]+$/,'').trim()
           _TRAIL = re.compile(r"[.,;:&/\\'\"`\-\s]+$")
           def norm_name(s):
@@ -1157,6 +1157,19 @@ jobs:
           log("Wrote data/contract-search.json (%d bytes, %d contracts)"
               % (os.path.getsize("data/contract-search.json"), len(records)))
           PYEOF
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # contract-index.json + 64 detail shards + contract-aggregates.json, split
+      # from the contract-search.json just written (which stays published). Only
+      # this job writes them. A failure keeps the previous split files.
+      - name: Split contract-search.json (index, detail shards, aggregates)
+        continue-on-error: true
+        run: |
+          node tools/build-contract-splits.js --data data
+          rm -f data/*.tmp-* data/contract-detail/*.tmp-*
 
       - name: Commit if changed
         run: |

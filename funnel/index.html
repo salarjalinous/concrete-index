@@ -1,264 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://data.cityofnewyork.us; upgrade-insecure-requests">
-<meta name="referrer" content="strict-origin-when-cross-origin">
+<!-- ci:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' https://data.cityofnewyork.us; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="same-origin">
+<meta name="color-scheme" content="light">
+<title>Funnel · The Concrete Index</title>
+<meta name="description" content="Committed, awarded, spent, and paid NYC construction dollars read as separate gauges, with spending pace, award pace, backlog coverage, and agency velocity.">
 <link rel="canonical" href="https://concreteindex.co/funnel/">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="The Concrete Index">
+<meta property="og:title" content="Funnel · The Concrete Index">
+<meta property="og:description" content="Committed, awarded, spent, and paid NYC construction dollars read as separate gauges, with spending pace, award pace, backlog coverage, and agency velocity.">
 <meta property="og:url" content="https://concreteindex.co/funnel/">
 <meta property="og:image" content="https://concreteindex.co/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://concreteindex.co/og-image.png">
-<title>The Funnel · The Concrete Index</title>
-<meta name="description" content="NYC public construction capital from budget to payment: how committed dollars become awards and spending, and how fast each agency moves money.">
-<meta property="og:title" content="The Concrete Index · Funnel">
-<meta property="og:description" content="How fast NYC capital commitments become cash.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23ae4e34%22/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha384-bs/nf9FbdNouRbMiFcrcZfLXYPKiPaGVGplVbv7dLGECccEXDW+S3zjqSKR5ZEaD" crossorigin="anonymous"></script>
-<style>
-:root{
-  --paper:#f7f3ef; --surface:#fefbf8; --band:#f2ede8;
-  --ink:#201611; --navy:#243b53; --muted:#6b5e56; --faint:#968a7f;
-  --line:#ded5ce; --rule:#201611;
-  --accent:#ae4e34; --accent-soft:#eadbd4; --steel:#2f5d8f;
-  --pos:#2f7d52; --neg:#9e362f; --green:#2f7d52; --red:#9e362f; --radius:3px;
-  --maxw:1180px; --gut:28px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'Public Sans',-apple-system,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
-a{color:var(--steel);text-decoration:none}
-a:hover{text-decoration:underline}
-.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
-.serif{font-family:'Source Serif 4',Georgia,serif}
-.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
-
-/* ---------- header ---------- */
-header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2px solid var(--ink)}
-.nav{display:flex;align-items:center;justify-content:space-between;height:62px}
-.brand{display:flex;align-items:center;gap:10px;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:20px;letter-spacing:-.01em;color:var(--ink)}
-.brand svg{color:var(--navy);flex-shrink:0}
-.brand .tick{color:var(--accent)}
-.nav-links{display:flex;gap:17px;align-items:center;font-size:13.5px;font-weight:500}
-.nav-links a{color:var(--muted)}
-.nav-links a:hover{color:var(--ink);text-decoration:none}
-.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px}
-.badge-live{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--pos);background:rgba(47,125,82,.1);border:1px solid rgba(47,125,82,.34);border-radius:3px;padding:3px 9px}
-.badge-live .dot{width:6px;height:6px;border-radius:50%;background:var(--pos);animation:pulse 2.4s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* ---------- release-series bar ---------- */
-.series-bar{background:var(--band);border-bottom:1px solid var(--line)}
-.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px var(--gut);max-width:var(--maxw);margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.series-bar b{color:var(--ink);font-weight:600}
-.series-bar .sep{color:var(--faint);padding:0 12px}
-@media(max-width:720px){.series-bar .inner{white-space:normal}}
-
-/* ---------- hero ---------- */
-.hero{padding:46px 0 14px}
-.kicker{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:14px}
-.hero h1{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(32px,4.6vw,46px);line-height:1.06;letter-spacing:-.012em;max-width:840px;color:var(--ink)}
-.hero p.sub{margin-top:17px;font-size:16px;color:var(--muted);max-width:700px}
-.hero .asof{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--faint)}
-.hero .asof strong{color:var(--muted);font-weight:600}
-
-/* ---------- KPI tape ---------- */
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:28px 0 8px;border-left:1px solid var(--line)}
-.kpi{background:var(--surface);border-right:1px solid var(--line);border-top:2px solid var(--ink);padding:16px 18px 18px}
-.kpi.hl{border-top-color:var(--accent)}
-.kpi .k-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
-.kpi .k-value{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;margin-top:11px;letter-spacing:-.01em;color:var(--navy);line-height:1}
-.kpi.hl .k-value{font-size:clamp(30px,4.5vw,38px);color:var(--ink)}.kpi:not(.hl) .k-value{color:var(--navy)}
-.kpi .k-note{font-size:12.5px;color:var(--muted);margin-top:8px}
-
-/* ---------- section heads ---------- */
-.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:0}
-.sec-head h2{font-family:'Source Serif 4',Georgia,serif;font-size:21px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
-.sec-head .cap{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em;text-align:right;white-space:nowrap}
-
-.grid{display:grid;gap:22px;padding:30px 0 0}
-.grid.two{grid-template-columns:1fr 1fr}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 22px;box-shadow:0 1px 0 rgba(32,22,17,.04)}
-.card .h-sub{font-size:12.5px;color:var(--muted);margin-top:9px;margin-bottom:18px}
-.chart-box{position:relative;height:280px}
-.tnote{font-size:11.5px;line-height:1.55;color:var(--muted);margin-top:13px;padding-top:9px;border-top:1px solid var(--line)}
-
-.unavail{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);background:var(--band);border-left:3px solid var(--faint);border-radius:0;padding:12px 16px;margin-top:14px}
-
-/* ---------- stage bars ---------- */
-.stage-row{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--line)}
-.stage-row:last-child{border-bottom:0}
-.stage-name{width:150px;flex-shrink:0}
-.stage-name .s-t{font-weight:700;font-size:14px}
-.stage-name .s-s{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint)}
-.stage-bar-track{flex:1;height:26px;background:var(--band);border-radius:3px;overflow:hidden}
-.stage-bar{height:100%;border-radius:3px;min-width:3px}
-.stage-val{width:90px;text-align:right;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-size:18px;font-weight:600;flex-shrink:0}
-
-/* ---------- tables ---------- */
-table{width:100%;border-collapse:collapse;font-size:13.5px}
-th{text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);padding:0 10px 8px;border-bottom:1px solid var(--ink)}
-td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-tr:last-child td{border-bottom:0}
-td.num,th.num{text-align:right}
-td.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
-td .t-title{font-weight:500;color:var(--ink)}
-.amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
-.yrs{font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
-.yrs.slow{color:var(--neg)}
-.yrs.fast{color:var(--pos)}
-
-/* ---------- methodology ---------- */
-.method{padding:44px 0 10px}
-.method h2{font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:700;letter-spacing:-.012em;color:var(--ink)}
-.method-body{margin-top:24px}
-.method h3{font-family:'Public Sans',sans-serif;font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin:24px 0 6px;color:var(--ink)}
-.method p{font-size:14px;color:var(--muted);max-width:820px}
-.method p+p{margin-top:8px}
-.method code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:var(--band);padding:1px 5px;border-radius:3px;border:1px solid var(--line)}
-
-/* ---------- footer ---------- */
-footer{margin-top:54px;background:var(--band);border-top:2px solid var(--ink);padding:30px 0 40px;font-size:13px;color:var(--muted)}
-footer a{color:var(--steel)}
-footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-footer .brand{font-size:17px;color:var(--ink)}
-footer .brand svg{color:var(--navy)}
-footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em}
-
-#loader{padding:80px 0;text-align:center;color:var(--muted)}
-.spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-#error{display:none;padding:60px 24px;text-align:center;color:var(--muted)}
-#app{display:none}
-@media(max-width:880px){
-  .kpis{grid-template-columns:repeat(2,1fr)}
-  .kpi:nth-child(2){border-right:0}
-  .grid.two{grid-template-columns:1fr}
-  .stage-name{width:110px}
-}
-@media(max-width:560px){
-  .kpis{grid-template-columns:1fr 1fr}
-  .kpi .k-value{font-size:24px}
-  .hero{padding-top:34px}
-  :root{--maxw:1180px;--gut:18px}
-}
-.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
-@media(max-width:1180px){
-  .menu-btn{display:block}
-  .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:61px;left:calc(-1 * var(--gut));right:calc(-1 * var(--gut));background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px var(--gut);gap:13px;box-shadow:0 10px 24px rgba(32,22,17,.16);z-index:60;max-height:calc(100vh - 62px);overflow-y:auto}
-  .nav-links.open{display:flex}
-}
-
-/* ---------- reduced motion ---------- */
-@media (prefers-reduced-motion: reduce){
-  .badge-live .dot{animation:none}
-  .spinner{animation:none}
-  *{scroll-behavior:auto}
-}
-
-/* ---------- print ---------- */
-@media print{
-  header,.series-bar,.badge-live,.controls,.seg,.menu-btn{display:none !important}
-  body{background:#fff;color:#000}
-  .card{background:#fff !important;box-shadow:none}
-  footer{background:#fff;border-top:1px solid #000;color:#000}
-  footer a,a{color:#000}
-}
-
-/* ---------- display scaling: fill wide / high-resolution screens ---------- */
-@media(min-width:1400px){
-  :root{--maxw:1330px;--gut:34px}
-  body{font-size:15.5px}
-  .kpi .k-value{font-size:33px}
-  .kpi.hl .k-value{font-size:42px}
-  .hero p.sub,.lp-sub{font-size:17.5px;max-width:860px}
-  .hero h1{max-width:960px}
-  .method p{max-width:980px}
-  table{font-size:14px}
-  .chart-box{height:330px}
-  .chart-box.tall{height:376px}
-}
-@media(min-width:1750px){
-  :root{--maxw:1500px;--gut:40px}
-  body{font-size:16px}
-  .kpi .k-value{font-size:35px}
-  .kpi.hl .k-value{font-size:45px}
-  .method p{max-width:1060px}
-  table{font-size:14.5px}
-  .chart-box{height:360px}
-  .chart-box.tall{height:410px}
-}
-@media(min-width:2100px){ :root{--maxw:1620px} }
-/* ---------- narrow: wide tables scroll inside their card, not the page ---------- */
-@media(max-width:900px){
-  .card{overflow-x:auto}
-  .card table{min-width:560px}
-  .sec-head{flex-wrap:wrap}
-  .sec-head .cap{white-space:normal;text-align:left}
-}
-/* suppressed cell: a figure below the floor for a meaningful reading, not a zero */
-.na{font-family:'IBM Plex Mono',monospace;font-weight:500;color:var(--faint)}
-</style>
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/public-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/ci.css">
+<link rel="stylesheet" href="/assets/pages/funnel.css">
+<meta name="ci:export" content="on">
+<meta name="ci:chrome" content="on">
+<script src="/assets/ci.js" defer></script>
+<script src="/assets/vendor/chart.umd.min.js" defer></script>
+<script src="/assets/ci-chart.js" defer></script>
+<script src="/assets/pages/funnel.js" defer></script>
+<!-- /ci:head -->
 </head>
 <body>
 
-<header>
-  <div class="wrap nav">
-    <div class="brand">
-      <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
-      <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
-    </div>
-    <button class="menu-btn" aria-label="Menu" aria-expanded="false" onclick="const o=this.nextElementSibling.classList.toggle('open');this.setAttribute('aria-expanded',o)">☰</button>
-    <nav class="nav-links">
-      <a href="/pipeline/">Pipeline</a>
-      <a href="/solicitations/">Bidding</a>
-      <a href="/awarded/">Awarded</a>
-      <a href="/funnel/" class="active">Funnel</a>
-      <a href="/agency/">Agencies</a>
-      <a href="/regional/">SCA &amp; MTA</a>
-      <a href="/competitive/">Contractors</a>
-      <a href="/contracts/">Contracts</a>
-      <a href="/analysis/">Analysis</a>
-      <a href="/briefing/">Briefing</a>
-      <a href="/about/">About</a>
-      <span class="badge-live"><span class="dot"></span>Live data</span>
-    </nav>
+<!-- ci:header -->
+<a class="ci-skip" href="#content">Skip to content</a>
+<header class="ci-masthead">
+  <div class="wrap ci-masthead__bar">
+    <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="26" height="26" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+    <nav class="ci-utility" aria-label="Site"><a href="/methodology/">Methodology</a><a href="/about/">About</a><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></nav>
+    <button class="ci-menu-btn" type="button" aria-expanded="false" aria-controls="ci-menu"><svg class="ci-i-menu" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#menu"/></svg><svg class="ci-i-close" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#close"/></svg><span class="ci-menu-btn__label">Menu</span></button>
   </div>
+  <nav class="ci-rail" id="ci-menu" aria-label="Sections">
+    <div class="wrap ci-rail__inner">
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-stages">Stages</p><ul class="ci-rail__list" aria-labelledby="ci-g-stages"><li><a href="/pipeline/">Pipeline</a></li><li><a href="/bidding/">Bidding</a></li><li><a href="/awarded/">Awarded</a></li><li><a href="/contracts/">Contracts</a></li><li><a href="/funnel/" aria-current="page">Funnel</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-entities">Entities</p><ul class="ci-rail__list" aria-labelledby="ci-g-entities"><li><a href="/agencies/">Agencies</a></li><li><a href="/contractors/">Contractors</a></li><li><a href="/regional/">Regional</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-synthesis">Synthesis</p><ul class="ci-rail__list" aria-labelledby="ci-g-synthesis"><li><a href="/analysis/">Analysis</a></li><li><a href="/briefing/">Briefing</a></li></ul></div>
+      <div class="ci-rail__group ci-rail__group--utility"><p class="ci-rail__label" id="ci-g-site">Site</p><ul class="ci-rail__list" aria-labelledby="ci-g-site"><li><a href="/methodology/">Methodology</a></li><li><a href="/about/">About</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></li></ul></div>
+    </div>
+  </nav>
 </header>
+<!-- /ci:header -->
 
 <div class="series-bar">
-  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-FUNNEL</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CAPITAL PLAN (fb86-vt7u), 3× YEARLY · CITY RECORD (qyyg-4tf5), DAILY</b><span class="sep">·</span>PLAN&nbsp;·&nbsp;<b id="series-asof">–</b></div>
+  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-FUNNEL</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CAPITAL PLAN (fb86-vt7u), 3× YEARLY · CITY RECORD (qyyg-4tf5), DAILY</b><span class="sep">·</span>PLAN&nbsp;·&nbsp;<b id="series-asof"><span class="ci-skel ci-skel--word" aria-hidden="true"></span></b></div>
 </div>
+
+<main id="content" tabindex="-1">
 
 <div class="wrap">
   <div class="hero">
-    <div class="kicker">NYC Capital Conversion</div>
     <h1>How committed dollars become cash.</h1>
     <p class="sub">Commitments, awards, and outlays live in separate City systems, each on its own format and its own ledger. This page sets them side by side: how much funded work is stacked upstream, how fast it converts to contracts, and how fast contracts turn into cash, agency by agency.</p>
-    <p class="asof" id="asof">Assembling the funnel from live City data…</p>
+    <p class="asof" id="asof"><span class="ci-skel ci-skel--line" aria-hidden="true"></span><span class="ci-vh">Assembling the funnel from City data…</span></p>
   </div>
 </div>
 
-<div id="loader" class="wrap">
-  <div class="spinner"></div>
-  Pulling the capital plan and award record from NYC Open Data…
+<nav class="ci-subnav" aria-label="On this page">
+  <div class="wrap"><ul class="ci-subnav__list"><li><a href="#stages">Gauges</a></li><li><a href="#trend">Pace of spending</a></li><li><a href="#award-trend">Pace of awarding</a></li><li><a href="#velocity">Agency velocity</a></li><li><a href="#methodology">Definitions</a></li></ul></div>
+</nav>
+
+<div id="loader" class="wrap ci-loading">
+  <p class="ci-loading__status" role="status">Pulling the capital plan and award record from NYC Open Data…</p>
+  <div class="ci-skel-tape" aria-hidden="true"><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span></div><div class="ci-skel ci-skel--chart" aria-hidden="true"></div>
 </div>
 
-<div id="error" class="wrap">
+<div id="error" class="wrap ci-error">
   <p><strong>Couldn't reach NYC Open Data.</strong></p>
-  <p style="margin-top:6px">The City's API may be momentarily unavailable.</p>
-  <button type="button" onclick="location.reload()" style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--paper);background:var(--navy);border:none;border-radius:var(--radius);padding:9px 16px;cursor:pointer">Retry</button>
+  <p class="u-mt-2">The City's API may be momentarily unavailable.</p>
+  <button type="button" class="ci-btn" data-action="reload">Retry</button>
 </div>
 
-<main id="app" class="wrap">
+<div data-ci-main id="app" class="wrap">
 
   <section class="kpis">
     <div class="kpi"><div class="k-label">Committed, unspent</div><div class="k-value" id="kpi-committed">–</div><div class="k-note" id="kpi-committed-note"></div></div>
@@ -280,13 +109,13 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     <div class="card" id="trend">
       <div class="sec-head"><h2>Pace of spending</h2><span class="cap">PLAN-TO-PLAN · USD</span></div>
       <div class="h-sub">Capital dollars paid out between plan snapshots (≈4-month periods)</div>
-      <div class="chart-box"><canvas id="chart-spend"></canvas></div>
+      <div class="chart-box"><canvas id="chart-spend" data-ci-col="Period" data-ci-val="Spent"></canvas></div>
       <div class="tnote">Each bar is capital paid out in one plan period, computed as the increase in cumulative spend-to-date between two consecutive OMB plan snapshots (published roughly every four months), floored at zero. Spending is measured on a matched panel: only projects observed in both snapshots contribute, so a project's back-history does not land in the period it first appears. Spending by new entrants before they entered the plan is therefore outside the series. A restatement that lowers a cumulative figure reads as zero rather than negative spend.</div>
     </div>
     <div class="card" id="award-trend">
       <div class="sec-head"><h2>Pace of awarding</h2><span class="cap">BY QUARTER · USD</span></div>
       <div class="h-sub">Construction award value entering the market, by quarter</div>
-      <div class="chart-box"><canvas id="chart-award"></canvas></div>
+      <div class="chart-box"><canvas id="chart-award" data-ci-col="Quarter" data-ci-val="Awarded"></canvas></div>
       <div class="tnote">Each bar is the construction award value entering the market in one calendar quarter, on the deduplicated set (one record per procurement, keeping the largest amount). Award value is the figure stated at the notice, a floor that later change orders and registrations can grow.</div>
     </div>
   </section>
@@ -294,7 +123,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <section class="grid" id="velocity">
     <div class="card">
       <div class="sec-head"><h2>Agency velocity</h2><span class="cap">TOP 10 BY PIPELINE</span></div>
-      <div class="h-sub">Who moves money fast, open pipeline vs. trailing-year spending, top agencies by pipeline. <a href="/agency/">See the full agency velocity table and backlog chart on the “Agencies” page</a>.</div>
+      <div class="h-sub">Who moves money fast, open pipeline vs. trailing-year spending, top agencies by pipeline. <a href="/agencies/">See the full agency velocity table and backlog chart on the “Agencies” page</a>.</div>
       <table id="tbl-velocity">
         <thead><tr><th>Agency</th><th class="num">Open pipeline</th><th class="num">Spent (TTM)</th><th class="num">Awarded (TTM)</th><th class="num">Backlog, years</th></tr></thead>
         <tbody></tbody>
@@ -308,8 +137,8 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
       <div class="sec-head"><h2>Funnel · Methodology &amp; definitions</h2><span class="cap">SERIES NOTES</span></div>
       <div class="method-body">
       <h3>The measures</h3>
-      <p><strong>Committed, unspent</strong> is the forward pipeline from the “<a href="/pipeline/">Pipeline</a>” page: total project budgets minus spending to date across active capital projects in the City's most recent capital plan snapshot (NYC OMB, dataset <code>fb86-vt7u</code>). <strong>Awarded</strong> is trailing-twelve-month construction award value from the City Record (dataset <code>qyyg-4tf5</code>), as on the “<a href="/awarded/">Awarded</a>” page. This figure is gross: deduplicated to one record per procurement but still inclusive of renewals, extensions, and awards of $500M and above. It sits on the same basis as the headline on the “<a href="/awarded/">Awarded</a>” page and the “Awarded, 12 mo” tile on the home page, which is the site's canonical gross reading. Every new-work reading runs below it: the competitive-set total on the “<a href="/competitive/">Contractors</a>” page, the index on the “<a href="/analysis/">Analysis</a>” page, and the trailing-year figure in the “<a href="/briefing/">Briefing</a>”, each of which strips renewals and megaprojects to isolate contested new demand. <strong>Spent</strong> is trailing-year capital outlays, measured as the growth in each project's cumulative spend-to-date between capital plan snapshots, across the projects observed in both. The underlying ledger is the City's FMS, the same accounting that feeds Checkbook NYC.</p>
-      <p><strong>Paid (Checkbook)</strong> is a separate reading drawn from the Comptroller's Checkbook NYC: paid to date, as of the file date, on registered construction contracts to named vendors, City scope, for the contracts Checkbook lists under <span class="cbk-fy-long">the fiscal years Checkbook publishes</span>. It is a cumulative figure, not a sum of payments made within those years, and the in-progress fiscal year is still adding contracts. It is the demand-to-cash payoff at the vendor level, the same figures shown on the “<a href="/competitive/">Contractors</a>” page, summed across all construction vendor groups. It is not the same number as Spent. Spent is capital-plan outlays across all construction measured between plan snapshots; Paid is disbursements on the subset of work that has been registered as a contract to a named vendor. The two sit on different ledgers and different scopes and are never added together.</p>
+      <p><strong>Committed, unspent</strong> is the forward pipeline from the “<a href="/pipeline/">Pipeline</a>” page: total project budgets minus spending to date across active capital projects in the City's most recent capital plan snapshot (NYC OMB, dataset <code>fb86-vt7u</code>). <strong>Awarded</strong> is trailing-twelve-month construction award value from the City Record (dataset <code>qyyg-4tf5</code>), as on the “<a href="/awarded/">Awarded</a>” page. This figure is gross: deduplicated to one record per procurement but still inclusive of renewals, extensions, and awards of $500M and above. It sits on the same basis as the headline on the “<a href="/awarded/">Awarded</a>” page and the Awarded band in the money-flow drawing on the home page, which is the site's canonical gross reading. Every new-work reading runs below it: the competitive-set total on the “<a href="/contractors/">Contractors</a>” page, the index on the “<a href="/analysis/">Analysis</a>” page, and the trailing-year figure in the “<a href="/briefing/">Briefing</a>”, each of which strips renewals and megaprojects to isolate contested new demand. <strong>Spent</strong> is trailing-year capital outlays, measured as the growth in each project's cumulative spend-to-date between capital plan snapshots, across the projects observed in both. The underlying ledger is the City's FMS, the same accounting that feeds Checkbook NYC.</p>
+      <p><strong>Paid (Checkbook)</strong> is a separate reading drawn from the Comptroller's Checkbook NYC: paid to date, as of the file date, on registered construction contracts to named vendors, City scope, for the contracts Checkbook lists under <span class="cbk-fy-long">the fiscal years Checkbook publishes</span>. It is a cumulative figure, not a sum of payments made within those years, and the in-progress fiscal year is still adding contracts. It is the demand-to-cash payoff at the vendor level, the same figures shown on the “<a href="/contractors/">Contractors</a>” page, summed across all construction vendor groups. It is not the same number as Spent. Spent is capital-plan outlays across all construction measured between plan snapshots; Paid is disbursements on the subset of work that has been registered as a contract to a named vendor. The two sit on different ledgers and different scopes and are never added together.</p>
       <h3>How spending pace is computed</h3>
       <p>OMB publishes a plan snapshot roughly every four months. For each project, spending in a period is its cumulative spend-to-date in one snapshot minus the prior snapshot, floored at zero. Projects are matched across snapshots by agency and FMS ID, with sub-project rows collapsed first so nothing is double-counted.</p>
       <p>Spending is measured only across projects observed in both the prior and the current snapshot, a matched panel. The reason is that <code>spend_to_date</code> is a lifetime cumulative figure, not a period figure. A project appearing in the plan for the first time arrives carrying whatever it has already spent, sometimes years of it; counting that from zero would book its entire back-history as spending in the one period it happened to show up. A new entrant therefore contributes nothing until it has been observed twice, and its spending before it entered the plan is not counted. Projects that leave the dataset stop contributing at the same rule. Both edges hold the series to growth that two readings actually support.</p>
@@ -323,694 +152,26 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
     </div>
   </section>
 
+</div>
 </main>
 
-<footer>
-  <div class="wrap f-row">
-    <div>
-      <div class="brand">
-        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
-        <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.01em">The Concrete Index<span class="tick" style="color:var(--accent)">.</span></span>
-      </div>
-      <div style="margin-top:8px">NYC public construction capital, tracked end to end.</div>
-      <div style="margin-top:6px;font-size:12px;color:var(--faint);max-width:430px">An independent project built by Salar Jalinous using only public data. Not affiliated with any employer.</div>
+<!-- ci:footer -->
+<footer class="ci-footer">
+  <div class="wrap ci-footer__inner">
+    <div class="ci-footer__brand">
+      <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="22" height="22" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+      <p class="ci-footer__tag">NYC public construction capital, from commitment to cash.</p>
     </div>
-    <div style="text-align:right" class="f-meta">
-      <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load<span id="f-paid-src">; Paid from Checkbook NYC, refreshed nightly</span></div>
-      <div style="margin-top:5px"><a href="https://github.com/salarjalinous/concrete-index" target="_blank" rel="noopener">Source on GitHub</a></div>
-      <div style="margin-top:5px">© 2026 <a href="/about/">Salar Jalinous</a></div>
+    <nav class="ci-footer__links" aria-label="Site information">
+      <ul><li><a href="/methodology/">Methodology</a></li><li><a href="/sources/">Sources</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">Corrections</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source on GitHub</a></li></ul>
+    </nav>
+    <div class="ci-footer__meta">
+      <p>An independent project built by Salar Jalinous using only public data. Not affiliated with the City or State of New York or any employer.</p>
+      <p><a href="/sources/">Data: NYC Open Data · Open NY · Checkbook NYC · BLS</a></p>
+      <p><a href="/about/">© <span data-ci-year="2026">2026</span> The Concrete Index</a></p>
     </div>
   </div>
 </footer>
-
-<script>
-'use strict';
-/* ================= data layer ================= */
-const PLAN_API = 'https://data.cityofnewyork.us/resource/fb86-vt7u.json';
-const AWARD_API = 'https://data.cityofnewyork.us/resource/qyyg-4tf5.json';
-const SNAPSHOTS = 5; // latest 5 plan snapshots → 4 spend periods; last 3 ≈ TTM
-
-const state = {
-  periods: [],          // ascending, e.g. ['202409','202501','202505','202509','202601']
-  snap: {},             // period -> Map(key -> {spend,budget,bucket,agency})
-  spendPeriods: [],     // [{label, total, byAgency:Map}]
-  pipeline: { total:0, byAgency:new Map() },
-  awards: { ttm:0, count:0, byAgency:new Map(), byQuarter:[] },
-  checkbook: { paid:0, ok:false, meta:null, ageHours:null, stale:false }
-};
-
-async function getJSON(api, params){
-  const res = await fetch(api + '?' + new URLSearchParams(params), { headers: { 'X-App-Token': '3TAzQQPiSG2T4WGWfYYUxxqfJ' } });
-  if(!res.ok) throw new Error('API ' + res.status);
-  return res.json();
-}
-
-/* ---- phase normalization (same rules as the Pipeline page) ---- */
-const PHASE_MAP = {
-  'pending':'Pending','initiation':'Pending','pre-design':'Pre-Design','predesign':'Pre-Design',
-  'design':'Design','construction procurement':'Procurement','construction':'Construction',
-  'design build':'Construction','design built':'Construction','close-out':'Close-out','closeout':'Close-out'
-};
-const EXCLUDED = new Set([
-  // inactive / finished states
-  'completed','cancelled','inactive','on-hold','on hold','transferred',
-  'withdrawn','terminated','defaulted','capitally ineligible','expense',
-  // dead phases: the project is gone, not waiting to be built
-  'defunded','funding withdrawn','rescinded','fmsid changed','project renamed','n/a',
-  // not construction work: these do not belong in the construction-demand pipeline
-  'land acquisition','property acquisition','real estate transaction','fundraising',
-  'it project','non capital fund','equipment','consultant services']);
-const PHASE_ORDER = ['Pending','Pre-Design','Design','Procurement','Construction','Close-out','Other active'];
-function normPhase(raw){
-  const p = (raw||'').replace(/[()]/g,'').trim().toLowerCase();
-  if(EXCLUDED.has(p)) return 'excluded';
-  return PHASE_MAP[p] || 'Other active';
-}
-function phaseRank(b){
-  const i = PHASE_ORDER.indexOf(b);
-  return i === -1 ? -1 : (b === 'Other active' ? -1 : i);
-}
-
-/* one record per project per snapshot; keep most advanced phase.
-   Spending deltas use ALL projects (including completed) so final payments count;
-   pipeline uses active phases excluding Close-out. */
-function collapseSnapshot(rows){
-  const m = new Map();
-  for(const r of rows){
-    const key = (r.managing_agency||'') + '|' + (r.fms_id||r.fms_project_name||'');
-    const bucket = normPhase(r.current_phase);
-    const rec = {
-      agency: r.managing_agency || '–',
-      spend: Math.max(parseFloat(r.spend_to_date)||0, 0),
-      budget: Math.max(parseFloat(r.total_budget)||0, 0),
-      bucket
-    };
-    const prev = m.get(key);
-    if(!prev || phaseRank(bucket) > phaseRank(prev.bucket)) m.set(key, rec);
-  }
-  return m;
-}
-
-/* The capital plan (OMB) and the award record (City Record) are independent
-   sources. Settle them separately so one being unavailable does not blank the
-   sections that depend on the other. */
-async function fetchPlan(){
-  // 1. snapshot periods
-  const ps = await getJSON(PLAN_API, {
-    '$select':'reporting_period','$group':'reporting_period',
-    '$order':'reporting_period DESC','$limit': String(SNAPSHOTS)
-  });
-  state.periods = ps.map(p=>p.reporting_period).sort();
-
-  // 2. rows per snapshot (in parallel)
-  const snaps = await Promise.all(state.periods.map(p => getJSON(PLAN_API, {
-    '$select':'fms_id,fms_project_name,managing_agency,spend_to_date,total_budget,current_phase',
-    '$where': `reporting_period='${p}'`, '$limit':'20000'
-  })));
-  state.periods.forEach((p,i) => { state.snap[p] = collapseSnapshot(snaps[i]); });
-
-  // 3. spend deltas between consecutive snapshots, on a MATCHED PANEL.
-  //    Only projects present in BOTH snapshots contribute. spend_to_date is a
-  //    lifetime cumulative figure, so a project seen for the first time carries
-  //    its whole back-history; counting it from zero would book years of prior
-  //    spending into the single period it first appears. The matched panel
-  //    measures growth where a prior reading exists and nowhere else.
-  for(let i=1; i<state.periods.length; i++){
-    const prev = state.snap[state.periods[i-1]], cur = state.snap[state.periods[i]];
-    let total = 0; const byAgency = new Map();
-    for(const [key, rec] of cur){
-      // Match the pipeline sum's scope: completed/cancelled/land-acquisition/
-      // IT/equipment/consultant-services lines are not construction demand and
-      // must not inflate this denominator under a numerator that already drops
-      // them. Close-out IS kept here (unlike the pipeline sum): spend booked
-      // while a project winds down is real construction cash paid out, even
-      // though its remaining unspent balance no longer counts as pipeline.
-      if(rec.bucket === 'excluded') continue;
-      const was = prev.get(key);
-      if(!was) continue; // new entrant: no prior reading, so no measurable period spend
-      const d = Math.max(rec.spend - was.spend, 0);
-      total += d;
-      byAgency.set(rec.agency, (byAgency.get(rec.agency)||0) + d);
-    }
-    state.spendPeriods.push({ label: periodLabel(state.periods[i-1], state.periods[i]), total, byAgency });
-  }
-
-  // 4. pipeline from latest snapshot (active, excluding Close-out)
-  const latest = state.snap[state.periods[state.periods.length-1]];
-  for(const rec of latest.values()){
-    if(rec.bucket === 'excluded' || rec.bucket === 'Close-out') continue;
-    const unspent = Math.max(rec.budget - rec.spend, 0);
-    state.pipeline.total += unspent;
-    state.pipeline.byAgency.set(rec.agency, (state.pipeline.byAgency.get(rec.agency)||0) + unspent);
-  }
-}
-
-async function fetchAwards(){
-  // awards: TTM total + by agency + by quarter, deduped to one row per pin
-  // (max contract_amount). Pull rows rather than a server-side sum so the
-  // canonical pin-dedupe applies; the same award is published as several
-  // near-duplicate notices, so a raw sum overstates the total.
-  // Trailing twelve FULLY-ELAPSED months, matching the Analysis index and the
-  // Briefing: the current partial month is excluded so a few days of the month
-  // in progress do not understate the awarded total or the pages disagree.
-  const c0 = isoCompleteMonthBoundary(0);     // first day of the current (incomplete) month
-  const since = isoCompleteMonthBoundary(12); // first day, twelve complete months back
-  const rows = (await fetchAwardRows(since)).filter(r => (r.start_date || '') < c0);
-  const deduped = dedupeAwardsByPin(rows);
-  let ttm = 0; const byAgency = new Map(); const byMonth = new Map();
-  for(const r of deduped){
-    ttm += r.amt;
-    if(r.agency) byAgency.set(r.agency, (byAgency.get(r.agency)||0) + r.amt);
-    if(r.month) byMonth.set(r.month, (byMonth.get(r.month)||0) + r.amt);
-  }
-  state.awards.ttm = ttm;
-  state.awards.count = deduped.length;
-  state.awards.byAgency = byAgency;
-  const monthRows = [...byMonth.entries()].sort((a,b)=>a[0]<b[0]?-1:1).map(([m,s])=>({m, s}));
-  state.awards.byQuarter = toQuarters(monthRows);
-}
-
-/* Paid to date from Checkbook NYC: a static file built nightly server-side
-   (the Comptroller's API blocks browsers). Same-origin, so a plain fetch, no
-   app token. Sums the paid figure across every construction vendor group. This
-   is a DIFFERENT ledger and scope from the OMB Spent gauge and is never summed
-   with it. Failure is quiet: the Paid figure is simply omitted.
-
-   FRESHNESS. Every other figure on this page is fetched live on load; Paid is
-   the one number served from a file, so it is the one number that can silently
-   go stale if the nightly job stops committing (it did: the job failed 12 of 13
-   nights on a push race and the file sat four days old behind a live figure).
-   The file therefore declares its own refresh contract in meta -- generated,
-   cadence_hours, stale_after_hours, drop_after_hours -- and the page enforces
-   it rather than trusting the file:
-     age <= stale_after (48h)  -> show the gauge, dated
-     age >  stale_after        -> show the gauge, dated, and DISCLOSE that the
-                                  refresh has not run since that date
-     age >  drop_after (14d)   -> do NOT show the figure at all; the page falls
-                                  back to three gauges. A number that old is not
-                                  "refreshed daily" and will not be presented as
-                                  if it were.
-   A file with no generated stamp is treated as undatable and dropped. */
-const CBK_STALE_H_DEFAULT = 48;
-const CBK_DROP_H_DEFAULT  = 336;   // 14 days
-
-async function fetchCheckbook(){
-  const res = await fetch('/data/checkbook-vendors.json');
-  if(!res.ok) throw new Error('checkbook ' + res.status);
-  const d = await res.json();
-  const meta = d.meta || null;
-  state.checkbook.meta = meta;
-
-  // Age the file against its own declared cadence. No stamp -> undatable -> drop.
-  const gen = meta && meta.generated ? Date.parse(meta.generated) : NaN;
-  if(!isFinite(gen)) throw new Error('checkbook file carries no generated stamp');
-  const ageHours = (Date.now() - gen) / 36e5;
-  const dropAfter = (meta && +meta.drop_after_hours) || CBK_DROP_H_DEFAULT;
-  state.checkbook.ageHours = ageHours;
-  state.checkbook.stale = ageHours > ((meta && +meta.stale_after_hours) || CBK_STALE_H_DEFAULT);
-  if(ageHours > dropAfter){
-    throw new Error('checkbook file is ' + Math.round(ageHours/24) + ' days old (drop threshold '
-      + Math.round(dropAfter/24) + ' days)');
-  }
-
-  const vendors = d.vendors || {};
-  let paid = 0;
-  for(const k in vendors){ paid += (parseFloat(vendors[k].paid) || 0); }
-  state.checkbook.paid = paid;
-  state.checkbook.ok = true;
-}
-
-/* "Jul 9, 2026" from the file's generated stamp, for dating the Paid gauge.
-   Byte-for-byte the same helper /competitive/ already uses to date this same
-   file, so one file is never dated two ways on two pages. */
-function cbkAsOf(){
-  const g = state.checkbook.meta && state.checkbook.meta.generated
-    ? state.checkbook.meta.generated : null;
-  if(!g) return '';
-  const d = new Date(g);
-  if(isNaN(d)) return '';
-  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-}
-
-/* Paged pull of construction award rows in the window, only the fields used.
-   The lower bound is inclusive (>=), matching the Home page: `since` is a
-   first-of-month midnight, and awards stamped exactly on that midnight belong
-   to the window. A strict > silently dropped them and put the funnel below the
-   Home total. The caller applies the exclusive upper bound. */
-async function fetchAwardRows(since){
-  const PAGE = 50000;
-  let offset = 0; const out = [];
-  for(;;){
-    const batch = await getJSON(AWARD_API, {
-      '$select':'pin,contract_amount,start_date,agency_name',
-      '$where':`starts_with(category_description,'Construction') AND start_date>='${since}' AND contract_amount>0`,
-      '$order':'pin','$limit':String(PAGE),'$offset':String(offset)
-    });
-    out.push(...batch);
-    if(batch.length < PAGE) break;
-    offset += PAGE;
-    if(offset > 400000) break; // safety stop
-  }
-  return out;
-}
-
-/* Dedupe construction-award rows to one record per pin keeping the max amount.
-   Rows with no pin stand alone under a stable per-row surrogate key. */
-function dedupeAwardsByPin(rows){
-  const byPin = new Map();
-  for(let i=0; i<rows.length; i++){
-    const r = rows[i];
-    const amt = parseFloat(r.contract_amount);
-    if(!(amt > 0)) continue;
-    const pin = r.pin || ('_np_' + i);
-    const rec = { amt, agency: r.agency_name || null,
-      month: r.start_date ? r.start_date.slice(0,7) : null };
-    const prev = byPin.get(pin);
-    if(!prev || rec.amt > prev.amt) byPin.set(pin, rec);
-  }
-  return [...byPin.values()];
-}
-
-/* Same calendar day n months back, UTC-anchored, with the day clamped to the
-   length of the target month so the end of a long month does not roll forward
-   into the next one. Used only as a widened fetch margin, never as a window. */
-function isoMonthsAgo(n){
-  const now = new Date();
-  const y = now.getUTCFullYear(), m = now.getUTCMonth();
-  const lastDay = new Date(Date.UTC(y, m - n + 1, 0)).getUTCDate();
-  return new Date(Date.UTC(y, m - n, Math.min(now.getUTCDate(), lastDay)))
-    .toISOString().slice(0,10);
-}
-/* First-of-month boundary n complete months before the current (incomplete)
-   month, so the award window aligns to fully-elapsed months. Mirrors the
-   Analysis index and the Briefing, keeping the three pages on one window.
-
-   Anchored in UTC end to end. A local midnight formatted through toISOString
-   reads back a day early for anyone east of UTC, which moved the whole trailing
-   window and made the same page report different totals in Berlin than in New
-   York. Date.UTC in, toISOString out, so every reader gets one window. */
-function isoCompleteMonthBoundary(n){
-  const now = new Date();
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - n, 1))
-    .toISOString().slice(0,10);
-}
-function toQuarters(byMonth){
-  const qs = new Map();
-  for(const r of byMonth){
-    const ym = r.m.slice(0,7), y = ym.slice(0,4), q = 'Q' + (Math.floor((+ym.slice(5,7)-1)/3)+1);
-    const k = q + ' ’' + y.slice(2);
-    qs.set(k, (qs.get(k)||0) + (parseFloat(r.s)||0));
-  }
-  return [...qs.entries()];
-}
-const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-function shortPeriod(p){ return MONTHS[+p.slice(4,6)-1] + ' ’' + p.slice(2,4); }
-function periodLabel(a,b){ return shortPeriod(a) + ' → ' + shortPeriod(b); }
-function fmtPeriodLong(p){
-  const names=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  return names[+p.slice(4,6)-1] + ' ' + p.slice(0,4);
-}
-
-/* TTM spend = last 3 inter-snapshot periods (≈12 months) */
-function ttmSpend(){ return state.spendPeriods.slice(-3).reduce((a,p)=>a+p.total,0); }
-function ttmSpendByAgency(){
-  const m = new Map();
-  for(const p of state.spendPeriods.slice(-3))
-    for(const [a,v] of p.byAgency) m.set(a, (m.get(a)||0)+v);
-  return m;
-}
-
-/* agency code (capital plan) -> City Record agency_name */
-const CODE_TO_AWARD = {
-  DDC:'Design and Construction', DOT:'Transportation', DEP:'Environmental Protection',
-  DPR:'Parks and Recreation', DCAS:'Citywide Administrative Services', DSNY:'Sanitation',
-  NYPD:'Police Department', HPD:'Housing Preservation and Development', FDNY:'Fire Department',
-  DOC:'Correction', DOHMH:'Health and Mental Hygiene', DHS:'Homeless Services',
-  ACS:'Children’s Services', DFTA:'Aging'
-};
-const AGENCY_NAMES = {
-  DPR:'Parks & Recreation', DDC:'Design & Construction', DOT:'Transportation',
-  EDC:'Economic Development', DEP:'Environmental Protection', HHC:'NYC Health + Hospitals',
-  DCAS:'Citywide Admin Services', CUNY:'CUNY', NYPD:'Police', FDNY:'Fire',
-  DCLA:'Cultural Affairs', DHS:'Homeless Services', DSNY:'Sanitation',
-  QPL:'Queens Public Library', DOC:'Correction', DOHMH:'Health & Mental Hygiene',
-  BPL:'Brooklyn Public Library', NYPL:'New York Public Library', HRA:'Human Resources Admin',
-  DFTA:'Aging', ACS:'Children’s Services', DOE:'Education',
-  HPD:'Housing Preservation & Dev', OTI:'Technology & Innovation'
-};
-function agencyLabel(code){ return AGENCY_NAMES[code] ? `${AGENCY_NAMES[code]} (${code})` : code; }
-
-/* ================= formatting ================= */
-function fmtMoney(v){
-  if(v >= 1e9) return '$' + (v/1e9).toFixed(v >= 10e9 ? 1 : 2) + 'B';
-  if(v >= 1e6) return '$' + (v/1e6).toFixed(v >= 100e6 ? 0 : 1) + 'M';
-  if(v >= 1e3) return '$' + Math.round(v/1e3) + 'K';
-  return '$' + Math.round(v);
-}
-function fmtInt(v){ return v.toLocaleString('en-US'); }
-function esc(s){ const d = document.createElement('div'); d.textContent = String(s==null?'':s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,''); return d.innerHTML; }
-
-/* ================= rendering ================= */
-const COLOR_A = '#ae4e34', COLOR_B = '#243b53', COLOR_C = '#2f7d52', GRID = '#e3dbd3';
-Chart.defaults.font.family = "'IBM Plex Mono',monospace";
-Chart.defaults.font.size = 10;
-Chart.defaults.color = '#6b5e56';
-Object.assign(Chart.defaults.plugins.tooltip, {
-  backgroundColor:'#fefbf8', titleColor:'#201611', bodyColor:'#6b5e56',
-  borderColor:'#ae4e34', borderWidth:1, cornerRadius:2, padding:10, displayColors:false,
-  titleFont:{family:"'Public Sans',sans-serif",weight:'600',size:12}, bodyFont:{family:"'IBM Plex Mono',monospace",size:12},
-  caretSize:5
-});
-const charts = {};
-function destroy(k){ if(charts[k]){ charts[k].destroy(); delete charts[k]; } }
-
-function renderKpis(){
-  const committed = state.pipeline.total, spent = ttmSpend();
-  const latest = state.periods[state.periods.length-1];
-  document.getElementById('kpi-committed').textContent = fmtMoney(committed);
-  document.getElementById('kpi-committed-note').textContent = 'open pipeline, ' + fmtPeriodLong(latest) + ' plan';
-  document.getElementById('kpi-awarded').textContent = state.awardsOk ? fmtMoney(state.awards.ttm) : '–';
-  document.getElementById('kpi-awarded-note').textContent = state.awardsOk
-    ? fmtInt(state.awards.count) + ' construction awards, trailing 12 months'
-    : 'award record temporarily unavailable';
-  document.getElementById('kpi-spent').textContent = fmtMoney(spent);
-  document.getElementById('kpi-spent-note').textContent = 'capital outlays, trailing year of plan snapshots';
-  document.getElementById('kpi-coverage').textContent = spent > 0 ? (committed/spent).toFixed(1) + ' yrs' : '–';
-}
-
-/* Fiscal-year window label for Paid, read only from the Checkbook file's meta.
-   fiscal_years is the ascending list the numbers cover; fiscal_year_ytd names
-   the in-progress year inside it (NYC FY N = Jul 1 N-1 to Jun 30 N), which is
-   labeled year to date. Files written before fiscal_year_ytd existed carry only
-   closed years and read as before. No years are hardcoded here or in the prose. */
-function cbkFYLabel(meta){
-  var ys=(meta&&Array.isArray(meta.fiscal_years))?meta.fiscal_years.filter(function(y){return isFinite(+y);}).map(Number):[];
-  if(!ys.length) return { short:'Checkbook FYs', long:'the fiscal years Checkbook publishes' };
-  var ytd=(meta&&meta.fiscal_year_ytd!=null&&ys.indexOf(+meta.fiscal_year_ytd)!==-1)?+meta.fiscal_year_ytd:null;
-  var closed=ys.filter(function(y){return y!==ytd;});
-  var yy=function(y){return String(y).slice(2);};
-  var cs='', cl='';
-  if(closed.length===1){ cs='FY'+yy(closed[0]); cl='fiscal year '+closed[0]; }
-  else if(closed.length>1){ var a=closed[0], b=closed[closed.length-1];
-    cs='FY'+yy(a)+'–'+yy(b); cl='fiscal years '+a+' to '+b; }
-  if(ytd===null) return { short:cs, long:cl };
-  var ys_='FY'+yy(ytd)+' YTD', yl='fiscal year '+ytd+' to date';
-  if(!closed.length) return { short:ys_, long:yl };
-  return { short:cs+' + '+ys_, long:cl+' plus '+yl };
-}
-function cbkFY(){ return cbkFYLabel(state.checkbook.meta); }
-function renderStages(){
-  const stages = [
-    { t:'Committed', s:'stock · full capital plan, unspent', v: state.pipeline.total, c: COLOR_B },
-    { t:'Awarded', s:'flow · construction awards, TTM', v: state.awards.ttm, c: COLOR_A },
-    { t:'Spent', s:'flow · capital outlays, trailing year', v: ttmSpend(), c: COLOR_C }
-  ];
-  // Paid (Checkbook): a fourth, separate ledger. Disbursements on registered
-  // construction contracts to named vendors, City scope, over the FY window in
-  // the file's meta (cbkFY). Shown
-  // only when the static Checkbook file loaded; never summed with Spent.
-  if(state.checkbookOk){
-    // The Paid gauge is the one figure on this page served from a nightly file
-    // rather than fetched live, so it always carries the date of the file it came
-    // from. Everything else here is as of load.
-    const asOf = cbkAsOf();
-    stages.push({ t:'Paid (Checkbook)',
-      s:'disbursed · registered contracts, '+cbkFY().short + (asOf ? ' · as of '+asOf : ''),
-      v: state.checkbook.paid, c: COLOR_B });
-  }
-  if(state.checkbookOk){
-    const fyLong = cbkFY().long;
-    document.querySelectorAll('.cbk-fy-long').forEach(function(el){ el.textContent = fyLong; });
-  }
-  document.getElementById('stages-title').textContent =
-    state.checkbookOk ? 'Four gauges, not one flow' : 'Three gauges, not one flow';
-  const max = Math.max(...stages.map(s=>s.v));
-  document.getElementById('stage-rows').innerHTML = stages.map(s=>`
-    <div class="stage-row">
-      <div class="stage-name"><div class="s-t">${esc(s.t)}</div><div class="s-s">${esc(s.s)}</div></div>
-      <div class="stage-bar-track"><div class="stage-bar" style="width:${(s.v/max*100).toFixed(1)}%;background:${s.c}"></div></div>
-      <div class="stage-val">${fmtMoney(s.v)}</div>
-    </div>`).join('');
-  const base = 'Each stage is a separate reading drawn from a different ledger. '
-    + 'Committed is a stock from the full capital plan; Awarded covers two City Record procurement categories; '
-    + 'Spent is full-plan outlays measured between plan snapshots. The scopes differ, so the bars do not net against each other. '
-    + 'Each bar is scaled against the largest only to size it on screen; the gauges sit on different ledgers and time windows, so their lengths are not a like-for-like comparison.';
-  const cbkNote = state.checkbookOk
-    ? ' Paid (Checkbook) is a different ledger again: disbursements on registered construction contracts to named vendors, '
-      + 'NYC City scope, ' + cbkFY().long + ', from the Comptroller’s Checkbook NYC. '
-      + 'It is not the same number as Spent, which is capital-plan outlays across all construction between plan snapshots, '
-      + 'and the two are not added together.'
-    : '';
-  // Checkbook cannot be called from a browser, so Paid is read from a file rebuilt
-  // nightly. When that rebuild has not landed on time, say so on the figure rather
-  // than let it pass as current.
-  const asOf = cbkAsOf();
-  const staleNote = (state.checkbookOk && state.checkbook.stale && asOf)
-    ? ' The Checkbook file behind Paid has not refreshed since ' + asOf
-      + '; that figure is ' + Math.floor(state.checkbook.ageHours / 24)
-      + ' days old, while every other figure on this page is read live on load.'
-    : '';
-  document.getElementById('stages-sub').textContent = base + cbkNote + staleNote;
-
-  /* Footer attribution follows the same rule as the figures. Plan and award are
-     read live from Socrata on load, so they say "on load"; Paid is the one figure
-     served from a nightly file, so it says "refreshed nightly" and carries that
-     file's date. When the Checkbook file is missing or too old to publish, the
-     Paid gauge is not drawn and its clause disappears with it, rather than
-     claiming a nightly refresh behind a figure the page is not showing. */
-  const fsrc = document.getElementById('f-paid-src');
-  if(fsrc){
-    const fAsOf = cbkAsOf();
-    fsrc.textContent = state.checkbookOk
-      ? '; Paid from Checkbook NYC, refreshed nightly' + (fAsOf ? ' (' + fAsOf + ')' : '')
-      : '';
-  }
-}
-
-function vBar(canvasId, labels, data, color){
-  destroy(canvasId);
-  charts[canvasId] = new Chart(document.getElementById(canvasId), {
-    type:'bar',
-    data:{ labels, datasets:[{ data, backgroundColor: color, borderRadius:1 }] },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false},
-        tooltip:{callbacks:{label:(c)=> fmtMoney(c.parsed.y)}} },
-      scales:{
-        x:{grid:{display:false}, ticks:{maxRotation:0}},
-        y:{grid:{color:GRID}, border:{display:false}, ticks:{callback:(v)=>fmtMoney(v), maxTicksLimit:5}}
-      }
-    }
-  });
-}
-
-function renderTrends(){
-  vBar('chart-spend', state.spendPeriods.map(p=>p.label), state.spendPeriods.map(p=>p.total), COLOR_C);
-  if(state.awardsOk){
-    vBar('chart-award', state.awards.byQuarter.map(q=>q[0]), state.awards.byQuarter.map(q=>q[1]), COLOR_A);
-  }
-}
-
-function renderVelocity(){
-  const spend = ttmSpendByAgency();
-  // Same $10M trailing-spend floor the Agency Velocity page uses: below it, the
-  // agency's own outlay line is too small to anchor a backlog ratio (its capital
-  // work is mostly delivered under another managing agency), so the ratio is a
-  // dash rather than a noise figure. Keeps the two pages identical.
-  const MIN_SPEND = 10e6;
-  // Floor on what is printable as a trailing-year outlay at all. An agency whose
-  // whole year of self-delivered spending lands in the thousands is not spending
-  // slowly, it is not the builder: the outlay sits under another managing agency.
-  // Printing the residue next to a pipeline in the hundreds of millions reads as
-  // a broken figure, so it is suppressed the same way the ratio is.
-  const MIN_SHOWN_SPEND = 1e6;
-  const rows = [...state.pipeline.byAgency.entries()]
-    .sort((a,b)=>b[1]-a[1]).slice(0,10)
-    .map(([code, pipe]) => {
-      const sp = spend.get(code) || 0;
-      const awardName = CODE_TO_AWARD[code];
-      const aw = awardName ? state.awards.byAgency.get(awardName) : undefined;
-      const yrs = sp >= MIN_SPEND ? pipe/sp : null;
-      return { code, pipe, sp, aw, yrs };
-    });
-  const medianYrs = (()=>{ const v = rows.filter(r=>r.yrs!==null).map(r=>r.yrs).sort((a,b)=>a-b);
-    return v.length ? v[Math.floor(v.length/2)] : 0; })();
-  document.querySelector('#tbl-velocity tbody').innerHTML = rows.map(r=>`<tr>
-    <td><span class="t-title">${esc(agencyLabel(r.code))}</span></td>
-    <td class="num amt">${fmtMoney(r.pipe)}</td>
-    <td class="num amt">${r.sp >= MIN_SHOWN_SPEND ? fmtMoney(r.sp) : '<span class="na">–</span>'}</td>
-    <td class="num amt">${r.aw!==undefined ? fmtMoney(r.aw) : '–'}</td>
-    <td class="num"><span class="yrs ${r.yrs===null?'':(r.yrs>medianYrs*1.5?'slow':(r.yrs<medianYrs*.67?'fast':''))}">${r.yrs===null?'–':r.yrs.toFixed(1)}</span></td>
-  </tr>`).join('');
-}
-
-/* ================= init ================= */
-function unavailNote(host){
-  return `<div class="unavail">This dataset (${host}) is temporarily unavailable. The rest of the page reflects what loaded; refresh to retry.</div>`;
-}
-
-(async function init(){
-  const [planR, awardsR, cbkR] = await Promise.allSettled([fetchPlan(), fetchAwards(), fetchCheckbook()]);
-  state.planOk = planR.status === 'fulfilled';
-  state.awardsOk = awardsR.status === 'fulfilled';
-  state.checkbookOk = cbkR.status === 'fulfilled' && state.checkbook.ok;
-
-  // The capital plan anchors the page (committed, spent, velocity, the as-of
-  // line). If it is unavailable there is nothing to scaffold, so show the error.
-  if(!state.planOk){
-    document.getElementById('loader').style.display = 'none';
-    document.getElementById('error').style.display = 'block';
-    return;
-  }
-  const latest = state.periods[state.periods.length-1];
-  document.getElementById('asof').innerHTML =
-    `Capital plan through <strong>${fmtPeriodLong(latest)}</strong> · awards through today · spending measured across ${state.spendPeriods.length} plan-to-plan periods`;
-  document.getElementById('series-asof').textContent = fmtPeriodLong(latest).toUpperCase();
-  document.getElementById('loader').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  if(!state.awardsOk){
-    document.getElementById('award-trend').insertAdjacentHTML('beforebegin', unavailNote('City Record awards'));
-  }
-  renderKpis();
-  renderStages();
-  renderTrends();
-  renderVelocity();
-})();
-
-</script>
-<!-- ===== Concrete Index export module: page PDF, chart PNG, tile CSV. No external dependencies. ===== -->
-<style id="exp-css">
-.exp{display:flex;justify-content:flex-end;gap:0;margin-top:10px}
-.exp button{background:none;border:1px solid var(--line);color:var(--muted);font:500 10px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.07em;text-transform:uppercase;padding:6px 9px;cursor:pointer;transition:color .12s,border-color .12s}
-.exp button+button{border-left:none}
-.exp button:hover{color:var(--accent);border-color:var(--accent)}
-.exp button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.pdf-btn{background:none;border:1px solid var(--line);color:var(--muted);font:600 11px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;cursor:pointer;white-space:nowrap;transition:color .12s,border-color .12s}
-.pdf-btn:hover{color:var(--accent);border-color:var(--accent)}
-.series-bar .inner .pdf-btn{margin-left:auto;font-size:10px;padding:4px 9px;align-self:center}
-.pdf-bar{display:flex;justify-content:flex-end;max-width:var(--maxw);margin:0 auto;padding:6px var(--gut)}
-@media (max-width:720px){.pdf-bar{padding:6px 18px}}
-@media print{
-  @page{margin:14mm}
-  header .menu-btn,.nav-links,.controls,.series-bar,.photo-band,.exp,.pdf-btn,.pdf-bar,.badge-live,.valstrip{display:none !important}
-  header{border-bottom:2px solid #201611}
-  body{background:#fff !important}
-  .wrap{max-width:none !important;width:100% !important}
-  .grid,.grid.two,.grid.three{display:block !important}
-  .card{break-inside:avoid;page-break-inside:avoid;box-shadow:none !important;margin:0 0 16px !important}
-  .chart-box,.chart-box.tall{height:300px !important}
-  a{color:inherit;text-decoration:none}
-  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
-}
-</style>
-<script>
-(function(){
-  "use strict";
-  if(window.__ciExport)return; window.__ciExport=1;
-  function slug(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60);}
-  var pageSlug=slug(location.pathname.replace(/\/index\.html?$/i,'').replace(/\/+$/,''))||'awarded';
-  function getChart(cv){return (cv&&window.Chart&&Chart.getChart)?(Chart.getChart(cv)||null):null;}
-  function fnameFor(el,ext){
-    var card=el.closest('.card')||el.closest('section')||el.parentElement;
-    var h=card&&card.querySelector('.sec-head h2,h2,h3');
-    if(!h){var s=el.previousElementSibling;while(s){if(s.tagName==='H2'||s.tagName==='H3'){h=s;break;}s=s.previousElementSibling;}}
-    return ('concrete-index-'+pageSlug+'-'+slug(h?h.textContent:'export')).replace(/-+/g,'-')+'.'+ext;
-  }
-  function dl(href,name,revoke){
-    var a=document.createElement('a');a.href=href;a.download=name;a.rel='noopener';
-    document.body.appendChild(a);a.click();a.remove();
-    if(revoke)setTimeout(function(){URL.revokeObjectURL(href);},2000);
-  }
-  function csvCell(v){v=(v==null?'':String(v));return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
-  function csv(rows,name){
-    var t='\ufeff'+rows.map(function(r){return r.map(csvCell).join(',');}).join('\r\n');
-    dl(URL.createObjectURL(new Blob([t],{type:'text/csv;charset=utf-8'})),name,true);
-  }
-  function pngFromChart(ch,name){
-    var src=ch.canvas,out=document.createElement('canvas');
-    out.width=src.width;out.height=src.height;
-    var x=out.getContext('2d');
-    x.fillStyle='#fefbf8';x.fillRect(0,0,out.width,out.height);
-    x.drawImage(src,0,0);
-    dl(out.toDataURL('image/png'),name,false);
-  }
-  function csvFromChart(ch,name){
-    var labels=ch.data.labels||[],ds=ch.data.datasets||[];
-    var rows=[['Label'].concat(ds.map(function(d,i){return d.label||('Series '+(i+1));}))];
-    var n=labels.length||((ds[0]&&ds[0].data)?ds[0].data.length:0);
-    for(var r=0;r<n;r++){
-      var row=[labels[r]!=null?labels[r]:r];
-      ds.forEach(function(d){
-        var v=d.data?d.data[r]:'';
-        if(v&&typeof v==='object')v=(v.y!=null?v.y:(v.v!=null?v.v:JSON.stringify(v)));
-        row.push(v==null?'':v);
-      });
-      rows.push(row);
-    }
-    csv(rows,name);
-  }
-  function csvFromTable(tbl,name){
-    var rows=[];
-    tbl.querySelectorAll('tr').forEach(function(tr){
-      var cells=[];
-      tr.querySelectorAll('th,td').forEach(function(c){cells.push(c.textContent.replace(/\s+/g,' ').trim());});
-      if(cells.some(function(x){return x!=='';}))rows.push(cells);
-    });
-    if(rows.length)csv(rows,name);
-  }
-  function mkBtn(label,title,fn){
-    var b=document.createElement('button');b.type='button';b.textContent=label;b.title=title;
-    b.addEventListener('click',fn);return b;
-  }
-  function placeAfter(el,bar){
-    var t=el,nx=el.nextElementSibling;
-    if(nx&&nx.classList&&nx.classList.contains('tnote'))t=nx;
-    t.insertAdjacentElement('afterend',bar);
-  }
-  function attachChart(box){
-    if(!box||box.getAttribute('data-exp'))return;
-    var cv=box.querySelector('canvas');if(!cv)return;
-    box.setAttribute('data-exp','1');
-    var bar=document.createElement('div');bar.className='exp';
-    bar.appendChild(mkBtn('PNG','Download this chart as a PNG image',function(){var ch=getChart(cv);if(ch)pngFromChart(ch,fnameFor(box,'png'));}));
-    bar.appendChild(mkBtn('CSV','Download this chart’s data as a CSV file',function(){var ch=getChart(cv);if(ch)csvFromChart(ch,fnameFor(box,'csv'));}));
-    placeAfter(box,bar);
-  }
-  function attachTable(tbl){
-    if(!tbl||tbl.getAttribute('data-exp'))return;
-    if(!tbl.querySelector('th'))return;
-    if(tbl.closest('header')||tbl.closest('footer')||tbl.closest('nav'))return;
-    tbl.setAttribute('data-exp','1');
-    var bar=document.createElement('div');bar.className='exp';
-    bar.appendChild(mkBtn('CSV','Download this table as a CSV file',function(){csvFromTable(tbl,fnameFor(tbl,'csv'));}));
-    placeAfter(tbl,bar);
-  }
-  function scan(){
-    document.querySelectorAll('.chart-box').forEach(attachChart);
-    document.querySelectorAll('main canvas,#app canvas').forEach(function(cv){if(!cv.closest('.chart-box'))attachChart(cv.parentElement);});
-    document.querySelectorAll('main table,#app table,.card table').forEach(attachTable);
-  }
-  function addPdfBtn(){
-    if(document.querySelector('.pdf-btn'))return;
-    var b=mkBtn('Save PDF','Save or print this page as a PDF',function(){window.print();});
-    b.className='pdf-btn';
-    var inner=document.querySelector('.series-bar .inner');
-    if(inner){inner.appendChild(b);return;}
-    var header=document.querySelector('header');
-    if(header){var bar=document.createElement('div');bar.className='pdf-bar';bar.appendChild(b);header.insertAdjacentElement('afterend',bar);return;}
-    var nav=document.querySelector('.nav-links');if(nav)nav.appendChild(b);
-  }
-  var pending=null;
-  function start(){
-    addPdfBtn();scan();
-    try{
-      var mo=new MutationObserver(function(){if(pending)return;pending=setTimeout(function(){pending=null;scan();},300);});
-      mo.observe(document.body,{childList:true,subtree:true});
-    }catch(e){}
-    [400,1200,3000].forEach(function(t){setTimeout(scan,t);});
-  }
-  if(document.readyState!=='loading')start();else document.addEventListener('DOMContentLoaded',start);
-})();
-</script>
+<!-- /ci:footer -->
 </body>
 </html>

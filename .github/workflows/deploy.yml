@@ -1,0 +1,140 @@
+name: Deploy site
+
+# PRD 9.4 and 14: GitHub Pages is published by this workflow (Settings >
+# Pages > Source: GitHub Actions). It runs on a source push to main, after any
+# of the four nightly data workflows succeeds (their pushes use GITHUB_TOKEN,
+# which does not start other workflows, so workflow_run is what picks up a
+# data commit), and by hand. It always checks out main HEAD, so the newest
+# data and source go out together.
+#
+# The site has no build step yet: tools/stamp.mjs is the build-time
+# templating and the job only verifies that its output is current. Astro
+# (PRD 9, phase P2) is the remaining item; when it lands, the build step goes
+# between the checks and the upload.
+#
+# This workflow never writes to main, so it cannot race the data jobs' pushes.
+# Its own concurrency group is "pages" with cancel-in-progress off: two data
+# jobs finishing back to back queue two deploys, and the second publishes the
+# later HEAD.
+#
+# Rollback: revert the commit and push, or re-run the last good run of this
+# workflow. Emergency fallback: Pages "Deploy from a branch" (main, root)
+# still works, because the repository root is the site.
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'data/**'
+  workflow_run:
+    workflows:
+      - 'Nightly data archive'
+      - 'Checkbook NYC vendor data'
+      - 'Checkbook NYC dated payments'
+      - 'Doing Business corroboration'
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    # A failed data run publishes nothing new.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Shared head, header, and footer are current
+        run: node tools/stamp.mjs --check
+
+      - name: Post-build checks (no inline script or style, CSP, em dashes, spacing, fonts)
+        run: node tools/check.mjs
+
+      - name: Methodology and builder tests
+        env:
+          STRICT_PAGES: '1'
+        run: node --test test/*.test.js
+
+      - name: Formatter parity (ci.fmt against every page format)
+        run: node tools/test-fmt.mjs
+
+      # Home's no-JS figures are stamped from data/ (tools/render-flow.mjs). The
+      # checkbook job re-stamps and commits index.html nightly; the archive job
+      # changes precomputed.json without touching index.html, so the published
+      # copy is stamped here from the data it ships with. Workspace only: this
+      # workflow never commits.
+      - name: Stamp Home's static figures from the data being published
+        run: node tools/render-flow.mjs
+
+      # Excludes are anchored at the repository root (leading /), so a folder
+      # of the same name deeper in the site is never dropped by accident.
+      - name: Assemble the site
+        run: |
+          mkdir -p "$RUNNER_TEMP/site"
+          rsync -a \
+            --exclude '.git' --exclude '/.github' --exclude '/test' --exclude '/tools' \
+            --exclude '/lib' --exclude '/node_modules' --exclude '/scratch' \
+            --exclude '/package.json' --exclude '/package-lock.json' --exclude '/.gitignore' \
+            ./ "$RUNNER_TEMP/site/"
+          test -f "$RUNNER_TEMP/site/index.html"
+          test -d "$RUNNER_TEMP/site/data"
+          for x in node_modules scratch test tools lib .github package.json package-lock.json; do
+            if [ -e "$RUNNER_TEMP/site/$x" ]; then echo "::error::$x would be published"; exit 1; fi
+          done
+          echo "Publishing $(find "$RUNNER_TEMP/site" -type f | wc -l) files from $(git rev-parse --short HEAD)"
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  # Post-deploy health check against the live site (PRD 14). It reports; it
+  # does not roll back, so it runs after the deploy and cannot block it.
+  health:
+    needs: deploy
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Playwright (library only; uses the runner's Chrome)
+        run: npm install --no-save --no-package-lock playwright@1.63.0
+      - name: Health check
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: node tools/health.mjs --base https://concreteindex.co --external --json health.json
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: health-report
+          path: health.json
+          if-no-files-found: ignore

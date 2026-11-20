@@ -1,0 +1,83 @@
+{
+ "meta": {
+  "generated": "2026-11-20T19:04:25Z",
+  "last_attempt": "2026-11-20T19:04:25Z",
+  "last_attempt_status": "ok",
+  "cadence_hours": 24,
+  "stale_after_hours": 48,
+  "drop_after_hours": 336,
+  "source": "Checkbook NYC API (checkbooknyc.com), Registered Contracts (expense)",
+  "fiscal_years": [
+   2021,
+   2022,
+   2023,
+   2024,
+   2025,
+   2026,
+   2027
+  ],
+  "fiscal_year_ytd": 2027,
+  "fiscal_years_closed": [
+   2021,
+   2022,
+   2023,
+   2024,
+   2025,
+   2026
+  ],
+  "fiscal_years_requested": [
+   2021,
+   2022,
+   2023,
+   2024,
+   2025,
+   2026,
+   2027
+  ],
+  "rows_per_fy": {
+   "2021": 16113,
+   "2022": 25274,
+   "2023": 18987,
+   "2024": 18153,
+   "2025": 19754,
+   "2026": 15242,
+   "2027": 5904
+  },
+  "as_of": "2026-11-20",
+  "fiscal_year_basis": "NYC FY (Jul 1 to Jun 30); Checkbook fiscal_year search criterion; fy_first/fy_last from registration date",
+  "industry_filter_mode": "client",
+  "contracts_rows": 19308,
+  "spending_rows": 3227,
+  "groups": 699,
+  "paid_source": "prime_vendor_spent_to_date on registered contracts"
+ },
+ "vendors": {
+  "AECOM USA": {
+   "label": "AECOM USA",
+   "registered": 50987142,
+   "paid": 35730743,
+   "agencies": 4,
+   "fy_first": 2021,
+   "fy_last": 2027,
+   "matched": true
+  },
+  "NEW YORK CITY HOUSING AUTHORITY": {
+   "label": "NEW YORK CITY HOUSING AUTHORITY",
+   "registered": 3062779525,
+   "paid": 1379179893,
+   "agencies": 1,
+   "fy_first": 2021,
+   "fy_last": 2027,
+   "matched": false
+  },
+  "AWL INDUSTRIES": {
+   "label": "AWL Industries",
+   "registered": 181300844,
+   "paid": 77733299,
+   "agencies": 7,
+   "fy_first": 2021,
+   "fy_last": 2025,
+   "matched": true
+  }
+ }
+}

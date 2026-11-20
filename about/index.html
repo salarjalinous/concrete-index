@@ -1,218 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; form-action 'self'; worker-src 'none'; img-src 'self' data: https://images.unsplash.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://data.cityofnewyork.us; upgrade-insecure-requests">
-<meta name="referrer" content="strict-origin-when-cross-origin">
+<!-- ci:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="same-origin">
+<meta name="color-scheme" content="light">
+<title>About · The Concrete Index</title>
+<meta name="description" content="Why The Concrete Index exists and how it joins scattered City and State construction records into one view under a single disclosed rule set.">
 <link rel="canonical" href="https://concreteindex.co/about/">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="The Concrete Index">
+<meta property="og:title" content="About · The Concrete Index">
+<meta property="og:description" content="Why The Concrete Index exists and how it joins scattered City and State construction records into one view under a single disclosed rule set.">
 <meta property="og:url" content="https://concreteindex.co/about/">
 <meta property="og:image" content="https://concreteindex.co/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://concreteindex.co/og-image.png">
-<title>About · The Concrete Index</title>
-<meta name="description" content="Who builds The Concrete Index and why: closing the information gap in NYC public construction.">
-<meta property="og:title" content="About · The Concrete Index">
-<meta property="og:description" content="Closing the information gap in NYC public construction.">
-<!-- BROADSHEET-V1 -->
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%20width%3D%22120%22%20height%3D%22120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2226%22%20fill%3D%22%23243b53%22/%3E%3Cpath%20d%3D%22M60%2039%20A25%2025%200%201%200%2060%2081%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%2213%22%20stroke-linecap%3D%22round%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2238%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2274%22%20y%3D%2272.5%22%20width%3D%2224%22%20height%3D%229.5%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%2282.4%22%20y%3D%2238%22%20width%3D%227.2%22%20height%3D%2244%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2284%22%20r%3D%225.6%22%20fill%3D%22%23ae4e34%22/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<style>
-:root{
-  --paper:#f7f3ef; --surface:#fefbf8; --band:#f2ede8;
-  --ink:#201611; --navy:#243b53; --muted:#6b5e56; --faint:#968a7f;
-  --line:#ded5ce; --rule:#201611;
-  --accent:#ae4e34; --accent-soft:#eadbd4; --steel:#2f5d8f;
-  --pos:#2f7d52; --neg:#9e362f; --radius:3px;
-  --maxw:1180px; --gut:28px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-#methodology{scroll-margin-top:80px}
-body{font-family:'Public Sans',-apple-system,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
-a{color:var(--steel);text-decoration:none}
-a:hover{text-decoration:underline}
-.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
-
-/* ---------- header ---------- */
-header{background:var(--paper);position:sticky;top:0;z-index:50;border-bottom:2px solid var(--ink)}
-.nav{display:flex;align-items:center;justify-content:space-between;height:62px}
-.brand{display:flex;align-items:center;gap:10px;font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:20px;letter-spacing:-.01em;color:var(--ink)}
-.brand svg{color:var(--navy);flex-shrink:0}
-.brand .tick{color:var(--accent)}
-.nav-links{display:flex;gap:17px;align-items:center;font-size:13.5px;font-weight:500}
-.nav-links a{color:var(--muted)}
-.nav-links a:hover{color:var(--ink);text-decoration:none}
-.nav-links a.active{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px}
-.badge-live{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--pos);background:rgba(47,125,82,.1);border:1px solid rgba(47,125,82,.34);border-radius:3px;padding:3px 9px}
-.badge-live .dot{width:6px;height:6px;border-radius:50%;background:var(--pos);animation:pulse 2.4s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* ---------- release-series bar ---------- */
-.series-bar{background:var(--band);border-bottom:1px solid var(--line)}
-.series-bar .inner{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);padding:7px var(--gut);max-width:var(--maxw);margin:0 auto;display:flex;flex-wrap:wrap;gap:4px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.series-bar b{color:var(--ink);font-weight:600}
-.series-bar .sep{color:var(--faint);padding:0 12px}
-@media(max-width:720px){.series-bar .inner{white-space:normal}}
-
-/* ---------- hero ---------- */
-.hero{padding:46px 0 14px}
-.kicker{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:14px}
-.hero h1{font-family:'Source Serif 4',Georgia,serif;font-weight:700;font-size:clamp(32px,4.6vw,46px);line-height:1.06;letter-spacing:-.012em;max-width:840px;color:var(--ink)}
-
-/* ---------- about ---------- */
-.about{display:grid;grid-template-columns:300px 1fr;gap:34px;padding:34px 0}
-.photo-col img{width:100%;border-radius:0;border:1px solid var(--line);box-shadow:0 1px 0 rgba(32,22,17,.06);display:block;filter:sepia(.08) saturate(.93) contrast(1.02)}
-.photo-col .p-name{font-family:'Source Serif 4',Georgia,serif;font-size:20px;font-weight:700;letter-spacing:-.01em;margin-top:14px;color:var(--ink)}
-.photo-col .p-occ{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);margin-top:5px;line-height:1.5;letter-spacing:.02em}
-.bio .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px 28px 26px;box-shadow:0 1px 0 rgba(32,22,17,.04)}
-.bio h2{font-family:'Source Serif 4',Georgia,serif;font-size:22px;font-weight:700;letter-spacing:-.01em;color:var(--ink);border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:14px}
-.bio p{font-size:15px;color:var(--muted);max-width:680px;line-height:1.7}
-.bio p+p{margin-top:12px}
-.btn-row{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;padding:9px 16px;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);color:var(--ink);box-shadow:0 1px 0 rgba(32,22,17,.04)}
-.btn:hover{text-decoration:none;border-color:var(--ink)}
-.btn.primary{background:var(--navy);border-color:var(--navy);color:var(--paper)}
-.btn.primary:hover{background:#1c2e41}
-.what{padding:6px 0 10px}
-.what .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px 28px 26px;box-shadow:0 1px 0 rgba(32,22,17,.04)}
-.what h2{font-family:'Source Serif 4',Georgia,serif;font-size:22px;font-weight:700;letter-spacing:-.01em;color:var(--ink);border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:14px}
-.what p.lede{font-size:15px;color:var(--muted);max-width:760px;line-height:1.7}
-.how{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:22px}
-.how .step{border-top:2px solid var(--accent);padding-top:12px}
-.how .step:nth-child(2){border-top-color:var(--navy)}
-.how .step:nth-child(3){border-top-color:var(--ink)}
-.how .s-t{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
-.how .s-d{font-size:13.5px;color:var(--muted);margin-top:7px;line-height:1.6}
-.who{margin-top:26px;border-top:1px solid var(--line);padding-top:20px}
-.who h3{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-bottom:12px}
-.who-lede{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:14px;max-width:780px}
-.who-stack{display:grid;gap:14px}
-.who .w-block{font-size:14px;color:var(--muted);line-height:1.65;max-width:820px;border-left:3px solid var(--line);padding-left:14px}
-.who .w-block strong{color:var(--ink);font-weight:600}
-.who .w-block code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink);background:var(--band);padding:1px 5px;border-radius:3px;border:1px solid var(--line)}
-.who-close{font-size:13px;color:var(--muted);margin-top:16px;padding-top:14px;border-top:1px solid var(--line);max-width:820px}
-@media(max-width:760px){
-  .how{grid-template-columns:1fr}
-  .who-grid{grid-template-columns:1fr}
-}
-footer{margin-top:54px;background:var(--band);border-top:2px solid var(--ink);padding:30px 0 40px;font-size:13px;color:var(--muted)}
-footer a{color:var(--steel)}
-footer .f-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
-footer .brand{font-size:17px;color:var(--ink)}
-footer .brand svg{color:var(--navy)}
-footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.02em}
-@media(max-width:760px){
-  .about{grid-template-columns:1fr}
-  .photo-col img{max-width:280px}
-}
-@media(max-width:560px){
-  .hero{padding-top:34px}
-  :root{--maxw:1180px;--gut:18px}
-}
-.menu-btn{display:none;font:inherit;font-size:18px;line-height:1;background:none;border:1px solid var(--line);border-radius:var(--radius);padding:5px 10px;color:var(--ink);cursor:pointer}
-@media(max-width:1180px){
-  .menu-btn{display:block}
-  .nav{position:relative}
-  .nav-links{display:none;position:absolute;top:61px;left:calc(-1 * var(--gut));right:calc(-1 * var(--gut));background:var(--paper);border-bottom:2px solid var(--accent);flex-direction:column;align-items:flex-start;padding:14px var(--gut);gap:13px;box-shadow:0 10px 24px rgba(32,22,17,.16);z-index:60;max-height:calc(100vh - 62px);overflow-y:auto}
-  .nav-links.open{display:flex}
-}
-.photo-band{position:relative;height:200px;background-size:cover;background-position:center 38%;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);filter:sepia(.16) saturate(.66) contrast(1.03) brightness(.97);margin-top:22px}
-.ph-credit{position:absolute;right:10px;bottom:8px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.04em;color:rgba(247,243,239,.92);background:rgba(32,22,17,.55);padding:2px 8px;border-radius:3px}
-@media(max-width:560px){.photo-band{height:130px}}
-
-/* ---------- reduced motion ---------- */
-@media (prefers-reduced-motion: reduce){
-  .badge-live .dot{animation:none}
-  .spinner{animation:none}
-  *{scroll-behavior:auto}
-}
-
-/* ---------- print ---------- */
-@media print{
-  header,.series-bar,.badge-live,.controls,.seg,.menu-btn{display:none !important}
-  body{background:#fff;color:#000}
-  .card{background:#fff !important;box-shadow:none}
-  footer{background:#fff;border-top:1px solid #000;color:#000}
-  footer a,a{color:#000}
-}
-
-/* ---------- display scaling: fill wide / high-resolution screens ---------- */
-@media(min-width:1400px){
-  :root{--maxw:1330px;--gut:34px}
-  body{font-size:15.5px}
-  .kpi .k-value{font-size:33px}
-  .kpi.hl .k-value{font-size:42px}
-  .hero p.sub,.lp-sub{font-size:17.5px;max-width:860px}
-  .hero h1{max-width:960px}
-  .method p{max-width:980px}
-  table{font-size:14px}
-  .chart-box{height:330px}
-  .chart-box.tall{height:376px}
-}
-@media(min-width:1750px){
-  :root{--maxw:1500px;--gut:40px}
-  body{font-size:16px}
-  .kpi .k-value{font-size:35px}
-  .kpi.hl .k-value{font-size:45px}
-  .method p{max-width:1060px}
-  table{font-size:14.5px}
-  .chart-box{height:360px}
-  .chart-box.tall{height:410px}
-}
-@media(min-width:2100px){ :root{--maxw:1620px} }
-/* ---------- narrow: wide tables scroll inside their card, not the page ---------- */
-@media(max-width:900px){
-  .card{overflow-x:auto}
-  .card table{min-width:560px}
-  .sec-head{flex-wrap:wrap}
-  .sec-head .cap{white-space:normal;text-align:left}
-}
-</style>
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/public-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/ci.css">
+<link rel="stylesheet" href="/assets/pages/about.css">
+<meta name="ci:export" content="on">
+<meta name="ci:chrome" content="on">
+<script src="/assets/ci.js" defer></script>
+<script src="/assets/pages/about.js" defer></script>
+<!-- /ci:head -->
 </head>
 <body>
 
-<header>
-  <div class="wrap nav">
-    <div class="brand">
-      <svg viewBox="0 0 120 120" width="25" height="25" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
-      <a href="/" style="text-decoration:none;color:inherit"><span>The Concrete Index<span class="tick">.</span></span></a>
-    </div>
-    <button class="menu-btn" aria-label="Menu" aria-expanded="false" onclick="const o=this.nextElementSibling.classList.toggle('open');this.setAttribute('aria-expanded',o)">☰</button>
-    <nav class="nav-links">
-      <a href="/pipeline/">Pipeline</a>
-      <a href="/solicitations/">Bidding</a>
-      <a href="/awarded/">Awarded</a>
-      <a href="/funnel/">Funnel</a>
-      <a href="/agency/">Agencies</a>
-      <a href="/regional/">SCA &amp; MTA</a>
-      <a href="/competitive/">Contractors</a>
-      <a href="/contracts/">Contracts</a>
-      <a href="/analysis/">Analysis</a>
-      <a href="/briefing/">Briefing</a>
-      <a href="/about/" class="active">About</a>
-      <span class="badge-live"><span class="dot"></span>Live data</span>
-    </nav>
+<!-- ci:header -->
+<a class="ci-skip" href="#content">Skip to content</a>
+<header class="ci-masthead">
+  <div class="wrap ci-masthead__bar">
+    <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="26" height="26" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+    <nav class="ci-utility" aria-label="Site"><a href="/methodology/">Methodology</a><a href="/about/" aria-current="page">About</a><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></nav>
+    <button class="ci-menu-btn" type="button" aria-expanded="false" aria-controls="ci-menu"><svg class="ci-i-menu" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#menu"/></svg><svg class="ci-i-close" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#close"/></svg><span class="ci-menu-btn__label">Menu</span></button>
   </div>
+  <nav class="ci-rail" id="ci-menu" aria-label="Sections">
+    <div class="wrap ci-rail__inner">
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-stages">Stages</p><ul class="ci-rail__list" aria-labelledby="ci-g-stages"><li><a href="/pipeline/">Pipeline</a></li><li><a href="/bidding/">Bidding</a></li><li><a href="/awarded/">Awarded</a></li><li><a href="/contracts/">Contracts</a></li><li><a href="/funnel/">Funnel</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-entities">Entities</p><ul class="ci-rail__list" aria-labelledby="ci-g-entities"><li><a href="/agencies/">Agencies</a></li><li><a href="/contractors/">Contractors</a></li><li><a href="/regional/">Regional</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-synthesis">Synthesis</p><ul class="ci-rail__list" aria-labelledby="ci-g-synthesis"><li><a href="/analysis/">Analysis</a></li><li><a href="/briefing/">Briefing</a></li></ul></div>
+      <div class="ci-rail__group ci-rail__group--utility"><p class="ci-rail__label" id="ci-g-site">Site</p><ul class="ci-rail__list" aria-labelledby="ci-g-site"><li><a href="/methodology/">Methodology</a></li><li><a href="/about/" aria-current="page">About</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></li></ul></div>
+    </div>
+  </nav>
 </header>
+<!-- /ci:header -->
 
 <div class="series-bar">
   <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-ABOUT</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>NYC OPEN DATA · DATA.NY.GOV · BLS</b><span class="sep">·</span>DOC&nbsp;·&nbsp;<b>MISSION &amp; METHOD</b></div>
 </div>
 
-<div class="wrap hero">
-  <div class="kicker">About</div>
+<main id="content" tabindex="-1">
+
+<div class="wrap hero hero--art">
   <h1>Why The Concrete Index exists.</h1>
+  <!-- ci:art ibeam ci-art ci-art--about --><svg class="ci-art ci-art--about" viewBox="0 0 280 200" width="280" height="200" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+<g stroke-width="2"><path d="M140 0V14"/><path d="M50 110H230V116H50zM50 140H230V146H50z"/><path d="M230 110L241.2 103.6V109.6L237 112V136L241.2 133.6V139.6L230 146V140L234.2 137.6V113.6L230 116Z"/></g>
+<g stroke-width="1.5"><path d="M50 110L61.2 103.6H241.2"/><path d="M54.2 116V137.6H234.2M50 140L54.2 137.6"/><circle cx="140" cy="40" r="5"/><path d="M137 45L66 103.6M143 45L214 103.6"/><path d="M70 103.6c-5 0-6 42.4 0 42.4M76 104c5 0 6 42 0 42M204 104c-5 0-6 42 0 42M210 103.6c5 0 6 42.4 0 42.4"/></g>
+<g stroke-width="1">
+<path d="M58 120H230M58 124H230M58 128H230M58 132H230M58 136H230"/>
+<path d="M62 104.5h179M66 106h175M60 107.5h181"/>
+<path d="M238.5 114v20M240 112.5v1.5M240 134.5v3"/>
+<path d="M56 149h170M64 152h150"/>
+<path d="M52 146c-6 10 6 18 0 28s-8 12-10 18M228 146c6 9-6 17 0 26s8 12 10 20"/>
+<path d="M40 186c40 8 160 8 200 0" stroke-dasharray="3 4"/>
+<path d="M134 12h12v8h-12z"/>
+</g>
+<path class="ci-accent" stroke-width="2" d="M140 20v8a6 6 0 1 0 6 6"/>
+</g></svg><!-- /ci:art -->
 </div>
 
-<div class="photo-band" style="background-image:url('https://images.unsplash.com/photo-1522083165195-3424ed129620?auto=format&fit=crop&w=1800&q=55')"><span class="ph-credit">Brooklyn Bridge · Unsplash</span></div>
-
-<main class="wrap">
+<div data-ci-main class="wrap">
   <div class="about">
     <div class="photo-col">
       <img src="headshot.jpg" alt="Salar Jalinous">
@@ -228,7 +96,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <div class="btn-row">
           <a class="btn primary" href="https://www.linkedin.com/in/salar-jalinous/" target="_blank" rel="noopener">Connect on LinkedIn</a>
           <a class="btn" href="https://github.com/salarjalinous/concrete-index" target="_blank" rel="noopener">View the code</a>
-          <a class="btn" href="mailto:salar.jalinous@gmail.com">Email</a>
+          <a class="btn" href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">Report a correction</a>
         </div>
       </div>
     </div>
@@ -237,7 +105,7 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
   <section class="what" id="methodology">
     <div class="card">
       <h2>What this site actually does</h2>
-      <p class="lede">The Concrete Index is a live reading of New York City's public construction market, built directly on the government's own records. Nothing here is estimated or scraped. Most pages query the official datasets at the moment you load it, run the numbers in your browser, and render the result. The few sources a browser cannot reach are pulled and normalized overnight by an automated job and read back from a compact static file. There is no analyst refresh to wait for.</p>
+      <p class="lede">The Concrete Index is a reading of New York City's public construction market, built directly on the government's own records. Nothing here is estimated or scraped. Most pages query the published datasets when you load them, run the numbers in your browser, and render the result; payment data and long histories come from a nightly archive. The few sources a browser cannot reach are pulled and normalized overnight by an automated job and read back from a compact static file. There is no analyst refresh to wait for.</p>
       <div class="how">
         <div class="step">
           <div class="s-t">1 · Pull</div>
@@ -249,14 +117,14 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         </div>
         <div class="step">
           <div class="s-t">3 · Read</div>
-          <div class="s-d">From the cleaned data the site reads the demand funnel's three stages side by side, phase-conversion rates by agency, a composite index back to 2004, and a briefing that rewrites itself from the live record on every visit.</div>
+          <div class="s-d">From the cleaned data the site reads the demand funnel's three stages side by side, phase-conversion rates by agency, a composite index back to 2004, and a briefing that rewrites itself from the City Record and the capital plan on every visit.</div>
         </div>
       </div>
       <div class="who">
         <h3>The pipeline underneath</h3>
         <p class="who-lede">Those three steps run on top of a record-linkage and aggregation pipeline that does the work a public-records analyst would otherwise do by hand. The City's construction record is split across systems that were never built to be read together, and each is loosely aggregated inside itself. The pipeline resolves that into one current, contractor-attributed picture, and re-runs itself nightly with no manual pull.</p>
         <div class="who-stack">
-          <div class="w-block"><strong>Ingestion.</strong> It reads several public sources: the City Record for award notices (<code>qyyg-4tf5</code>), the OMB capital plan for committed budgets (<code>fb86-vt7u</code>), current City construction solicitations (<code>3khw-qi8f</code>), the School Construction Authority's active construction projects (<code>8586-3zfm</code>) and the MTA capital dashboard (<code>kizb-nxtu</code>), and Checkbook NYC, the Comptroller's system of record for registered and paid amounts, read through its Contracts and Spending APIs. It also reads New York State open data on data.ny.gov, the MTA's (<code>twsw-2mqa</code>) and the State University Construction Fund's (<code>cfjm-ii27</code>) named-vendor procurement records, which attach a contractor name to MTA and State construction work, and the City's Doing Business Database (<code>2sps-j9st</code>), used behind the scenes to corroborate the contractor groupings. Every City dataset ID refers to NYC Open Data at data.cityofnewyork.us; the MTA capital and procurement IDs and the Construction Fund ID refer to data.ny.gov.</div>
+          <div class="w-block"><strong>Ingestion.</strong> It reads several public sources: the City Record for award notices (<code>qyyg-4tf5</code>), the OMB capital plan for committed budgets (<code>fb86-vt7u</code>), current City construction solicitations (<code>3khw-qi8f</code>), the School Construction Authority's active construction projects (<code>8586-3zfm</code>) and the MTA capital dashboard (<code>kizb-nxtu</code>), and Checkbook NYC, the Comptroller's public ledger of registered and paid amounts, read through its Contracts and Spending APIs. It also reads New York State open data on data.ny.gov, the MTA's (<code>twsw-2mqa</code>) and the State University Construction Fund's (<code>cfjm-ii27</code>) named-vendor procurement records, which attach a contractor name to MTA and State construction work, and the City's Doing Business Database (<code>2sps-j9st</code>), used behind the scenes to corroborate the contractor groupings. Every City dataset ID refers to NYC Open Data at data.cityofnewyork.us; the MTA capital and procurement IDs and the Construction Fund ID refer to data.ny.gov.</div>
           <div class="w-block"><strong>Record linkage.</strong> One contractor files under many legal-name spellings and joint-venture entities. The pipeline links those to a single parent through a deterministic, hand-verified alias map. Each grouping is corroborated by a shared, distinctive identifier: a shared business address, with high-occupancy office towers and registered-agent suites excluded so a common address can never merge two unrelated firms, and, at the organization level, a shared principal officer or owner in the City's Doing Business Database, with common or non-distinctive principals discarded. No individual is named anywhere on the site. The match is exact and rule-based, not probabilistic and not machine-learned.</div>
           <div class="w-block"><strong>Deduplication.</strong> Award notices collapse to one record per procurement, and capital-plan budgets collapse to one record per project, since the source repeats a project's budget across every sub-project row.</div>
           <div class="w-block"><strong>Reconciliation.</strong> It carries three dollar measures per contractor: award-notice value from the City Record, plus registered contract value and paid to date, both from Checkbook NYC. They are held as separate reconciled figures and never blended into one number.</div>
@@ -267,187 +135,35 @@ footer .f-meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spa
         <h3>Who it serves</h3>
         <p class="who-lede">The site does not see financials, margins, bonding capacity, or job performance, and it does not rate or certify any contractor. Each party below reads the same public numbers for a different decision.</p>
         <div class="who-stack">
-          <div class="w-block"><strong>Surety and credit professionals.</strong> The “Contractors” page opens with a contractor lookup that pulls any account's public award history from the City Record in one query: what it has won, from which agencies, and how its job sizes are trending. Read against a contractor's financials, this is demand-side context those statements do not carry. A rising job-size trend is a demand fact, not a verdict. A book stepping up in size is taking on work of a different scale: context to read against the financials, not a risk rating. The “Funnel” and “Analysis” pages add portfolio color, whether a segment is thinning and where forward work is funded. The contractor lookup also shows a firm's MTA and New York State construction work, named from the State's own open data, on a separate ledger that is never summed with the City figures. The “Agencies” page profiles a single agency's committed-versus-awarded book, the trades it buys, the firms it pays, and a dollar-weighted borough footprint of where its work lands. The “Contracts” page is a per-contract lookup: I made it searchable by contract number, vendor, agency, the work's scope description, and the City's procurement identification number, so a query like a street name or a treatment plant surfaces the contracts that name it. Open one registered contract and it shows how much of that contract the public record confirms has been paid, the scope and PIN that identify it, and, for contracts of $500,000 or more registered since 2019 that are open or recently closed, a dated spend curve built from the individual checks with first-payment lag and pay-down speed. That paid figure is a floor built from confirmed disbursements. It covers the single contract entered rather than the market, and a balance below the registered amount can reflect work still in progress as well as payment not yet posted. The School Construction Authority and Port Authority remain unattributed, because those datasets carry no contractor name.</div>
-          <div class="w-block"><strong>Brokers and agents.</strong> The “Pipeline” page and the “Bidding” page are a prospecting map. “Pipeline” shows committed-but-unspent capital by agency, borough, and category, the market where the next round of bonding demand is forming, often before it is advertised. “Bidding” shows every City construction solicitation open right now, sorted by what is due next.</div>
-          <div class="w-block"><strong>Contractors.</strong> The “Bidding” page is a working bid-chase list: every open City construction solicitation, its due date, its procurement method and PIN, and the agency contact who answers questions, re-pulled on every load. The “Contractors” page adds competitive context, showing who has been winning what kind of work from which agencies, and how award dollars spread across the market by job size. The “Pipeline” page shows where funded work is stacking up before it is advertised.</div>
+          <div class="w-block"><strong>Surety and credit professionals.</strong> The “Contractors” page opens with a contractor lookup that pulls an account's public award history from the City Record in one query: what it has won, from which agencies, and how its job sizes are trending. Read against a contractor's financials, this is demand-side context those statements do not carry. A rising job-size trend is a demand fact, not a verdict. A book stepping up in size is taking on work of a different scale: context to read against the financials, not a risk rating. The “Funnel” and “Analysis” pages add portfolio color, whether a segment is thinning and where forward work is funded. The contractor lookup also shows a firm's MTA and New York State construction work, named from the State's own open data, on a separate ledger that is never summed with the City figures. The “Agencies” page profiles a single agency's committed-versus-awarded book, the trades it buys, the firms it pays, and a dollar-weighted borough footprint of where its work lands. The “Contracts” page is a per-contract lookup: I made it searchable by contract number, vendor, agency, the work's scope description, and the City's procurement identification number, so a query like a street name or a treatment plant surfaces the contracts that name it. Open one registered contract and it shows how much of that contract the public record confirms has been paid, the scope and PIN that identify it, and, for contracts of $500,000 or more registered since 2019 that are open or recently closed, a dated spend curve built from the individual checks with first-payment lag and pay-down speed. That paid figure is a floor built from confirmed disbursements. It covers the single contract entered rather than the market, and a balance below the registered amount can reflect work still in progress as well as payment not yet posted. The School Construction Authority and Port Authority remain unattributed, because those datasets carry no contractor name.</div>
+          <div class="w-block"><strong>Brokers and agents.</strong> The “Pipeline” page and the “Bidding” page are a prospecting map. “Pipeline” shows committed-but-unspent capital by agency, borough, and category, the market where the next round of bonding demand is forming, often before it is advertised. “Bidding” shows each City construction solicitation the City Record lists as open, sorted by what is due next.</div>
+          <div class="w-block"><strong>Contractors.</strong> The “Bidding” page is a working bid-chase list: each open City construction solicitation in the City Record, its due date, its procurement method and PIN, and the agency contact who answers questions, re-pulled on every load. The “Contractors” page adds competitive context, showing who has been winning what kind of work from which agencies, and how award dollars spread across the market by job size. The “Pipeline” page shows where funded work is stacking up before it is advertised.</div>
           <div class="w-block"><strong>Credit analysts and investors.</strong> The “Funnel” and “Analysis” pages give a public-market read on one of the country's largest construction economies, with the full method disclosed on each page. Backlog coverage, unspent committed dollars over trailing-year spending, is a market-level reading, the public-market analog of how a single contractor's backlog relates to its revenue. It describes the market, not any one firm; the per-vendor pages carry no revenue or backlog figure and none can be derived here.</div>
         </div>
         <p class="who-close">Everything here comes from public data, read by a fixed, disclosed rule set. No contractor is rated, scored, or ranked, and nothing is estimated or inferred by a model.</p>
       </div>
     </div>
   </section>
+</div>
 </main>
 
-<footer>
-  <div class="wrap f-row">
-    <div>
-      <div class="brand">
-        <svg viewBox="0 0 120 120" width="22" height="22" aria-hidden="true"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle cx="101" cy="84" r="5.6" fill="var(--accent)"/></svg>
-        <span style="font-family:'Source Serif 4',Georgia,serif;font-weight:700;letter-spacing:-.01em">The Concrete Index<span class="tick" style="color:var(--accent)">.</span></span>
-      </div>
-      <div style="margin-top:8px">NYC public construction capital, tracked end to end.</div>
-      <div style="margin-top:6px;font-size:12px;color:var(--faint);max-width:430px">An independent project built by Salar Jalinous using only public data. Not affiliated with any employer.</div>
+<!-- ci:footer -->
+<footer class="ci-footer">
+  <div class="wrap ci-footer__inner">
+    <div class="ci-footer__brand">
+      <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="22" height="22" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+      <p class="ci-footer__tag">NYC public construction capital, from commitment to cash.</p>
     </div>
-    <div style="text-align:right" class="f-meta">
-      <div>Data: <a href="https://opendata.cityofnewyork.us/" target="_blank" rel="noopener">NYC Open Data</a> · refreshed on load</div>
-      <div style="margin-top:5px">© 2026 <a href="/about/">Salar Jalinous</a></div>
+    <nav class="ci-footer__links" aria-label="Site information">
+      <ul><li><a href="/methodology/">Methodology</a></li><li><a href="/sources/">Sources</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">Corrections</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source on GitHub</a></li></ul>
+    </nav>
+    <div class="ci-footer__meta">
+      <p>An independent project built by Salar Jalinous using only public data. Not affiliated with the City or State of New York or any employer.</p>
+      <p><a href="/sources/">Data: NYC Open Data · Open NY · Checkbook NYC · BLS</a></p>
+      <p><a href="/about/">© <span data-ci-year="2026">2026</span> The Concrete Index</a></p>
     </div>
   </div>
 </footer>
-
-<script>
-// The page images (headshot, photo band) load after parse, so the browser's
-// initial #methodology jump lands short; and scroll-behavior:smooth makes the
-// programmatic jump async and miss after the reflow. Force an instant jump once
-// everything is loaded (and on hashchange), respecting the sticky-header offset.
-(function(){
-  function go(){
-    if(location.hash !== '#methodology') return;
-    var e = document.getElementById('methodology');
-    if(!e) return;
-    var html = document.documentElement, prev = html.style.scrollBehavior;
-    html.style.scrollBehavior = 'auto';
-    e.scrollIntoView();
-    setTimeout(function(){ html.style.scrollBehavior = prev; }, 60);
-  }
-  window.addEventListener('load', go);
-  window.addEventListener('hashchange', go);
-})();
-</script>
-
-<!-- ===== Concrete Index export module: page PDF, chart PNG, tile CSV. No external dependencies. ===== -->
-<style id="exp-css">
-.exp{display:flex;justify-content:flex-end;gap:0;margin-top:10px}
-.exp button{background:none;border:1px solid var(--line);color:var(--muted);font:500 10px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.07em;text-transform:uppercase;padding:6px 9px;cursor:pointer;transition:color .12s,border-color .12s}
-.exp button+button{border-left:none}
-.exp button:hover{color:var(--accent);border-color:var(--accent)}
-.exp button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.pdf-btn{background:none;border:1px solid var(--line);color:var(--muted);font:600 11px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;cursor:pointer;white-space:nowrap;transition:color .12s,border-color .12s}
-.pdf-btn:hover{color:var(--accent);border-color:var(--accent)}
-.series-bar .inner .pdf-btn{margin-left:auto;font-size:10px;padding:4px 9px;align-self:center}
-.pdf-bar{display:flex;justify-content:flex-end;max-width:var(--maxw);margin:0 auto;padding:6px var(--gut)}
-@media (max-width:720px){.pdf-bar{padding:6px 18px}}
-@media print{
-  @page{margin:14mm}
-  header .menu-btn,.nav-links,.controls,.series-bar,.photo-band,.exp,.pdf-btn,.pdf-bar,.badge-live,.valstrip{display:none !important}
-  header{border-bottom:2px solid #201611}
-  body{background:#fff !important}
-  .wrap{max-width:none !important;width:100% !important}
-  .grid,.grid.two,.grid.three{display:block !important}
-  .card{break-inside:avoid;page-break-inside:avoid;box-shadow:none !important;margin:0 0 16px !important}
-  .chart-box,.chart-box.tall{height:300px !important}
-  a{color:inherit;text-decoration:none}
-  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
-}
-</style>
-<script>
-(function(){
-  "use strict";
-  if(window.__ciExport)return; window.__ciExport=1;
-  function slug(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60);}
-  var pageSlug=slug(location.pathname.replace(/\/index\.html?$/i,'').replace(/\/+$/,''))||'awarded';
-  function getChart(cv){return (cv&&window.Chart&&Chart.getChart)?(Chart.getChart(cv)||null):null;}
-  function fnameFor(el,ext){
-    var card=el.closest('.card')||el.closest('section')||el.parentElement;
-    var h=card&&card.querySelector('.sec-head h2,h2,h3');
-    if(!h){var s=el.previousElementSibling;while(s){if(s.tagName==='H2'||s.tagName==='H3'){h=s;break;}s=s.previousElementSibling;}}
-    return ('concrete-index-'+pageSlug+'-'+slug(h?h.textContent:'export')).replace(/-+/g,'-')+'.'+ext;
-  }
-  function dl(href,name,revoke){
-    var a=document.createElement('a');a.href=href;a.download=name;a.rel='noopener';
-    document.body.appendChild(a);a.click();a.remove();
-    if(revoke)setTimeout(function(){URL.revokeObjectURL(href);},2000);
-  }
-  function csvCell(v){v=(v==null?'':String(v));return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
-  function csv(rows,name){
-    var t='\ufeff'+rows.map(function(r){return r.map(csvCell).join(',');}).join('\r\n');
-    dl(URL.createObjectURL(new Blob([t],{type:'text/csv;charset=utf-8'})),name,true);
-  }
-  function pngFromChart(ch,name){
-    var src=ch.canvas,out=document.createElement('canvas');
-    out.width=src.width;out.height=src.height;
-    var x=out.getContext('2d');
-    x.fillStyle='#fefbf8';x.fillRect(0,0,out.width,out.height);
-    x.drawImage(src,0,0);
-    dl(out.toDataURL('image/png'),name,false);
-  }
-  function csvFromChart(ch,name){
-    var labels=ch.data.labels||[],ds=ch.data.datasets||[];
-    var rows=[['Label'].concat(ds.map(function(d,i){return d.label||('Series '+(i+1));}))];
-    var n=labels.length||((ds[0]&&ds[0].data)?ds[0].data.length:0);
-    for(var r=0;r<n;r++){
-      var row=[labels[r]!=null?labels[r]:r];
-      ds.forEach(function(d){
-        var v=d.data?d.data[r]:'';
-        if(v&&typeof v==='object')v=(v.y!=null?v.y:(v.v!=null?v.v:JSON.stringify(v)));
-        row.push(v==null?'':v);
-      });
-      rows.push(row);
-    }
-    csv(rows,name);
-  }
-  function csvFromTable(tbl,name){
-    var rows=[];
-    tbl.querySelectorAll('tr').forEach(function(tr){
-      var cells=[];
-      tr.querySelectorAll('th,td').forEach(function(c){cells.push(c.textContent.replace(/\s+/g,' ').trim());});
-      if(cells.some(function(x){return x!=='';}))rows.push(cells);
-    });
-    if(rows.length)csv(rows,name);
-  }
-  function mkBtn(label,title,fn){
-    var b=document.createElement('button');b.type='button';b.textContent=label;b.title=title;
-    b.addEventListener('click',fn);return b;
-  }
-  function placeAfter(el,bar){
-    var t=el,nx=el.nextElementSibling;
-    if(nx&&nx.classList&&nx.classList.contains('tnote'))t=nx;
-    t.insertAdjacentElement('afterend',bar);
-  }
-  function attachChart(box){
-    if(!box||box.getAttribute('data-exp'))return;
-    var cv=box.querySelector('canvas');if(!cv)return;
-    box.setAttribute('data-exp','1');
-    var bar=document.createElement('div');bar.className='exp';
-    bar.appendChild(mkBtn('PNG','Download this chart as a PNG image',function(){var ch=getChart(cv);if(ch)pngFromChart(ch,fnameFor(box,'png'));}));
-    bar.appendChild(mkBtn('CSV','Download this chart’s data as a CSV file',function(){var ch=getChart(cv);if(ch)csvFromChart(ch,fnameFor(box,'csv'));}));
-    placeAfter(box,bar);
-  }
-  function attachTable(tbl){
-    if(!tbl||tbl.getAttribute('data-exp'))return;
-    if(!tbl.querySelector('th'))return;
-    if(tbl.closest('header')||tbl.closest('footer')||tbl.closest('nav'))return;
-    tbl.setAttribute('data-exp','1');
-    var bar=document.createElement('div');bar.className='exp';
-    bar.appendChild(mkBtn('CSV','Download this table as a CSV file',function(){csvFromTable(tbl,fnameFor(tbl,'csv'));}));
-    placeAfter(tbl,bar);
-  }
-  function scan(){
-    document.querySelectorAll('.chart-box').forEach(attachChart);
-    document.querySelectorAll('main canvas,#app canvas').forEach(function(cv){if(!cv.closest('.chart-box'))attachChart(cv.parentElement);});
-    document.querySelectorAll('main table,#app table,.card table').forEach(attachTable);
-  }
-  function addPdfBtn(){
-    if(document.querySelector('.pdf-btn'))return;
-    var b=mkBtn('Save PDF','Save or print this page as a PDF',function(){window.print();});
-    b.className='pdf-btn';
-    var inner=document.querySelector('.series-bar .inner');
-    if(inner){inner.appendChild(b);return;}
-    var header=document.querySelector('header');
-    if(header){var bar=document.createElement('div');bar.className='pdf-bar';bar.appendChild(b);header.insertAdjacentElement('afterend',bar);return;}
-    var nav=document.querySelector('.nav-links');if(nav)nav.appendChild(b);
-  }
-  var pending=null;
-  function start(){
-    addPdfBtn();scan();
-    try{
-      var mo=new MutationObserver(function(){if(pending)return;pending=setTimeout(function(){pending=null;scan();},300);});
-      mo.observe(document.body,{childList:true,subtree:true});
-    }catch(e){}
-    [400,1200,3000].forEach(function(t){setTimeout(scan,t);});
-  }
-  if(document.readyState!=='loading')start();else document.addEventListener('DOMContentLoaded',start);
-})();
-</script>
+<!-- /ci:footer -->
 </body>
 </html>

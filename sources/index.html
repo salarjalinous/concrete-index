@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- ci:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="same-origin">
+<meta name="color-scheme" content="light">
+<title>Sources · The Concrete Index</title>
+<meta name="description" content="Each dataset The Concrete Index reads, with its ID, publisher, the pages it feeds, the refresh cadence its publisher states, and its license or terms link.">
+<link rel="canonical" href="https://concreteindex.co/sources/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Concrete Index">
+<meta property="og:title" content="Sources · The Concrete Index">
+<meta property="og:description" content="Each dataset The Concrete Index reads, with its ID, publisher, the pages it feeds, the refresh cadence its publisher states, and its license or terms link.">
+<meta property="og:url" content="https://concreteindex.co/sources/">
+<meta property="og:image" content="https://concreteindex.co/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://concreteindex.co/og-image.png">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/public-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/ci.css">
+<link rel="stylesheet" href="/assets/pages/editorial.css">
+<meta name="ci:chrome" content="on">
+<script src="/assets/ci.js" defer></script>
+<!-- /ci:head -->
+</head>
+<body>
+<!-- ci:header -->
+<a class="ci-skip" href="#content">Skip to content</a>
+<header class="ci-masthead">
+  <div class="wrap ci-masthead__bar">
+    <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="26" height="26" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+    <nav class="ci-utility" aria-label="Site"><a href="/methodology/">Methodology</a><a href="/about/">About</a><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></nav>
+    <button class="ci-menu-btn" type="button" aria-expanded="false" aria-controls="ci-menu"><svg class="ci-i-menu" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#menu"/></svg><svg class="ci-i-close" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#close"/></svg><span class="ci-menu-btn__label">Menu</span></button>
+  </div>
+  <nav class="ci-rail" id="ci-menu" aria-label="Sections">
+    <div class="wrap ci-rail__inner">
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-stages">Stages</p><ul class="ci-rail__list" aria-labelledby="ci-g-stages"><li><a href="/pipeline/">Pipeline</a></li><li><a href="/bidding/">Bidding</a></li><li><a href="/awarded/">Awarded</a></li><li><a href="/contracts/">Contracts</a></li><li><a href="/funnel/">Funnel</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-entities">Entities</p><ul class="ci-rail__list" aria-labelledby="ci-g-entities"><li><a href="/agencies/">Agencies</a></li><li><a href="/contractors/">Contractors</a></li><li><a href="/regional/">Regional</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-synthesis">Synthesis</p><ul class="ci-rail__list" aria-labelledby="ci-g-synthesis"><li><a href="/analysis/">Analysis</a></li><li><a href="/briefing/">Briefing</a></li></ul></div>
+      <div class="ci-rail__group ci-rail__group--utility"><p class="ci-rail__label" id="ci-g-site">Site</p><ul class="ci-rail__list" aria-labelledby="ci-g-site"><li><a href="/methodology/">Methodology</a></li><li><a href="/about/">About</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></li></ul></div>
+    </div>
+  </nav>
+</header>
+<!-- /ci:header -->
+
+<main id="content" tabindex="-1">
+<div class="wrap">
+<article class="editorial prose" aria-labelledby="sources-title">
+  <header class="page-head">
+    <h1 id="sources-title">Sources</h1>
+    <p class="page-meta">Last updated: <time datetime="2026-11-20">November 20, 2026</time></p>
+  </header>
+
+  <p class="lede">Every figure on the site traces to one of the datasets below. Each row names the publisher, the pages the dataset feeds, the refresh cadence the publisher states, and how this site reads it: in your browser when the page loads, or through the nightly archive job that writes a same-origin file under <code>/data/</code>.</p>
+
+  <section aria-labelledby="src-nyc">
+    <h2 id="src-nyc">NYC Open Data</h2>
+    <p>Served from data.cityofnewyork.us. License: <a href="https://www.nyc.gov/html/data/terms.html" rel="noopener">NYC OpenData Terms of Use</a>.</p>
+    <div class="table-wrap" role="region" aria-labelledby="src-nyc-cap" tabindex="0">
+      <table class="rule-table">
+        <caption id="src-nyc-cap">NYC Open Data datasets</caption>
+        <thead>
+          <tr><th scope="col">Dataset</th><th scope="col">ID</th><th scope="col">Publisher</th><th scope="col">Feeds</th><th scope="col">Cadence, as published</th><th scope="col">How it is read</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="https://data.cityofnewyork.us/City-Government/Recent-Contract-Awards/qyyg-4tf5" rel="noopener">Recent Contract Awards</a></td>
+            <td><code>qyyg-4tf5</code></td>
+            <td>The City Record, NYC Department of Citywide Administrative Services</td>
+            <td>Home, Awarded, Funnel, Agencies, Contractors, Analysis, Briefing; bid due dates on Contracts</td>
+            <td>Daily</td>
+            <td>On page load; nightly archive (<code>awards.json</code>, <code>precomputed.json</code>)</td>
+          </tr>
+          <tr>
+            <td><a href="https://data.cityofnewyork.us/City-Government/Current-Solicitations/3khw-qi8f" rel="noopener">Current Solicitations</a></td>
+            <td><code>3khw-qi8f</code></td>
+            <td>The City Record, NYC Department of Citywide Administrative Services</td>
+            <td>Bidding; open-bid count on Home</td>
+            <td>Daily</td>
+            <td>On page load; nightly archive (<code>solicitations.json</code>)</td>
+          </tr>
+          <tr>
+            <td><a href="https://data.cityofnewyork.us/City-Government/Capital-Projects-Dashboard-Citywide-Budget-and-Sch/fb86-vt7u" rel="noopener">Capital Projects Dashboard: Citywide Budget and Schedule</a></td>
+            <td><code>fb86-vt7u</code></td>
+            <td>NYC Office of Management and Budget</td>
+            <td>Pipeline, Funnel, Agencies, Analysis, Briefing; Committed on Home</td>
+            <td>Three times a year, with each capital commitment plan (January, May, September)</td>
+            <td>On page load; nightly archive (<code>plan-latest.json</code>)</td>
+          </tr>
+          <tr>
+            <td><a href="https://data.cityofnewyork.us/Housing-Development/Active-Projects-Under-Construction/8586-3zfm" rel="noopener">Active Projects Under Construction</a></td>
+            <td><code>8586-3zfm</code></td>
+            <td>NYC School Construction Authority</td>
+            <td>Regional</td>
+            <td>Republished periodically; the page shows the snapshot date from the dataset's metadata</td>
+            <td>On page load</td>
+          </tr>
+          <tr>
+            <td><a href="https://data.cityofnewyork.us/d/2sps-j9st" rel="noopener">Doing Business Search: People</a></td>
+            <td><code>2sps-j9st</code></td>
+            <td>NYC Doing Business Database</td>
+            <td>Contractors (corroborates the contractor groupings at the organization level; no individual is named on the site)</td>
+            <td>See the dataset page</td>
+            <td>Nightly archive only (<code>doing-business-corroboration.json</code>)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="src-ny">
+    <h2 id="src-ny">Open NY</h2>
+    <p>Served from data.ny.gov. License: <a href="https://data.ny.gov/dataset/OPEN-NY-Terms-Of-Use/77gx-ii52" rel="noopener">OPEN-NY Terms of Use</a>.</p>
+    <div class="table-wrap" role="region" aria-labelledby="src-ny-cap" tabindex="0">
+      <table class="rule-table">
+        <caption id="src-ny-cap">Open NY datasets</caption>
+        <thead>
+          <tr><th scope="col">Dataset</th><th scope="col">ID</th><th scope="col">Publisher</th><th scope="col">Feeds</th><th scope="col">Cadence, as published</th><th scope="col">How it is read</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="https://data.ny.gov/Transportation/Metropolitan-Transportation-Authority-MTA-Capital-/kizb-nxtu" rel="noopener">MTA Capital Dashboard: Agencies Detail</a></td>
+            <td><code>kizb-nxtu</code></td>
+            <td>Metropolitan Transportation Authority</td>
+            <td>Regional</td>
+            <td>See the dataset page</td>
+            <td>On page load; source values in thousands of dollars, converted on the page</td>
+          </tr>
+          <tr>
+            <td><a href="https://data.ny.gov/d/twsw-2mqa" rel="noopener">MTA Procurements</a></td>
+            <td><code>twsw-2mqa</code></td>
+            <td>Metropolitan Transportation Authority, reported through the Public Authorities Reporting Information System</td>
+            <td>Contractors (MTA and State section of a firm lookup)</td>
+            <td>Re-reported each fiscal year; see the dataset page</td>
+            <td>On a firm lookup</td>
+          </tr>
+          <tr>
+            <td><a href="https://data.ny.gov/d/cfjm-ii27" rel="noopener">State University Construction Fund contracts</a></td>
+            <td><code>cfjm-ii27</code></td>
+            <td>State University Construction Fund, reported through the Public Authorities Reporting Information System</td>
+            <td>Contractors (MTA and State section of a firm lookup)</td>
+            <td>Re-reported each fiscal year; see the dataset page</td>
+            <td>On a firm lookup</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="src-cbk">
+    <h2 id="src-cbk">Checkbook NYC</h2>
+    <p>Published by the Office of the NYC Comptroller at <a href="https://www.checkbooknyc.com/" rel="noopener">checkbooknyc.com</a>, under the <a href="https://www.comptroller.nyc.gov/disclaimer/" rel="noopener">Comptroller's disclaimer</a>. Checkbook NYC serves no cross-origin access and answers in paged XML, so a browser cannot query it. The nightly jobs post to its API and write same-origin files; your browser never contacts it.</p>
+    <div class="table-wrap" role="region" aria-labelledby="src-cbk-cap" tabindex="0">
+      <table class="rule-table">
+        <caption id="src-cbk-cap">Checkbook NYC domains</caption>
+        <thead>
+          <tr><th scope="col">Domain</th><th scope="col">Filter</th><th scope="col">Feeds</th><th scope="col">Cadence, as published</th><th scope="col">How it is read</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Contracts: Registered Contracts (expense)</td>
+            <td>Registered status, expense category, fiscal years from FY2021 through the current year to date; construction industries kept by name</td>
+            <td>Contracts, Contractors (registered and paid), Funnel (Paid)</td>
+            <td>See checkbooknyc.com</td>
+            <td>Nightly archive (<code>checkbook-vendors.json</code>, <code>contract-search.json</code>)</td>
+          </tr>
+          <tr>
+            <td>Spending</td>
+            <td>Contract spending categories, one contract at a time, for registered construction contracts of $500,000 or more registered since 2019 that are open or closed within the past year</td>
+            <td>Contracts (dated spend curve), Agencies and Analysis (payment velocity)</td>
+            <td>See checkbooknyc.com</td>
+            <td>Nightly archive (<code>contract-search.json</code>)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="src-bls">
+    <h2 id="src-bls">U.S. Bureau of Labor Statistics</h2>
+    <p>Two monthly price series drive the cost-adjusted index. Each is rebased to its own 2019 average and blended 60 percent materials, 40 percent labor. The browser cannot reach api.bls.gov under this site's Content Security Policy, so the nightly archive job pulls both and writes <code>cost-index.json</code>. Terms: <a href="https://www.bls.gov/opub/copyright-information.htm" rel="noopener">BLS copyright information</a>.</p>
+    <div class="table-wrap" role="region" aria-labelledby="src-bls-cap" tabindex="0">
+      <table class="rule-table">
+        <caption id="src-bls-cap">BLS series</caption>
+        <thead>
+          <tr><th scope="col">Series</th><th scope="col">ID</th><th scope="col">Program</th><th scope="col">Feeds</th><th scope="col">Cadence, as published</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>PPI inputs to construction industries, goods (materials)</td>
+            <td><a href="https://data.bls.gov/timeseries/WPUSI012011" rel="noopener"><code>WPUSI012011</code></a></td>
+            <td>Producer Price Index</td>
+            <td>Analysis (cost-adjusted index)</td>
+            <td>Monthly</td>
+          </tr>
+          <tr>
+            <td>New York State construction average hourly earnings, production and nonsupervisory employees, not seasonally adjusted (labor)</td>
+            <td><a href="https://data.bls.gov/timeseries/SMU36000002000000008" rel="noopener"><code>SMU36000002000000008</code></a></td>
+            <td>State and Area Employment, Hours, and Earnings</td>
+            <td>Analysis (cost-adjusted index)</td>
+            <td>Monthly, one month behind the national release</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="src-files">
+    <h2 id="src-files">Files this site publishes</h2>
+    <p>The nightly jobs commit their output to the <a href="https://github.com/salarjalinous/concrete-index" rel="noopener">public repository</a>, so the git history of each file is a dated archive of what the source said that night.</p>
+    <div class="table-wrap" role="region" aria-labelledby="src-files-cap" tabindex="0">
+      <table class="rule-table">
+        <caption id="src-files-cap">Same-origin data files</caption>
+        <thead>
+          <tr><th scope="col">File</th><th scope="col">Built from</th><th scope="col">Job</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>/data/awards.json</code></td><td><code>qyyg-4tf5</code>, construction categories</td><td>archive</td></tr>
+          <tr><td><code>/data/solicitations.json</code></td><td><code>3khw-qi8f</code>, construction categories</td><td>archive</td></tr>
+          <tr><td><code>/data/plan-latest.json</code></td><td><code>fb86-vt7u</code>, latest plan period</td><td>archive</td></tr>
+          <tr><td><code>/data/cost-index.json</code></td><td>BLS <code>WPUSI012011</code> and <code>SMU36000002000000008</code></td><td>archive</td></tr>
+          <tr><td><code>/data/precomputed.json</code></td><td>The four files above, with the pages' own window and dedupe rules</td><td>archive</td></tr>
+          <tr><td><code>/data/checkbook-vendors.json</code></td><td>Checkbook NYC Contracts</td><td>checkbook</td></tr>
+          <tr><td><code>/data/contract-search.json</code></td><td>Checkbook NYC Contracts and Spending</td><td>payments</td></tr>
+          <tr><td><code>/data/doing-business-corroboration.json</code></td><td><code>2sps-j9st</code>, organization-level results only</td><td>doing-business</td></tr>
+          <tr><td><code>/data/vendor-aliases.json</code></td><td>Hand-verified contractor alias map</td><td>Maintained by hand</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="src-sw">
+    <h2 id="src-sw">Software and type</h2>
+    <p>Chart.js 4.4.1 (MIT License), served from this site. Source Serif 4, Public Sans, and IBM Plex Mono (SIL Open Font License), served from this site with their license files.</p>
+  </section>
+
+  <p class="page-note">A dataset ID here that disagrees with a page, or a page reading a source not listed here, is an error. Report it on the <a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">GitHub issues page</a>.</p>
+</article>
+</div>
+</main>
+
+<!-- ci:footer -->
+<footer class="ci-footer">
+  <div class="wrap ci-footer__inner">
+    <div class="ci-footer__brand">
+      <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="22" height="22" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+      <p class="ci-footer__tag">NYC public construction capital, from commitment to cash.</p>
+    </div>
+    <nav class="ci-footer__links" aria-label="Site information">
+      <ul><li><a href="/methodology/">Methodology</a></li><li><a href="/sources/">Sources</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">Corrections</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source on GitHub</a></li></ul>
+    </nav>
+    <div class="ci-footer__meta">
+      <p>An independent project built by Salar Jalinous using only public data. Not affiliated with the City or State of New York or any employer.</p>
+      <p><a href="/sources/">Data: NYC Open Data · Open NY · Checkbook NYC · BLS</a></p>
+      <p><a href="/about/">© <span data-ci-year="2026">2026</span> The Concrete Index</a></p>
+    </div>
+  </div>
+</footer>
+<!-- /ci:footer -->
+</body>
+</html>
