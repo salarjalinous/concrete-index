@@ -75,10 +75,14 @@ def get_json(ds, params):
 
 def fetch_people():
     cols = "organization_name,person_name_first,person_name_middle,person_name_last,relationship_type_code"
+    # D4 (2026-11-20): page on the unique system order :id, not organization_name
+    # (ties made offset paging able to skip or repeat rows), and check the total
+    # against count(*). A short or over-cap pull raises, so nothing is written.
+    expected = int(get_json(PEOPLE_DS, {"$select": "count(*) AS n"})[0]["n"])
     rows, off = [], 0
     while True:
         page = get_json(PEOPLE_DS, {
-            "$select": cols, "$limit": PAGE, "$offset": off, "$order": "organization_name",
+            "$select": cols, "$limit": PAGE, "$offset": off, "$order": ":id",
         })
         rows.extend(page)
         log("  pulled %d (total %d)" % (len(page), len(rows)))
@@ -87,7 +91,9 @@ def fetch_people():
         off += PAGE
         time.sleep(0.5)
         if off > 2_000_000:
-            log("  WARNING paging cap hit"); break
+            raise RuntimeError("paging cap hit at %d rows; refusing a partial pull" % len(rows))
+    if len(rows) != expected:
+        raise RuntimeError("pulled %d rows but count(*) is %d; refusing a partial pull" % (len(rows), expected))
     return rows
 
 def principal_key(r):

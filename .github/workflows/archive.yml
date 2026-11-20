@@ -27,26 +27,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # D4 (methodology alignment, 2026-11-20): every capped pull below is paged on
+      # $order=:id and its row count is checked against a server-side count(*)
+      # under the same $where (tools/socrata-pull.js). A short pull, a count over
+      # the cap, or an HTTP failure exits non-zero BEFORE the file is replaced, so
+      # the job stops, nothing is committed, and the repo keeps last night's file.
+      # The previous single-request pulls could truncate silently at their $limit
+      # (solicitations.json sat at exactly its 5,000-row limit).
       - name: Snapshot construction awards (full set, compact fields)
         run: |
           mkdir -p data
-          curl -sf --retry 3 -G "https://data.cityofnewyork.us/resource/qyyg-4tf5.json" \
-            --data-urlencode "\$select=pin,request_id,start_date,due_date,agency_name,category_description,selection_method_description,short_title,vendor_name,contract_amount" \
-            --data-urlencode "\$where=starts_with(category_description,'Construction')" \
-            --data-urlencode "\$order=start_date DESC,request_id" \
-            --data-urlencode "\$limit=50000" \
-            -o data/awards.json
-          python3 -c "import json;d=json.load(open('data/awards.json'));assert len(d)>5000, f'only {len(d)} rows';print(len(d),'award rows')"
+          node tools/socrata-pull.js --dataset qyyg-4tf5 \
+            --select "pin,request_id,start_date,due_date,agency_name,category_description,selection_method_description,short_title,vendor_name,contract_amount" \
+            --where "starts_with(category_description,'Construction')" \
+            --cap 50000 --min 5000 --sort "start_date DESC,request_id" \
+            --out data/awards.json
 
-      - name: Snapshot open construction solicitations
+      - name: Snapshot construction solicitations (full set)
         run: |
-          curl -sf --retry 3 -G "https://data.cityofnewyork.us/resource/3khw-qi8f.json" \
-            --data-urlencode "\$select=request_id,start_date,agency_name,category_description,selection_method_description,short_title,pin,due_date,contact_name,email" \
-            --data-urlencode "\$where=starts_with(category_description,'Construction')" \
-            --data-urlencode "\$order=due_date DESC" \
-            --data-urlencode "\$limit=5000" \
-            -o data/solicitations.json
-          python3 -c "import json;d=json.load(open('data/solicitations.json'));print(len(d),'solicitation rows')"
+          node tools/socrata-pull.js --dataset 3khw-qi8f \
+            --select "request_id,start_date,agency_name,category_description,selection_method_description,short_title,pin,due_date,contact_name,email" \
+            --where "starts_with(category_description,'Construction')" \
+            --cap 30000 --min 1 --sort "due_date DESC,request_id" \
+            --out data/solicitations.json
 
       - name: Snapshot latest capital plan period (compact fields)
         run: |
@@ -56,12 +63,12 @@ jobs:
             --data-urlencode "\$order=reporting_period DESC" \
             --data-urlencode "\$limit=1" | python3 -c "import sys,json;print(json.load(sys.stdin)[0]['reporting_period'])")
           echo "Latest plan period: $PERIOD"
-          curl -sf --retry 3 -G "https://data.cityofnewyork.us/resource/fb86-vt7u.json" \
-            --data-urlencode "\$select=fms_id,managing_agency,fms_project_name,total_budget,spend_to_date,current_phase,borough,ten_year_plan_category,budget_line" \
-            --data-urlencode "\$where=reporting_period='$PERIOD'" \
-            --data-urlencode "\$limit=20000" \
-            -o data/plan-latest.json
-          python3 -c "import json;d=json.load(open('data/plan-latest.json'));assert len(d)>3000;print(len(d),'plan rows')"
+          echo "PLAN_PERIOD=$PERIOD" >> "$GITHUB_ENV"
+          node tools/socrata-pull.js --dataset fb86-vt7u \
+            --select "fms_id,managing_agency,fms_project_name,total_budget,spend_to_date,current_phase,borough,ten_year_plan_category,budget_line" \
+            --where "reporting_period='$PERIOD'" \
+            --cap 20000 --min 3000 \
+            --out data/plan-latest.json
 
       - name: Build construction-cost deflator from BLS (materials + labor)
         run: |
@@ -185,7 +192,7 @@ jobs:
           # uses, so the fallback number reconciles with the live one. Reads the
           # awards.json just pulled.
           python3 - <<'PYEOF'
-          import json, time, statistics
+          import json, time, statistics, os
           from datetime import datetime, timezone
           rows = json.load(open('data/awards.json'))
 
@@ -304,6 +311,8 @@ jobs:
               adjusted_index_level = None; adjusted_index_month = None
           # --- Glimpse numbers for the landing page ---
           PHASE_MAP = {'pending':'Pending','initiation':'Pending','pre-design':'Pre-Design','predesign':'Pre-Design','design':'Design','construction procurement':'Procurement','construction':'Construction','design build':'Construction','design built':'Construction','close-out':'Close-out','closeout':'Close-out'}
+          # Canonical phase exclusion set, identical to lib/plan-core.js EXCLUDED_LIST
+          # (test/methodology.test.js asserts the two match).
           EXCLUDED = set(['completed','cancelled','inactive','on-hold','on hold','transferred','withdrawn','terminated','defaulted','capitally ineligible','expense','defunded','funding withdrawn','rescinded','fmsid changed','project renamed','n/a','land acquisition','property acquisition','land purchase','real estate transaction','fundraising','it project','non capital fund','equipment','consultant services'])
           ORDER = ['Pending','Pre-Design','Design','Procurement','Construction','Close-out','Other active']
           def _np(raw):
@@ -324,8 +333,11 @@ jobs:
               for i, r in enumerate(plan):
                   bucket = _np(r.get('current_phase'))
                   if bucket == 'excluded': continue
-                  fmsId = r.get('fms_id') or ('_np_' + str(i))
-                  key = (r.get('managing_agency') or '-') + '|' + fmsId
+                  # D3 (aligned 2026-11-20): a missing fms_id falls back to the
+                  # project name, the rule the plan pages and lib/plan-core.js use,
+                  # in place of a per-row surrogate. Agency blank keys as ''.
+                  fmsId = r.get('fms_id') or r.get('fms_project_name') or ''
+                  key = (r.get('managing_agency') or '') + '|' + fmsId
                   try: bud = max(float(r.get('total_budget') or 0), 0.0)
                   except (TypeError, ValueError): bud = 0.0
                   try: spd = max(float(r.get('spend_to_date') or 0), 0.0)
@@ -395,7 +407,8 @@ jobs:
                           "window": ("twelve fully-elapsed months [%s, %s), all construction; "
                                      "the same canonical trailing-twelve window the pages compute live"
                                      % (TTM_LO, TTM_HI)),
-                          "ttm_start": TTM_LO, "ttm_end": TTM_HI},
+                          "ttm_start": TTM_LO, "ttm_end": TTM_HI,
+                          "committed_period": os.environ.get("PLAN_PERIOD") or None},
                  "awarded_ttm": {"total": total, "count": count, "median": median, "max": mx},
                  "index_level": index_level, "index_month": index_month,
                  "adjusted_index_level": adjusted_index_level, "adjusted_index_month": adjusted_index_month,
@@ -404,6 +417,29 @@ jobs:
           print("precomputed awarded_ttm: total=%d count=%d median=%d max=%d" % (total, count, median, mx))
           print("precomputed index_level=%s month=%s adjusted=%s committed=%s open_sol=%s contractors=%s" % (index_level, index_month, adjusted_index_level, committed, open_sol, contractors))
           PYEOF
+
+      - name: Build plan-history.json (every plan period, paged, lib/plan-core.js rules)
+        id: planhistory
+        continue-on-error: true
+        run: |
+          node tools/build-plan-history.js --out data/plan-history.json.new
+          # One definition of Committed: the history's latest period must reproduce
+          # the precomputed headline to the dollar, on the same period. If it does
+          # not, the new file is discarded and yesterday's stays.
+          node -e '
+            const fs=require("fs"), rd=f=>JSON.parse(fs.readFileSync(f,"utf8"));
+            const h=rd("data/plan-history.json.new"), p=rd("data/precomputed.json");
+            const l=h.periods[h.periods.length-1];
+            const a=Math.round(l.committed.total), b=p.glimpse.committed, per=process.env.PLAN_PERIOD;
+            console.log("plan-history latest", l.period, a, "precomputed", per, b);
+            if(a!==b || l.period!==per){ console.error("plan-history disagrees with precomputed.json; keeping the previous file"); process.exit(1); }'
+          mv data/plan-history.json.new data/plan-history.json
+
+      - name: Discard a failed plan-history build
+        if: steps.planhistory.outcome == 'failure'
+        run: |
+          rm -f data/plan-history.json.new data/*.tmp-*
+          echo "::warning::plan-history.json not refreshed tonight; the committed copy keeps its own generated_at"
 
       - name: Commit if changed
         run: |
