@@ -549,6 +549,21 @@ jobs:
               % (os.path.getsize("data/checkbook-vendors.json"), len(vendors)))
           PYEOF
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Landing money-flow ledgers (PRD 7.2). Built here, after the Checkbook file,
+      # so Registered and Paid are tonight's; Committed and Awarded come from the
+      # archive job's precomputed.json and plan-history.json. Only this job writes
+      # flow.json, so no two jobs edit the same file. A failure keeps the
+      # previous flow.json, which carries its own generated_at.
+      - name: Build flow.json (four ledgers)
+        continue-on-error: true
+        run: |
+          node tools/build-flow.js --data data --out data/flow.json
+          rm -f data/*.tmp-*
+
       - name: Commit if changed
         run: |
           set -euo pipefail

@@ -1,0 +1,370 @@
+{
+ "note": "real rows; later = data/plan-latest.json at b2bb90d, earlier = revision 3a4a959 of the same file",
+ "earlier": [
+  {
+   "fms_id": "ACECUN211",
+   "managing_agency": "CUNY",
+   "fms_project_name": "CUNY - Portfolio Submetering - BMCC",
+   "total_budget": "145776",
+   "spend_to_date": "3401",
+   "current_phase": "(Pre-Design)",
+   "borough": "Manhattan",
+   "ten_year_plan_category": "BUILDING CONSTRUCTION, RECONSTRUCTION OR RETROFIT",
+   "budget_line": "PU-0025"
+  },
+  {
+   "fms_id": "ACECUN212",
+   "managing_agency": "CUNY",
+   "fms_project_name": "CUNY - Portfolio Submetering - Bronx CC",
+   "total_budget": "2382881",
+   "spend_to_date": "75911",
+   "current_phase": "(Pre-Design)",
+   "borough": "Bronx",
+   "ten_year_plan_category": "BUILDING CONSTRUCTION, RECONSTRUCTION OR RETROFIT",
+   "budget_line": "PU-0025"
+  },
+  {
+   "fms_id": "ACECUN213",
+   "managing_agency": "CUNY",
+   "fms_project_name": "CUNY - Portfolio Submetering - Hostos CC",
+   "total_budget": "152667",
+   "spend_to_date": "19966",
+   "current_phase": "(Pre-Design)",
+   "borough": "Bronx",
+   "ten_year_plan_category": "BUILDING CONSTRUCTION, RECONSTRUCTION OR RETROFIT",
+   "budget_line": "PU-0025"
+  },
+  {
+   "fms_id": "BX024-011",
+   "managing_agency": "CUNY",
+   "fms_project_name": "Roof Replacement",
+   "total_budget": "15955109",
+   "spend_to_date": "13235555",
+   "current_phase": "(Completed)",
+   "borough": "Bronx",
+   "ten_year_plan_category": "MISCELLANEOUS RECONSTRUCTION",
+   "budget_line": "HN-0206"
+  },
+  {
+   "fms_id": "CA055QB17",
+   "managing_agency": "CUNY",
+   "fms_project_name": "CUNY ASAP Expansion",
+   "total_budget": "4402059",
+   "spend_to_date": "2782132",
+   "current_phase": "(Land Purchase)",
+   "borough": "Queens",
+   "ten_year_plan_category": "MISCELLANEOUS RECONSTRUCTION",
+   "budget_line": "HN-0206 , HN-Q001"
+  },
+  {
+   "fms_id": "HH112PJFC",
+   "managing_agency": "DDC",
+   "fms_project_name": "PAMOJA HOUSE - FACADE REHABILITATION/RESTORATION",
+   "total_budget": "35378055",
+   "spend_to_date": "2644085",
+   "current_phase": "(Cancelled)",
+   "borough": "Brooklyn",
+   "ten_year_plan_category": "SHELTERS FOR HOMELESS INDIVIDUALS",
+   "budget_line": "HH-0112"
+  },
+  {
+   "fms_id": "HH112PJFC",
+   "managing_agency": "DDC",
+   "fms_project_name": "PAMOJA HOUSE - FACADE REHABILITATION/RESTORATION",
+   "total_budget": "35378055",
+   "spend_to_date": "2644085",
+   "current_phase": "Construction Procurement",
+   "borough": "Brooklyn",
+   "ten_year_plan_category": "SHELTERS FOR HOMELESS INDIVIDUALS",
+   "budget_line": "HH-0112"
+  },
+  {
+   "fms_id": "C540",
+   "managing_agency": "DEP",
+   "fms_project_name": "Completion of CT3 Stage 2 B/Q Leg & Bklyn Downtake Intercon.",
+   "total_budget": "1165712427",
+   "spend_to_date": "482226656",
+   "current_phase": "Pre-Design",
+   "borough": "Queens",
+   "ten_year_plan_category": "CITY TUNNEL NO. 3, STAGE 2",
+   "budget_line": "W -0013"
+  },
+  {
+   "fms_id": "C540",
+   "managing_agency": "DEP",
+   "fms_project_name": "Completion of CT3 Stage 2 B/Q Leg & Bklyn Downtake Intercon.",
+   "total_budget": "1165712427",
+   "spend_to_date": "482226656",
+   "current_phase": "Construction",
+   "borough": "Queens",
+   "ten_year_plan_category": "CITY TUNNEL NO. 3, STAGE 2",
+   "budget_line": "W -0013"
+  },
+  {
+   "fms_id": "C540",
+   "managing_agency": "DEP",
+   "fms_project_name": "Completion of CT3 Stage 2 B/Q Leg & Bklyn Downtake Intercon.",
+   "total_budget": "1165712427",
+   "spend_to_date": "482226656",
+   "current_phase": "Design",
+   "borough": "Queens",
+   "ten_year_plan_category": "CITY TUNNEL NO. 3, STAGE 2",
+   "budget_line": "W -0013"
+  },
+  {
+   "fms_id": "CS-GC-SFS",
+   "managing_agency": "DEP",
+   "fms_project_name": "CONSTRUCTION OF GOWANUS CSO RETENTION FAC SUPERFUND SITE",
+   "total_budget": "1766236044",
+   "spend_to_date": "836529133",
+   "current_phase": "Close-out",
+   "borough": "Brooklyn",
+   "ten_year_plan_category": "WATER QUALITY MANDATES",
+   "budget_line": "WP-0169"
+  },
+  {
+   "fms_id": "CS-GC-SFS",
+   "managing_agency": "DEP",
+   "fms_project_name": "CONSTRUCTION OF GOWANUS CSO RETENTION FAC SUPERFUND SITE",
+   "total_budget": "1766236044",
+   "spend_to_date": "836529133",
+   "current_phase": "Construction",
+   "borough": "Brooklyn",
+   "ten_year_plan_category": "WATER QUALITY MANDATES",
+   "budget_line": "WP-0169"
+  },
+  {
+   "fms_id": "CS-GC-SFS",
+   "managing_agency": "DEP",
+   "fms_project_name": "CONSTRUCTION OF GOWANUS CSO RETENTION FAC SUPERFUND SITE",
+   "total_budget": "1766236044",
+   "spend_to_date": "836529133",
+   "current_phase": "Design",
+   "borough": "Brooklyn",
+   "ten_year_plan_category": "WATER QUALITY MANDATES",
+   "budget_line": "WP-0169"
+  },
+  {
+   "fms_id": "PO79BMALC",
+   "managing_agency": "NYPD",
+   "fms_project_name": "BOILERS REPLACEMENT AT 52 & 108 PCT",
+   "total_budget": "2718530",
+   "spend_to_date": "32000",
+   "current_phase": "(Completed)",
+   "borough": "Citywide",
+   "ten_year_plan_category": "POLICE FACILITIES",
+   "budget_line": "PO-0079 , PU-0025"
+  },
+  {
+   "fms_id": "PO79BMALC",
+   "managing_agency": "NYPD",
+   "fms_project_name": "BOILERS REPLACEMENT AT 52 & 108 PCT",
+   "total_budget": "2718530",
+   "spend_to_date": "32000",
+   "current_phase": "Pre-Design",
+   "borough": "Citywide",
+   "ten_year_plan_category": "POLICE FACILITIES",
+   "budget_line": "PO-0079 , PU-0025"
+  },
+  {
+   "fms_id": "PO79BMALC",
+   "managing_agency": "NYPD",
+   "fms_project_name": "BOILERS REPLACEMENT AT 52 & 108 PCT",
+   "total_budget": "2718530",
+   "spend_to_date": "32000",
+   "current_phase": "Design",
+   "borough": "Citywide",
+   "ten_year_plan_category": "POLICE FACILITIES",
+   "budget_line": "PO-0079 , PU-0025"
+  }
+ ],
+ "later": [
+  {
+   "fms_id": "CROSSBH",
+   "managing_agency": "ACS",
+   "fms_project_name": "Crossroads HVAC- Juvenille Detention Center",
+   "total_budget": "6000000.00",
+   "spend_to_date": "0.00",
+   "current_phase": "(Pending)",
+   "borough": "Brooklyn",
+   "ten_year_plan_category": "EQUIPMENT",
+   "budget_line": "CS-0005"
+  },
+  {
+   "fms_id": "ACECUN211",
+   "managing_agency": "CUNY",
+   "fms_project_name": "CUNY - Portfolio Submetering - BMCC",
+   "total_budget": "145776.00",
+   "spend_to_date": "5633.71",
+   "current_phase": "(Pre-Design)",
+   "borough": "Manhattan",
+   "ten_year_plan_category": "BUILDING CONSTRUCTION, RECONSTRUCTION OR RETROFIT",
+   "budget_line": "PU-0025"
+  },
+  {
+   "fms_id": "ACECUN212",
+   "managing_agency": "CUNY",
+   "fms_project_name": "CUNY - Portfolio Submetering - Bronx CC",
+   "total_budget": "2382881.00",
+   "spend_to_date": "85766.55",
+   "current_phase": "(Pre-Design)",
+   "borough": "Bronx",
+   "ten_year_plan_category": "BUILDING CONSTRUCTION, RECONSTRUCTION OR RETROFIT",
+   "budget_line": "PU-0025"
+  },
+  {
+   "fms_id": "ACECUN213",
+   "managing_agency": "CUNY",
+   "fms_project_name": "CUNY - Portfolio Submetering - Hostos CC",
+   "total_budget": "152667.00",
+   "spend_to_date": "19965.85",
+   "current_phase": "(Pre-Design)",
+   "borough": "Bronx",
+   "ten_year_plan_category": "BUILDING CONSTRUCTION, RECONSTRUCTION OR RETROFIT",
+   "budget_line": "PU-0025"
+  },
+  {
+   "fms_id": "BX024-011",
+   "managing_agency": "CUNY",
+   "fms_project_name": "Roof Replacement",
+   "total_budget": "15955109.00",
+   "spend_to_date": "13301041.02",
+   "current_phase": "(Completed)",
+   "borough": "Bronx",
+   "ten_year_plan_category": "MISCELLANEOUS RECONSTRUCTION",
+   "budget_line": "HN-0206"
+  },
+  {
+   "fms_id": "CA055QB17",
+   "managing_agency": "CUNY",
+   "fms_project_name": "CUNY ASAP Expansion",
+   "total_budget": "4402059.00",
+   "spend_to_date": "2782132.34",
+   "current_phase": "(Land Purchase)",
+   "borough": "Queens",
+   "ten_year_plan_category": "MISCELLANEOUS RECONSTRUCTION",
+   "budget_line": "HN-0206 , HN-Q001"
+  },
+  {
+   "fms_id": "HH112PJFC",
+   "managing_agency": "DDC",
+   "fms_project_name": "PAMOJA HOUSE - FACADE REHABILITATION/RESTORATION",
+   "total_budget": "35378054.81",
+   "spend_to_date": "2644085.28",
+   "current_phase": "(Cancelled)",
+   "borough": "Brooklyn",
+   "ten_year_plan_category": "SHELTERS FOR HOMELESS INDIVIDUALS",
+   "budget_line": "HH-0112"
+  },
+  {
+   "fms_id": "HH112PJFC",
+   "managing_agency": "DDC",
+   "fms_project_name": "PAMOJA HOUSE - FACADE REHABILITATION/RESTORATION",
+   "total_budget": "35378054.81",
+   "spend_to_date": "2644085.28",
+   "current_phase": "Construction Procurement",
+   "borough": "Brooklyn",
+   "ten_year_plan_category": "SHELTERS FOR HOMELESS INDIVIDUALS",
+   "budget_line": "HH-0112"
+  },
+  {
+   "fms_id": "C540",
+   "managing_agency": "DEP",
+   "fms_project_name": "Completion of CT3 Stage 2 B/Q Leg & Bklyn Downtake Intercon.",
+   "total_budget": "1240190427.49",
+   "spend_to_date": "500347921.59",
+   "current_phase": "Pre-Design",
+   "borough": "Queens",
+   "ten_year_plan_category": "CITY TUNNEL NO. 3, STAGE 2",
+   "budget_line": "W -0013"
+  },
+  {
+   "fms_id": "C540",
+   "managing_agency": "DEP",
+   "fms_project_name": "Completion of CT3 Stage 2 B/Q Leg & Bklyn Downtake Intercon.",
+   "total_budget": "1240190427.49",
+   "spend_to_date": "500347921.59",
+   "current_phase": "Construction",
+   "borough": "Queens",
+   "ten_year_plan_category": "CITY TUNNEL NO. 3, STAGE 2",
+   "budget_line": "W -0013"
+  },
+  {
+   "fms_id": "C540",
+   "managing_agency": "DEP",
+   "fms_project_name": "Completion of CT3 Stage 2 B/Q Leg & Bklyn Downtake Intercon.",
+   "total_budget": "1240190427.49",
+   "spend_to_date": "500347921.59",
+   "current_phase": "Construction Procurement",
+   "borough": "Queens",
+   "ten_year_plan_category": "CITY TUNNEL NO. 3, STAGE 2",
+   "budget_line": "W -0013"
+  },
+  {
+   "fms_id": "CS-GC-SFS",
+   "managing_agency": "DEP",
+   "fms_project_name": "CONSTRUCTION OF GOWANUS CSO RETENTION FAC SUPERFUND SITE",
+   "total_budget": "1861687044.24",
+   "spend_to_date": "874609558.69",
+   "current_phase": "Close-out",
+   "borough": "Brooklyn",
+   "ten_year_plan_category": "WATER QUALITY MANDATES",
+   "budget_line": "EP-0007 , WP-0169"
+  },
+  {
+   "fms_id": "CS-GC-SFS",
+   "managing_agency": "DEP",
+   "fms_project_name": "CONSTRUCTION OF GOWANUS CSO RETENTION FAC SUPERFUND SITE",
+   "total_budget": "1861687044.24",
+   "spend_to_date": "874609558.69",
+   "current_phase": "Construction",
+   "borough": "Brooklyn",
+   "ten_year_plan_category": "WATER QUALITY MANDATES",
+   "budget_line": "EP-0007 , WP-0169"
+  },
+  {
+   "fms_id": "CS-GC-SFS",
+   "managing_agency": "DEP",
+   "fms_project_name": "CONSTRUCTION OF GOWANUS CSO RETENTION FAC SUPERFUND SITE",
+   "total_budget": "1861687044.24",
+   "spend_to_date": "874609558.69",
+   "current_phase": "Construction Procurement",
+   "borough": "Brooklyn",
+   "ten_year_plan_category": "WATER QUALITY MANDATES",
+   "budget_line": "EP-0007 , WP-0169"
+  },
+  {
+   "fms_id": "PO79BMALC",
+   "managing_agency": "NYPD",
+   "fms_project_name": "BOILERS REPLACEMENT AT 52 & 108 PCT",
+   "total_budget": "2718530.00",
+   "spend_to_date": "32000.00",
+   "current_phase": "(Completed)",
+   "borough": "Citywide",
+   "ten_year_plan_category": "POLICE FACILITIES",
+   "budget_line": "PO-0079 , PU-0025"
+  },
+  {
+   "fms_id": "PO79BMALC",
+   "managing_agency": "NYPD",
+   "fms_project_name": "BOILERS REPLACEMENT AT 52 & 108 PCT",
+   "total_budget": "2718530.00",
+   "spend_to_date": "32000.00",
+   "current_phase": "Pre-Design",
+   "borough": "Citywide",
+   "ten_year_plan_category": "POLICE FACILITIES",
+   "budget_line": "PO-0079 , PU-0025"
+  },
+  {
+   "fms_id": "PO79BMALC",
+   "managing_agency": "NYPD",
+   "fms_project_name": "BOILERS REPLACEMENT AT 52 & 108 PCT",
+   "total_budget": "2718530.00",
+   "spend_to_date": "32000.00",
+   "current_phase": "Design",
+   "borough": "Citywide",
+   "ten_year_plan_category": "POLICE FACILITIES",
+   "budget_line": "PO-0079 , PU-0025"
+  }
+ ]
+}

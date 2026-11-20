@@ -1158,6 +1158,19 @@ jobs:
               % (os.path.getsize("data/contract-search.json"), len(records)))
           PYEOF
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # contract-index.json + 64 detail shards + contract-aggregates.json, split
+      # from the contract-search.json just written (which stays published). Only
+      # this job writes them. A failure keeps the previous split files.
+      - name: Split contract-search.json (index, detail shards, aggregates)
+        continue-on-error: true
+        run: |
+          node tools/build-contract-splits.js --data data
+          rm -f data/*.tmp-* data/contract-detail/*.tmp-*
+
       - name: Commit if changed
         run: |
           set -euo pipefail

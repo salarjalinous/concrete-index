@@ -1,0 +1,493 @@
+{
+ "meta": {
+  "generated": "2026-11-20T19:17:29Z",
+  "as_of": "2026-11-20",
+  "fiscal_years": [
+   2021,
+   2022,
+   2023,
+   2024,
+   2025,
+   2026,
+   2027
+  ],
+  "fiscal_year_ytd": 2027,
+  "fiscal_years_closed": [
+   2021,
+   2022,
+   2023,
+   2024,
+   2025,
+   2026
+  ]
+ },
+ "contracts": [
+  {
+   "contract_id": "CT185020221402086",
+   "vendor": "IPC RESILIENCY PARTNERS",
+   "agency": "Department of Design and Construction",
+   "category": "Construction Services",
+   "award_method": "COMPETITIVE SEALED BIDDING",
+   "purpose": "East Side Coastal Resiliency - Area 1, Manhattan",
+   "pin": "85022B8018KXLC068",
+   "registration_date": "2021-08-16",
+   "start_date": "2021-08-16",
+   "end_date": "2026-08-15",
+   "bid_due_date": null,
+   "original_amount": 1272221100,
+   "current_amount": 1272842225,
+   "paid_to_date": 1060910485,
+   "pct_paid_to_date": 0.8335,
+   "payments_swept": true,
+   "first_payment_lag_days": 143,
+   "days_to_50pct_paid": 1764,
+   "days_to_90pct_paid": null,
+   "payment_count": 71,
+   "total_paid": 708792513,
+   "first_payment_date": "2022-01-06",
+   "last_payment_date": "2026-10-29",
+   "monthly_cumulative": [
+    [
+     "2022-01",
+     868765
+    ],
+    [
+     "2022-03",
+     40764426
+    ],
+    [
+     "2022-04",
+     53102937
+    ],
+    [
+     "2022-06",
+     54982780
+    ],
+    [
+     "2022-07",
+     62149731
+    ],
+    [
+     "2022-08",
+     66708089
+    ],
+    [
+     "2022-09",
+     96087593
+    ],
+    [
+     "2022-10",
+     125051216
+    ],
+    [
+     "2022-12",
+     138294550
+    ],
+    [
+     "2023-01",
+     171330040
+    ],
+    [
+     "2023-02",
+     180051579
+    ],
+    [
+     "2023-03",
+     192060688
+    ],
+    [
+     "2023-04",
+     198527449
+    ],
+    [
+     "2023-05",
+     205905920
+    ],
+    [
+     "2023-06",
+     212783672
+    ],
+    [
+     "2023-07",
+     220502410
+    ],
+    [
+     "2023-09",
+     231772530
+    ],
+    [
+     "2023-10",
+     241879027
+    ],
+    [
+     "2023-11",
+     254987194
+    ],
+    [
+     "2023-12",
+     265922194
+    ],
+    [
+     "2024-01",
+     289991098
+    ],
+    [
+     "2024-03",
+     304563452
+    ],
+    [
+     "2024-04",
+     315240790
+    ],
+    [
+     "2024-05",
+     334050375
+    ],
+    [
+     "2024-06",
+     345818597
+    ],
+    [
+     "2024-07",
+     355581719
+    ],
+    [
+     "2024-08",
+     374325854
+    ],
+    [
+     "2024-09",
+     391585949
+    ],
+    [
+     "2024-10",
+     403530882
+    ],
+    [
+     "2024-11",
+     414770641
+    ],
+    [
+     "2024-12",
+     430372087
+    ],
+    [
+     "2025-01",
+     444987758
+    ],
+    [
+     "2025-03",
+     477834315
+    ],
+    [
+     "2025-04",
+     489155013
+    ],
+    [
+     "2025-06",
+     498236938
+    ],
+    [
+     "2025-07",
+     506081006
+    ],
+    [
+     "2025-08",
+     515268580
+    ],
+    [
+     "2025-09",
+     529972443
+    ],
+    [
+     "2025-10",
+     544717641
+    ],
+    [
+     "2025-11",
+     550535628
+    ],
+    [
+     "2025-12",
+     571872321
+    ],
+    [
+     "2026-01",
+     589713109
+    ],
+    [
+     "2026-02",
+     600462321
+    ],
+    [
+     "2026-03",
+     604388125
+    ],
+    [
+     "2026-04",
+     615667094
+    ],
+    [
+     "2026-05",
+     624464679
+    ],
+    [
+     "2026-06",
+     636834571
+    ],
+    [
+     "2026-07",
+     667233855
+    ],
+    [
+     "2026-08",
+     679522223
+    ],
+    [
+     "2026-09",
+     685653505
+    ],
+    [
+     "2026-10",
+     708792513
+    ]
+   ]
+  },
+  {
+   "contract_id": "CT182620258805355",
+   "vendor": "FRONTIER-KEMPER CONSTRUCTORS INC",
+   "agency": "Department of Environmental Protection",
+   "category": "Construction Services",
+   "award_method": "COMPETITIVE SEALED BIDDING",
+   "purpose": "KENS-EAST-1: Tunnel, Shafts & Kensico Rock Excavation",
+   "pin": "82623B0083001",
+   "registration_date": "2025-02-11",
+   "start_date": "2025-03-03",
+   "end_date": "2031-01-07",
+   "bid_due_date": null,
+   "original_amount": 1093255000,
+   "current_amount": 1093255000,
+   "paid_to_date": 128762652,
+   "pct_paid_to_date": 0.1178,
+   "payments_swept": true,
+   "first_payment_lag_days": 78,
+   "days_to_50pct_paid": null,
+   "days_to_90pct_paid": null,
+   "payment_count": 10,
+   "total_paid": 122376442,
+   "first_payment_date": "2025-04-30",
+   "last_payment_date": "2026-11-12",
+   "monthly_cumulative": [
+    [
+     "2025-04",
+     32768350
+    ],
+    [
+     "2025-06",
+     37119350
+    ],
+    [
+     "2025-11",
+     67173408
+    ],
+    [
+     "2025-12",
+     68281172
+    ],
+    [
+     "2026-02",
+     71921850
+    ],
+    [
+     "2026-04",
+     79494115
+    ],
+    [
+     "2026-06",
+     83633389
+    ],
+    [
+     "2026-07",
+     87508950
+    ],
+    [
+     "2026-09",
+     110240913
+    ],
+    [
+     "2026-11",
+     122376442
+    ]
+   ]
+  },
+  {
+   "contract_id": "CT182620258801735",
+   "vendor": "Skanska ECCO III HVR JV",
+   "agency": "Department of Environmental Protection",
+   "category": "Construction Services",
+   "award_method": "COMPETITIVE SEALED BIDDING",
+   "purpose": "HVR-210: Hillview Reservoir Chemical Addition Facilities",
+   "pin": "82623B0062001C009",
+   "registration_date": "2024-08-09",
+   "start_date": "2024-08-26",
+   "end_date": "2030-05-06",
+   "bid_due_date": null,
+   "original_amount": 847720000,
+   "current_amount": 847720000,
+   "paid_to_date": 204535389,
+   "pct_paid_to_date": 0.2413,
+   "payments_swept": true,
+   "first_payment_lag_days": 172,
+   "days_to_50pct_paid": null,
+   "days_to_90pct_paid": null,
+   "payment_count": 26,
+   "total_paid": 177024995,
+   "first_payment_date": "2025-01-28",
+   "last_payment_date": "2026-11-10",
+   "monthly_cumulative": [
+    [
+     "2025-01",
+     14250000
+    ],
+    [
+     "2025-03",
+     31290000
+    ],
+    [
+     "2025-05",
+     41184423
+    ],
+    [
+     "2025-07",
+     52152262
+    ],
+    [
+     "2025-09",
+     58724586
+    ],
+    [
+     "2025-10",
+     67011140
+    ],
+    [
+     "2025-11",
+     83640187
+    ],
+    [
+     "2025-12",
+     90861493
+    ],
+    [
+     "2026-01",
+     104649806
+    ],
+    [
+     "2026-02",
+     104653306
+    ],
+    [
+     "2026-03",
+     110322880
+    ],
+    [
+     "2026-04",
+     122163991
+    ],
+    [
+     "2026-06",
+     129571507
+    ],
+    [
+     "2026-09",
+     143277718
+    ],
+    [
+     "2026-10",
+     174146600
+    ],
+    [
+     "2026-11",
+     177024995
+    ]
+   ]
+  },
+  {
+   "contract_id": "CT182620268808542",
+   "vendor": "Newtown Creek CSO Partners A Joint Venture",
+   "agency": "Department of Environmental Protection",
+   "category": "Construction Services",
+   "award_method": "REQUEST FOR  PROPOSAL (RFP)",
+   "purpose": "Construction Management Services",
+   "pin": "82626P0004002",
+   "registration_date": "2026-07-14",
+   "start_date": "2026-07-17",
+   "end_date": "2042-07-16",
+   "bid_due_date": null,
+   "original_amount": 221792412,
+   "current_amount": 221792412,
+   "paid_to_date": 0,
+   "pct_paid_to_date": 0,
+   "payments_swept": false,
+   "first_payment_lag_days": null,
+   "days_to_50pct_paid": null,
+   "days_to_90pct_paid": null,
+   "payment_count": null,
+   "total_paid": null,
+   "first_payment_date": null,
+   "last_payment_date": null,
+   "monthly_cumulative": null
+  },
+  {
+   "contract_id": "CT185620228803599",
+   "vendor": "TECHNICO CONSTRUCTION SERVICES INC.",
+   "agency": "Department of Citywide Administrative Services",
+   "category": "Construction Services",
+   "award_method": "COMPETITIVE SEALED BIDDING",
+   "purpose": "Relocation of Kings County Civil Courts to 210 Joralemon St.",
+   "pin": "85622B8005KXLC070",
+   "registration_date": "2021-11-22",
+   "start_date": "2022-01-04",
+   "end_date": "2025-01-03",
+   "bid_due_date": null,
+   "original_amount": 187231000,
+   "current_amount": 187231000,
+   "paid_to_date": 207839378,
+   "pct_paid_to_date": 1.1101,
+   "payments_swept": false,
+   "first_payment_lag_days": null,
+   "days_to_50pct_paid": null,
+   "days_to_90pct_paid": null,
+   "payment_count": null,
+   "total_paid": null,
+   "first_payment_date": null,
+   "last_payment_date": null,
+   "monthly_cumulative": null
+  },
+  {
+   "contract_id": "CT185020211426357",
+   "vendor": "DRAGONETTI BROTHERS LAND SCAPING NURSERY & FLORIST INC",
+   "agency": "Department of Design and Construction",
+   "category": "Construction Services",
+   "award_method": "COMPETITIVE SEALED BIDDING",
+   "purpose": "Installation of Sidewalks & Curbs - FY20 PNSW, Brooklyn",
+   "pin": "85020B0049001",
+   "registration_date": "2021-07-21",
+   "start_date": "2021-06-30",
+   "end_date": "2022-12-27",
+   "bid_due_date": null,
+   "original_amount": 5661197,
+   "current_amount": 0,
+   "paid_to_date": 0,
+   "pct_paid_to_date": 0,
+   "payments_swept": false,
+   "first_payment_lag_days": null,
+   "days_to_50pct_paid": null,
+   "days_to_90pct_paid": null,
+   "payment_count": null,
+   "total_paid": null,
+   "first_payment_date": null,
+   "last_payment_date": null,
+   "monthly_cumulative": null
+  }
+ ]
+}
