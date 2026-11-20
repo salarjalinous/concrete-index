@@ -1,0 +1,122 @@
+/* The Concrete Index · design tokens (design system v2, PRD Section 6)
+ *
+ * Every color, type size, space, duration, and easing on the site resolves
+ * to a custom property declared in this file. Nothing outside it may declare
+ * a raw px/rem/em value in margin, padding, gap, inset, or scroll-padding.
+ *
+ * Light only: pages ship <meta name="color-scheme" content="light"> and this
+ * file has no prefers-color-scheme rules.
+ */
+
+/* ---------- self-hosted fonts (latin subset, OFL; licenses in /assets/fonts) ---------- */
+@font-face{font-family:'Source Serif 4';font-style:normal;font-weight:600;font-display:swap;src:url(/assets/fonts/source-serif-4-latin-600-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Source Serif 4';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/source-serif-4-latin-700-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Public Sans';font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/public-sans-latin-400-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Public Sans';font-style:normal;font-weight:500;font-display:swap;src:url(/assets/fonts/public-sans-latin-500-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Public Sans';font-style:normal;font-weight:600;font-display:swap;src:url(/assets/fonts/public-sans-latin-600-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;font-display:swap;src:url(/assets/fonts/ibm-plex-mono-latin-500-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:600;font-display:swap;src:url(/assets/fonts/ibm-plex-mono-latin-600-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
+:root{
+  /* ---------- color (6.1) ---------- */
+  --paper:#f7f3ef;          /* page ground */
+  --surface:#fefbf8;        /* panels, tiles, tables */
+  --band:#f2ede8;           /* release bar, reading note, skeleton */
+  --ink:#201611;            /* text, rules, focus ring */
+  --navy:#243b53;           /* chart series 2, primary button */
+  --muted:#6b5e56;          /* secondary text */
+  --faint:#766a60;          /* labels, as-of, table heads (was #968a7f) */
+  --line:#ded5ce;           /* decorative hairlines only */
+  --control-line:#8c7f75;   /* input, select, segmented boundaries */
+  --accent:#a8462c;         /* links, chart series 1, the rust period (was #ae4e34) */
+  --accent-soft:#f2e7e1;    /* pill ground (was #eadbd4) */
+  --steel:#2f5d8f;          /* informational text only, never a chart series */
+  --pos:#276b45;            /* positive delta (was #2f7d52) */
+  --neg:#9e362f;            /* negative delta */
+  --chart-grid:#e6ddd5;     /* gridlines (was #ead9c9) */
+  --chart-3:#2c6e6a;        /* series 3, teal, graphics only */
+  --chart-4:#8a6a1f;        /* series 4, ochre, graphics only */
+  --navy-deep:#1c2e41;      /* primary button hover */
+  --steel-soft:#e4eef6;     /* low-band pill ground (steel text on it) */
+  --pos-soft:rgba(39,107,69,.12);  /* high-band pill ground (pos text on it) */
+  --neg-soft:#f0d6d2;       /* concentration pill ground (neg text on it) */
+  --label-halo:rgba(32,22,17,.28); /* stroke behind light map labels */
+  --shadow-hair:0 1px 0 rgba(32,22,17,.04); /* panel lift, the only shadow */
+  --radius:3px;             /* controls; panels are square */
+
+  /* ---------- type families (6.2) ---------- */
+  --font-serif:'Source Serif 4',Georgia,'Times New Roman',serif;
+  --font-sans:'Public Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+
+  /* ---------- type scale (6.2): fluid from 390 to 1280 ---------- */
+  --fluid:((100vw - 390px) / 890);
+  --t-display-size:clamp(30px, calc(30px + 14 * var(--fluid)), 44px);  --t-display-line:clamp(34px, calc(34px + 14 * var(--fluid)), 48px);
+  --t-h1-size:clamp(28px, calc(28px + 6 * var(--fluid)), 34px);         --t-h1-line:clamp(34px, calc(34px + 6 * var(--fluid)), 40px);
+  --t-h2-size:clamp(20px, calc(20px + 2 * var(--fluid)), 22px);         --t-h2-line:clamp(26px, calc(26px + 2 * var(--fluid)), 28px);
+  --t-h3-size:clamp(17px, calc(17px + 1 * var(--fluid)), 18px);         --t-h3-line:clamp(22px, calc(22px + 2 * var(--fluid)), 24px);
+  --t-lede-size:clamp(17px, calc(17px + 1 * var(--fluid)), 18px);       --t-lede-line:clamp(26px, calc(26px + 2 * var(--fluid)), 28px);
+  --t-body-size:16px;       --t-body-line:26px;
+  --t-body-sm-size:14px;    --t-body-sm-line:22px;
+  --t-ui-size:clamp(14px, calc(15px - 1 * var(--fluid)), 15px);         --t-ui-line:20px;
+  --t-label-size:12px;      --t-label-line:16px;   --t-label-track:.08em;
+  --t-meta-size:12px;       --t-meta-line:16px;
+  --t-num-hero-size:clamp(44px, calc(44px + 12 * var(--fluid)), 56px); --t-num-hero-line:1;
+  --t-num-xl-size:clamp(26px, calc(26px + 6 * var(--fluid)), 32px);    --t-num-xl-line:clamp(30px, calc(30px + 6 * var(--fluid)), 36px);
+  --t-num-md-size:clamp(18px, calc(18px + 2 * var(--fluid)), 20px);    --t-num-md-line:clamp(22px, calc(22px + 2 * var(--fluid)), 24px);
+  --t-num-sm-size:14px;     --t-num-sm-line:20px;
+  --t-num-xs-size:12px;     --t-num-xs-line:16px;
+
+  /* Size steps used by page stylesheets migrated from the single-file pages.
+     Each resolves to a role token above, so the site renders at most these
+     sizes: 12, 14, 15 (ui), 16, 17-18, 18-20, 20-22, 26-32, 28-34, 30-44, 44-56. */
+  --fs-12:var(--t-label-size);
+  --fs-14:var(--t-body-sm-size);
+  --fs-16:var(--t-body-size);
+  --fs-18:var(--t-h3-size);
+  --fs-20:var(--t-num-md-size);
+  --fs-22:var(--t-h2-size);
+  --fs-26:var(--t-num-xl-size);
+  --fs-32:var(--t-num-xl-size);
+  --fs-34:var(--t-h1-size);
+  --fs-44:var(--t-display-size);
+  --fs-56:var(--t-num-hero-size);
+
+  /* ---------- spacing (6.3): 4px base ---------- */
+  --s-px:1px;   /* hairline offsets only (pill and code insets) */
+  --s-half:2px; /* hairline offsets only */
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:20px; --s-6:24px;
+  --s-8:32px; --s-10:40px; --s-12:48px; --s-16:64px; --s-20:80px;
+  --section:var(--s-10);    /* section rhythm: 40 at 390, 48 at 1280 */
+
+  /* ---------- grid (6.3) ---------- */
+  --maxw:1200px;            /* content max at 1280+ (78px columns, 24px gutters) */
+  --gut:16px;               /* page margin: 16 at 390, 24 at 768, 32 at 1024 */
+  --gutter:16px;            /* column gutter: 16 at 390, 24 from 768 */
+  --masthead-h:56px;
+  --rail-h:0px;
+  --sticky-h:var(--masthead-h);
+
+  /* Breakpoints, for reference by scripts (custom properties cannot be used
+     inside media queries). The only width queries in the CSS are these:
+     max-width:767px, min-width:768px, max-width:1023px, min-width:1024px,
+     max-width:1279px, min-width:1280px. */
+  --bp-md:768px; --bp-lg:1024px; --bp-xl:1280px;
+
+  /* ---------- motion (6.9) ---------- */
+  --dur-fast:150ms;
+  --dur-base:240ms;
+  --dur-slow:400ms;
+  --dur-hero:1000ms;
+  --ease-productive:cubic-bezier(.2,0,.38,.9);
+  --ease-expressive:cubic-bezier(.2,.7,.2,1);
+}
+@media (min-width:768px){
+  :root{--gut:24px;--gutter:24px}
+}
+@media (min-width:1024px){
+  :root{--gut:32px;--masthead-h:64px;--rail-h:44px;--sticky-h:calc(var(--masthead-h) + var(--rail-h));--section:var(--s-12)}
+}
+@media (min-width:1280px){
+  :root{--gut:40px}
+}

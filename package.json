@@ -1,0 +1,19 @@
+{
+  "name": "concrete-index-site",
+  "private": true,
+  "description": "Build tooling for The Concrete Index static site. The site itself is plain HTML served from the repository root.",
+  "license": "UNLICENSED",
+  "scripts": {
+    "vendor": "node tools/vendor.mjs",
+    "stamp": "node tools/stamp.mjs",
+    "check": "node tools/check.mjs",
+    "test:fmt": "node tools/test-fmt.mjs",
+    "build": "node tools/vendor.mjs && node tools/stamp.mjs && node tools/check.mjs"
+  },
+  "devDependencies": {
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@fontsource/public-sans": "5.3.0",
+    "@fontsource/source-serif-4": "5.3.1",
+    "chart.js": "4.4.1"
+  }
+}
