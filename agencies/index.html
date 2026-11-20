@@ -59,7 +59,7 @@
 <!-- /ci:header -->
 
 <div class="series-bar">
-  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-AGENCY</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CAPITAL PLAN (fb86-vt7u), 3× YEARLY · CITY RECORD (qyyg-4tf5), DAILY</b><span class="sep">·</span>PLAN&nbsp;·&nbsp;<b id="series-asof">–</b></div>
+  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-AGENCY</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CAPITAL PLAN (fb86-vt7u), 3× YEARLY · CITY RECORD (qyyg-4tf5), DAILY</b><span class="sep">·</span>PLAN&nbsp;·&nbsp;<b id="series-asof"><span class="ci-skel ci-skel--word" aria-hidden="true"></span></b></div>
 </div>
 
 <main id="content" tabindex="-1">
@@ -68,7 +68,7 @@
   <div class="hero">
     <h1>One agency at a time.</h1>
     <p class="sub">Citywide totals are a starting point; the working unit is the single agency. Pick an agency below and the page repaints to that agency's own book: what it has committed in the capital plan, what it has awarded in the City Record, the trades it buys, the firms it pays, and where the work lands across the five boroughs.</p>
-    <p class="asof" id="asof">Loading the capital plan and the award record…</p>
+    <p class="asof" id="asof"><span class="ci-skel ci-skel--line" aria-hidden="true"></span><span class="ci-vh">Loading the capital plan and the award record…</span></p>
   </div>
 </div>
 
@@ -76,12 +76,12 @@
   <div class="wrap"><ul class="ci-subnav__list"><li><a href="#funnel-sec">Funnel</a></li><li><a href="#velocity-sec" data-also="vel-rank-sec vel-table-sec payvel-sec">Velocity</a></li><li><a href="#trades">Trades</a></li><li><a href="#recipients">Recipients</a></li><li><a href="#boro-sec">Boroughs</a></li><li><a href="#methodology">Definitions</a></li></ul></div>
 </nav>
 
-<div id="loader" class="wrap">
-  <div class="spinner"></div>
-  Pulling the capital plan and award record from NYC Open Data…
+<div id="loader" class="wrap ci-loading">
+  <p class="ci-loading__status" role="status">Pulling the capital plan and award record from NYC Open Data…</p>
+  <div class="ci-skel-tape" aria-hidden="true"><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span></div><div class="ci-skel ci-skel--chart" aria-hidden="true"></div>
 </div>
 
-<div id="error" class="wrap">
+<div id="error" class="wrap ci-error">
   <p><strong>Couldn't reach NYC Open Data.</strong></p>
   <p class="u-mt-2">The City's API may be momentarily unavailable.</p>
   <button type="button" class="ci-btn" data-action="reload">Retry</button>
@@ -98,6 +98,8 @@
       <span class="ctrl-note" id="match-note"></span>
     </div>
   </section>
+
+  <div class="ci-banner-slot" id="agency-alert"></div>
 
   <section class="agency-banner" id="agency-banner" aria-live="polite">
     <div class="ab-name">

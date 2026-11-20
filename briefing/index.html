@@ -64,15 +64,15 @@
 
 <div class="wrap hero">
   <h1>The state of NYC public construction demand.</h1>
-  <p class="asof" id="asof">Reading the public record…</p>
+  <p class="asof" id="asof"><span class="ci-skel ci-skel--line" aria-hidden="true"></span><span class="ci-vh">Reading the public record…</span></p>
 </div>
 
-<div id="loader" class="wrap">
-  <div class="spinner"></div>
-  Composing the briefing from City data…
+<div id="loader" class="wrap ci-loading">
+  <p class="ci-loading__status" role="status">Composing the briefing from City data…</p>
+  <div class="ci-skel-tape" aria-hidden="true"><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span></div><div class="ci-skel-text" aria-hidden="true"><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span></div>
 </div>
 
-<div id="error" class="wrap">
+<div id="error" class="wrap ci-error">
   <p><strong>Couldn't reach NYC Open Data.</strong></p>
   <p class="u-mt-2">The City's API may be momentarily unavailable.</p>
   <button type="button" class="ci-btn" data-action="reload">Retry</button>

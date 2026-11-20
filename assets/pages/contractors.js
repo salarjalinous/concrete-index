@@ -284,7 +284,12 @@ function soqlLit(s){ return (s||'').replace(/'/g, "''").replace(/[%_]/g, ''); }
 
 async function runSearch(q){
   q = (q||'').trim();
-  if(q.length < 3) return;
+  ci.banner(document.getElementById('lookup-banner'), null);
+  if(q.length < 3){
+    // Invalid input: say so at the field; nothing is sent.
+    ci.invalid(document.getElementById('q'), 'Enter at least 3 characters of the contractor name.');
+    return;
+  }
   document.getElementById('q').value = q;
   history.replaceState(null,'', '?q=' + encodeURIComponent(q));
   document.getElementById('starter').style.display = 'none';
@@ -310,14 +315,14 @@ async function runSearch(q){
   const vendorClause = `(${clauses.join(' OR ')})`;
   const where = `starts_with(category_description,'Construction') AND contract_amount>0 AND ${vendorClause}`;
 
-  let rows = [];
+  let rows = [], failed = false;
   try{
     rows = await getJSON({
       '$select':'start_date,agency_name,category_description,selection_method_description,short_title,vendor_name,contract_amount',
       '$where':where,
       '$order':'start_date DESC','$limit':'5000'
     });
-  }catch(e){ rows = []; }
+  }catch(e){ rows = []; failed = true; }
 
   state.rows = rows.map(r => ({
     // date is for display only, through fmtDate. Every window decision and the
@@ -356,7 +361,16 @@ async function runSearch(q){
 
   document.getElementById('vloader').style.display = 'none';
   if(!state.groups.size){
+    if(failed){
+      // The award query itself failed: that is not the same as no awards.
+      ci.banner(document.getElementById('lookup-banner'), { alert: true,
+        title: 'Couldn’t reach NYC Open Data.',
+        text: 'The award search for “' + q + '” did not run, so no award record is shown. The market view below is unaffected.',
+        retry: () => runSearch(q) });
+      return;
+    }
     document.getElementById('noresults').style.display = 'block';
+    ci.alert(document.getElementById('noresults').textContent);
     return;
   }
 

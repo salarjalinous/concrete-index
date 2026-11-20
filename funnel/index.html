@@ -59,7 +59,7 @@
 <!-- /ci:header -->
 
 <div class="series-bar">
-  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-FUNNEL</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CAPITAL PLAN (fb86-vt7u), 3× YEARLY · CITY RECORD (qyyg-4tf5), DAILY</b><span class="sep">·</span>PLAN&nbsp;·&nbsp;<b id="series-asof">–</b></div>
+  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-FUNNEL</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CAPITAL PLAN (fb86-vt7u), 3× YEARLY · CITY RECORD (qyyg-4tf5), DAILY</b><span class="sep">·</span>PLAN&nbsp;·&nbsp;<b id="series-asof"><span class="ci-skel ci-skel--word" aria-hidden="true"></span></b></div>
 </div>
 
 <main id="content" tabindex="-1">
@@ -68,7 +68,7 @@
   <div class="hero">
     <h1>How committed dollars become cash.</h1>
     <p class="sub">Commitments, awards, and outlays live in separate City systems, each on its own format and its own ledger. This page sets them side by side: how much funded work is stacked upstream, how fast it converts to contracts, and how fast contracts turn into cash, agency by agency.</p>
-    <p class="asof" id="asof">Assembling the funnel from City data…</p>
+    <p class="asof" id="asof"><span class="ci-skel ci-skel--line" aria-hidden="true"></span><span class="ci-vh">Assembling the funnel from City data…</span></p>
   </div>
 </div>
 
@@ -76,12 +76,12 @@
   <div class="wrap"><ul class="ci-subnav__list"><li><a href="#stages">Gauges</a></li><li><a href="#trend">Pace of spending</a></li><li><a href="#award-trend">Pace of awarding</a></li><li><a href="#velocity">Agency velocity</a></li><li><a href="#methodology">Definitions</a></li></ul></div>
 </nav>
 
-<div id="loader" class="wrap">
-  <div class="spinner"></div>
-  Pulling the capital plan and award record from NYC Open Data…
+<div id="loader" class="wrap ci-loading">
+  <p class="ci-loading__status" role="status">Pulling the capital plan and award record from NYC Open Data…</p>
+  <div class="ci-skel-tape" aria-hidden="true"><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span></div><div class="ci-skel ci-skel--chart" aria-hidden="true"></div>
 </div>
 
-<div id="error" class="wrap">
+<div id="error" class="wrap ci-error">
   <p><strong>Couldn't reach NYC Open Data.</strong></p>
   <p class="u-mt-2">The City's API may be momentarily unavailable.</p>
   <button type="button" class="ci-btn" data-action="reload">Retry</button>

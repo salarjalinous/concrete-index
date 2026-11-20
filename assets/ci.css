@@ -315,6 +315,7 @@ td.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
 .pdf-btn{background:none;border:1px solid var(--control-line);color:var(--muted);font:600 var(--t-label-size)/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;min-height:24px;padding:var(--s-1) var(--s-2);cursor:pointer;white-space:nowrap;transition:color var(--dur-fast),border-color var(--dur-fast)}
 .pdf-btn:hover{color:var(--ink);border-color:var(--ink)}
 .series-bar .inner .pdf-btn{margin-left:auto;align-self:center}
+.series-bar .inner .ci-copy + .pdf-btn{margin-left:var(--s-2)}
 .pdf-bar{display:flex;justify-content:flex-end;max-width:calc(var(--maxw) + 2 * var(--gut));margin:0 auto;padding:var(--s-2) var(--gut)}
 
 /* ================= app chrome (PRD 6.5, 8.2) ================= */
@@ -385,6 +386,31 @@ th[aria-sort="ascending"] .ci-sort{color:var(--ink)}
 th[aria-sort="ascending"] .ci-sort::after{border-top:0;border-bottom:5px solid var(--ink);opacity:1}
 th .ci-sort:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 @media print{.ci-table-wrap{max-height:none !important;overflow:visible !important}}
+
+/* ---- loading: sized skeletons and a polite status line ---- */
+#loader.ci-loading,#vloader.ci-loading{padding:var(--s-6) 0 var(--s-8);text-align:left}
+.ci-loading__status{font-family:var(--font-mono);font-size:var(--t-meta-size);line-height:var(--t-meta-line);color:var(--muted);margin-bottom:var(--s-4)}
+.ci-skel-tape{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--line);gap:var(--s-4);padding-top:var(--s-4)}
+.ci-skel-tape .ci-skel{height:96px}
+.ci-skel--chart{height:340px;margin-top:var(--s-8)}
+.ci-skel-rows,.ci-skel-text{display:grid;gap:var(--s-3);margin-top:var(--s-6)}
+.ci-skel-rows .ci-skel{height:72px}
+.ci-skel-text .ci-skel{height:1.5em;max-width:760px}
+.ci-skel--line{display:inline-block;width:min(36ch, 100%);height:1em;vertical-align:middle}
+.ci-skel--word{display:inline-block;width:10ch;height:.9em;vertical-align:middle}
+@media (max-width:1023px){.ci-skel-tape{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* A failed load hides the skeletons; the error states say what happened. */
+body:has(#error[style*="block"]) .ci-skel{display:none}
+
+/* ---- error and stale states: one banner treatment ---- */
+#error.ci-error{text-align:left;padding:0}
+#error.ci-error,.unavail,.brief-unavail{background:var(--surface);border:1px solid var(--ink);border-left-width:1px;padding:var(--s-3) var(--s-4);margin-top:var(--s-6);font-size:var(--t-body-sm-size);line-height:var(--t-body-sm-line);color:var(--ink)}
+#error.ci-error p{margin:0}
+#error.ci-error p + p{margin-top:var(--s-1);color:var(--muted)}
+.unavail,.brief-unavail{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-2) var(--s-4);background:var(--band)}
+.unavail .ci-btn,.brief-unavail .ci-btn{margin-left:auto}
+.ci-field-error{margin-top:var(--s-2);font-size:var(--t-body-sm-size);line-height:var(--t-body-sm-line);color:var(--neg);font-weight:600}
+[aria-invalid="true"]{border-color:var(--neg) !important}
 
 /* ---- search combobox ---- */
 .ci-combo{position:relative}

@@ -727,6 +727,11 @@ async function selectAgency(code){
   catch(e){ award = {ok:true, agg:{total:0,count:0,byBorough:new Map(),byVendor:new Map(),largestBoro:new Map()}, errored:true}; }
   // ignore a stale async return if the user moved on
   if(state.selected !== code) return;
+  // A failed award query is disclosed, not passed off as a quiet zero.
+  ci.banner(document.getElementById('agency-alert'), award.errored ? { alert: true,
+    title: 'Couldn’t reach NYC Open Data.',
+    text: 'The award record for this agency did not load, so its awarded figures below read as zero. Committed figures from the capital plan are unaffected.',
+    retry: () => selectAgency(code) } : null);
 
   const awarded = award.ok && award.agg ? award.agg.total : 0;
   document.getElementById('kpi-awarded').textContent = award.ok ? (awarded>0?fmtMoney(awarded):'$0') : '–';

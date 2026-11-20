@@ -145,7 +145,7 @@ function hBar(canvasId, labels, data, color, countFor){
 
 // Inline note shown in place of a section whose source did not load.
 function unavail(host){
-  return `<div class="unavail">This dataset (${host}) is temporarily unavailable. The rest of the page reflects what loaded; refresh to retry.</div>`;
+  return `<div class="unavail"><span>This dataset (${host}) is temporarily unavailable. The rest of the page reflects what loaded.</span><button type="button" class="ci-btn" data-action="reload">Retry</button></div>`;
 }
 
 function renderSCA(){

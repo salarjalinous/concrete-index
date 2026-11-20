@@ -59,7 +59,7 @@
 <!-- /ci:header -->
 
 <div class="series-bar">
-  <div class="inner">SERIES&nbsp;·&nbsp;<b>CI-SCA-MTA</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>SCA (8586-3zfm) · MTA (kizb-nxtu)</b><span class="sep">·</span>SCA AS OF&nbsp;·&nbsp;<b id="series-asof">–</b><span class="sep">·</span>UNITS&nbsp;·&nbsp;<b>USD</b></div>
+  <div class="inner">SERIES&nbsp;·&nbsp;<b>CI-SCA-MTA</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>SCA (8586-3zfm) · MTA (kizb-nxtu)</b><span class="sep">·</span>SCA AS OF&nbsp;·&nbsp;<b id="series-asof"><span class="ci-skel ci-skel--word" aria-hidden="true"></span></b><span class="sep">·</span>UNITS&nbsp;·&nbsp;<b>USD</b></div>
 </div>
 
 <main id="content" tabindex="-1">
@@ -67,19 +67,19 @@
 <div class="wrap hero">
   <h1>The School Construction Authority and the MTA, on their own ledgers.</h1>
   <p class="sub">City agencies aren't New York's only public builders. The School Construction Authority runs its own program, and the MTA runs the region's largest. Both publish their books. This page reads them with the same normalization rules as the City funnel, including the conversion of MTA figures from their source units of thousands of dollars.</p>
-  <p class="asof" id="asof">Reading the SCA and MTA records…</p>
+  <p class="asof" id="asof"><span class="ci-skel ci-skel--line" aria-hidden="true"></span><span class="ci-vh">Reading the SCA and MTA records…</span></p>
 </div>
 
 <nav class="ci-subnav" aria-label="On this page">
   <div class="wrap"><ul class="ci-subnav__list"><li><a href="#sca-boro">SCA boroughs</a></li><li><a href="#sca-projects">SCA projects</a></li><li><a href="#mta-agency">MTA by agency</a></li><li><a href="#mta-plans">MTA plans</a></li><li><a href="#methodology">Definitions</a></li></ul></div>
 </nav>
 
-<div id="loader" class="wrap">
-  <div class="spinner"></div>
-  Pulling SCA and MTA capital data…
+<div id="loader" class="wrap ci-loading">
+  <p class="ci-loading__status" role="status">Pulling SCA and MTA capital data…</p>
+  <div class="ci-skel-tape" aria-hidden="true"><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span></div><div class="ci-skel ci-skel--chart" aria-hidden="true"></div>
 </div>
 
-<div id="error" class="wrap">
+<div id="error" class="wrap ci-error">
   <p><strong>Couldn't reach the open data APIs.</strong></p>
   <p class="u-mt-2">NYC Open Data or data.ny.gov may be momentarily unavailable.</p>
   <button type="button" class="ci-btn" data-action="reload">Retry</button>

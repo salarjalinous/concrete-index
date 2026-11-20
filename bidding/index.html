@@ -57,7 +57,7 @@
 <!-- /ci:header -->
 
 <div class="series-bar">
-  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-BIDDING</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>NYC CITY RECORD (3khw-qi8f), DAILY</b><span class="sep">·</span>OPEN&nbsp;·&nbsp;<b id="series-asof">–</b></div>
+  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-BIDDING</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>NYC CITY RECORD (3khw-qi8f), DAILY</b><span class="sep">·</span>OPEN&nbsp;·&nbsp;<b id="series-asof"><span class="ci-skel ci-skel--word" aria-hidden="true"></span></b></div>
 </div>
 
 <main id="content" tabindex="-1">
@@ -66,16 +66,16 @@
   <div class="hero">
     <h1>What's bidding right now.</h1>
     <p class="sub">Each construction solicitation the City Record lists as open, sorted by what's due next. Each notice carries its procurement method, PIN, and the agency contact who answers questions. The list re-pulls from the City's API on every load.</p>
-    <p class="asof" id="asof">Loading open solicitations…</p>
+    <p class="asof" id="asof"><span class="ci-skel ci-skel--line" aria-hidden="true"></span><span class="ci-vh">Loading open solicitations…</span></p>
   </div>
 </div>
 
-<div id="loader" class="wrap">
-  <div class="spinner"></div>
-  Pulling open solicitations from NYC Open Data…
+<div id="loader" class="wrap ci-loading">
+  <p class="ci-loading__status" role="status">Pulling open solicitations from NYC Open Data…</p>
+  <div class="ci-skel-rows" aria-hidden="true"><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span></div>
 </div>
 
-<div id="error" class="wrap">
+<div id="error" class="wrap ci-error">
   <p><strong>Couldn't reach NYC Open Data.</strong></p>
   <p class="u-mt-2">The City's API may be momentarily unavailable.</p>
   <button type="button" class="ci-btn" data-action="reload">Retry</button>

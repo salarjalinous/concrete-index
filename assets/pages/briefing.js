@@ -252,7 +252,7 @@ function esc(s){ var d=document.createElement('div'); d.textContent=String(s==nu
 
 /* ================= composition ================= */
 function unavailNote(host){
-  return `<p class="brief-unavail">This dataset (${host}) is temporarily unavailable. The rest of the briefing reflects what loaded; refresh to retry.</p>`;
+  return `<div class="brief-unavail"><span>This dataset (${host}) is temporarily unavailable. The rest of the briefing reflects what loaded.</span><button type="button" class="ci-btn" data-action="reload">Retry</button></div>`;
 }
 
 function compose(){

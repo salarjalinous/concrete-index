@@ -58,7 +58,7 @@
 <!-- /ci:header -->
 
 <div class="series-bar">
-  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-CONTRACTS</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CHECKBOOK NYC REGISTERED CONTRACTS · CHECKBOOK NYC SPENDING, NIGHTLY</b><span class="sep">·</span>UPDATED&nbsp;·&nbsp;<b id="series-updated">&ndash;</b><span class="sep">·</span>AS OF&nbsp;·&nbsp;<b id="series-asof">&ndash;</b></div>
+  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-CONTRACTS</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CHECKBOOK NYC REGISTERED CONTRACTS · CHECKBOOK NYC SPENDING, NIGHTLY</b><span class="sep">·</span>UPDATED&nbsp;·&nbsp;<b id="series-updated"><span class="ci-skel ci-skel--word" aria-hidden="true"></span></b><span class="sep">·</span>AS OF&nbsp;·&nbsp;<b id="series-asof"><span class="ci-skel ci-skel--word" aria-hidden="true"></span></b></div>
 </div>
 
 <main id="content" tabindex="-1">
@@ -67,7 +67,7 @@
   <div class="hero">
     <h1>One contract at a time.</h1>
     <p class="sub">This page searches NYC public construction at the level of a single registered contract. Search by contract number, vendor, agency, or trade, then open a row to read its registered dates and amounts, its payment velocity, and the cumulative spend curve drawn from the City's payment ledger.</p>
-    <p class="asof" id="asof">Loading the contract search index&hellip;</p>
+    <p class="asof" id="asof"><span class="ci-skel ci-skel--line" aria-hidden="true"></span><span class="ci-vh">Loading the contract search index&hellip;</span></p>
   </div>
 </div>
 
@@ -75,16 +75,18 @@
   <div class="wrap"><ul class="ci-subnav__list"><li><a href="#search">Search</a></li><li><a href="#methodology">Definitions</a></li></ul></div>
 </nav>
 
-<div id="loader" class="wrap">
-  <div class="spinner"></div>
-  Loading the contract search index&hellip;
+<div id="loader" class="wrap ci-loading">
+  <p class="ci-loading__status" role="status">Loading the contract search index&hellip;</p>
+  <div class="ci-skel-tape" aria-hidden="true"><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span></div><div class="ci-skel-rows" aria-hidden="true"><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span></div>
 </div>
 
-<div id="error" class="wrap">
+<div id="error" class="wrap ci-error">
   <p><strong>Couldn't load the contract index.</strong></p>
   <p class="u-mt-2">The nightly search file may be momentarily unavailable.</p>
   <button type="button" class="ci-btn" data-action="reload">Retry</button>
 </div>
+
+<div class="wrap ci-banner-slot" id="stale-banner"></div>
 
 <div data-ci-main id="app" class="wrap">
 

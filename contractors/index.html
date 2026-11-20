@@ -93,7 +93,7 @@
     </div>
   </section>
 
-  <div id="vloader"><div class="spinner"></div>Pulling the award record&hellip;</div>
+  <div id="vloader" class="ci-loading"><p class="ci-loading__status" role="status">Pulling the award record&hellip;</p><div class="ci-skel-tape" aria-hidden="true"><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span></div><div class="ci-skel ci-skel--chart" aria-hidden="true"></div></div>
 
   <section id="profile">
     <div class="chips" id="chips"></div>
@@ -174,21 +174,22 @@
     </section>
   </section>
 
+  <div class="ci-banner-slot" id="lookup-banner"></div>
   <div id="noresults" class="card empty" data-ci-hide>No construction awards found for that name. Try a shorter fragment of the company name.</div>
 
 </div>
 
 <div class="wrap u-pt-2" id="market">
   <div class="sec-head"><h2>Market structure</h2><span class="cap">COMPETITIVE SET BY WINS</span></div>
-  <p class="asof u-mt-3 u-pt-0 u-bt-0" id="asof">Assembling the market set from City Record data&hellip;</p>
+  <p class="asof u-mt-3 u-pt-0 u-bt-0" id="asof"><span class="ci-skel ci-skel--line" aria-hidden="true"></span><span class="ci-vh">Assembling the market set from City Record data&hellip;</span></p>
 </div>
 
-<div id="loader" class="wrap">
-  <div class="spinner"></div>
-  Pulling construction award notices from NYC Open Data&hellip;
+<div id="loader" class="wrap ci-loading">
+  <p class="ci-loading__status" role="status">Pulling construction award notices from NYC Open Data&hellip;</p>
+  <div class="ci-skel-tape" aria-hidden="true"><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span></div><div class="ci-skel ci-skel--chart" aria-hidden="true"></div>
 </div>
 
-<div id="error" class="wrap">
+<div id="error" class="wrap ci-error">
   <p><strong>Couldn't reach NYC Open Data.</strong></p>
   <p class="u-mt-2">The City's API may be momentarily unavailable.</p>
   <button type="button" class="ci-btn" data-action="reload">Retry</button>

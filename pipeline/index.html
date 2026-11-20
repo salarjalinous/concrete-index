@@ -59,7 +59,7 @@
 <!-- /ci:header -->
 
 <div class="series-bar">
-  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-PIPELINE</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>NYC CAPITAL PROJECTS (fb86-vt7u), 3× YEARLY</b><span class="sep">·</span>PLAN&nbsp;·&nbsp;<b id="series-asof">–</b></div>
+  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-PIPELINE</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>NYC CAPITAL PROJECTS (fb86-vt7u), 3× YEARLY</b><span class="sep">·</span>PLAN&nbsp;·&nbsp;<b id="series-asof"><span class="ci-skel ci-skel--word" aria-hidden="true"></span></b></div>
 </div>
 
 <main id="content" tabindex="-1">
@@ -68,7 +68,7 @@
   <div class="hero">
     <h1>Funded capital work the City has not yet spent.</h1>
     <p class="sub">Every capital project in the City's plan carries a budget and a spend-to-date. The gap between them is tomorrow's construction demand: dollars the City has funded but not yet spent, on projects that still have to move through design, procurement, and construction. Sub-project rows are collapsed to one record per project, keyed on agency and FMS ID, so no budget is counted twice.</p>
-    <p class="asof" id="asof">Loading the capital plan…</p>
+    <p class="asof" id="asof"><span class="ci-skel ci-skel--line" aria-hidden="true"></span><span class="ci-vh">Loading the capital plan…</span></p>
   </div>
 </div>
 
@@ -76,12 +76,12 @@
   <div class="wrap"><ul class="ci-subnav__list"><li><a href="#overview" data-also="phases">Overview</a></li><li><a href="#by-agency">By agency</a></li><li><a href="#by-borough">By borough</a></li><li><a href="#categories">By category</a></li><li><a href="#projects">Largest projects</a></li><li><a href="#methodology">Definitions</a></li></ul></div>
 </nav>
 
-<div id="loader" class="wrap">
-  <div class="spinner"></div>
-  Pulling the capital projects plan from NYC Open Data…
+<div id="loader" class="wrap ci-loading">
+  <p class="ci-loading__status" role="status">Pulling the capital projects plan from NYC Open Data…</p>
+  <div class="ci-skel-tape" aria-hidden="true"><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span></div><div class="ci-skel ci-skel--chart" aria-hidden="true"></div>
 </div>
 
-<div id="error" class="wrap">
+<div id="error" class="wrap ci-error">
   <p><strong>Couldn't reach NYC Open Data.</strong></p>
   <p class="u-mt-2">The City's API may be momentarily unavailable.</p>
   <button type="button" class="ci-btn" data-action="reload">Retry</button>

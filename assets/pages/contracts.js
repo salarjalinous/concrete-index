@@ -389,6 +389,7 @@ function init(payload){
   });
 
   render();
+  ci.stale(state.meta, { slot: document.getElementById('stale-banner') });
 
   document.getElementById('loader').style.display = 'none';
   document.getElementById('app').style.display = 'block';

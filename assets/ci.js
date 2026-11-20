@@ -242,7 +242,7 @@
   /* ================= error and stale banner ================= */
   ci.banner = function (slot, o) {
     if (!slot) return null;
-    o = o || {};
+    if (!o) { slot.replaceChildren(); return null; }   // clear the slot
     var b = document.createElement('div');
     b.className = 'ci-banner' + (o.stale ? ' ci-banner--stale' : '');
     if (o.alert) b.setAttribute('role', 'alert');
@@ -260,6 +260,49 @@
     }
     slot.replaceChildren(b);
     return b;
+  };
+
+  /* ---- alerts after a user action (role=alert) ----
+   * The visible state (a banner, an empty table, a field message) is always
+   * shown by the page; this region only makes sure it is announced. */
+  var alertRegion = null;
+  ci.alert = function (msg) {
+    if (!alertRegion) {
+      alertRegion = document.createElement('div');
+      alertRegion.className = 'ci-vh'; alertRegion.setAttribute('role', 'alert');
+      document.body.appendChild(alertRegion);
+    }
+    alertRegion.textContent = '';
+    setTimeout(function () { alertRegion.textContent = msg; }, 50);
+  };
+  // Invalid input: a message tied to the field, cleared on the next edit.
+  ci.invalid = function (input, msg) {
+    if (!input) return;
+    var id = (input.id || uid('in')) + '-error';
+    var el = document.getElementById(id);
+    if (!el) {
+      el = document.createElement('p'); el.id = id; el.className = 'ci-field-error'; el.setAttribute('role', 'alert');
+      (input.closest('.ci-combo,.searchbar,.search-box') || input).insertAdjacentElement('afterend', el);
+      input.addEventListener('input', function () { el.textContent = ''; el.hidden = true; input.removeAttribute('aria-invalid'); });
+    }
+    el.hidden = false; el.textContent = msg;
+    input.setAttribute('aria-invalid', 'true');
+    var d = (input.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean);
+    if (d.indexOf(id) < 0) { d.push(id); input.setAttribute('aria-describedby', d.join(' ')); }
+  };
+  // Stale archive: a nightly file older than its own stale_after_hours.
+  // fallbackHours applies only when the file does not publish the field.
+  ci.stale = function (meta, o) {
+    o = o || {};
+    if (!meta) return false;
+    var gen = new Date(meta.generated_at || meta.generated || '');
+    if (isNaN(gen.getTime())) return false;
+    var limit = +meta.stale_after_hours || o.fallbackHours || 48;
+    var age = (Date.now() - gen.getTime()) / 3600000;
+    if (age <= limit) return false;
+    ci.banner(o.slot, { stale: true, title: 'Showing the snapshot of ' + KINDS['date-utc?'](gen.toISOString().slice(0, 10)) + '.',
+      text: (o.what ? o.what + ' ' : '') + 'The latest scheduled refresh did not complete; every figure below is as of that date.' });
+    return true;
   };
 
   /* ================= app chrome (PRD 6.5, 8.2) =================
@@ -739,6 +782,34 @@
     (rootEl || document).querySelectorAll('main .chart-box canvas').forEach(frameChart);
   };
 
+  /* ---- filter result count: toast when rows remain, alert when none ----
+   * <... class="ci-filterbar" data-ci-count="#el"> reads the page's own
+   * count line; data-ci-count-of="<selector>" counts rendered rows. */
+  function filterCounts() {
+    document.querySelectorAll('.ci-filterbar[data-ci-count],.ci-filterbar[data-ci-count-of]').forEach(function (bar) {
+      var timer = null;
+      function report() {
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          var n = null, msg = '';
+          if (bar.hasAttribute('data-ci-count-of')) {
+            n = document.querySelectorAll(bar.getAttribute('data-ci-count-of')).length;
+            var forms = (bar.getAttribute('data-ci-count-label') || 'result|results').split('|');
+            msg = KINDS.int(n) + ' ' + (n === 1 ? forms[0] : forms[1]) + ' shown';
+          } else {
+            var el = document.querySelector(bar.getAttribute('data-ci-count'));
+            msg = textOf(el);
+            n = /^0\b|^No\b/i.test(msg) ? 0 : 1;
+          }
+          if (!msg) return;
+          if (n === 0) ci.alert(msg || 'No results match these filters.'); else ci.toast(msg);
+        }, 450);
+      }
+      bar.addEventListener('click', function (e) { if (e.target.closest('.seg button')) report(); });
+      bar.addEventListener('change', function (e) { if (e.target.tagName === 'SELECT') report(); });
+    });
+  }
+
   function chrome() {
     if (!document.querySelector('meta[name="ci:chrome"]')) return;
     enhanceSegs(document);
@@ -746,6 +817,7 @@
     ci.wrapTables();
     enhanceSort();
     subnav();
+    filterCounts();
     new MutationObserver(function (records) {
       var tables = false;
       for (var i = 0; i < records.length; i++) {
@@ -794,8 +866,14 @@
       if (document.querySelector('.pdf-btn')) return;
       var b = mkBtn('Save PDF', 'Save or print this page as a PDF', function () { printing = true; window.print(); });
       b.className = 'pdf-btn';
+      var cp = mkBtn('Copy link', 'Copy the address of this view', function () {
+        var done = function () { ci.toast('Link copied'); };
+        var fail = function () { ci.alert('The link could not be copied. Copy it from the address bar.'); };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(location.href).then(done, fail); else fail();
+      });
+      cp.className = 'pdf-btn ci-copy';
       var inner = document.querySelector('.series-bar .inner');
-      if (inner) { inner.appendChild(b); return; }
+      if (inner) { inner.appendChild(cp); inner.appendChild(b); return; }
       var header = document.querySelector('.ci-masthead');
       if (header) { var bar = document.createElement('div'); bar.className = 'pdf-bar'; bar.appendChild(b); header.insertAdjacentElement('afterend', bar); }
     }

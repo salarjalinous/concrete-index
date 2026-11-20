@@ -67,19 +67,19 @@
 <div class="wrap hero">
   <h1>Two decades of demand in a single index.</h1>
   <p class="sub">The Concrete Index condenses the City's construction award record into a single composite measure, then digs into the patterns underneath: when the City buys, how project budgets grow, and how fast the pipeline converts.</p>
-  <p class="asof" id="asof">Computing from the public record…</p>
+  <p class="asof" id="asof"><span class="ci-skel ci-skel--line" aria-hidden="true"></span><span class="ci-vh">Computing from the public record…</span></p>
 </div>
 
 <nav class="ci-subnav" aria-label="On this page">
   <div class="wrap"><ul class="ci-subnav__list"><li><a href="#index">Index</a></li><li><a href="#cost-adjusted">Cost-adjusted</a></li><li><a href="#cost-card">Cost since 2019</a></li><li><a href="#adj-card">Nominal vs real</a></li><li><a href="#seasonality">Seasonality</a></li><li><a href="#conversion">Conversion</a></li><li><a href="#escalation">Budget growth</a></li><li><a href="#scurve">Pay-down</a></li><li><a href="#schedpace">Schedule</a></li><li><a href="#methodology">Definitions</a></li></ul></div>
 </nav>
 
-<div id="loader" class="wrap">
-  <div class="spinner"></div>
-  Computing two decades of award history and three capital plan snapshots…
+<div id="loader" class="wrap ci-loading">
+  <p class="ci-loading__status" role="status">Computing two decades of award history and three capital plan snapshots…</p>
+  <div class="ci-skel-tape" aria-hidden="true"><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span></div><div class="ci-skel ci-skel--chart" aria-hidden="true"></div>
 </div>
 
-<div id="error" class="wrap">
+<div id="error" class="wrap ci-error">
   <p><strong>Couldn't reach NYC Open Data.</strong></p>
   <p class="u-mt-2">The City's API may be momentarily unavailable.</p>
   <button type="button" class="ci-btn" data-action="reload">Retry</button>

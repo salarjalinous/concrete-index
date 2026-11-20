@@ -59,7 +59,7 @@
 <!-- /ci:header -->
 
 <div class="series-bar">
-  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-AWARDED</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>NYC CITY RECORD (qyyg-4tf5), DAILY</b><span class="sep">·</span>AS OF&nbsp;·&nbsp;<b id="series-asof">–</b></div>
+  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-AWARDED</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>NYC CITY RECORD (qyyg-4tf5), DAILY</b><span class="sep">·</span>AS OF&nbsp;·&nbsp;<b id="series-asof"><span class="ci-skel ci-skel--word" aria-hidden="true"></span></b></div>
 </div>
 
 <main id="content" tabindex="-1">
@@ -68,7 +68,7 @@
   <div class="hero">
     <h1>Construction the City has awarded, totaled from the City Record.</h1>
     <p class="sub">This is the award stage of the funnel: the construction contracts the City has let, read from the City Record on each page load. Each procurement is counted once (deduplicated to one record per City Record PIN), so no award is double-counted. These are published award values, before registration and any change orders. Set a time window to see how much work is being awarded, which agencies are awarding it, and to whom.</p>
-    <p class="asof" id="asof">Loading latest award data…</p>
+    <p class="asof" id="asof"><span class="ci-skel ci-skel--line" aria-hidden="true"></span><span class="ci-vh">Loading latest award data…</span></p>
   </div>
 </div>
 
@@ -76,12 +76,12 @@
   <div class="wrap"><ul class="ci-subnav__list"><li><a href="#trend">Monthly</a></li><li><a href="#by-agency">By agency</a></li><li><a href="#by-borough">By borough</a></li><li><a href="#vendors">Top recipients</a></li><li><a href="#recent">Latest</a></li><li><a href="#methodology">Definitions</a></li></ul></div>
 </nav>
 
-<div id="loader" class="wrap">
-  <div class="spinner"></div>
-  Pulling award data from NYC Open Data…
+<div id="loader" class="wrap ci-loading">
+  <p class="ci-loading__status" role="status">Pulling award data from NYC Open Data…</p>
+  <div class="ci-skel-tape" aria-hidden="true"><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span></div><div class="ci-skel ci-skel--chart" aria-hidden="true"></div>
 </div>
 
-<div id="error" class="wrap">
+<div id="error" class="wrap ci-error">
   <p><strong>Couldn't reach NYC Open Data.</strong></p>
   <p class="u-mt-2">The City's API may be momentarily unavailable.</p>
   <button type="button" class="ci-btn" data-action="reload">Retry</button>

@@ -74,7 +74,6 @@
 .boro-row.multi .t-title{color:var(--muted);font-style:italic}
 .provenance{font-family:var(--font-mono);font-size:var(--fs-12);color:var(--muted);background:var(--band);border-left:3px solid var(--faint);border-radius:0;padding:var(--s-3) var(--s-4);margin-top:var(--s-3);line-height:1.55}
 .provenance b{color:var(--ink);font-weight:600}
-.unavail{font-family:var(--font-mono);font-size:var(--fs-12);color:var(--muted);background:var(--band);border-left:3px solid var(--faint);border-radius:0;padding:var(--s-3) var(--s-4);margin-top:var(--s-3)}
 td{padding:var(--s-3) var(--s-2);border-bottom:1px solid var(--line);vertical-align:top}
 td .t-title{font-weight:500;color:var(--ink)}
 td .t-sub{font-size:var(--fs-12);color:var(--muted);margin-top:var(--s-1)}
