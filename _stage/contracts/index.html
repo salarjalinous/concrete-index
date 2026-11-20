@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- ci:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="same-origin">
+<meta name="color-scheme" content="light">
+<title>Contracts · The Concrete Index</title>
+<meta name="description" content="Search registered NYC construction contracts from Checkbook NYC by number, vendor, agency, scope, or PIN, then read one contract's payments and spend curve.">
+<link rel="canonical" href="https://concreteindex.co/contracts/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Concrete Index">
+<meta property="og:title" content="Contracts · The Concrete Index">
+<meta property="og:description" content="Search registered NYC construction contracts from Checkbook NYC by number, vendor, agency, scope, or PIN, then read one contract's payments and spend curve.">
+<meta property="og:url" content="https://concreteindex.co/contracts/">
+<meta property="og:image" content="https://concreteindex.co/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://concreteindex.co/og-image.png">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/public-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/ci.css">
+<link rel="stylesheet" href="/assets/pages/contracts.css">
+<meta name="ci:chrome" content="on">
+<script src="/assets/ci.js" defer></script>
+<script src="/assets/vendor/chart.umd.min.js" defer></script>
+<script src="/assets/ci-chart.js" defer></script>
+<script src="/assets/pages/contracts.js" defer></script>
+<!-- /ci:head -->
+</head>
+<body>
+
+<!-- ci:header -->
+<a class="ci-skip" href="#content">Skip to content</a>
+<header class="ci-masthead">
+  <div class="wrap ci-masthead__bar">
+    <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="26" height="26" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+    <nav class="ci-utility" aria-label="Site"><a href="/methodology/">Methodology</a><a href="/about/">About</a><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></nav>
+    <button class="ci-menu-btn" type="button" aria-expanded="false" aria-controls="ci-menu"><svg class="ci-i-menu" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#menu"/></svg><svg class="ci-i-close" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#close"/></svg><span class="ci-menu-btn__label">Menu</span></button>
+  </div>
+  <nav class="ci-rail" id="ci-menu" aria-label="Sections">
+    <div class="wrap ci-rail__inner">
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-stages">Stages</p><ul class="ci-rail__list" aria-labelledby="ci-g-stages"><li><a href="/pipeline/">Pipeline</a></li><li><a href="/bidding/">Bidding</a></li><li><a href="/awarded/">Awarded</a></li><li><a href="/contracts/" aria-current="page">Contracts</a></li><li><a href="/funnel/">Funnel</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-entities">Entities</p><ul class="ci-rail__list" aria-labelledby="ci-g-entities"><li><a href="/agencies/">Agencies</a></li><li><a href="/contractors/">Contractors</a></li><li><a href="/regional/">Regional</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-synthesis">Synthesis</p><ul class="ci-rail__list" aria-labelledby="ci-g-synthesis"><li><a href="/analysis/">Analysis</a></li><li><a href="/briefing/">Briefing</a></li></ul></div>
+      <div class="ci-rail__group ci-rail__group--utility"><p class="ci-rail__label" id="ci-g-site">Site</p><ul class="ci-rail__list" aria-labelledby="ci-g-site"><li><a href="/methodology/">Methodology</a></li><li><a href="/about/">About</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></li></ul></div>
+    </div>
+  </nav>
+</header>
+<!-- /ci:header -->
+
+<div class="series-bar">
+  <div class="inner" id="series-bar">SERIES&nbsp;·&nbsp;<b>CI-CONTRACTS</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>CHECKBOOK NYC REGISTERED CONTRACTS · CHECKBOOK NYC SPENDING, NIGHTLY</b><span class="sep">·</span>UPDATED&nbsp;·&nbsp;<b id="series-updated"><span class="ci-skel ci-skel--word" aria-hidden="true"></span></b><span class="sep">·</span>AS OF&nbsp;·&nbsp;<b id="series-asof"><span class="ci-skel ci-skel--word" aria-hidden="true"></span></b></div>
+</div>
+
+<main id="content" tabindex="-1">
+
+<div class="wrap">
+  <div class="hero">
+    <h1>One contract at a time.</h1>
+    <p class="sub">This page searches NYC public construction at the level of a single registered contract. Search by contract number, vendor, agency, or trade, then open a row to read its registered dates and amounts, its payment velocity, and the cumulative spend curve drawn from the City's payment ledger.</p>
+    <p class="asof" id="asof"><span class="ci-skel ci-skel--line" aria-hidden="true"></span><span class="ci-vh">Loading the contract search index&hellip;</span></p>
+  </div>
+</div>
+
+<nav class="ci-subnav" aria-label="On this page">
+  <div class="wrap"><ul class="ci-subnav__list"><li><a href="#search">Search</a></li><li><a href="#methodology">Definitions</a></li></ul></div>
+</nav>
+
+<div id="loader" class="wrap ci-loading">
+  <p class="ci-loading__status" role="status">Loading the contract search index&hellip;</p>
+  <div class="ci-skel-tape" aria-hidden="true"><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span></div><div class="ci-skel-rows" aria-hidden="true"><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span></div>
+</div>
+
+<div id="error" class="wrap ci-error">
+  <p><strong>Couldn't load the contract index.</strong></p>
+  <p class="u-mt-2">The nightly search file may be momentarily unavailable.</p>
+  <button type="button" class="ci-btn" data-action="reload">Retry</button>
+</div>
+
+<div class="wrap ci-banner-slot" id="stale-banner"></div>
+
+<div data-ci-main id="app" class="wrap">
+
+  <section class="kpis" id="kpis">
+    <div class="kpi hl"><div class="k-label">Contracts indexed</div><div class="k-value" id="kpi-count">&ndash;</div><div class="k-note" id="kpi-count-note"></div></div>
+    <div class="kpi"><div class="k-label">Registered value</div><div class="k-value" id="kpi-registered">&ndash;</div><div class="k-note">current registered amounts, original amount where none, summed</div></div>
+    <div class="kpi"><div class="k-label">Paid to date</div><div class="k-value" id="kpi-paid">&ndash;</div><div class="k-note" id="kpi-paid-note"></div></div>
+    <div class="kpi"><div class="k-label">Median first-payment lag</div><div class="k-value" id="kpi-lag">&ndash;</div><div class="k-note">days to first check, across dated contracts</div></div>
+  </section>
+
+  <section>
+    <div class="reading ci-note">
+      <strong>How to read this page.</strong> This page does one thing: it looks up a single contract and shows how much of it the public record reports has been paid so far. Paid to date and percent paid come from the City's contract record and cover every contract in this file. Contracts of $500,000 or more registered since 2019 that are open or closed within the past year also carry a dated spend curve and payment velocity built from their individual checks; that dated total is a floor, what the ledger confirms was disbursed rather than a full accounting. It does not total the market. The summed figures in the tape above describe only the contracts currently in view; they are not a market aggregate and should not be read as the value of NYC construction. Use it to check one contract's payment progress, not to build a headline total.
+    </div>
+  </section>
+
+  <section class="search-row" id="search">
+    <div class="sec-head"><h2>Search the contract record</h2><span class="cap" id="search-cap">&ndash;</span></div>
+    <div class="u-pt-4 ci-filterbar" role="group" aria-label="Filters" data-ci-count="#match-note">
+      <div class="search-box">
+        <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Search contract ID, vendor, agency, category, scope, or PIN&hellip;" aria-label="Search contracts">
+        <button class="sx" id="clear-q" type="button" aria-label="Clear search" hidden>&times;</button>
+      </div>
+      <div class="filters">
+        <div class="ctrl">
+          <label for="f-agency">Agency</label>
+          <select id="f-agency" class="sel" aria-label="Filter by agency"></select>
+        </div>
+        <div class="ctrl">
+          <label for="f-cat">Category</label>
+          <select id="f-cat" class="sel" aria-label="Filter by category"></select>
+        </div>
+        <div class="ctrl">
+          <label for="f-sort">Sort by</label>
+          <select id="f-sort" class="sel" aria-label="Sort results">
+            <option value="current_amount">Current amount, high to low</option>
+            <option value="pct_paid_to_date">Percent paid, high to low</option>
+            <option value="first_payment_lag_days">First-payment lag, slow to fast</option>
+            <option value="registration_date">Registration date, newest first</option>
+          </select>
+        </div>
+      </div>
+      <div class="match-note" id="match-note"></div>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="card u-pt-4">
+      <table id="tbl" data-ci-label="Matching contracts">
+        <thead>
+          <tr>
+            <th>Contract</th>
+            <th>Vendor</th>
+            <th>Agency</th>
+            <th class="th-cat col-cat">Category</th>
+            <th class="num" data-ci-sort="f-sort" data-ci-sort-value="registration_date" data-ci-sort-dir="descending">Registered</th>
+            <th class="num" data-ci-sort="f-sort" data-ci-sort-value="current_amount" data-ci-sort-dir="descending">Current amt.</th>
+            <th class="num">Paid to date</th>
+            <th class="num" data-ci-sort="f-sort" data-ci-sort-value="pct_paid_to_date" data-ci-sort-dir="descending">% paid</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="tnote" id="tbl-note"></div>
+    </div>
+  </section>
+
+  <section class="method" id="methodology">
+    <div class="card">
+      <div class="sec-head"><h2>Contract search &middot; Methodology &amp; definitions</h2><span class="cap">SERIES NOTES</span></div>
+      <div class="method-body">
+        <div class="reading ci-note">
+          <strong>What this is.</strong> A searchable index of registered New York City construction contracts. Every contract carries its paid to date and percent paid from the City's contract record; contracts of $500,000 or more registered since 2019 that are open or closed within the past year also carry a dated spend curve and payment velocity from their individual checks. Every figure comes from public records and is rebuilt nightly. The page reads one contract at a time and does not rate a vendor or predict whether a contract will finish. The dated disbursement total is a floor: it confirms what the ledger reports was paid, not what is still owed, and the totals shown describe the contracts in view rather than a market aggregate.
+        </div>
+        <h3>The universe</h3>
+        <p>The index covers construction contracts registered with the City, drawn from the Comptroller's Checkbook NYC registered-contract record (expense contracts in registered status) that Checkbook lists under <span id="universe-fy">the fiscal years in the current build</span>. A contract counts as construction when its Checkbook industry names construction, engineering, architecture, paving, excavation or infrastructure work, and each contract appears once, keyed on its contract ID. City Record award notices (dataset <code>qyyg-4tf5</code>) supply only the bid due date described below. A contract enters the index when it is registered; the date row leads with registration because that is the point at which the obligation becomes a public record.</p>
+        <h3>Scope and identifiers</h3>
+        <p>Each contract carries the City's free-text <strong>scope</strong> description (the work the contract registers) and its <strong>PIN</strong>, the procurement identification number that the City uses to track the award. Both come straight from the registered-contract record and read blank where the record carries no value. The scope line and PIN are searchable alongside the contract number, vendor, and agency, so a query like a street name or a treatment plant can surface the contracts that name it.</p>
+        <h3>Dates and what they mean</h3>
+        <p>The <strong>scheduled end</strong> is the contract's planned end date as registered. It is the schedule on the paper, not a record of actual completion; a contract can run past it, finish early, or sit open without the published record changing. Read it as the original plan. The <strong>bid due date</strong> is a best-effort join to the City Record solicitation that preceded the award, matched where a clean link exists; it is blank where no match was found, so its coverage is partial by construction.</p>
+        <h3>Amounts and percent paid</h3>
+        <p><strong>Original</strong> is the contract value at registration; <strong>current</strong> reflects registered modifications. <strong>Paid to date</strong> is the City's registered-contract spent-to-date figure, and <strong>percent paid</strong> divides it by the current amount, falling back to original. Both come from the City contract record and cover every contract in the index, so the table column, the percent paid, and the sort all read the same field for every row. A contract can read above one hundred percent where modifications, retainage release, or rounding push cumulative payment past the registered amount; the page shows the figure as published rather than capping it.</p>
+        <h3>The dated spend curve and payment velocity</h3>
+        <p>The dated spend curve and velocity cover a defined set: every registered construction contract of $500,000 or more registered since 2019 that is open or closed within the past year. Closure is judged by the registered end date because the public record carries no actual-completion date, so a contract whose registered end date is more than a year in the past drops out of the dated set while open contracts and recently closed ones stay in. For each one the nightly job pulls that contract's disbursements from Checkbook NYC and orders them in time. <strong>First-payment lag</strong> is the number of days from registration to the first disbursement. <strong>Days to fifty and ninety percent paid</strong> count from registration to the first day cumulative dated payment crosses that share of the contract amount; either reads as a dash when the contract has not reached that mark. <strong>Confirmed dated disbursements</strong> is the sum of those dated checks, a floor on what has been paid rather than a full accounting. A contract outside that scope, or one inside it that drew no disbursement, reads as a dash for the spend curve and every velocity figure; its paid to date and percent paid still come from the contract record.</p>
+        <h3>Why two payment figures can differ</h3>
+        <p>For a contract in the dated scope that drew a disbursement, the detail panel shows both <strong>paid to date</strong>, the City's running tally, and <strong>confirmed dated disbursements</strong>, the sum of individual checks the nightly job found. These can legitimately differ: a check the ledger has not yet published is not in the dated sum, so it can sit below the City's tally. The table and percent paid use the contract-record figure because it covers every contract; the dated sum is shown alongside it as a confirmed floor, and the nightly job reports how closely the two agree.</p>
+        <h3>Where the payment timing comes from</h3>
+        <p>Progress-payment timing is read from Checkbook NYC's Spending domain one contract at a time: for each contract in the dated scope the nightly job queries that contract's own checks, then dedupes them on the payment document so a re-reported check is not counted twice. The scope is fixed by definition, every registered construction contract of $500,000 or more registered since 2019 that is open or closed within the past year, not by a count cap. Checkbook serves no cross-origin access, so this page reads a static file the nightly job writes rather than calling the payment ledger from the browser.</p>
+        <h3>What is not here</h3>
+        <p>No borough, address, or coordinate appears on this page. The published registration and payment records do not carry a location field for these contracts, so the page omits geography rather than inferring it.</p>
+        <h3>Coverage notes from the nightly build</h3>
+        <ul class="cov-list" id="cov-list"></ul>
+      </div>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<!-- ci:footer -->
+<footer class="ci-footer">
+  <div class="wrap ci-footer__inner">
+    <div class="ci-footer__brand">
+      <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="22" height="22" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+      <p class="ci-footer__tag">NYC public construction capital, from commitment to cash.</p>
+    </div>
+    <nav class="ci-footer__links" aria-label="Site information">
+      <ul><li><a href="/methodology/">Methodology</a></li><li><a href="/sources/">Sources</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">Corrections</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source on GitHub</a></li></ul>
+    </nav>
+    <div class="ci-footer__meta">
+      <p>An independent project built by Salar Jalinous using only public data. Not affiliated with the City or State of New York or any employer.</p>
+      <p><a href="/sources/">Data: NYC Open Data · Open NY · Checkbook NYC · BLS</a></p>
+      <p><a href="/about/">© <span data-ci-year="2026">2026</span> The Concrete Index</a></p>
+    </div>
+  </div>
+</footer>
+<!-- /ci:footer -->
+
+</body>
+</html>

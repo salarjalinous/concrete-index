@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- ci:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' https://data.cityofnewyork.us https://data.ny.gov; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="same-origin">
+<meta name="color-scheme" content="light">
+<title>Regional · The Concrete Index</title>
+<meta name="description" content="School Construction Authority projects under construction and the MTA capital program by plan and agency, kept on their own ledgers apart from City totals.">
+<link rel="canonical" href="https://concreteindex.co/regional/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Concrete Index">
+<meta property="og:title" content="Regional · The Concrete Index">
+<meta property="og:description" content="School Construction Authority and MTA capital, on their own ledgers.">
+<meta property="og:url" content="https://concreteindex.co/regional/">
+<meta property="og:image" content="https://concreteindex.co/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://concreteindex.co/og-image.png">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/public-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/ci.css">
+<link rel="stylesheet" href="/assets/pages/regional.css">
+<meta name="ci:export" content="on">
+<meta name="ci:chrome" content="on">
+<script src="/assets/ci.js" defer></script>
+<script src="/assets/vendor/chart.umd.min.js" defer></script>
+<script src="/assets/ci-chart.js" defer></script>
+<script src="/assets/pages/regional.js" defer></script>
+<!-- /ci:head -->
+</head>
+<body>
+
+<!-- ci:header -->
+<a class="ci-skip" href="#content">Skip to content</a>
+<header class="ci-masthead">
+  <div class="wrap ci-masthead__bar">
+    <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="26" height="26" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+    <nav class="ci-utility" aria-label="Site"><a href="/methodology/">Methodology</a><a href="/about/">About</a><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></nav>
+    <button class="ci-menu-btn" type="button" aria-expanded="false" aria-controls="ci-menu"><svg class="ci-i-menu" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#menu"/></svg><svg class="ci-i-close" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#close"/></svg><span class="ci-menu-btn__label">Menu</span></button>
+  </div>
+  <nav class="ci-rail" id="ci-menu" aria-label="Sections">
+    <div class="wrap ci-rail__inner">
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-stages">Stages</p><ul class="ci-rail__list" aria-labelledby="ci-g-stages"><li><a href="/pipeline/">Pipeline</a></li><li><a href="/bidding/">Bidding</a></li><li><a href="/awarded/">Awarded</a></li><li><a href="/contracts/">Contracts</a></li><li><a href="/funnel/">Funnel</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-entities">Entities</p><ul class="ci-rail__list" aria-labelledby="ci-g-entities"><li><a href="/agencies/">Agencies</a></li><li><a href="/contractors/">Contractors</a></li><li><a href="/regional/" aria-current="page">Regional</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-synthesis">Synthesis</p><ul class="ci-rail__list" aria-labelledby="ci-g-synthesis"><li><a href="/analysis/">Analysis</a></li><li><a href="/briefing/">Briefing</a></li></ul></div>
+      <div class="ci-rail__group ci-rail__group--utility"><p class="ci-rail__label" id="ci-g-site">Site</p><ul class="ci-rail__list" aria-labelledby="ci-g-site"><li><a href="/methodology/">Methodology</a></li><li><a href="/about/">About</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></li></ul></div>
+    </div>
+  </nav>
+</header>
+<!-- /ci:header -->
+
+<div class="series-bar">
+  <div class="inner">SERIES&nbsp;·&nbsp;<b>CI-SCA-MTA</b><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>SCA (8586-3zfm) · MTA (kizb-nxtu)</b><span class="sep">·</span>SCA AS OF&nbsp;·&nbsp;<b id="series-asof"><span class="ci-skel ci-skel--word" aria-hidden="true"></span></b><span class="sep">·</span>UNITS&nbsp;·&nbsp;<b>USD</b></div>
+</div>
+
+<main id="content" tabindex="-1">
+
+<div class="wrap hero">
+  <h1>The School Construction Authority and the MTA, on their own ledgers.</h1>
+  <p class="sub">City agencies aren't New York's only public builders. The School Construction Authority runs its own program, and the MTA runs the region's largest. Both publish their books. This page reads them with the same normalization rules as the City funnel, including the conversion of MTA figures from their source units of thousands of dollars.</p>
+  <p class="asof" id="asof"><span class="ci-skel ci-skel--line" aria-hidden="true"></span><span class="ci-vh">Reading the SCA and MTA records…</span></p>
+</div>
+
+<nav class="ci-subnav" aria-label="On this page">
+  <div class="wrap"><ul class="ci-subnav__list"><li><a href="#sca-boro">SCA boroughs</a></li><li><a href="#sca-projects">SCA projects</a></li><li><a href="#mta-agency">MTA by agency</a></li><li><a href="#mta-plans">MTA plans</a></li><li><a href="#methodology">Definitions</a></li></ul></div>
+</nav>
+
+<div id="loader" class="wrap ci-loading">
+  <p class="ci-loading__status" role="status">Pulling SCA and MTA capital data…</p>
+  <div class="ci-skel-tape" aria-hidden="true"><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span><span class="ci-skel"></span></div><div class="ci-skel ci-skel--chart" aria-hidden="true"></div>
+</div>
+
+<div id="error" class="wrap ci-error">
+  <p><strong>Couldn't reach the open data APIs.</strong></p>
+  <p class="u-mt-2">NYC Open Data or data.ny.gov may be momentarily unavailable.</p>
+  <button type="button" class="ci-btn" data-action="reload">Retry</button>
+</div>
+
+<div data-ci-main id="app" class="wrap">
+
+  <section class="kpis">
+    <div class="kpi hl"><div class="k-label">SCA under construction</div><div class="k-value" id="kpi-sca">–</div><div class="k-note" id="kpi-sca-note"></div></div>
+    <div class="kpi"><div class="k-label">School projects</div><div class="k-value" id="kpi-sca-n">–</div><div class="k-note">currently in construction</div></div>
+    <div class="kpi"><div class="k-label">MTA 2025–29 plan</div><div class="k-value" id="kpi-mta">–</div><div class="k-note" id="kpi-mta-note"></div></div>
+    <div class="kpi"><div class="k-label">MTA program growth</div><div class="k-value" id="kpi-mta-g">–</div><div class="k-note">2025–29 plan vs 2020–24 plan</div></div>
+  </section>
+
+  <section class="grid two" id="sca">
+    <div class="card" id="sca-boro">
+      <div class="sec-head"><h2>SCA: where the school work is</h2><span class="cap">BY BOROUGH · USD</span></div>
+      <div class="h-sub">Awarded construction value of projects currently under construction, by borough</div>
+      <div class="chart-box"><canvas id="chart-sca-boro" data-ci-col="Borough" data-ci-val="Awarded construction value" data-ci-asof="series-asof"></canvas></div>
+      <div class="reading ci-note ci-note--label" id="sca-reading"></div>
+      <div class="tnote">Each bar is the awarded construction value of School Construction Authority projects currently under construction, grouped by the borough code the SCA assigns each project. This is the value of active work under contract, not committed or future budget, and the SCA dataset names no contractor. <span id="sca-boro-note"></span></div>
+    </div>
+    <div class="card" id="sca-projects">
+      <div class="sec-head"><h2>SCA: largest active projects</h2><span class="cap">TOP 10 · USD</span></div>
+      <div class="h-sub">By awarded construction value</div>
+      <table id="tbl-sca">
+        <thead><tr><th></th><th>School</th><th class="num">Award</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="tnote">The ten largest active SCA projects by awarded construction value. Award is the value of the construction contract for work under way; the SCA dataset carries no contractor field, so no firm is named.</div>
+    </div>
+  </section>
+
+  <section class="grid two" id="mta">
+    <div class="card" id="mta-agency">
+      <div class="sec-head"><h2>MTA: the 2025–29 program by agency</h2><span class="cap">USD</span></div>
+      <div class="h-sub">Current allocations in the active capital plan</div>
+      <div class="chart-box"><canvas id="chart-mta-agency" data-ci-col="Agency" data-ci-val="Current allocation"></canvas></div>
+      <div class="tnote">Each bar is the MTA's current allocation to one constituent agency in the active 2025–29 capital program. The source reports in thousands of dollars (converted here) and sits on the State's books, so these figures are kept on their own ledger and never summed with the City's.</div>
+    </div>
+    <div class="card" id="mta-plans">
+      <div class="sec-head"><h2>MTA: five capital plans of growth</h2><span class="cap">BY PLAN · USD</span></div>
+      <div class="h-sub">Total current allocations by plan</div>
+      <div class="chart-box"><canvas id="chart-mta-plans" data-ci-col="Capital plan" data-ci-val="Current allocation"></canvas></div>
+      <div class="reading ci-note ci-note--label" id="mta-reading"></div>
+      <div class="tnote">Each bar is the total current allocation of one MTA capital plan, across five consecutive five-year programs, showing the program's growth over time. Figures are current planned dollars, converted from the source's thousands, not awards or actual outlays.</div>
+    </div>
+  </section>
+
+  <section class="method" id="methodology">
+    <div class="card">
+      <div class="sec-head"><h2>SCA &amp; MTA · Methodology &amp; definitions</h2><span class="m-cap">SERIES NOTES</span></div>
+      <h3>School Construction Authority</h3>
+      <p>SCA figures come from <a href="https://data.cityofnewyork.us/Housing-Development/Active-Projects-Under-Construction/8586-3zfm" target="_blank" rel="noopener">Active Projects Under Construction</a> on NYC Open Data (dataset <code>8586-3zfm</code>): new-capacity school projects and capital improvement projects currently in construction, with their awarded construction value. This is work in the ground today, the SCA's separate five-year plan commits additional future work not shown here. The SCA republishes the extract periodically rather than continuously, so the page carries the snapshot date the City stamps on the dataset, read live from its metadata.</p>
+      <h3>The headline total and the borough split</h3>
+      <p>The headline value and project count are an ungrouped aggregate over every record in the dataset, so no project can fall out of them. The borough breakdown is grouped separately, on the structured borough code the SCA assigns each project. That matters: the dataset's free-text borough column is blank on a small number of records while the code is filled in on all of them, so grouping on the text column drops those records and understates the total. The bars sum back to the headline; anything the SCA leaves without a code would show as its own “Not assigned” bar rather than disappearing.</p>
+      <h3>MTA</h3>
+      <p>MTA figures come from the <a href="https://data.ny.gov/Transportation/Metropolitan-Transportation-Authority-MTA-Capital-/kizb-nxtu" target="_blank" rel="noopener">MTA Capital Dashboard: Agencies Detail</a> on data.ny.gov (dataset <code>kizb-nxtu</code>), using each project's current budget submission. Source values are reported in thousands of dollars and converted here. Allocations measure planned capital budgets by plan, not construction contract awards, the MTA stage is most comparable to the City's “<a href="/pipeline/">Pipeline</a>”, not its award flow.</p>
+      <h3>Why these aren't merged into the City funnel</h3>
+      <p>The SCA and MTA publish on their own ledgers, with different definitions than the City Record and OMB plan. Blending them would manufacture precision that isn't there, so they stay side by side: same treatment, separate books.</p>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<!-- ci:footer -->
+<footer class="ci-footer">
+  <div class="wrap ci-footer__inner">
+    <div class="ci-footer__brand">
+      <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="22" height="22" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+      <p class="ci-footer__tag">NYC public construction capital, from commitment to cash.</p>
+    </div>
+    <nav class="ci-footer__links" aria-label="Site information">
+      <ul><li><a href="/methodology/">Methodology</a></li><li><a href="/sources/">Sources</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">Corrections</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source on GitHub</a></li></ul>
+    </nav>
+    <div class="ci-footer__meta">
+      <p>An independent project built by Salar Jalinous using only public data. Not affiliated with the City or State of New York or any employer.</p>
+      <p><a href="/sources/">Data: NYC Open Data · Open NY · Checkbook NYC · BLS</a></p>
+      <p><a href="/about/">© <span data-ci-year="2026">2026</span> The Concrete Index</a></p>
+    </div>
+  </div>
+</footer>
+<!-- /ci:footer -->
+</body>
+</html>

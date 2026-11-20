@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- ci:head -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' https://data.cityofnewyork.us; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="same-origin">
+<meta name="color-scheme" content="light">
+<title>The Concrete Index · NYC Public Construction Demand</title>
+<meta name="description" content="Where New York City's public construction money stands: capital committed, work awarded and registered, cash paid, each read from its own public ledger.">
+<link rel="canonical" href="https://concreteindex.co/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Concrete Index">
+<meta property="og:title" content="The Concrete Index · NYC Public Construction Demand">
+<meta property="og:description" content="NYC public construction capital, from commitment to cash.">
+<meta property="og:url" content="https://concreteindex.co/">
+<meta property="og:image" content="https://concreteindex.co/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://concreteindex.co/og-image.png">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/public-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/tokens.css">
+<link rel="stylesheet" href="/assets/ci.css">
+<link rel="stylesheet" href="/assets/pages/home.css">
+<meta name="ci:export" content="on">
+<script src="/assets/ci.js" defer></script>
+<script src="/assets/pages/home.js" defer></script>
+<!-- /ci:head -->
+</head>
+<body>
+
+<!-- ci:header -->
+<a class="ci-skip" href="#content">Skip to content</a>
+<header class="ci-masthead">
+  <div class="wrap ci-masthead__bar">
+    <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="26" height="26" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+    <nav class="ci-utility" aria-label="Site"><a href="/methodology/">Methodology</a><a href="/about/">About</a><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></nav>
+    <button class="ci-menu-btn" type="button" aria-expanded="false" aria-controls="ci-menu"><svg class="ci-i-menu" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#menu"/></svg><svg class="ci-i-close" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#close"/></svg><span class="ci-menu-btn__label">Menu</span></button>
+  </div>
+  <nav class="ci-rail" id="ci-menu" aria-label="Sections">
+    <div class="wrap ci-rail__inner">
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-stages">Stages</p><ul class="ci-rail__list" aria-labelledby="ci-g-stages"><li><a href="/pipeline/">Pipeline</a></li><li><a href="/bidding/">Bidding</a></li><li><a href="/awarded/">Awarded</a></li><li><a href="/contracts/">Contracts</a></li><li><a href="/funnel/">Funnel</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-entities">Entities</p><ul class="ci-rail__list" aria-labelledby="ci-g-entities"><li><a href="/agencies/">Agencies</a></li><li><a href="/contractors/">Contractors</a></li><li><a href="/regional/">Regional</a></li></ul></div>
+      <div class="ci-rail__group"><p class="ci-rail__label" id="ci-g-synthesis">Synthesis</p><ul class="ci-rail__list" aria-labelledby="ci-g-synthesis"><li><a href="/analysis/">Analysis</a></li><li><a href="/briefing/">Briefing</a></li></ul></div>
+      <div class="ci-rail__group ci-rail__group--utility"><p class="ci-rail__label" id="ci-g-site">Site</p><ul class="ci-rail__list" aria-labelledby="ci-g-site"><li><a href="/methodology/">Methodology</a></li><li><a href="/about/">About</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source</a></li></ul></div>
+    </div>
+  </nav>
+</header>
+<!-- /ci:header -->
+
+<div class="series-bar">
+  <div class="inner" id="series-bar"><span class="sb-seg">SERIES&nbsp;·&nbsp;<b>CI-INDEX</b></span><span class="sb-seg"><span class="sep">·</span>SOURCE&nbsp;·&nbsp;<b>NYC OPEN DATA · CHECKBOOK NYC</b></span><span class="sb-seg"><span class="sep">·</span>UPDATED&nbsp;·&nbsp;<b id="series-updated" data-home="series-updated">NOV 20, 2026</b></span><span class="sb-seg sb-asof"><span class="sep">·</span>AS OF&nbsp;·&nbsp;<b id="series-asof" data-home="series-asof">OCTOBER 2026</b></span></div>
+</div>
+
+<main id="content" tabindex="-1">
+
+<div class="wrap lp-hero">
+  <div class="lp-hero__lead">
+    <h1 class="thesis"><span class="thesis-line"><span class="thesis-in">NYC funds construction</span></span> <span class="thesis-line"><span class="thesis-in">years before it pays.</span></span></h1>
+    <div class="lp-index">
+      <p class="lp-index__label">The Concrete Index &middot; 2019 = 100</p>
+      <p class="lp-index__row"><span class="lp-num" id="lp-index" data-figure="home.hero.index" data-figure-ref="analysis.kpi.idx" data-home="index">80.3</span><span class="lp-index__delta" id="lp-index-delta"></span></p>
+      <p class="lp-index__window" id="lp-index-window" data-home="index-window">Trailing twelve months, Nov 2025–Oct 2026</p>
+      <p class="lp-num-cap" id="lp-index-cap" data-home="index-cap">A single number for how much new construction work the City is putting out, measured against its 2019 pace. Renewals and $500M megaprojects are stripped out so the reading tracks fresh demand. As of October 2026.</p>
+      <a class="lp-num-how" href="/analysis/#how-its-calculated">How the Concrete Index is calculated</a>
+    </div>
+  </div>
+  <!-- home:flow -->
+  <figure class="flow" id="flow" aria-labelledby="flow-cap" data-sig="4046589262" data-stamp-split="{&quot;awarded&quot;:{&quot;value&quot;:4851812919,&quot;split&quot;:[{&quot;name&quot;:&quot;Transportation&quot;,&quot;value&quot;:1393253391},{&quot;name&quot;:&quot;Environmental Protection&quot;,&quot;value&quot;:1220666311},{&quot;name&quot;:&quot;Design and Construction&quot;,&quot;value&quot;:906768076},{&quot;name&quot;:&quot;Small Business Services&quot;,&quot;value&quot;:586887735},{&quot;name&quot;:&quot;Parks and Recreation&quot;,&quot;value&quot;:277093364},{&quot;name&quot;:&quot;All other&quot;,&quot;value&quot;:467144042}]}}"><div class="flow__bar"><button class="ci-pause flow__pause" type="button" aria-pressed="false" hidden><svg class="flow-i" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#pause"/></svg><svg class="flow-i" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#play"/></svg><span class="flow__pause-label">Pause animation</span></button><p class="flow__dot"><span class="flow__dot-mark" aria-hidden="true"></span>Each dot = <span class="flow__unit" data-figure="home.flow.unit" data-value="1000000000">$1B</span>. Dots move at one speed, which encodes nothing.</p></div><ol class="flow__lanes" id="flow-lanes" data-mode="desktop" data-unit="1000000000" data-scale="1.1123501245237152e-9"><li class="flow-lane" id="lane-committed" data-lane="committed"><div class="flow-lane__label"><span class="flow-lane__n">01</span> <span class="flow-lane__name">Committed</span></div><div class="flow-lane__band"><svg class="flow-band" width="100%" height="120" role="img" aria-label="Committed band, $107.9B on the shared scale" aria-describedby="flow-table" data-h="120"><rect class="flow-band__fill" x="0" y="0" width="100%" height="120"/><g class="flow-band__dots"><circle cx="0.34%" cy="90.18" r="1.75"/><circle cx="1.54%" cy="82.47" r="1.75"/><circle cx="2.57%" cy="88.62" r="1.75"/><circle cx="3.29%" cy="17.43" r="1.75"/><circle cx="4.3%" cy="61.99" r="1.75"/><circle cx="5.08%" cy="115.26" r="1.75"/><circle cx="5.73%" cy="7.97" r="1.75"/><circle cx="6.71%" cy="60.17" r="1.75"/><circle cx="8.08%" cy="105.29" r="1.75"/><circle cx="8.93%" cy="21.83" r="1.75"/><circle cx="9.84%" cy="113.52" r="1.75"/><circle cx="10.81%" cy="81.83" r="1.75"/><circle cx="11.37%" cy="96.35" r="1.75"/><circle cx="12.35%" cy="15.29" r="1.75"/><circle cx="13.37%" cy="54.87" r="1.75"/><circle cx="14.04%" cy="111.3" r="1.75"/><circle cx="15.13%" cy="34.94" r="1.75"/><circle cx="15.94%" cy="96.71" r="1.75"/><circle cx="17.39%" cy="8.45" r="1.75"/><circle cx="18.18%" cy="114.36" r="1.75"/><circle cx="19.2%" cy="38.2" r="1.75"/><circle cx="20.22%" cy="91.73" r="1.75"/><circle cx="20.59%" cy="67.64" r="1.75"/><circle cx="21.89%" cy="6.34" r="1.75"/><circle cx="22.9%" cy="3.49" r="1.75"/><circle cx="23.91%" cy="86.94" r="1.75"/><circle cx="24.25%" cy="67" r="1.75"/><circle cx="25.3%" cy="16.93" r="1.75"/><circle cx="26.24%" cy="28.9" r="1.75"/><circle cx="27.32%" cy="42.39" r="1.75"/><circle cx="28.07%" cy="23.06" r="1.75"/><circle cx="29.31%" cy="85.98" r="1.75"/><circle cx="30.17%" cy="47.67" r="1.75"/><circle cx="31%" cy="5.85" r="1.75"/><circle cx="32.22%" cy="25.75" r="1.75"/><circle cx="33.19%" cy="60.7" r="1.75"/><circle cx="33.77%" cy="74.05" r="1.75"/><circle cx="35.03%" cy="75.1" r="1.75"/><circle cx="35.45%" cy="62.03" r="1.75"/><circle cx="36.77%" cy="81.78" r="1.75"/><circle cx="37.7%" cy="37.22" r="1.75"/><circle cx="38.34%" cy="95.57" r="1.75"/><circle cx="39.16%" cy="104.29" r="1.75"/><circle cx="40.57%" cy="56.78" r="1.75"/><circle cx="41.01%" cy="92.33" r="1.75"/><circle cx="41.85%" cy="64.03" r="1.75"/><circle cx="42.81%" cy="69.66" r="1.75"/><circle cx="43.9%" cy="95.88" r="1.75"/><circle cx="44.9%" cy="14.5" r="1.75"/><circle cx="45.54%" cy="109.16" r="1.75"/><circle cx="46.85%" cy="64.16" r="1.75"/><circle cx="47.76%" cy="91.77" r="1.75"/><circle cx="48.8%" cy="83.85" r="1.75"/><circle cx="49.36%" cy="25.41" r="1.75"/><circle cx="50.32%" cy="66.2" r="1.75"/><circle cx="51.2%" cy="41" r="1.75"/><circle cx="52.06%" cy="79.58" r="1.75"/><circle cx="53.21%" cy="17.53" r="1.75"/><circle cx="54.19%" cy="76.82" r="1.75"/><circle cx="55.32%" cy="13.5" r="1.75"/><circle cx="55.82%" cy="99.18" r="1.75"/><circle cx="56.97%" cy="88.54" r="1.75"/><circle cx="58%" cy="12.66" r="1.75"/><circle cx="58.9%" cy="88.14" r="1.75"/><circle cx="59.43%" cy="73.43" r="1.75"/><circle cx="60.62%" cy="21.77" r="1.75"/><circle cx="61.84%" cy="91.73" r="1.75"/><circle cx="62.26%" cy="97.2" r="1.75"/><circle cx="63.42%" cy="73.44" r="1.75"/><circle cx="64.22%" cy="74.82" r="1.75"/><circle cx="65.06%" cy="15.16" r="1.75"/><circle cx="65.89%" cy="111.51" r="1.75"/><circle cx="67.26%" cy="74.93" r="1.75"/><circle cx="67.75%" cy="79.41" r="1.75"/><circle cx="68.91%" cy="6.68" r="1.75"/><circle cx="70.23%" cy="74.45" r="1.75"/><circle cx="70.66%" cy="32.62" r="1.75"/><circle cx="71.49%" cy="56.21" r="1.75"/><circle cx="72.39%" cy="92.32" r="1.75"/><circle cx="73.67%" cy="83.47" r="1.75"/><circle cx="74.56%" cy="61.12" r="1.75"/><circle cx="75.41%" cy="14.93" r="1.75"/><circle cx="76.64%" cy="47.59" r="1.75"/><circle cx="77.28%" cy="72.35" r="1.75"/><circle cx="78.09%" cy="62.38" r="1.75"/><circle cx="79.4%" cy="15.88" r="1.75"/><circle cx="80.11%" cy="112.82" r="1.75"/><circle cx="81.33%" cy="12.91" r="1.75"/><circle cx="81.71%" cy="53.92" r="1.75"/><circle cx="82.79%" cy="44.32" r="1.75"/><circle cx="83.81%" cy="29.5" r="1.75"/><circle cx="84.41%" cy="96.64" r="1.75"/><circle cx="85.46%" cy="92.31" r="1.75"/><circle cx="86.54%" cy="104.58" r="1.75"/><circle cx="87.62%" cy="109.19" r="1.75"/><circle cx="88.17%" cy="53.71" r="1.75"/><circle cx="89.6%" cy="100.05" r="1.75"/><circle cx="90.42%" cy="45.66" r="1.75"/><circle cx="91.48%" cy="20.69" r="1.75"/><circle cx="92.19%" cy="36.71" r="1.75"/><circle cx="93.16%" cy="4.92" r="1.75"/><circle cx="93.97%" cy="107.14" r="1.75"/><circle cx="94.84%" cy="21.03" r="1.75"/><circle cx="96.05%" cy="116.58" r="1.75"/><circle cx="96.74%" cy="100.36" r="1.75"/><circle cx="97.86%" cy="30.52" r="1.75"/><circle cx="98.63%" cy="106.2" r="1.75"/><circle cx="99.22%" cy="72.99" r="1.75"/></g></svg></div><div class="flow-lane__value"><span class="flow-lane__v" data-figure="home.flow.committed" data-figure-ref="pipeline.kpi.unspent" data-value="107879702042" data-asof="2026-11-20T15:30:05Z">$107.9B</span></div><p class="flow-lane__meta">Full capital plan · stock, latest plan · as of Nov 20, 2026</p><div class="flow-lane__tools"><details class="flow-def"><summary><span>Definition</span></summary><div class="flow-def__panel"><p>For each project, funded, unspent dollars are its total budget (city plus non-city funds) minus spending to date: money the City has funded in the capital plan but not yet spent. This is the page's headline measure of forward demand, the work still ahead on funded projects. It is a planning measure, not encumbered or bondable backlog: budgets shift between plan releases, and a place in the plan is no guarantee of timing.</p><p class="flow-def__src">Pipeline methodology · <a href="/methodology/#pipeline">Methodology</a></p></div></details></div><a class="flow-lane__go" href="/pipeline/">Pipeline</a></li><li class="flow-lane" id="lane-awarded" data-lane="awarded"><div class="flow-lane__label"><span class="flow-lane__n">02</span> <span class="flow-lane__name">Awarded</span></div><div class="flow-lane__band"><svg class="flow-band is-thin" width="100%" height="5.4" role="img" aria-label="Awarded band, $4.85B on the shared scale" aria-describedby="flow-table" data-h="5.4"><rect class="flow-band__fill" x="0" y="0" width="100%" height="5.4"/><g class="flow-band__split"><rect class="flow-sw-0" x="0" y="0" width="100%" height="1.55"/><rect class="flow-sw-1" x="0" y="1.55" width="100%" height="1.36"/><rect class="flow-split-gap" x="0" y="1.05" width="100%" height="1"/><rect class="flow-sw-0" x="0" y="2.91" width="100%" height="1.01"/><rect class="flow-split-gap" x="0" y="2.41" width="100%" height="1"/><rect class="flow-sw-1" x="0" y="3.92" width="100%" height="0.65"/><rect class="flow-split-gap" x="0" y="3.42" width="100%" height="1"/><rect class="flow-sw-0" x="0" y="4.57" width="100%" height="0.31"/><rect class="flow-split-gap" x="0" y="4.07" width="100%" height="1"/><rect class="flow-sw-o" x="0" y="4.88" width="100%" height="0.52"/><rect class="flow-split-gap" x="0" y="4.38" width="100%" height="1"/></g><g class="flow-band__dots"><circle cx="7.96%" cy="2.7" r="2"/><circle cx="36.99%" cy="2.7" r="2"/><circle cx="51.83%" cy="2.7" r="2"/><circle cx="68.11%" cy="2.7" r="2"/><circle cx="88.63%" cy="2.7" r="2"/></g></svg></div><div class="flow-lane__value"><span class="flow-lane__v" data-figure="home.flow.awarded" data-figure-ref="awarded.kpi.total" data-value="4851812919" data-asof="2026-11-20T15:30:05Z">$4.85B</span></div><p class="flow-lane__meta">Gross · City Record · Nov 2025–Oct 2026 · as of Nov 20, 2026</p><div class="flow-lane__tools"><details class="flow-def"><summary><span>Definition</span></summary><div class="flow-def__panel"><p>Awarded is trailing-twelve-month construction award value from the City Record (dataset qyyg-4tf5), as on the “Awarded” page. This figure is gross: deduplicated to one record per procurement but still inclusive of renewals, extensions, and awards of $500M and above.</p><p class="flow-def__src">Funnel methodology · <a href="/methodology/#funnel">Methodology</a></p></div></details><button class="flow-lane__split" type="button" aria-pressed="false" aria-controls="split-awarded" aria-label="Split Awarded by agency" hidden>Split</button></div><a class="flow-lane__go" href="/awarded/">Awarded</a><div class="flow-split" id="split-awarded" hidden><p class="flow-split__h">Awarded by agency, top five and All other</p><ol><li><span class="flow-split__sw flow-sw-0" aria-hidden="true"></span><span class="flow-split__name">Transportation</span><span class="flow-split__v">$1.39B</span></li><li><span class="flow-split__sw flow-sw-1" aria-hidden="true"></span><span class="flow-split__name">Environmental Protection</span><span class="flow-split__v">$1.22B</span></li><li><span class="flow-split__sw flow-sw-0" aria-hidden="true"></span><span class="flow-split__name">Design and Construction</span><span class="flow-split__v">$907M</span></li><li><span class="flow-split__sw flow-sw-1" aria-hidden="true"></span><span class="flow-split__name">Small Business Services</span><span class="flow-split__v">$587M</span></li><li><span class="flow-split__sw flow-sw-0" aria-hidden="true"></span><span class="flow-split__name">Parks and Recreation</span><span class="flow-split__v">$277M</span></li><li><span class="flow-split__sw flow-sw-o" aria-hidden="true"></span><span class="flow-split__name">All other</span><span class="flow-split__v">$467M</span></li></ol></div></li><li class="flow-lane" id="lane-registered" data-lane="registered"><div class="flow-lane__label"><span class="flow-lane__n">03</span> <span class="flow-lane__name">Registered</span></div><div class="flow-lane__band"><svg class="flow-band" width="100%" height="34.52" role="img" aria-label="Registered band, $31.0B on the shared scale" aria-describedby="flow-table" data-h="34.52"><rect class="flow-band__fill" x="0" y="0" width="100%" height="34.52"/><g class="flow-band__dots"><circle cx="0.69%" cy="7.27" r="1.75"/><circle cx="5.51%" cy="13.82" r="1.75"/><circle cx="7.45%" cy="24.54" r="1.75"/><circle cx="10.36%" cy="27.66" r="1.75"/><circle cx="14.3%" cy="6.43" r="1.75"/><circle cx="17.35%" cy="10.88" r="1.75"/><circle cx="21.78%" cy="7" r="1.75"/><circle cx="24.22%" cy="32.59" r="1.75"/><circle cx="26.93%" cy="3.44" r="1.75"/><circle cx="30.3%" cy="9.01" r="1.75"/><circle cx="33.68%" cy="10.72" r="1.75"/><circle cx="37.11%" cy="31.29" r="1.75"/><circle cx="39.27%" cy="25.28" r="1.75"/><circle cx="44.21%" cy="12.9" r="1.75"/><circle cx="46.25%" cy="22.12" r="1.75"/><circle cx="51.04%" cy="30.44" r="1.75"/><circle cx="52.88%" cy="9.19" r="1.75"/><circle cx="57.12%" cy="22.71" r="1.75"/><circle cx="58.87%" cy="24.64" r="1.75"/><circle cx="61.89%" cy="22.01" r="1.75"/><circle cx="66.64%" cy="27.75" r="1.75"/><circle cx="68.75%" cy="32.15" r="1.75"/><circle cx="72.1%" cy="26.92" r="1.75"/><circle cx="75.4%" cy="29.82" r="1.75"/><circle cx="78.64%" cy="29.11" r="1.75"/><circle cx="81.64%" cy="20.34" r="1.75"/><circle cx="85.45%" cy="24.47" r="1.75"/><circle cx="89.63%" cy="2.45" r="1.75"/><circle cx="92.07%" cy="28.42" r="1.75"/><circle cx="94.53%" cy="31.02" r="1.75"/><circle cx="99.17%" cy="16.37" r="1.75"/></g></svg></div><div class="flow-lane__value"><span class="flow-lane__v" data-figure="home.flow.registered" data-figure-ref="contracts.kpi.registered" data-value="31029022599" data-asof="2026-11-20">$31.0B</span></div><p class="flow-lane__meta">Registered contracts · FY21–26 + FY27 YTD · as of Nov 20, 2026</p><div class="flow-lane__tools"><details class="flow-def"><summary><span>Definition</span></summary><div class="flow-def__panel"><p>The index covers construction contracts registered with the City, drawn from the Comptroller's Checkbook NYC registered-contract record (expense contracts in registered status) that Checkbook lists under the fiscal years in the current build. Original is the contract value at registration; current reflects registered modifications.</p><p class="flow-def__src">Contracts methodology · <a href="/methodology/#contracts">Methodology</a></p></div></details></div><a class="flow-lane__go" href="/contracts/">Contracts</a></li><li class="flow-lane" id="lane-paid" data-lane="paid"><div class="flow-lane__label"><span class="flow-lane__n">04</span> <span class="flow-lane__name">Paid</span></div><div class="flow-lane__band"><svg class="flow-band" width="100%" height="19.14" role="img" aria-label="Paid band, $17.2B on the shared scale" aria-describedby="flow-table" data-h="19.14"><rect class="flow-band__fill" x="0" y="0" width="100%" height="19.14"/><g class="flow-band__dots"><circle cx="1.82%" cy="8.74" r="1.75"/><circle cx="10.28%" cy="16.04" r="1.75"/><circle cx="14.67%" cy="11.73" r="1.75"/><circle cx="21.15%" cy="15.79" r="1.75"/><circle cx="24.63%" cy="6.38" r="1.75"/><circle cx="30.9%" cy="2.16" r="1.75"/><circle cx="38.55%" cy="7.13" r="1.75"/><circle cx="43.1%" cy="16.57" r="1.75"/><circle cx="49.88%" cy="11.81" r="1.75"/><circle cx="57.08%" cy="9.4" r="1.75"/><circle cx="61.86%" cy="2.05" r="1.75"/><circle cx="67.27%" cy="12.67" r="1.75"/><circle cx="73.03%" cy="16.13" r="1.75"/><circle cx="80.43%" cy="14.56" r="1.75"/><circle cx="84.59%" cy="5.81" r="1.75"/><circle cx="89.99%" cy="14.27" r="1.75"/><circle cx="95.68%" cy="14.27" r="1.75"/></g></svg></div><div class="flow-lane__value"><span class="flow-lane__v" data-figure="home.flow.paid" data-figure-ref="funnel.kpi.paid" data-value="17211252053" data-asof="2026-11-20">$17.2B</span></div><p class="flow-lane__meta">Cumulative paid · FY21–26 + FY27 YTD · as of Nov 20, 2026<br><span class="flow-lane__ratio">55% of Registered, same contracts</span></p><div class="flow-lane__tools"><details class="flow-def"><summary><span>Definition</span></summary><div class="flow-def__panel"><p>Paid (Checkbook) is a separate reading drawn from the Comptroller's Checkbook NYC: paid to date, as of the file date, on registered construction contracts to named vendors, City scope, for the contracts Checkbook lists under the fiscal years Checkbook publishes. It is a cumulative figure, not a sum of payments made within those years, and the in-progress fiscal year is still adding contracts.</p><p class="flow-def__src">Funnel methodology · <a href="/methodology/#funnel">Methodology</a></p></div></details></div><a class="flow-lane__go" href="/funnel/">Funnel</a></li></ol><figcaption class="flow__note" id="flow-cap">Four separate ledgers, not one flow. Each band is sized to its own dollar total on one shared scale. The ledgers cover different scopes and time windows, so no band is a share of the one above it, and the four are never added together.</figcaption><div class="flow__scale"><p class="flow__scale-item"><svg class="flow__scale-bar" width="24" height="11.12" aria-hidden="true" focusable="false"><rect x="0" y="0" width="24" height="11.12"/></svg><span><span class="flow__scale-amt">$10B</span> at this thickness. Band thickness: dollars, one scale for all four.</span></p><details class="flow__table" id="flow-table-box"><summary><svg class="flow-i" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><use href="/assets/icons.svg#table"/></svg><span>View as table</span></summary><div class="ci-table-wrap" role="region" tabindex="0" aria-label="Money-flow values as a table"><table class="ci-table flow-table" id="flow-table"><caption class="ci-vh">The four ledgers of the money-flow drawing: value, scope, window, and as-of date, then each split lane by agency.</caption><thead><tr><th scope="col">Ledger</th><th scope="col" class="num">Value</th><th scope="col">Scope</th><th scope="col">Window</th><th scope="col">As of</th></tr></thead><tbody><tr><th scope="row">01 Committed</th><td class="num">$107.9B</td><td>Full City capital plan: unspent budget of active projects, one record per agency and FMS ID, close-out excluded</td><td>stock, latest plan</td><td>Nov 20, 2026</td></tr><tr><th scope="row">02 Awarded, gross</th><td class="num">$4.85B</td><td>City Record construction award notices, one record per PIN at its largest amount; renewals, extensions, and $500M+ awards included</td><td>Nov 2025–Oct 2026</td><td>Nov 20, 2026</td></tr><tr><th scope="row">03 Registered</th><td class="num">$31.0B</td><td>Current registered amounts of construction expense contracts to named vendors, City scope</td><td>FY21–26 + FY27 YTD</td><td>Nov 20, 2026</td></tr><tr><th scope="row">04 Paid, cumulative paid</th><td class="num">$17.2B</td><td>Cumulative paid to date on the same registered contracts</td><td>FY21–26 + FY27 YTD</td><td>Nov 20, 2026</td></tr></tbody><tbody><tr><th scope="rowgroup" colspan="5" class="flow-table__group">Committed by agency</th></tr><tr><td colspan="5">No agency split available for this build.</td></tr></tbody><tbody><tr><th scope="rowgroup" colspan="5" class="flow-table__group">Awarded by agency</th></tr><tr><th scope="row">Transportation</th><td class="num">$1.39B</td><td colspan="3">Awarded, Nov 2025–Oct 2026</td></tr><tr><th scope="row">Environmental Protection</th><td class="num">$1.22B</td><td colspan="3">Awarded, Nov 2025–Oct 2026</td></tr><tr><th scope="row">Design and Construction</th><td class="num">$907M</td><td colspan="3">Awarded, Nov 2025–Oct 2026</td></tr><tr><th scope="row">Small Business Services</th><td class="num">$587M</td><td colspan="3">Awarded, Nov 2025–Oct 2026</td></tr><tr><th scope="row">Parks and Recreation</th><td class="num">$277M</td><td colspan="3">Awarded, Nov 2025–Oct 2026</td></tr><tr><th scope="row">All other</th><td class="num">$467M</td><td colspan="3">Awarded, Nov 2025–Oct 2026</td></tr></tbody><tbody><tr><th scope="rowgroup" colspan="5" class="flow-table__group">Registered by agency</th></tr><tr><td colspan="5">No agency split is published for this ledger.</td></tr></tbody><tbody><tr><th scope="rowgroup" colspan="5" class="flow-table__group">Paid by agency</th></tr><tr><td colspan="5">No agency split is published for this ledger.</td></tr></tbody></table></div></details></div></figure>
+  <!-- /home:flow -->
+</div>
+
+<div class="wrap">
+  <section class="lp-tape" aria-label="Four readings the drawing does not show">
+    <div class="ci-tape">
+      <a class="ci-tile lp-tile" href="/analysis/" data-reveal><span class="ci-tile__label">Index vs a year ago</span><span class="ci-tile__value" id="kpi-yoy" data-figure="home.kpi.index-yoy" data-figure-ref="analysis.kpi.yoy" aria-label="no data">–</span><span class="ci-tile__caption" id="kpi-yoy-cap">Concrete Index against twelve months earlier · Analysis</span></a>
+      <a class="ci-tile lp-tile" href="/funnel/" data-reveal><span class="ci-tile__label">Spent, TTM</span><span class="ci-tile__value" id="kpi-spent" data-figure="home.kpi.spent.ttm" data-figure-ref="funnel.kpi.spent.ttm" aria-label="no data">–</span><span class="ci-tile__caption" id="kpi-spent-cap">Capital-plan outlays between plan snapshots, trailing year; not the same ledger as Paid.</span></a>
+      <a class="ci-tile lp-tile" href="/funnel/" data-reveal><span class="ci-tile__label">Backlog coverage</span><span class="ci-tile__value" id="kpi-coverage" data-figure="home.kpi.coverage" data-figure-ref="funnel.kpi.coverage" aria-label="no data">–</span><span class="ci-tile__caption" id="kpi-coverage-cap">Open pipeline over trailing-year spending · Funnel</span></a>
+      <a class="ci-tile lp-tile" href="/bidding/" data-reveal><span class="ci-tile__label">Open solicitations</span><span class="ci-tile__value" id="st-sol" data-figure="home.kpi.open-solicitations" data-figure-ref="bidding.list.count" data-home="sol">76</span><span class="ci-tile__caption" id="st-sol-cap" data-home="sol-cap">Construction notices still open for bids · Bidding</span></a>
+    </div>
+  </section>
+
+  <section class="lp-sec lp-steps" aria-labelledby="h-steps">
+    <div class="sec-head"><h2 id="h-steps"><span class="ci-num">01</span>How money moves</h2></div>
+    <div class="steps">
+      <ol class="steps__list">
+        <li class="step is-on" data-step="0">
+          <div class="step__art"><!-- ci:art stage-committed ci-art step__svg --><svg class="ci-art step__svg" viewBox="0 0 320 240" width="320" height="240" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+<g stroke-width="1.5"><path d="M160 60L263.9 120L160 180L56.1 120Z"/><path d="M56.1 120V150L160 210L263.9 150V120M160 180V210"/><path d="M160 90v-12M212 120v-12M160 150v-12M108 120v-12"/><path d="M160 155L177.3 165L164.3 172.5L147 162.5Z"/></g>
+<g stroke-width="1">
+<path d="M64 124.6v30M72 129.2v30M80 133.8v30M88 138.4v30M96 143v30M104 147.7v30M112 152.3v30M120 156.9v30M128 161.5v30M136 166.1v30M144 170.7v30M152 175.4v30"/>
+<path d="M168 175.4v30M184 166.1v30M200 156.9v30M216 147.7v30M232 138.4v30M248 129.2v30"/>
+<path d="M56.1 137c18 6 34 19 52 26s36 18 51.9 30M160 194c18-9 34-19 52-28s36-15 51.9-30"/>
+<path d="M160 90L212 120L160 150L108 120Z"/>
+<path d="M155.7 157.5L173 167.5M151.3 160L168.7 170M168.7 160L155.7 167.5"/>
+<path d="M84 112v-3M90 108v-3M236 112v-3M241 116v-3M200 150v-3M120 150v-3M196 96v-3M124 96v-3"/>
+<path stroke-dasharray="3 4" d="M108 120V60M160 150V90M212 120V60M160 90V30M160 30L212 60L160 90L108 60Z"/>
+</g>
+<path class="ci-accent" stroke-width="1.5" d="M212 108l9 3-9 3"/>
+</g></svg><!-- /ci:art --></div>
+          <div class="step__text">
+            <h3 class="step__h"><span class="step__n">01</span>The capital plan sets money aside</h3>
+            <p>Each project in the City's capital plan carries a budget years before a contract is let. Committed is what remains unspent on active projects: <span class="step__fig" data-flow-fig="committed" data-figure="home.steps.committed" data-figure-ref="home.flow.committed" data-home="flow-committed">$107.9B</span> in the latest plan.</p>
+            <a class="step__go" href="/pipeline/">Pipeline</a>
+          </div>
+        </li>
+        <li class="step" data-step="1">
+          <div class="step__art"><!-- ci:art stage-awarded ci-art step__svg --><svg class="ci-art step__svg" viewBox="0 0 320 240" width="320" height="240" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+<g stroke-width="1.5"><path d="M160 60L263.9 120L160 180L56.1 120Z"/><path d="M56.1 120V150L160 210L263.9 150V120M160 180V210"/>
+<path d="M160 60v-14M177.3 70v-14M194.6 80v-14M212 90v-14M229.3 100v-14M246.6 110v-14M263.9 120v-14M142.7 70v-14M125.4 80v-14M108 90v-14M90.7 100v-14M73.4 110v-14M56.1 120v-14"/>
+<path d="M218.9 116L243.1 130V112L218.9 98ZM243.1 130L258.7 121V103L243.1 112M218.9 98L234.5 89L258.7 103"/>
+<path d="M160 90L212 120L160 150L108 120Z"/>
+<circle cx="118" cy="153" r="4"/><circle cx="126" cy="153" r="4"/><circle cx="122" cy="146" r="4"/></g>
+<g stroke-width="1">
+<path d="M64 124.6v30M72 129.2v30M80 133.8v30M88 138.4v30M96 143v30M104 147.7v30M112 152.3v30M120 156.9v30M128 161.5v30M136 166.1v30M144 170.7v30M152 175.4v30"/>
+<path d="M168 175.4v30M184 166.1v30M200 156.9v30M216 147.7v30M232 138.4v30M248 129.2v30"/>
+<path d="M56.1 137c18 6 34 19 52 26s36 18 51.9 30M160 194c18-9 34-19 52-28s36-15 51.9-30"/>
+<path d="M160 55L263.9 115M160 49L263.9 109M160 55L56.1 115M160 49L56.1 109"/>
+<path d="M222 99.8v18M225 101.5v18M236 107.9v18M239 109.6v18M242 111.4v18"/>
+<path d="M247 119v-8l6-3.5v8z"/>
+<path d="M160 90v10M160 100L203.3 125M160 100L116.7 125"/>
+<path d="M166 93.5v10M171 96.3v10M176 99.2v10M181 102.1v10M186 105v10M191 107.9v10M196 110.8v10M201 113.7v10M206 116.5v7"/>
+<path d="M154 93.5v10M150 95.8v10M146 98.1v10M142 100.4v10M138 102.7v10M134 105v10M130 107.3v10M126 109.6v10M122 111.9v10M118 114.2v8"/>
+<path d="M124 142.5l-26-15M120 149.5l-26-15M130 149.5l-26-15M114 156.5l-26-15"/>
+<path d="M84 112v-3M90 108v-3M240 131v-3M200 150v-3M80 120v-3"/>
+</g>
+<path class="ci-accent" stroke-width="1.5" d="M227.5 121L232.7 124V112L227.5 109Z"/>
+</g></svg><!-- /ci:art --></div>
+          <div class="step__text">
+            <h3 class="step__h"><span class="step__n">02</span>Agencies award the work</h3>
+            <p>When a project is ready, an agency bids it out and publishes the award in the City Record. Award notices over the last twelve full months total <span class="step__fig" data-flow-fig="awarded" data-figure="home.steps.awarded" data-figure-ref="home.flow.awarded" data-home="flow-awarded">$4.85B</span>, including renewals and $500M+ awards.</p>
+            <a class="step__go" href="/awarded/">Awarded</a>
+          </div>
+        </li>
+        <li class="step" data-step="2">
+          <div class="step__art"><!-- ci:art stage-registered ci-art step__svg --><svg class="ci-art step__svg" viewBox="0 0 320 240" width="320" height="240" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+<g stroke-width="1.5"><path d="M160 60L263.9 120L160 180L56.1 120Z"/><path d="M56.1 120V150L160 210L263.9 150V120M160 180V210"/>
+<path d="M160 90L212 120L160 150L108 120Z"/>
+<path d="M212 120V60M186 135V101M160 150V116M134 135V101M108 120V60M186 105V45M134 105V45"/>
+<path d="M108 90L134 105L160 120L186 105L212 90"/>
+<path d="M134 75L160 90L186 105M186 75L160 90L134 105"/>
+<path d="M212 60L186 45L160 30L134 45L108 60"/></g>
+<g stroke-width="1">
+<path d="M64 124.6v30M72 129.2v30M80 133.8v30M88 138.4v30M96 143v30M104 147.7v30M112 152.3v30M120 156.9v30M128 161.5v30M136 166.1v30M144 170.7v30M152 175.4v30"/>
+<path d="M168 175.4v30M184 166.1v30M200 156.9v30M216 147.7v30M232 138.4v30M248 129.2v30"/>
+<path d="M56.1 137c18 6 34 19 52 26s36 18 51.9 30M160 194c18-9 34-19 52-28s36-15 51.9-30"/>
+<path d="M160 90V30M186 105V45M160 120V60"/>
+<path d="M160 60L186 75L212 90M160 60L134 75L108 90"/>
+<path d="M186 45L160 60L134 45"/>
+<path d="M160 90L186 75M186 105L160 60"/>
+<path d="M127.5 78.8L153.5 93.8M121 82.5L147 97.5M114.5 86.3L140.5 101.3"/>
+<path d="M118 126l8 4.6M196 126l-8 4.6M150 142l6 3.5M170 142l-6 3.5"/>
+<path d="M84 112v-3M90 108v-3M236 112v-3M241 116v-3M220 146v-3M100 146v-3"/>
+</g>
+<g class="ci-accent" stroke-width="1.5"><circle cx="212" cy="90" r="2.5"/><path d="M216 86l4-4M217 91h5M215 94l3 3"/></g>
+</g></svg><!-- /ci:art --></div>
+          <div class="step__text">
+            <h3 class="step__h"><span class="step__n">03</span>The Comptroller registers the contract</h3>
+            <p>A contract becomes a public obligation when the Comptroller registers it. The construction contracts Checkbook NYC lists for the current build carry <span class="step__fig" data-flow-fig="registered" data-figure="home.steps.registered" data-figure-ref="home.flow.registered" data-home="flow-registered">$31.0B</span> in current registered amounts.</p>
+            <a class="step__go" href="/contracts/">Contracts</a>
+          </div>
+        </li>
+        <li class="step" data-step="3">
+          <div class="step__art"><!-- ci:art stage-paid ci-art step__svg --><svg class="ci-art step__svg" viewBox="0 0 320 240" width="320" height="240" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+<g stroke-width="1.5"><path d="M160 60L263.9 120L160 180L56.1 120Z"/><path d="M56.1 120V150L160 210L263.9 150V120M160 180V210"/><circle cx="84" cy="128" r="6"/><circle cx="240" cy="122" r="6"/></g>
+<g stroke-width="2"><path d="M108 120L160 150L212 120V48L160 18L108 48ZM160 150V78L212 48M160 78L108 48"/></g>
+<g stroke-width="1">
+<path d="M64 124.6v30M72 129.2v30M80 133.8v30M88 138.4v30M96 143v30M104 147.7v30M112 152.3v30M120 156.9v30M128 161.5v30M136 166.1v30M144 170.7v30M152 175.4v30"/>
+<path d="M168 175.4v30M184 166.1v30M200 156.9v30M216 147.7v30M232 138.4v30M248 129.2v30"/>
+<path d="M56.1 137c18 6 34 19 52 26s36 18 51.9 30M160 194c18-9 34-19 52-28s36-15 51.9-30"/>
+<path d="M160 132L212 102M160 114L212 84M160 96L212 66M108 102L160 132M108 84L160 114M108 66L160 96"/>
+<path d="M112 50.3v72M116 52.6v72M120 54.9v72M124 57.2v72M128 59.5v72M132 61.8v72M136 64.2v72M140 66.5v72M144 68.8v72M148 71.1v72M152 73.4v72M156 75.7v72"/>
+<path d="M205 119L196.3 124V116L205 111ZM175.5 136L166.9 141V133L175.5 128ZM205 101L196.3 106V98L205 93ZM190.3 109.5L181.6 114.5V106.5L190.3 101.5ZM175.5 118L166.9 123V115L175.5 110ZM205 83L196.3 88V80L205 75ZM190.3 91.5L181.6 96.5V88.5L190.3 83.5ZM175.5 100L166.9 105V97L175.5 92ZM205 65L196.3 70V62L205 57ZM190.3 73.5L181.6 78.5V70.5L190.3 65.5ZM175.5 82L166.9 87V79L175.5 74Z"/>
+<path d="M160 24L202 48L160 72L118 48Z"/>
+<path d="M100 120L160 155L220 120"/>
+<path d="M84 134v6M240 128v6M80 125l6 6M81 130l5 5M236 119l6 6M237 124l5 5"/>
+</g>
+<path class="ci-accent" stroke-width="1.5" d="M190.3 132.5L181.6 137.5V123.5L190.3 118.5Z"/>
+</g></svg><!-- /ci:art --></div>
+          <div class="step__text">
+            <h3 class="step__h"><span class="step__n">04</span>The City pays as work is done</h3>
+            <p>Payments follow progress on site. On those same contracts, <span class="step__fig" data-flow-fig="paid" data-figure="home.steps.paid" data-figure-ref="home.flow.paid" data-home="flow-paid">$17.2B</span> has been paid to date, counted over each contract's life.</p>
+            <a class="step__go" href="/funnel/">Funnel</a>
+          </div>
+        </li>
+      </ol>
+      <div class="steps__frame" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <section class="lp-sec lp-month" aria-labelledby="h-month">
+    <div class="sec-head"><h2 id="h-month"><span class="ci-num">02</span>This month in NYC construction</h2><p class="cap" id="month-cap">Readings from the Briefing</p></div>
+    <dl class="month">
+      <div class="month__item" data-reveal><dt>Awarded, TTM · new work</dt><dd class="month__v" id="mo-new" data-figure="home.month.new-work.ttm" data-figure-ref="briefing.stats.new-work.ttm" aria-label="no data">–</dd><dd class="month__cap">Renewals and $500M+ awards held out</dd></div>
+      <div class="month__item" data-reveal><dt>New work vs prior year</dt><dd class="month__v" id="mo-delta" data-figure="home.month.new-work.yoy" data-figure-ref="briefing.stats.new-work.yoy" aria-label="no data">–</dd><dd class="month__cap">Same new-work basis, both years</dd></div>
+      <div class="month__item" data-reveal><dt>Open pipeline</dt><dd class="month__v" id="mo-pipe" data-figure="home.month.pipeline" data-figure-ref="briefing.stats.pipeline" data-home="month-pipe">$107.9B</dd><dd class="month__cap" id="mo-pipe-cap" data-home="month-pipe-cap">Committed, unspent, latest plan</dd></div>
+      <div class="month__item" data-reveal><dt>Backlog coverage</dt><dd class="month__v" id="mo-cover" data-figure="home.month.coverage" data-figure-ref="briefing.stats.coverage" aria-label="no data">–</dd><dd class="month__cap" id="mo-cover-cap">Years of work at the trailing pace</dd></div>
+    </dl>
+    <p class="lp-more"><a href="/briefing/">Read the Briefing</a></p>
+  </section>
+
+  <section class="lp-sec lp-audience" aria-labelledby="h-audience">
+    <div class="sec-head"><h2 id="h-audience"><span class="ci-num">03</span>Questions this answers</h2></div>
+    <div class="ci-table-wrap" role="region" tabindex="0" aria-labelledby="h-audience">
+      <table class="ci-table aud">
+        <thead><tr><th scope="col">Question you have</th><th scope="col">Page</th><th scope="col">The figure it gives you</th></tr></thead>
+        <tbody>
+          <tr><th scope="rowgroup" colspan="3" class="aud__group">Underwriters and brokers</th></tr>
+          <tr><td>Is this contractor's City award volume growing or shrinking?</td><td><a href="/contractors/">Contractors</a></td><td>The firm's awards by year</td></tr>
+          <tr><td>How much of a firm's City work comes from one agency?</td><td><a href="/contractors/">Contractors</a></td><td>The firm's award dollars by agency</td></tr>
+          <tr><td>Is new City construction work growing or shrinking?</td><td><a href="/awarded/">Awarded</a></td><td>TTM awards against the prior twelve months</td></tr>
+          <tr><td>Which agencies will put the next round of bonded work out to bid?</td><td><a href="/bidding/">Bidding</a></td><td>Open solicitations by agency, with due dates</td></tr>
+          <tr><td>Where is committed money not yet awarded?</td><td><a href="/pipeline/">Pipeline</a></td><td>Unspent capital commitments by agency and borough</td></tr>
+        </tbody>
+        <tbody>
+          <tr><th scope="rowgroup" colspan="3" class="aud__group">Contractors</th></tr>
+          <tr><td>What is due, and when?</td><td><a href="/bidding/">Bidding</a></td><td>Open solicitations with due date, agency, category</td></tr>
+          <tr><td>Who wins this agency's work?</td><td><a href="/agencies/">Agencies</a></td><td>Top recipients and top-recipient share</td></tr>
+          <tr><td>How fast does an agency pay once a contract is registered?</td><td><a href="/agencies/">Agencies</a></td><td>Median days to first payment and to 50 percent paid</td></tr>
+        </tbody>
+        <tbody>
+          <tr><th scope="rowgroup" colspan="3" class="aud__group">Analysts and benchmarking</th></tr>
+          <tr><td>How many years of work does the open pipeline cover?</td><td><a href="/funnel/">Funnel</a></td><td>Backlog coverage: open pipeline over trailing spend</td></tr>
+          <tr><td>How long does an award take to turn into cash?</td><td><a href="/analysis/">Analysis</a></td><td>The award-to-spend curve</td></tr>
+          <tr><td>Is demand rising in real terms or only with inflation?</td><td><a href="/analysis/">Analysis</a></td><td>The cost-adjusted Concrete Index</td></tr>
+          <tr><td>What does school and transit capital look like?</td><td><a href="/regional/">Regional</a></td><td>SCA and MTA capital, on separate ledgers</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="lp-sec lp-method" aria-labelledby="h-method">
+    <div class="sec-head"><h2 id="h-method"><span class="ci-num">04</span>Methodology and sources</h2></div>
+    <div class="msrc">
+      <ul class="msrc__list" aria-label="Sources this page reads">
+        <li><span class="msrc__name">City Record, Recent Contract Awards</span><span class="msrc__id">qyyg-4tf5</span><span class="msrc__asof" data-home="src-awards">as of Nov 20, 2026</span></li>
+        <li><span class="msrc__name">OMB Capital Projects Dashboard</span><span class="msrc__id">fb86-vt7u</span><span class="msrc__asof" data-home="src-plan">file of Nov 20, 2026</span></li>
+        <li><span class="msrc__name">City Record, Current Solicitations</span><span class="msrc__id">3khw-qi8f</span><span class="msrc__asof" data-home="src-sol">file of Nov 20, 2026</span></li>
+        <li><span class="msrc__name">Checkbook NYC, registered contracts</span><span class="msrc__id">Comptroller</span><span class="msrc__asof" data-home="src-cbk">as of Nov 20, 2026</span></li>
+      </ul>
+      <dl class="msrc__defs">
+        <div><dt>Concrete Index</dt><dd>Trailing-twelve-month value and count of new construction awards against their 2019 average.</dd></div>
+        <div><dt>Gross awards</dt><dd>Every construction award notice, one record per PIN at its largest amount, renewals and $500M+ included.</dd></div>
+        <div><dt>Backlog coverage</dt><dd>Unspent committed dollars divided by trailing-year spending.</dd></div>
+      </dl>
+    </div>
+    <p class="msrc__series">Series CI-INDEX · method revised Nov 20, 2026 · <a href="/methodology/">Methodology</a> · <a href="/sources/">Sources</a></p>
+  </section>
+</div>
+</main>
+
+<script src="/assets/flow/flow-layout.js" defer></script>
+<script src="/assets/flow/flow-svg.js" defer></script>
+<script src="/assets/flow/flow-data.js" defer></script>
+<script src="/assets/flow/flow-stamp.js" defer></script>
+<script src="/assets/flow/flow-particles.js" defer></script>
+<script src="/assets/flow/flow-controller.js" defer></script>
+
+<!-- ci:footer -->
+<footer class="ci-footer">
+  <div class="wrap ci-footer__inner">
+    <div class="ci-footer__brand">
+      <a class="ci-home" href="/" aria-label="The Concrete Index, home"><svg class="ci-mark" viewBox="0 0 120 120" width="22" height="22" aria-hidden="true" focusable="false"><path d="M60 39 A25 25 0 1 0 60 81" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><rect x="74" y="38" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="74" y="72.5" width="24" height="9.5" rx="1.5" fill="currentColor"/><rect x="82.4" y="38" width="7.2" height="44" fill="currentColor"/><circle class="ci-mark__dot" cx="101" cy="84" r="5.6"/></svg><span class="ci-wordmark" aria-hidden="true">The Concrete Index<span class="ci-tick">.</span></span></a>
+      <p class="ci-footer__tag">NYC public construction capital, from commitment to cash.</p>
+    </div>
+    <nav class="ci-footer__links" aria-label="Site information">
+      <ul><li><a href="/methodology/">Methodology</a></li><li><a href="/sources/">Sources</a></li><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="https://github.com/salarjalinous/concrete-index/issues" rel="noopener">Corrections</a></li><li><a href="https://github.com/salarjalinous/concrete-index" rel="noopener">Source on GitHub</a></li></ul>
+    </nav>
+    <div class="ci-footer__meta">
+      <p>An independent project built by Salar Jalinous using only public data. Not affiliated with the City or State of New York or any employer.</p>
+      <p><a href="/sources/">Data: NYC Open Data · Open NY · Checkbook NYC · BLS</a></p>
+      <p><a href="/about/">© <span data-ci-year="2026">2026</span> The Concrete Index</a></p>
+    </div>
+  </div>
+</footer>
+<!-- /ci:footer -->
+</body>
+</html>

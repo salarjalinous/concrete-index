@@ -1,0 +1,43 @@
+/* editorial: Privacy, Terms, Sources, Methodology. Long-form pages with no
+   data calls. Shared components live in /assets/ci.css. */
+.editorial{max-width:760px;padding:var(--s-10) 0 var(--s-16)}
+.editorial .page-head{padding-bottom:var(--s-6);margin-bottom:var(--s-8);border-bottom:2px solid var(--ink)}
+.editorial h1{font-family:var(--font-serif);font-weight:700;font-size:var(--t-h1-size);line-height:var(--t-h1-line);letter-spacing:-.015em;margin-bottom:var(--s-3)}
+.editorial h2{font-family:var(--font-serif);font-weight:700;font-size:var(--t-h2-size);line-height:var(--t-h2-line);letter-spacing:-.01em;margin:var(--s-10) 0 var(--s-3)}
+.editorial h3{font-family:var(--font-serif);font-weight:600;font-size:var(--t-h3-size);line-height:var(--t-h3-line);margin:var(--s-6) 0 var(--s-2)}
+.editorial h4{font-family:var(--font-mono);font-weight:600;font-size:var(--t-label-size);letter-spacing:var(--t-label-track);text-transform:uppercase;margin:var(--s-5) 0 var(--s-2)}
+.editorial p,.editorial li{font-size:var(--t-body-size);line-height:1.65;color:var(--ink)}
+.editorial p+p{margin-top:var(--s-3)}
+.editorial ul,.editorial ol{padding-left:var(--s-5);margin:var(--s-3) 0}
+.editorial li+li{margin-top:var(--s-2)}
+.editorial a{text-decoration:underline;text-underline-offset:2px}
+.editorial code{font-family:var(--font-mono);font-size:var(--fs-14);background:var(--band);padding:var(--s-px) var(--s-1);border:1px solid var(--line);border-radius:var(--radius)}
+.editorial .lede{font-size:var(--t-lede-size);line-height:var(--t-lede-line);color:var(--muted)}
+.editorial .page-meta{font-family:var(--font-mono);font-size:var(--t-meta-size);line-height:var(--t-meta-line);color:var(--muted);letter-spacing:.02em}
+.editorial .page-note,.editorial .reading-note{margin-top:var(--s-8);border-top:1px solid var(--ink);background:var(--band);padding:var(--s-3) var(--s-4);font-size:var(--t-body-sm-size);line-height:var(--t-body-sm-line);color:var(--muted)}
+.editorial section{scroll-margin-top:calc(var(--sticky-h) + var(--s-4))}
+/* rule tables */
+.editorial .table-wrap{overflow-x:auto;margin:var(--s-4) 0;-webkit-overflow-scrolling:touch}
+.editorial .table-wrap:focus-visible{outline-offset:2px}
+.rule-table{width:100%;border-collapse:collapse;font-size:var(--t-body-sm-size);line-height:var(--t-body-sm-line)}
+.rule-table caption{text-align:left;font-family:var(--font-mono);font-size:var(--t-meta-size);color:var(--muted);padding-bottom:var(--s-2)}
+.rule-table th{text-align:left;font-family:var(--font-mono);font-size:var(--t-label-size);font-weight:500;letter-spacing:var(--t-label-track);text-transform:uppercase;color:var(--muted);padding:0 var(--s-2) var(--s-2);border-bottom:1px solid var(--ink);vertical-align:bottom}
+.rule-table td{padding:var(--s-2);border-bottom:1px solid var(--line);vertical-align:top}
+.rule-table tbody th{font-family:var(--font-sans);font-size:var(--t-body-sm-size);text-transform:none;letter-spacing:0;color:var(--ink);font-weight:600;border-bottom:1px solid var(--line);padding:var(--s-2);vertical-align:top}
+/* methodology */
+.page-head--art{position:relative;padding-top:var(--s-6);background-image:url(/assets/art/blueprint-grid.svg);background-size:24px 24px;background-position:0 0}
+.page-art{display:block;width:240px;height:auto;color:var(--muted);margin-bottom:var(--s-4)}
+.page-index{margin-bottom:var(--s-8)}
+.page-index__label{font-family:var(--font-mono);font-size:var(--t-label-size);letter-spacing:var(--t-label-track);text-transform:uppercase;color:var(--muted);margin-bottom:var(--s-2)}
+.page-index ol{display:flex;flex-wrap:wrap;gap:var(--s-1) var(--s-4);list-style:none;padding:0;margin:0}
+.page-index li+li{margin-top:0}
+.page-index a{display:inline-block;min-height:24px;font-size:var(--t-ui-size)}
+.method-page{border-top:1px solid var(--line);margin-top:var(--s-10)}
+.method-page h2{margin-top:var(--s-6)}
+.method-src{font-family:var(--font-mono);font-size:var(--t-meta-size);color:var(--muted);margin-bottom:var(--s-3)}
+.changelog dt{font-family:var(--font-mono);font-size:var(--t-meta-size);font-weight:600;margin-top:var(--s-4)}
+.changelog dd{margin:var(--s-1) 0 0;font-size:var(--t-body-size);line-height:1.65}
+@media (max-width:767px){
+  .editorial{padding:var(--s-6) 0 var(--s-10)}
+  .page-art{width:180px}
+}

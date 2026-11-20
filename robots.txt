@@ -4,3 +4,5 @@ Disallow: /test/
 Disallow: /tools/
 
 Sitemap: https://concreteindex.co/sitemap.xml
+User-agent: *
+Disallow: /_stage/

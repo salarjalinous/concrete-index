@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" width="320" height="240">
+<symbol id="art" viewBox="0 0 320 240">
+<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+<g stroke-width="1.5"><path d="M160 60L263.9 120L160 180L56.1 120Z"/><path d="M56.1 120V150L160 210L263.9 150V120M160 180V210"/><path d="M160 90v-12M212 120v-12M160 150v-12M108 120v-12"/><path d="M160 155L177.3 165L164.3 172.5L147 162.5Z"/></g>
+<g stroke-width="1">
+<path d="M64 124.6v30M72 129.2v30M80 133.8v30M88 138.4v30M96 143v30M104 147.7v30M112 152.3v30M120 156.9v30M128 161.5v30M136 166.1v30M144 170.7v30M152 175.4v30"/>
+<path d="M168 175.4v30M184 166.1v30M200 156.9v30M216 147.7v30M232 138.4v30M248 129.2v30"/>
+<path d="M56.1 137c18 6 34 19 52 26s36 18 51.9 30M160 194c18-9 34-19 52-28s36-15 51.9-30"/>
+<path d="M160 90L212 120L160 150L108 120Z"/>
+<path d="M155.7 157.5L173 167.5M151.3 160L168.7 170M168.7 160L155.7 167.5"/>
+<path d="M84 112v-3M90 108v-3M236 112v-3M241 116v-3M200 150v-3M120 150v-3M196 96v-3M124 96v-3"/>
+<path stroke-dasharray="3 4" d="M108 120V60M160 150V90M212 120V60M160 90V30M160 30L212 60L160 90L108 60Z"/>
+</g>
+<path class="ci-accent" stroke-width="1.5" d="M212 108l9 3-9 3"/>
+</g>
+</symbol>
+<use href="#art"/>
+</svg>

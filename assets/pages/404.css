@@ -1,0 +1,12 @@
+/* 404: rules used only on this page. Shared components live in /assets/ci.css. */
+.fill{flex:1;display:flex;align-items:center;justify-content:center;padding:var(--s-8)}
+.box{max-width:560px}
+h1{font-family:var(--font-serif);font-weight:700;font-size:var(--t-h1-size);line-height:1.08;letter-spacing:-.015em;margin:0 0 var(--s-3)}
+p{font-size:var(--fs-16);line-height:1.55;color:var(--muted);margin:0 0 var(--s-5);max-width:460px}
+.links{display:flex;flex-wrap:wrap;gap:var(--s-2)}
+.links a{font-family:var(--font-mono);font-size:var(--fs-14);text-decoration:none;color:var(--navy);border:1px solid var(--line);padding:var(--s-2) var(--s-3)}
+.links a:hover{border-color:var(--ink);color:var(--accent)}
+.links a.primary{background:var(--navy);color:var(--surface);border-color:var(--navy)}
+.links a.primary:hover{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+#content{display:flex;flex-direction:column}
+.ci-art--404{display:block;width:200px;margin-bottom:var(--s-5)}
