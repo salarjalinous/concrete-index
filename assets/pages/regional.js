@@ -209,10 +209,10 @@ function renderMTA(){
   });
   if(plan29 && plan24 && plan24.s > 0){
     document.getElementById('mta-reading').innerHTML =
-      `<strong>Reading:</strong> the MTA's plan has grown every cycle in nominal dollars. The 2025–29 program, at <strong>${fmtMoney(plan29.s)}</strong>, runs ${(plan29.s/plan24.s).toFixed(1)}× the current allocation of the 2020–24 plan. That comparison is not adjusted for construction cost; see the “<a href="/analysis/">Analysis</a>” page's cost-adjusted index for how much of any nominal gain over the same span is price rather than added work. For the region's contractors, the MTA is the single largest pool of public work in New York.`;
+      `<strong>Reading:</strong> the MTA's plan has grown every cycle in nominal dollars. The 2025–29 program, at <strong>${fmtMoney(plan29.s)}</strong>, runs ${(plan29.s/plan24.s).toFixed(1)}× the current allocation of the 2020–24 plan. That comparison is not adjusted for construction cost; see the “<a href="/analysis/">Analysis</a>” page's cost-adjusted index for how much of any nominal gain over the same span is price rather than added work.`;
   } else {
     document.getElementById('mta-reading').innerHTML =
-      `<strong>Reading:</strong> for the region's contractors, the MTA is the single largest pool of public work in New York.`;
+      `<strong>Reading:</strong> the MTA's capital program is a separate pool of public work from the City's, on its own ledger.`;
   }
 }
 

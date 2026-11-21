@@ -72,7 +72,7 @@
     <input id="q" type="search" placeholder="Try a contractor name" autocomplete="off" aria-label="Contractor name" aria-describedby="q-sent">
     <button id="go">Search</button>
   </div>
-  <p class="hint" id="q-sent">Search text is sent to NYC Open Data to run the query.</p>
+  <p class="hint" id="q-sent">Search text is sent to NYC Open Data and, for the MTA and State section, to Open NY.</p>
   <p class="hint">Matches the vendor name as published in the City Record. Where we can confirm by hand that several names belong to the same firm, they roll up under one parent total; every underlying name is listed below the profile.</p>
 </div>
 
@@ -141,7 +141,7 @@
     <section class="grid two" id="city-charts">
       <div class="card">
         <div class="sec-head"><h2>Awarded value by year</h2><span class="cap">BY YEAR &middot; USD</span></div>
-        <div class="h-sub">Job-size trend matters as much as the total: a book stepping up in size is taking on different risk</div>
+        <div class="h-sub">Job-size trend matters as much as the total: a book stepping up in size is taking on work of a different scale</div>
         <div class="chart-box"><canvas id="chart-year" data-ci-col="Year" data-ci-val="Awarded value"></canvas></div>
         <div class="tnote">Each bar is the group's awarded value for one year, on the deduplicated City Record set (one record per procurement). The trend in job size matters as much as the total: a book stepping up in scale is taking on work of a different size. These are award-notice values, not paid amounts.</div>
       </div>
