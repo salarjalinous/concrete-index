@@ -955,7 +955,20 @@ function wireControls(){
       if(!res.ok) throw new Error('HTTP ' + res.status); return res.json();
     });
   }
+  /* The sample file carries synthetic contracts for local work. It must never
+     paint as if it were the record (same guard as the Contracts page). */
+  function isLocalCheckout(){
+    var h = location.hostname;
+    return h === 'localhost' || h === '127.0.0.1' || h === '::1' || h === '';
+  }
+  function refusedFixture(payload){
+    if(!(payload && payload.meta && payload.meta.fixture)) return false;
+    if(isLocalCheckout()){ if(window.console) console.warn('contract-search: rendering the synthetic sample fixture, not the nightly file'); return false; }
+    if(window.console) console.error('contract-search: fixture payload refused outside a local checkout');
+    return true;
+  }
   function paintAll(payload){
+    if(refusedFixture(payload)){ hideTile1(); return; }
     var cs = (payload && Array.isArray(payload.contracts)) ? payload.contracts : [];
     try { renderPayVel(cs); } catch(e){ if(window.console) console.error('payvel render', e); var s = document.getElementById('payvel-sec'); if(s) s.style.display = 'none'; }
     try { fillVelocityColumn(cs); } catch(e){ if(window.console) console.error('payvel column', e); }
