@@ -99,12 +99,13 @@ function buildAggregates(contracts, vendors, meta, now){
       registered_canonical: vReg, paid_canonical: vPaid,
       registered_current_amount_only: curOnly,
       registered_contracts_page_rule: agg.registered,
+      registered_with_original_fallback: curOnly + fallbackSum,
       original_amount_fallback: { contracts: fallbackN, dollars: fallbackSum },
       paid_contracts_file: agg.paid,
       paid_gap: vPaid == null ? null : agg.paid - vPaid,
       registered_gap_contracts_page_vs_canonical: vReg == null ? null : agg.registered - vReg,
-      fallback_explains_gap: vReg != null && curOnly === vReg && agg.registered - vReg === fallbackSum,
-      note: 'Registered and Paid have one canonical source, checkbook-vendors.json. The Contracts page KPI counts a contract with no current amount at its original amount; when fallback_explains_gap is true that fallback is the whole registered gap.'
+      contracts_page_matches_canonical: vReg != null && agg.registered === vReg,
+      note: 'Registered and Paid have one canonical source, checkbook-vendors.json. Since Nov 20, 2026 the Contracts page KPI sums current amounts only (D6), so it matches the canonical figure; registered_with_original_fallback is the earlier rule, which counted a contract with no current amount at its original amount.'
     }
   };
 }

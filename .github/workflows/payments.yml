@@ -968,8 +968,10 @@ jobs:
           # total_paid_to_date are the contract-record current and spent-to-date
           # sums; total_dated_disbursements is the dated-check floor across swept
           # contracts. Not a market aggregate, the value of the contracts indexed.
-          total_registered = sum((rec["current_amount"] or rec["original_amount"] or 0)
-                                  for rec in records)
+          # D6 (Nov 20, 2026): current amounts only, the canonical rule the
+          # Contracts KPI and Home's Registered lane share.
+          total_registered = sum(a for a in ((rec["current_amount"] or 0) for rec in records)
+                                 if a > 0)
           total_paid_to_date = sum((rec["paid_to_date"] or 0) for rec in records)
           total_dated_disbursements = sum((rec["total_paid"] or 0) for rec in records
                                           if rec.get("payments_swept"))
@@ -1080,6 +1082,7 @@ jobs:
                   "dated check; they stay searchable with contract-level amounts.",
                   "total_registered and total_paid_to_date sum the contract-record current "
                   "(registered) and spent-to-date amounts across every contract in the index; "
+                  "a contract with no current amount adds nothing to total_registered; "
                   "total_dated_disbursements sums the dated check floor across swept contracts. "
                   "These describe the contracts indexed, not the NYC construction market.",
                   "No location/borough field is published for these records by design.",

@@ -156,8 +156,9 @@ test('B4. contract splits: lossless index, shards hold every curve, aggregates m
   const curves = src.contracts.filter(c => Array.isArray(c.monthly_cumulative) && c.monthly_cumulative.length);
   for(const c of curves) assert.deepEqual(shards[C.shardOf(c.contract_id)][c.contract_id].monthly_cumulative, c.monthly_cumulative);
   const agg = CS.buildAggregates(src.contracts, vendors, src.meta, now);
-  // Contracts page KPI = payments.yml meta totals
-  assert.equal(agg.contracts_page.registered, src.meta.total_registered);
+  // Contracts page KPI: registered on the D6 current-amount-only rule; paid
+  // and the dated count equal the payments.yml meta totals
+  assert.equal(agg.contracts_page.registered, agg.reconciliation_d6.registered_current_amount_only);
   assert.equal(agg.contracts_page.paid, src.meta.total_paid_to_date);
   assert.equal(agg.contracts_page.with_dated, src.meta.contracts_with_dated_payments);
   // Agency TILE 1 and Analysis S-curve are the page functions on the full file
@@ -171,7 +172,8 @@ test('B4. contract splits: lossless index, shards hold every curve, aggregates m
   for(const c of src.contracts){ const v = +c.current_amount; if(v > 0) cur += v; else { const o = +c.original_amount; if(o > 0){ fbN++; fb += o; } } }
   assert.equal(r.registered_current_amount_only, cur);
   assert.deepEqual(r.original_amount_fallback, { contracts: fbN, dollars: fb });
-  assert.ok(Math.abs(r.registered_contracts_page_rule - r.registered_current_amount_only - r.original_amount_fallback.dollars) < 0.5, 'old rule = current only + fallback');
+  assert.equal(r.registered_contracts_page_rule, r.registered_current_amount_only);
+  assert.equal(r.registered_with_original_fallback, r.registered_current_amount_only + r.original_amount_fallback.dollars);
   assert.equal(r.paid_contracts_file, src.meta.total_paid_to_date);
 });
 

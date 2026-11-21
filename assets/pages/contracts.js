@@ -106,7 +106,12 @@ function aggregate(contracts){
   var registered = 0, paid = 0, lags = [];
   for(var i=0;i<contracts.length;i++){
     var c = contracts[i];
-    registered += denom(c);
+    // D6 canonical rule (Nov 20, 2026): registered value sums current amounts
+    // only, the same rule as Home's Registered lane and checkbook-vendors.json.
+    // A contract with no current amount adds nothing here; its row still shows
+    // the original amount as a fallback.
+    var cur = +c.current_amount;
+    if(cur > 0) registered += cur;
     // Paid to date uses the contract-record figure (paid_to_date), available for
     // every contract, so the KPI and the table column agree.
     paid += (+c.paid_to_date || 0);
