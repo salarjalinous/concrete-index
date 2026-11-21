@@ -484,29 +484,28 @@ function renderTrades(committed){
 function renderVendors(award){
   const tb = document.querySelector('#tbl-vendors tbody');
   if(!award || !award.ok){
-    tb.innerHTML = '<tr><td colspan="4" class="u-muted u-py-4 u-px-2">No City Record award name maps to this agency, so its recipients cannot be read from the award ledger. See the methodology note on agency matching.</td></tr>';
+    tb.innerHTML = '<tr><td colspan="3" class="u-muted u-py-4 u-px-2">No City Record award name maps to this agency, so its recipients cannot be read from the award ledger. See the methodology note on agency matching.</td></tr>';
     return;
   }
   const agg = award.agg;
-  if(!agg.byVendor.size){ tb.innerHTML = '<tr><td colspan="4" class="u-muted u-py-4 u-px-2">No construction awards from this agency in the trailing twelve months.</td></tr>'; return; }
+  if(!agg.byVendor.size){ tb.innerHTML = '<tr><td colspan="3" class="u-muted u-py-4 u-px-2">No construction awards from this agency in the trailing twelve months.</td></tr>'; return; }
   // Split recipients the way the Briefing does: hard construction (bondable work)
   // versus design and construction-management (soft professional services), each
   // ranked on its own dollars so a CM firm is not read as a construction winner.
   function groupRows(map, groupTotal){
     const vs = [...map.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10);
-    return vs.map((v,i)=>`<tr>
-      <td class="rank">${i+1}</td>
+    return vs.map(v=>`<tr>
       <td><span class="t-title">${esc(v[0])}</span></td>
       <td class="num amt">${fmtMoney(v[1])}</td>
       <td class="num">${groupTotal>0 ? fmtPct(v[1]/groupTotal) : '–'}</td></tr>`).join('');
   }
   const sections = [];
   if(agg.byVendorHard.size){
-    sections.push(`<tr class="grp-row"><td colspan="4">Hard construction · ${fmtMoney(agg.hardTotal)}</td></tr>`
+    sections.push(`<tr class="grp-row"><td colspan="3">Hard construction · ${fmtMoney(agg.hardTotal)}</td></tr>`
       + groupRows(agg.byVendorHard, agg.hardTotal));
   }
   if(agg.byVendorSoft.size){
-    sections.push(`<tr class="grp-row${agg.byVendorHard.size?' second':''}"><td colspan="4">Design &amp; CM (professional services) · ${fmtMoney(agg.softTotal)}</td></tr>`
+    sections.push(`<tr class="grp-row${agg.byVendorHard.size?' second':''}"><td colspan="3">Design &amp; CM (professional services) · ${fmtMoney(agg.softTotal)}</td></tr>`
       + groupRows(agg.byVendorSoft, agg.softTotal));
   }
   tb.innerHTML = sections.join('');

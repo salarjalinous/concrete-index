@@ -298,8 +298,7 @@ function renderVendors(rows){
   const entries = [...groupSum(rows, r=>r.vendor).entries()]
     .sort((a,b)=>b[1].total-a[1].total).slice(0,10);
   const tb = document.querySelector('#tbl-vendors tbody');
-  tb.innerHTML = entries.map((e,i)=>`<tr>
-    <td class="rank">${i+1}</td>
+  tb.innerHTML = entries.map(e=>`<tr>
     <td><a class="t-title" href="/contractors/?q=${encodeURIComponent(e[0])}" title="See this contractor's full award history">${esc(e[0])}</a></td>
     <td class="num">${fmtInt(e[1].count)}</td>
     <td class="num amt">${fmtMoney(e[1].total)}</td>
