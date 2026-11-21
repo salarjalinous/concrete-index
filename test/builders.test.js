@@ -98,7 +98,9 @@ test('B2. plan-history stays under 150 KB at ten periods', () => {
 
 test('B3. flow.json reproduces each owning figure and splits sum to the dollar', () => {
   const pre = data('precomputed.json'), vendors = data('checkbook-vendors.json'), cs = data('contract-search.json');
-  const ph = PH.build([{ period: '202609', rows: data('plan-latest.json') }]);
+  // plan-latest.json is the plan period precomputed.json names; label it the same
+  // way the archive job does, so the test follows the live files.
+  const ph = PH.build([{ period: (pre.meta && pre.meta.committed_period) || '202609', rows: data('plan-latest.json') }]);
   const doc = FLOW.build({ precomputed: pre, planHistory: ph, awards: data('awards.json'), vendors, now: new Date('2026-11-20T20:00:00Z') });
   const lane = id => doc.lanes.find(l => l.id === id);
   assert.equal(lane('committed').value, pre.glimpse.committed);
