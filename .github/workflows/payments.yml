@@ -1171,6 +1171,34 @@ jobs:
           node tools/build-contract-splits.js --data data
           rm -f data/*.tmp-* data/contract-detail/*.tmp-*
 
+      # D6 cross-file invariant (moved out of test/builders.test.js): Registered
+      # and Paid have one canonical source, checkbook-vendors.json (written by
+      # checkbook.yml at 07:45 UTC). This is the last job of the night, so the
+      # contract file just written should agree with it: paid to the dollar, and
+      # registered on the current-amount-only rule. A disagreement is reported
+      # as a warning and never fails the job or blocks the data commit.
+      - name: D6 cross-file check (warning only)
+        continue-on-error: true
+        run: |
+          node - <<'JSEOF' || echo "::warning title=D6 check::could not run the cross-file check"
+          const fs = require('fs');
+          const rd = f => JSON.parse(fs.readFileSync(f, 'utf8'));
+          let cs, v;
+          try { cs = rd('data/contract-search.json'); v = rd('data/checkbook-vendors.json'); }
+          catch (e) { console.log('::warning title=D6 check::a data file is missing or unreadable: ' + e.message); process.exit(0); }
+          let vReg = 0, vPaid = 0;
+          for (const k in (v.vendors || {})) { vReg += +v.vendors[k].registered || 0; vPaid += +v.vendors[k].paid || 0; }
+          let cur = 0, paid = 0;
+          for (const c of (cs.contracts || [])) { const a = +c.current_amount; if (a > 0) cur += a; paid += +c.paid_to_date || 0; }
+          const r = x => Math.round(x);
+          const msgs = [];
+          if (r(paid) !== r(vPaid)) msgs.push(`paid: contract file ${r(paid)} vs vendor file ${r(vPaid)} (gap ${r(paid - vPaid)})`);
+          if (r(cur) !== r(vReg)) msgs.push(`registered (current amount only): contract file ${r(cur)} vs vendor file ${r(vReg)} (gap ${r(cur - vReg)})`);
+          const when = `contract file ${(cs.meta || {}).generated}, vendor file ${(v.meta || {}).generated}`;
+          if (msgs.length) for (const m of msgs) console.log(`::warning title=D6 cross-file check::${m}; ${when}`);
+          else console.log(`D6 cross-file check: paid and registered agree (${when})`);
+          JSEOF
+
       - name: Commit if changed
         run: |
           set -euo pipefail

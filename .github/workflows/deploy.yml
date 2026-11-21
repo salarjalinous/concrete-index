@@ -64,10 +64,13 @@ jobs:
       - name: Post-build checks (no inline script or style, CSP, em dashes, spacing, fonts)
         run: node tools/check.mjs
 
-      - name: Methodology and builder tests
+      # Methodology and flow tests only. builders.test.js reads the data
+      # files the nightly jobs write at different times, so it runs in
+      # test.yml on code changes; it must never hold nightly data back.
+      - name: Methodology and flow tests
         env:
           STRICT_PAGES: '1'
-        run: node --test test/*.test.js
+        run: node --test test/methodology.test.js test/flow.test.js
 
       - name: Formatter parity (ci.fmt against every page format)
         run: node tools/test-fmt.mjs

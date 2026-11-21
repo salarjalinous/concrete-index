@@ -4,7 +4,11 @@
  *     lib/plan-core.js (so the builders do not re-implement the pages).
  * (B) The nightly builders, run on the archived data/*.json, reproduce the
  *     figures already published in precomputed.json and the Checkbook files,
- *     and stay inside their byte budgets.
+ *     and stay inside their byte budgets. Every expectation is derived from
+ *     the files themselves (no snapshot constants), and no test compares two
+ *     files written by different nightly jobs: those can disagree between
+ *     runs. The cross-file D6 check (contract file vs vendor file) runs in
+ *     payments.yml as a warning instead.
  *
  *   node --test test/
  */
@@ -71,20 +75,28 @@ test('A2. Agency fetchVelocityPlan (page code): legacy loop until Patch 2, Funne
 });
 
 test('B1. plan-history reproduces precomputed Committed on the archived plan file', () => {
-  const doc = PH.build([{ period: '202609', rows: data('plan-latest.json') }], { now: new Date('2026-11-20T15:30:00Z') });
+  // plan-latest.json and precomputed.json are written by the same archive job;
+  // the period label is read from precomputed.json, not pinned.
+  const pre = data('precomputed.json'), rows = data('plan-latest.json');
+  const period = (pre.meta && pre.meta.committed_period) || 'latest';
+  const doc = PH.build([{ period, rows }], { now: new Date('2026-11-20T15:30:00Z') });
   const l = doc.periods[0];
-  const pre = data('precomputed.json');
   assert.equal(Math.round(l.committed.total), pre.glimpse.committed);
   assert.equal(Math.round(l.stages.all.unspent), pre.glimpse.committed, 'Pipeline "all active" headline is the same figure');
   assert.equal(Math.round(l.check_filter_first_total), pre.glimpse.committed, 'filter-first and collapse-first agree');
-  // D1 measured: the legacy rule reads exactly one project and its unspent higher
-  assert.equal(l.legacy_d1.committed_count - l.committed.count, 1);
-  assert.equal(Math.round((l.legacy_d1.committed_total - l.committed.total) * 100), 161992666);
+  // D1 measured: the legacy rule is recomputed here from the same rows; it can
+  // only add projects (its excluded set is a subset), never remove them.
+  const legacy = P.committedTotal(P.collapseSnapshot(rows, P.EXCLUDED_LEGACY_D1));
+  const aligned = P.committedTotal(P.collapseSnapshot(rows, P.EXCLUDED));
+  assert.equal(l.legacy_d1.committed_count, legacy.count);
+  assert.equal(Math.round(l.legacy_d1.committed_total * 100), Math.round(legacy.total * 100));
+  assert.equal(Math.round(l.committed.total * 100), Math.round(aligned.total * 100));
+  assert.ok(l.legacy_d1.committed_count >= l.committed.count, 'legacy D1 rule reads at least the aligned projects');
   // groups sum to the headline
   const sum = o => Object.values(o).reduce((a, v) => a + v[0], 0);
   for(const g of ['by_agency', 'by_borough', 'by_category']) assert.ok(Math.abs(sum(l[g]) - l.committed.total) < 0.01, g);
   assert.ok(Math.abs(Object.values(doc.latest.agency_detail).reduce((a, x) => a + x.total, 0) - l.committed.total) < 0.01);
-  assert.equal(l.rows, 5801);
+  assert.equal(l.rows, rows.length);
   assert.ok(doc.latest.dedup_check.raw_to_collapsed_ratio > 1.2);
   for(const k of ['generated_at', 'stale_after_hours', 'source_as_of']) assert.ok(doc.meta[k] != null, k);
 });
@@ -97,18 +109,21 @@ test('B2. plan-history stays under 150 KB at ten periods', () => {
 });
 
 test('B3. flow.json reproduces each owning figure and splits sum to the dollar', () => {
-  const pre = data('precomputed.json'), vendors = data('checkbook-vendors.json'), cs = data('contract-search.json');
+  const pre = data('precomputed.json'), vendors = data('checkbook-vendors.json');
   // plan-latest.json is the plan period precomputed.json names; label it the same
   // way the archive job does, so the test follows the live files.
-  const ph = PH.build([{ period: (pre.meta && pre.meta.committed_period) || '202609', rows: data('plan-latest.json') }]);
+  const ph = PH.build([{ period: (pre.meta && pre.meta.committed_period) || 'latest', rows: data('plan-latest.json') }]);
   const doc = FLOW.build({ precomputed: pre, planHistory: ph, awards: data('awards.json'), vendors, now: new Date('2026-11-20T20:00:00Z') });
   const lane = id => doc.lanes.find(l => l.id === id);
   assert.equal(lane('committed').value, pre.glimpse.committed);
   assert.equal(lane('awarded').value, pre.awarded_ttm.total);
   assert.equal(lane('awarded').qualifier, 'gross');
-  assert.equal(lane('paid').value, cs.meta.total_paid_to_date, 'Paid equals the contract file to the dollar');
-  let reg = 0; for(const k in vendors.vendors) reg += vendors.vendors[k].registered;
+  // Registered and Paid come from the vendor file (D6 canonical source). Their
+  // agreement with contract-search.json is checked in payments.yml, not here.
+  let reg = 0, paid = 0;
+  for(const k in vendors.vendors){ reg += parseFloat(vendors.vendors[k].registered) || 0; paid += parseFloat(vendors.vendors[k].paid) || 0; }
   assert.equal(lane('registered').value, reg);
+  assert.equal(lane('paid').value, paid);
   for(const id of ['committed', 'awarded']){
     const s = lane(id).split_agency;
     assert.equal(s.length, 6); assert.equal(s[5].name, 'All other');
@@ -148,12 +163,16 @@ test('B4. contract splits: lossless index, shards hold every curve, aggregates m
   // Agency TILE 1 and Analysis S-curve are the page functions on the full file
   assert.deepEqual(agg.agency_velocity, C.agencyVelocity(src.contracts));
   assert.equal(agg.scurve.sweptTotal, src.contracts.filter(c => c.payments_swept === true).length);
-  // D6 measured
+  // D6, within the contract file: current-amount-only plus the original-amount
+  // fallback is the old Contracts rule. The vendor-file comparison is a
+  // payments.yml warning, because the two files come from different jobs.
   const r = agg.reconciliation_d6;
-  assert.equal(r.paid_gap, 0);
-  assert.equal(r.registered_current_amount_only, r.registered_canonical);
-  assert.equal(r.registered_gap_contracts_page_vs_canonical, r.original_amount_fallback.dollars);
-  assert.equal(r.fallback_explains_gap, true);
+  let cur = 0, fbN = 0, fb = 0;
+  for(const c of src.contracts){ const v = +c.current_amount; if(v > 0) cur += v; else { const o = +c.original_amount; if(o > 0){ fbN++; fb += o; } } }
+  assert.equal(r.registered_current_amount_only, cur);
+  assert.deepEqual(r.original_amount_fallback, { contracts: fbN, dollars: fb });
+  assert.ok(Math.abs(r.registered_contracts_page_rule - r.registered_current_amount_only - r.original_amount_fallback.dollars) < 0.5, 'old rule = current only + fallback');
+  assert.equal(r.paid_contracts_file, src.meta.total_paid_to_date);
 });
 
 test('B5. award-core reproduces the archived precompute', () => {
