@@ -262,7 +262,7 @@ function compose(){
     ['New work vs prior year', D.awardsOk && D.awardDelta!==null ? (D.awardDelta>=0?'+':'−') + fmtPct(D.awardDelta) : '–',
       'Dollars awarded, both years on the same new-work basis; the year-over-year on the “Analysis” page is a composite of value and count.'],
     ['Open pipeline', D.planOk ? fmtMoney(D.pipe) : '–', ''],
-    ['Backlog coverage', D.planOk && D.coverage ? D.coverage.toFixed(1)+' yrs' : '–', '']
+    ['Backlog coverage', D.planOk && D.coverage ? D.coverage.toFixed(1)+' yrs' : '–', "Market-level: City open pipeline over trailing spend. Not any firm's backlog."]
   ].map(([l,v,n],i)=>`<div class="kpi${i===0?' hl':''}"><div class="k-label">${l}</div><div class="k-value">${v}</div>${n?`<div class="k-note">${n}</div>`:''}</div>`).join('');
 
   const market = D.awardDelta!==null && D.awardDelta<=-15 ?

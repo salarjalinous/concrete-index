@@ -412,6 +412,20 @@ function cbkWindowPhrase(){
   if(ytd !== null) p = p ? (p + ' plus fiscal year ' + ytd + ' to date') : ('fiscal year ' + ytd + ' to date');
   return 'Checkbook’s published coverage window (currently ' + p + ')';
 }
+/* Short fiscal-year label for the Checkbook window, e.g. "FY21–26 + FY27 YTD",
+   built from the vendor file's meta the same way tools/build-flow.js labels it. */
+function cbkFYShort(){
+  const m = checkbook.meta || {};
+  const ys = Array.isArray(m.fiscal_years) ? m.fiscal_years.map(Number).filter(isFinite).sort((a,b)=>a-b) : [];
+  if(!ys.length) return '';
+  const ytd = (m.fiscal_year_ytd != null && ys.indexOf(+m.fiscal_year_ytd) !== -1) ? +m.fiscal_year_ytd : null;
+  const closed = ys.filter(y => y !== ytd);
+  const yy = n => String(n % 100).padStart(2, '0');
+  const parts = [];
+  if(closed.length) parts.push(closed.length > 1 ? ('FY' + yy(closed[0]) + '–' + yy(closed[closed.length-1])) : ('FY' + yy(closed[0])));
+  if(ytd !== null) parts.push('FY' + yy(ytd) + ' YTD');
+  return parts.join(' + ');
+}
 function cbkAsOf(){
   const g = checkbook.meta && checkbook.meta.generated ? checkbook.meta.generated : null;
   if(!g) return '';
@@ -468,7 +482,8 @@ function renderCheckbook(grp, awardNotice){
     + `<div class="rd-note">Value of this group's contracts registered with the Comptroller${span?(', '+span):''}${agencyTxt?(', across '+agencyTxt):''}. A separate measure from the award notice, not a sum of it.</div></div>`
     + `<div class="rd flag"><div class="rd-label">Paid to date (Checkbook)</div>`
     + `<div class="rd-value">${fmtMoney(cbk.paid)}</div>`
-    + `<div class="rd-note">Amount the City has disbursed against those registered contracts so far. Lower than registered while work is in progress.</div></div>`;
+    + `<div class="rd-note">Amount the City has disbursed against those registered contracts so far. Lower than registered while work is in progress.</div>`
+    + `<p class="vendor-note">Cumulative City payments${cbkFYShort() ? (' ' + esc(cbkFYShort())) : ''}. Not percent complete, not a financial statement.</p></div>`;
   note.textContent = disclosure;
 }
 

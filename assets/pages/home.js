@@ -354,7 +354,7 @@
   }
   function planUnavailable() {
     setText($('kpi-spent-cap'), 'Capital-plan outlays between plan snapshots, trailing year; not the same ledger as Paid. Read it on Funnel.');
-    setText($('kpi-coverage-cap'), 'Open pipeline over trailing-year spending; read it on Funnel.');
+    setText($('kpi-coverage-cap'), "Market-level: City open pipeline over trailing spend. Not any firm's backlog. Read it on Funnel.");
     setText($('mo-cover-cap'), 'Read it in the Briefing');
   }
 

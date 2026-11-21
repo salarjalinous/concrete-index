@@ -171,7 +171,7 @@ function detailHtml(c){
         '<dt>Paid to date</dt><dd' + (!(c.paid_to_date > 0) ? ' class="en"' : '') + '>' + fmtMoneyFull(+c.paid_to_date) + '</dd>' +
         '<dt>Percent paid</dt><dd>' + fmtPct(c.pct_paid_to_date) + '</dd>' +
         '<dt>Confirmed dated disbursements</dt><dd' + (!(c.total_paid > 0) ? ' class="en"' : '') + '>' + (c.total_paid > 0 ? fmtMoneyFull(+c.total_paid) : EN) + '</dd>' +
-      '</dl></div>' +
+      '</dl><p class="vendor-note">Payment pace only. Retainage, change orders, and timing make this differ from progress.</p></div>' +
       '<div class="dblock"><div class="db-head">Payment velocity</div><dl class="dl">' + velRows + '</dl></div>' +
     '</div>' +
     chartBlock +
