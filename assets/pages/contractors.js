@@ -286,7 +286,6 @@ async function runSearch(q){
     return;
   }
   document.getElementById('q').value = q;
-  history.replaceState(null,'', '?q=' + encodeURIComponent(q));
   document.getElementById('starter').style.display = 'none';
   document.getElementById('profile').style.display = 'none';
   document.getElementById('noresults').style.display = 'none';

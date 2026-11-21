@@ -22,7 +22,7 @@ Contracts and the editorial pages (Methodology, About, Privacy, Terms, Sources, 
 
 The site does take user input, and some of it leaves the browser:
 
-- **Contractors search.** The typed name is quote-escaped and placed in a SoQL `$where` clause sent as a GET request to data.cityofnewyork.us and, for the MTA and State section, data.ny.gov. The operator of both portals (Tyler Technologies, which runs Socrata) can log the term with the visitor's IP address and user agent. The network call happens only on an explicit submit or selection; typing alone sends nothing. The page writes the submitted term to its own address (`?q=`) so a lookup can be bookmarked or shared; it is never written to storage, and under the same-origin referrer policy that address is not sent to the data APIs.
+- **Contractors search.** The typed name is quote-escaped and placed in a SoQL `$where` clause sent as a GET request to data.cityofnewyork.us and, for the MTA and State section, data.ny.gov. The operator of both portals (Tyler Technologies, which runs Socrata) can log the term with the visitor's IP address and user agent. The network call happens only on an explicit submit or selection; typing alone sends nothing. The typed term is never written to the page address or to storage.
 - **Contracts search.** Filters a same-origin file (`/data/contract-search.json`) inside the browser. Nothing is sent.
 - **Filters, toggles, sort controls.** Change the query parameters a page sends to the data APIs on Bidding, Awarded, Agencies, and Contractors; they carry no free text.
 
