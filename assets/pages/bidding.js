@@ -12,13 +12,21 @@ function cleanField(v){
   if(!s || /^(null|undefined|n\/?a)$/i.test(s)) return '';
   return s;
 }
-// Phone cleaner: drops placeholder numbers like (000) 000-0000 (no real digits).
-function cleanPhone(v){
-  const s = cleanField(v);
-  if(!s) return '';
-  if(!/[1-9]/.test(s.replace(/\D/g,''))) return '';
-  return s;
+// City Record notice link, built from the numeric request_id. Named City staff
+// contacts are not shown or exported (counsel decision, Nov 2026); the notice
+// itself carries the contact for bidders. The link base lives on #list in the
+// page markup (an outbound link, never fetched), so this file names no host.
+function noticeUrl(id){
+  const s = cleanField(id);
+  const el = document.getElementById('list');
+  const base = el ? (el.getAttribute('data-notice-base') || '') : '';
+  return (base && /^\d{6,14}$/.test(s)) ? base + s : '';
 }
+// Notice descriptions can embed a staff email or phone; those are never shown.
+// Same pattern rule as the Contracts scope field.
+const CONTACT_EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g;
+const CONTACT_PHONE = /(?:\+?1[\s.-]?)?(?:\(\d{3}\)|\b\d{3})[\s.-]?\d{3}[\s.-]?\d{4}\b(?:\s*(?:x|ext\.?)\s*\d{1,6})?/gi;
+function scrubContact(s){ return String(s||'').replace(CONTACT_EMAIL, '').replace(CONTACT_PHONE, '').replace(/\s{2,}/g, ' ').trim(); }
 // Placeholder due dates (year 2040, 2099, 2106, 9999, and the like) are not real
 // deadlines. Real construction bids close within months, so any due date more
 // than five years out is a placeholder. A horizon test, not an enumerated set,
@@ -103,7 +111,7 @@ async function fetchSolicitations(){
   // rewrite it against local date fields.
   const today = new Date().toISOString().slice(0,10);
   const params = new URLSearchParams({
-    '$select':'request_id,start_date,agency_name,category_description,selection_method_description,short_title,pin,due_date,contact_name,contact_phone,email,additional_description_1',
+    '$select':'request_id,start_date,agency_name,category_description,selection_method_description,short_title,pin,due_date,additional_description_1',
     '$where':`starts_with(category_description,'Construction') AND due_date>='${today}'`,
     '$order':'due_date',
     '$limit':'2000'
@@ -141,12 +149,10 @@ async function fetchSolicitations(){
       noDeadline: !standing && isSentinelDate(due),
       dead: isDeadNotice(posted, standing, due),
       posted: posted,
-      contact: cleanField(r.contact_name),
-      phone: cleanPhone(r.contact_phone),
-      email: cleanField(r.email),
+      notice: noticeUrl(r.request_id),
       tags: wtClassify(title),
       borough: deriveBorough(title, fullDesc),
-      desc: fullDesc.slice(0, 280)
+      desc: scrubContact(fullDesc).slice(0, 280)
     };
   });
   // Dropped, not hidden: the count is reported under the list so the total
@@ -179,14 +185,14 @@ function fmtDate(d){ return ci.fmt(d, 'date'); }
 function csvCell(v){ const s=(v==null?'':String(v)); return '"'+s.replace(/"/g,'""')+'"'; }
 function exportCSV(){
   const rows = filtered();
-  const lines = [['Due date','Posted','Agency','Title','Borough','Work types','Category','Selection method','PIN','Contact','Phone','Email'].map(csvCell).join(',')];
+  const lines = [['Due date','Posted','Agency','Title','Borough','Work types','Category','Selection method','PIN','City Record notice'].map(csvCell).join(',')];
   rows.forEach(r => {
     lines.push([
       r.standing ? 'Standing pre-qualified list' : r.noDeadline ? 'No closing date published' : r.dueDay,
       r.postedDay, r.agency, r.title, r.borough,
       r.tags.map(t=>WT_LEXICON[t].label).join('; '),
       r.cat==='hard'?'Construction':'Related services',
-      r.method, r.pin, r.contact, r.phone, r.email
+      r.method, r.pin, r.notice
     ].map(csvCell).join(','));
   });
   const blob = new Blob([lines.join('\r\n')], { type:'text/csv;charset=utf-8;' });
@@ -243,7 +249,6 @@ function render(){
       ? '' : `<span class="pill boro">${esc(r.borough)}</span>`;
     const tagRow = (wtPills || boroPill) ? `<div class="s-tags">${boroPill}${wtPills}</div>` : '';
     const pinTxt = r.pin ? esc(r.pin) : DASH;
-    const contactTxt = r.contact ? esc(r.contact) : DASH;
     const sideHtml = r.standing
       ? `<div class="due ok txt">Standing pre-qualified list</div>
         <div class="due-sub">open year-round · posted ${fmtDate(r.posted)}</div>`
@@ -258,7 +263,7 @@ function render(){
         <div class="s-meta">${esc(r.agency)} · ${esc(r.method)} · PIN ${pinTxt} · <span class="pill ${r.cat}">${r.cat==='hard'?'Construction':'Related services'}</span></div>
         ${tagRow}
         ${r.desc ? `<div class="s-desc">${esc(r.desc)}${r.desc.length>=280?'…':''}</div>` : ''}
-        <div class="contact">${contactTxt}${r.phone?' · '+esc(r.phone):''}${r.email?' · <a href="mailto:'+esc(r.email)+'">'+esc(r.email)+'</a>':''}</div>
+        ${r.notice ? `<div class="contact"><a href="${esc(r.notice)}" rel="noopener">Read the notice in the City Record</a></div>` : ''}
       </div>
       <div class="s-side">
         ${sideHtml}

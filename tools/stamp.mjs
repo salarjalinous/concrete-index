@@ -77,7 +77,7 @@ export const PAGES = [
   { file: 'pipeline/index.html', route: R.pipeline, current: R.pipeline, title: "Pipeline",
     desc: "NYC capital work funded but not yet spent, from the OMB Capital Projects Dashboard: unspent budget by phase, agency, borough, and ten-year plan category.", type: 'nyc', chart: true, css: 'pipeline', js: ['pipeline'], export: true },
   { file: 'bidding/index.html', route: R.bidding, current: R.bidding, title: "Bidding",
-    desc: "Open City construction solicitations from the City Record, sorted by due date, with procurement method, PIN, agency contact, and trade and borough tags.", type: 'nyc', css: 'bidding', js: ['bidding'], export: true },
+    desc: "Open City construction solicitations from the City Record, sorted by due date, with procurement method, PIN, a notice link, and trade and borough tags.", type: 'nyc', css: 'bidding', js: ['bidding'], export: true },
   { file: 'awarded/index.html', route: R.awarded, current: R.awarded, title: "Awarded",
     desc: "Construction contracts the City has awarded, from City Record award notices deduplicated to one record per PIN, by month, agency, borough, and recipient.", ogDesc: "Construction contracts the City has awarded, totaled from the City Record.", type: 'nyc', chart: true, css: 'awarded', js: ['awarded'], export: true },
   { file: 'contracts/index.html', route: R.contracts, current: R.contracts, title: "Contracts",

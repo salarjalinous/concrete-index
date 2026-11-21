@@ -38,6 +38,29 @@ function pctClass(v){
 }
 
 /* ================= pure data ops (exercised by the test harness) ================= */
+/* The scope (purpose) field occasionally holds a City staff contact instead of a
+   description. Emails and phone numbers are never shown: a segment carrying one
+   is dropped, and so is a bare person-name segment next to it. The data file is
+   left as published; this runs at render and search time only. */
+var CONTACT_EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/;
+var CONTACT_PHONE = /(?:\+?1[\s.-]?)?(?:\(\d{3}\)|\b\d{3})[\s.-]?\d{3}[\s.-]?\d{4}\b(?:\s*(?:x|ext\.?)\s*\d{1,6})?/i;
+var NAME_LIKE = /^(?:[A-Z][A-Za-z'.-]*\s+){1,3}[A-Z][A-Za-z'.-]*$/;
+function scrubContact(s){
+  s = s == null ? '' : String(s);
+  if(!CONTACT_EMAIL.test(s) && !CONTACT_PHONE.test(s)) return s;
+  var parts = s.split(/\s*[,;|]\s*/);
+  var hit = parts.map(function(p){ return CONTACT_EMAIL.test(p) || CONTACT_PHONE.test(p); });
+  var kept = parts.filter(function(p, i){
+    if(hit[i] || !p) return false;
+    var nextToHit = (i > 0 && hit[i-1]) || (i < parts.length - 1 && hit[i+1]);
+    return !(nextToHit && NAME_LIKE.test(p.trim()));
+  });
+  return kept.join(', ').trim();
+}
+function scopeText(c){
+  if(c.__scope === undefined) c.__scope = scrubContact(c.purpose);
+  return c.__scope;
+}
 /* substring match across the four searchable fields, case-insensitive */
 function matchesQuery(c, q){
   if(!q) return true;
@@ -46,7 +69,7 @@ function matchesQuery(c, q){
     (c.vendor || '') + ' ' +
     (c.agency || '') + ' ' +
     (c.category || '') + ' ' +
-    (c.purpose || '') + ' ' +
+    scopeText(c) + ' ' +
     (c.pin || '')
   ).toLowerCase();
   return s.indexOf(q.toLowerCase()) !== -1;
@@ -154,7 +177,7 @@ function detailHtml(c){
     '<div class="detail-head">' +
       '<div><div class="dh-name">' + esc(c.vendor || EN) + '</div>' +
       '<div class="detail-meta">' + esc(c.agency || EN) + ' &middot; ' + esc(c.category || EN) + ' &middot; awarded by ' + esc(c.award_method || EN) + (c.pin ? ' &middot; PIN ' + esc(c.pin) : '') + '</div>' +
-      (c.purpose ? '<div class="detail-purpose"><span class="dp-label">Scope</span>' + esc(c.purpose) + '</div>' : '') +
+      (scopeText(c) ? '<div class="detail-purpose"><span class="dp-label">Scope</span>' + esc(scopeText(c)) + '</div>' : '') +
       '</div>' +
       '<div class="dh-id">' + esc(c.contract_id) + '</div>' +
     '</div>' +

@@ -50,7 +50,7 @@ jobs:
       - name: Snapshot construction solicitations (full set)
         run: |
           node tools/socrata-pull.js --dataset 3khw-qi8f \
-            --select "request_id,start_date,agency_name,category_description,selection_method_description,short_title,pin,due_date,contact_name,email" \
+            --select "request_id,start_date,agency_name,category_description,selection_method_description,short_title,pin,due_date" \
             --where "starts_with(category_description,'Construction')" \
             --cap 30000 --min 1 --sort "due_date DESC,request_id" \
             --out data/solicitations.json

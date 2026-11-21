@@ -8,12 +8,12 @@
 <meta name="referrer" content="same-origin">
 <meta name="color-scheme" content="light">
 <title>Bidding · The Concrete Index</title>
-<meta name="description" content="Open City construction solicitations from the City Record, sorted by due date, with procurement method, PIN, agency contact, and trade and borough tags.">
+<meta name="description" content="Open City construction solicitations from the City Record, sorted by due date, with procurement method, PIN, a notice link, and trade and borough tags.">
 <link rel="canonical" href="https://concreteindex.co/bidding/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="The Concrete Index">
 <meta property="og:title" content="Bidding · The Concrete Index">
-<meta property="og:description" content="Open City construction solicitations from the City Record, sorted by due date, with procurement method, PIN, agency contact, and trade and borough tags.">
+<meta property="og:description" content="Open City construction solicitations from the City Record, sorted by due date, with procurement method, PIN, a notice link, and trade and borough tags.">
 <meta property="og:url" content="https://concreteindex.co/bidding/">
 <meta property="og:image" content="https://concreteindex.co/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -65,7 +65,7 @@
 <div class="wrap">
   <div class="hero">
     <h1>What's bidding right now.</h1>
-    <p class="sub">Each construction solicitation the City Record lists as open, sorted by what's due next. Each notice carries its procurement method, PIN, and the agency contact who answers questions. The list re-pulls from the City's API on every load.</p>
+    <p class="sub">Each construction solicitation the City Record lists as open, sorted by what's due next. Each notice carries its procurement method, PIN, and a link to the notice. The list re-pulls from the City's API on every load.</p>
     <p class="asof" id="asof"><span class="ci-skel ci-skel--line" aria-hidden="true"></span><span class="ci-vh">Loading open solicitations…</span></p>
   </div>
 </div>
@@ -103,7 +103,7 @@
     <div class="card">
       <div class="sec-head"><h2>Open solicitations</h2><span class="cap"><a href="#" id="csv-link" class="csv-link">↓ Download CSV</a> · <span id="sort-cap">SORTED BY DUE DATE</span></span></div>
       <div class="s-intro">Open solicitations carry no published contract value in this dataset, so they are listed by agency and due date, tagged by trade and borough where the title allows. These are open opportunities, not results. When each one is decided, the award notice names the winning contractor only, so the “<a href="/awarded/">Awarded</a>” page shows who was awarded work, not who else bid.</div>
-      <div id="list"></div>
+      <div id="list" data-notice-base="https://a856-cityrecord.nyc.gov/RequestDetail/"></div>
       <div class="tnote">Each row is one open City construction solicitation, sorted as selected above (default: soonest due date first). These are opportunities, not results: the dataset publishes no contract value, so each is shown by agency, due date, and the trade and borough tags inferred from its title. Notices without a countdown are standing pre-qualified lists that accept applications year-round. When a solicitation is decided, only the winning contractor is named, over on the “Awarded” page.<span id="dropped-note"></span></div>
     </div>
   </section>
