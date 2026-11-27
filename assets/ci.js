@@ -29,6 +29,29 @@
   'use strict';
   var ci = root.ci || (root.ci = {});
 
+  /* ================= retired routes =================
+   * Old addresses have no folders; GitHub Pages answers them with 404.html,
+   * which loads this file. Forward them to the current page, keeping the
+   * ?query and #hash so deep links survive. */
+  var OLD_ROUTES = {
+    '/solicitations/': '/bidding/',
+    '/competitive/': '/contractors/',
+    '/vendors/': '/contractors/',
+    '/agency/': '/agencies/',
+    '/velocity/': '/agencies/#velocity'
+  };
+  (function () {
+    if (typeof location === 'undefined' || typeof URL === 'undefined') return;
+    var path = location.pathname.replace(/index\.html?$/i, '');
+    if (path.charAt(path.length - 1) !== '/') path += '/';
+    var to = OLD_ROUTES[path.toLowerCase()];
+    if (!to) return;
+    var u = new URL(to, location.href);
+    if (location.search) u.search = location.search;
+    if (location.hash) u.hash = location.hash;
+    location.replace(u.href);
+  })();
+
   /* ================= text ================= */
   var CTRL = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g;
   ci.esc = function (s) {
