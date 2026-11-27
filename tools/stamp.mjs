@@ -25,8 +25,8 @@ const FIRST_PUBLISH_YEAR = 2026;
 const BUILD_YEAR = new Date().getUTCFullYear();
 
 // ---------------------------------------------------------------- routes
-// Final routes (Phase 5 renames promoted Nov 20, 2026). Old routes are stub
-// pages generated below (STUBS) that forward to these.
+// Final routes (Phase 5 renames promoted Nov 20, 2026). Old routes have no
+// pages; assets/ci.js forwards them from 404.html.
 const R = {
   pipeline: '/pipeline/', bidding: '/bidding/', awarded: '/awarded/', contracts: '/contracts/', funnel: '/funnel/',
   agencies: '/agencies/', contractors: '/contractors/', regional: '/regional/',
@@ -55,21 +55,9 @@ export const csp = (type) => CSP_BASE.replace('CONNECT', CONNECT[type]);
 // file: path from the repo root. title: the nav label. type: CSP connect set.
 // chart: loads Chart.js and the chart grammar. js: page modules in order.
 // export: the PNG/CSV/PDF export controls the page had before Phase 5.
-// Old routes forward straight to the final route (no chains). Each stub is
-// noindex, canonical to its target, carries a visible link, loads only
-// /assets/redirect.js (keeps ?query and #hash), and falls back to a meta
-// refresh. to: target; name: the page label for the visible link.
-const STUBS = [
-  ['solicitations', R.bidding, 'Bidding'],
-  ['competitive', R.contractors, 'Contractors'],
-  ['agency', R.agencies, 'Agencies'],
-  ['vendors', R.contractors, 'Contractors'],
-  ['velocity', `${R.agencies}#velocity`, 'Agencies'],
-].map(([dir, to, name]) => ({
-  file: `${dir}/index.html`, route: `/${dir}/`, current: null, stub: true, title: `Moved to ${name}`, robots: 'noindex,follow',
-  refresh: to, canonical: to.split('#')[0], name,
-  desc: `This address has moved. The same view now lives on the ${name} page of The Concrete Index.`, type: 'editorial', css: null, js: [],
-}));
+// Retired routes (/solicitations/, /competitive/, /agency/, /vendors/,
+// /velocity/) have no folders. GitHub Pages serves 404.html for them, and
+// assets/ci.js forwards those paths to their current page (see OLD_ROUTES).
 
 export const PAGES = [
   { file: 'index.html', route: '/', current: null, title: "The Concrete Index · NYC Public Construction Demand",
@@ -110,8 +98,6 @@ export const PAGES = [
     type: 'editorial', css: 'editorial', js: [] },
   { file: '404.html', route: null, current: null, title: "Page not found", robots: 'noindex',
     desc: "This address does not match a page on The Concrete Index. The section list below links to every data page, the methodology, and the site policies.", type: 'editorial', css: '404', js: [] },
-  // Old routes: stubs, generated whole by stubPage() below.
-  ...STUBS,
 ];
 
 // ---------------------------------------------------------------- markup
@@ -155,13 +141,6 @@ function head(p) {
   L.push(`<meta http-equiv="Content-Security-Policy" content="${csp(p.type)}">`);
   L.push('<meta name="referrer" content="same-origin">');
   L.push('<meta name="color-scheme" content="light">');
-  if (p.refresh) {
-    // redirect.js runs first (synchronously) and keeps ?query and #hash; the
-    // meta refresh is the fallback when scripts do not run.
-    L.push(`<meta name="ci:redirect" content="${p.refresh}">`);
-    L.push('<script src="/assets/redirect.js"></script>');
-    L.push(`<meta http-equiv="refresh" content="0; url=${p.refresh}">`);
-  }
   L.push(`<title>${esc(fullTitle(p))}</title>`);
   L.push(`<meta name="description" content="${esc(p.desc)}">`);
   if (p.robots) L.push(`<meta name="robots" content="${p.robots}">`);
@@ -255,39 +234,13 @@ function replaceBlock(html, name, content, file) {
   return html.replace(re, () => `<!-- ci:${name} -->\n${content}\n<!-- /ci:${name} -->`);
 }
 
-function stubPage(p) {
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<!-- ci:head -->
-<!-- /ci:head -->
-</head>
-<body>
-<!-- ci:header -->
-<!-- /ci:header -->
-
-<main id="content" tabindex="-1">
-<div class="wrap ci-moved">
-  <h1>This page has moved.</h1>
-  <p>It is now the “${p.name}” page. You are being sent there now.</p>
-  <p><a class="ci-moved__go" href="${p.refresh}">Go to the “${p.name}” page</a></p>
-</div>
-</main>
-
-<!-- ci:footer -->
-<!-- /ci:footer -->
-</body>
-</html>
-`;
-}
-
 const checkOnly = process.argv.includes('--check');
 let stale = 0;
 for (const p of PAGES) {
   const path = join(ROOT, p.file);
-  if (!p.stub && !existsSync(path)) throw new Error(`missing page ${p.file}`);
+  if (!existsSync(path)) throw new Error(`missing page ${p.file}`);
   const before = existsSync(path) ? readFileSync(path, 'utf8') : '';
-  let html = p.stub ? stubPage(p) : before;
+  let html = before;
   html = replaceBlock(html, 'head', head(p), p.file);
   html = replaceBlock(html, 'header', header(p), p.file);
   html = replaceBlock(html, 'footer', footer(), p.file);
