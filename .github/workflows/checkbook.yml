@@ -2,7 +2,7 @@ name: Checkbook NYC vendor data
 
 # Pulls registered (Contracts) and paid-to-date (Spending) per construction
 # vendor from the Checkbook NYC API and writes data/checkbook-vendors.json,
-# keyed on the SAME normName() the /vendors/ page uses so the page can join.
+# keyed on the SAME normName() the /contractors/ page uses so the page can join.
 # Stdlib-only Python (urllib + xml), no extra deps. Commits only if changed.
 
 on:
